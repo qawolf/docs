@@ -1,97 +1,95 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+mode: "custom"
+title: "QA Wolf Documentation"
 ---
 
-## Setting up
+import { SearchBar } from "/snippets/search-bar.jsx";
 
-Get your documentation site up and running in minutes.
+{/* ========== HERO SECTION ========== */}
+<div className="relative w-full flex items-center justify-center py-4 overflow-hidden bg-[#3b3cef]">
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
+{/* Screen grid overlay */}
+
+
+<div className="relative w-full max-w-6xl mx-auto px-5 py-4 z-10 flex items-center justify-between gap-12">
+  <div className="flex-1">
+    <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-[#08edcb] mb-4">
+      QA Wolf Documentation
+    </h1>
+    
+    <p className="text-lg md:text-xl text-gray-300 font-normal max-w-xl mb-8 leading-relaxed">
+      QA Wolf is a test automation platform that helps teams find bugs earlier and make confident release decisions. It combines AI-assisted test creation with code-based control, so you can move quickly without sacrificing accuracy.
+    </p>
+
+    <div className="flex items-center w-full max-w-lg">
+      <SearchBar placeholder="Search clusters, quickstarts, concepts..." />
+    </div>
+  </div>
+
+  <div className="hidden md:flex items-center justify-center flex-shrink-0 relative">
+    <div 
+      className="absolute inset-0 rounded-full opacity-50"
+      style={{
+        background: 'radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.12) 50%, transparent 85%)',
+        filter: 'blur(30px)',
+        transform: 'scale(1.15)'
+      }}
+    />
+    <img 
+      src="https://cdn.prod.website-files.com/6260298eca091b57c9cf188e/6418a55a2ccce3cf374945b6_join-the-wolfpack.png" 
+      alt="QA Wolf" 
+      className="w-96 h-96 object-contain relative z-10"
+      style={{ filter: 'drop-shadow(0 0 50px rgba(255,255,255,0.18))' }}
+      noZoom
+    />
+  </div>
+</div>
+</div>
+
+{/* ========== MAIN CONTENT ========== */}
+<div className="max-w-6xl mx-auto px-5 py-12">
+
+<CardGroup cols={3}>
+<Card title="Key Concepts" icon="compass" href="/qawolf/key-concepts"  iconType="solid">
+  Key concepts are the core ideas behind QA Wolf. They are the foundation of how QA Wolf works.
 </Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
+<Card title="Access & Setup" icon="key" href="/qawolf/access-and-setup"  iconType="solid">
+  Access and setup are the steps to get started with QA Wolf. They are the foundation of how QA Wolf works.
 </Card>
+<Card title="Using QA Wolf AI" icon="sparkles" href="/qawolf/using-qa-wolf-ai"  iconType="solid">
+  Using QA Wolf AI is the process of using the AI features of QA Wolf. They are the foundation of how QA Wolf works.
+</Card>
+<Card title="Building and maintaining flows" icon="code" href="/qawolf/building-and-maintaining-flows"  iconType="solid">
+  Building and maintaining flows is the process of building and maintaining the flows of QA Wolf. They are the foundation of how QA Wolf works.
+</Card>
+<Card title="Advanced flows and tests" icon="bug" href="/qawolf/advanced-flows-and-tests"  iconType="solid">
+  Advanced flows and tests is the process of building and maintaining the flows of QA Wolf. They are the foundation of how QA Wolf works.
+</Card>
+<Card title="Execution, scheduling, bugs & maintenance" icon="wrench" href="/qawolf/execution-scheduling-bugs-and-maintenance"  iconType="solid">
+  Learn how to execute tests, schedule runs, and manage bugs and maintenance in QA Wolf.
+</Card>
+<Card title="Coverage-as-a-service" icon="shield" href="/qawolf/coverage-as-a-service"  iconType="solid">
+  Learn about QA Wolf's coverage-as-a-service offering and how to request new coverage.
+</Card>
+</CardGroup>
+
+
+<div className="my-12">
+<h3 className="text-3xl text-black dark:text-white font-semibold">Integrations</h3>
+</div>
+
+<CardGroup cols={3}>
+<Card title="Connect your VPN" icon="lock" href="/qawolf/connect-your-VPN"  iconType="solid">
+  Connect your VPN to QA Wolf for secure test execution.
+</Card>
+<Card title="Integrate your test management system" icon="ballot-check" href="/qawolf/integrate-your-test-management-system"  iconType="solid">
+  Integrate QA Wolf with your test management system for seamless test tracking.
+</Card>
+<Card title="Integrating with CI/CD" icon="code-compare" href="/qawolf/integrating-with-CI-CD"  iconType="solid">
+  Integrate QA Wolf with your CI/CD pipeline for automated testing.
+</Card>
+<Card title="Integrate your issue tracker" icon="bug" href="/qawolf/integrate-your-issue-tracker"  iconType="solid">
+  Connect QA Wolf with your issue tracker to streamline bug reporting.
+</Card>
+</CardGroup>
+</div>

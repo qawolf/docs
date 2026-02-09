@@ -1,0 +1,79 @@
+---
+title: "How to: Interpret run results"
+---
+
+<AccordionGroup>
+<Accordion title="Overview: Get familiar with the Runs tab">
+
+<Tip>
+**For each run, the list shows:**
+
+- The name of the schedule that triggered the run
+
+    <Icon icon="check"/> The current number of fully passing attempts over the total attempts made.
+
+    <Icon icon="circle-x"/> — The number of flows in the run that still require investigation (if applicable).
+
+    <Icon icon="bug"/> — The number of open bug reports linked to flows in the run (if applicable). 
+
+    <Icon icon="hammer"/> — The number of open maintenance reports linked to flows in the run (if applicable).
+
+- Total wall clock time of the run, including all attempts.
+</Tip>
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-11.png"/>
+</Frame>
+
+</Accordion>
+<Accordion title="How to: Sort and filter run histories">
+
+- The default view on the **Runs** tab displays past runs, sorted by date in descending order.
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-12.png"/>
+</Frame>
+
+- You can filter the list by clicking the <Icon icon="filter"/> icon.
+
+- **Created date** lets you filter runs by *1 week ago, 1 month ago, or 1 year ago*.
+
+<Columns cols={2}>
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-13.png"/>
+</Frame>
+</Columns>
+
+- **Trigger** lets you filter runs by schedule frequency: *Hourly or Weekly*.
+
+<Columns cols={2}>
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-14.png"/>
+</Frame>
+</Columns>
+
+</Accordion>
+<Accordion title="How to: Identify failed runs that need attention">
+<Steps>
+<Step>
+**Go to the Runs tab**. The icon next to the environment name indicates the status of flows from previous runs.
+
+| Environment status | Meaning |
+|:--- |:--- |
+| Red – Failed | High severity bug reported |
+| Yellow – Needs investigation | Failed flow <br/><br/>or<br/><br/> Medium or low priority bug reported |
+| Green – Ready | All flows passing |
+</Step>
+<Step>
+Select the environment you are investigating. Runs are sorted into three categories:
+
+- *Completed:* All flows in the run have passed or been marked *Do Not Investigate*.
+- *Investigating:* Flows in the run failed, but have not been marked *Do Not Investigate*.
+- *Canceled*. The run was cancelled mid-execution by a subsequent run matching the same branch and environment.
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-15.png"/>
+</Frame>
+</Step>
+</Steps>
+</Accordion>
+</AccordionGroup>

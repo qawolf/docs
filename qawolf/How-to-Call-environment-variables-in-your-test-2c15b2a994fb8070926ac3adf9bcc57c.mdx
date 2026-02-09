@@ -1,0 +1,31 @@
+---
+title: "How to: Call environment variables in your test"
+---
+
+## Overview: About environment variables
+
+In the QA Wolf platform, environment variables are encrypted constants scoped to a specific environment.
+
+You can use the same variable across environments by reusing the same name in each environment and setting the appropriate value for that environment (for example, BASE\_URL in Staging vs Production). QA Wolf doesn't enforce cross-environment consistency—this pattern relies on naming conventions.
+
+<Check>
+**Prerequisite:** 
+
+[How to: Declare and manage environment variables](/qawolf/How-to-Configure-environments-2cd5b2a994fb8014ba8bd7aa25f3ed0f)
+</Check>
+
+You can see which environment variables are available by clicking the **Env vars** tab below the editing window.
+
+<Frame>
+![](/images/building-and-maintaining-flows/image-13.png)
+</Frame>
+
+## How to: Call an env variable
+
+Call an environment variable in your code by using the `process.env` object.
+
+In this example, we use the standard Playwright `page.goto` function to open the location defined in the `BASE_URL` environment variable.
+
+<Frame>
+![](/images/building-and-maintaining-flows/image-14.png)
+</Frame>

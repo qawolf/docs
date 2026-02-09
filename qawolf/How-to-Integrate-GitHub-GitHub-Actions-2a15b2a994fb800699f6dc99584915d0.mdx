@@ -1,0 +1,136 @@
+---
+title: "How to: Integrate GitHub/GitHub Actions"
+---
+<Check>
+To proceed in this guide, you need:
+
+- Access to your QA Wolf team.
+- Admin access to your GitHub repository.
+</Check>
+
+QA Wolf integrates directly with GitHub to automatically run tests when you deploy code. This integration uses **GitHub Actions (GHA)** to notify QA Wolf of new deployments. Almost every GitHub organization can use it, including private repos and GitHub Enterprise Cloud.
+
+<Danger>
+You cannot use GitHub actions if your team:
+
+- Self-hosts GitHub Enterprise Server without internet access.
+- Explicitly disables GitHub Actions by policy.
+- If either applies, see the [SDK Integration Guide](/2a15b2a994fb802fb918e8d675421252?pvs=25) for an alternative.
+</Danger>
+
+<AccordionGroup>
+<Accordion title="How to: Integrate QA Wolf and GitHub Actions">
+<Steps>
+<Step>
+Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-1.png"/>
+</Frame>
+</Step>
+<Step>
+Choose **Integrations** and then click **Enable** next to **GitHub**. This opens GitHub, where you’ll be prompted to sign in if you have not already done so.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-2.png"/>
+</Frame>
+
+<Danger>
+Your user cannot be a member of multiple GitHub orgs.
+</Danger>
+</Step>
+<Step>
+Choose the repositories QA Wolf should access.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-3.png"/>
+</Frame>
+</Step>
+<Step>
+Click **Install**. Once installed, QA Wolf can create PR comments
+</Step>
+<Step>
+Return to QA Wolf **Integrations**, and generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard"/> icon to the right of **API Key** under **API Access**.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-4.png"/>
+</Frame>
+</Step>
+<Step>
+Return to GitHub, go to your repository’s **Settings** tab, click **Secrets and variables**, and then **Actions**.
+</Step>
+<Step>
+Type QAWOLF_API_KEY in **Name** and paste the value you copied above into **Secret**.
+</Step>
+<Step>
+Click **Add secret** to save.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-5.png"/>
+</Frame>
+
+<Note>
+This key allows your workflow to authenticate with QA Wolf when the Action runs.
+</Note>
+</Step>
+</Steps>
+</Accordion>
+<Accordion title="How to: Install the action">
+
+#### Installing the action
+
+QA Wolf’s official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy), will notify QA Wolf whenever a new deployment is ready for testing.
+
+<Danger>
+This must be done for every repository you want connected to CI/CD.
+</Danger>
+<Steps>
+<Step>
+Open your repository on GitHub. Click the **Actions** tab.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-6.png"/>
+</Frame>
+</Step>
+<Step>
+If you already have actions, you can click **New workflow**.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-7.png"/>
+</Frame>
+</Step>
+<Step>
+Choose **Set up a workflow yourself**.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-8.png"/>
+</Frame>
+</Step>
+<Step>
+Copy either the [example](/qawolf/How-to-Integrate-GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0) from the Action’s Marketplace page or the example below into your workflow file (usually .github/workflows/deploy.yml). Replace the values in `deployment-type` and `deployment-url` with your actual values. 
+
+To get the value for `deployment-type`, reach out to QA Wolf, and we will provide this value for you.
+
+```bash
+- name: Notify QA Wolf
+  uses: qawolf/notify-qawolf-on-deploy-action@v1
+  with:
+    qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+    deployment-type: "staging"
+    deployment-url: "https://staging.example.com"  
+```
+</Step>
+</Steps>
+
+#### Validating the action
+
+<Steps>
+<Step>
+Push a new commit to your main branch. Wait for your deployment to complete.
+</Step>
+<Step>
+Check your **Runs** tab in the QA Wolf app. If everything is working correctly, you see a new run created for that environment.
+</Step>
+</Steps>
+</Accordion>
+</AccordionGroup>

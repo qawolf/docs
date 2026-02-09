@@ -1,0 +1,388 @@
+---
+title: "Triggering test runs on deployment"
+description: "When you deploy a new version of your application, you can notify us and we will initiate a test run for this deployment."
+---
+
+<Warning>
+Please note that these are meant to be triggered by your main environment, per the contract with QA Wolf. If you need additional environment support, please reach out to our team. There are both technical and account implications for secondary environments that are not fully covered in this document.
+</Warning>
+
+## Notify QA Wolf after Deployment
+
+### Prerequisites
+
+A QAE representative must configure a [trigger](/qawolf/Triggers-a3348b3e92154d4a960bf5f7877ccc5d) associated with an environment for deploy success requests to initiate test runs. The `DeployConfig` object below will require some parameters that match this Trigger configuration.
+
+Contact your QA Wolf representative, and we’ll set it up with you.
+
+### Option 1: With our SDK
+
+Below is a sample script written in TypeScript:
+
+<Warning>
+Please refer to [Deploy Success Webhook - Choosing Fields Based on Your Setup](/qawolf/Deploy-Success-Webhook-dd72e46ceb7f451dae4e9ef06f64a2cc#choosing-fields-based-on-your-setup) to properly set up the `DeployConfig` object.
+</Warning>
+
+```js TypeScript
+import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+// Edit this to your needs.
+const deployConfig: DeployConfig = {
+  sha: undefined, // Recomended
+  branch: undefined, // Recommended
+  commitUrl: undefined, // Recommended
+  deploymentType: undefined, // "accounting"
+  deduplicationKey: undefined, // Not needed
+  deploymentUrl: undefined, // Not needed
+  ephemeralEnvironment: undefined, // Not needed
+  hostingService: undefined, // Not needed
+  variables: undefined, // Not needed
+};
+
+const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey });
+
+const result = await attemptNotifyDeploy(deployConfig);
+if (result.outcome !== "success") {
+  // Fail the job.
+  throw Error(`Failed to notify QAWolf: ${JSON.stringify(result)}`);
+}
+
+// result.runId can be output from the job to be used in a CI-greenlight job.
+```
+
+#### CircleCI Example
+
+Save this script in a file named `.circleci/notifyQaWolf.mjs` in the repo the corresponds to the deployments QA Wolf will be testing. This example assumes GitHub, but just change the `hostingService` value if you use another supported code hosting service.
+
+```js JavaScript expandable
+import assert from "assert";
+import { makeQaWolfSdk } from "https://esm.sh/@qawolf/ci-sdk@0.23.0";
+
+const apiKey = process.env.QA_WOLF_TEAM_API_KEY;
+assert(apiKey, "QA_WOLF_TEAM_API_KEY is required");
+
+const sha = process.env.CIRCLE_SHA1;
+assert(sha, "CIRCLE_SHA1 is required");
+
+const branch = process.env.CIRCLE_BRANCH;
+assert(branch, "CIRCLE_BRANCH is required");
+
+const deployConfig = {
+  branch,
+  // Required only if the target trigger requires matching a deployment type
+  deploymentType: "staging", // e.g., "production", "staging", "qa"
+  // Optional: Include deployment URL to override URL environment variable for the run
+  deploymentUrl: undefined,
+  hostingService: "GitHub",
+  // Optional: Include pull request number for PR testing
+  // pullRequestNumber: 123,
+  // Recommended: Include repository information
+  repository: {
+    name: "circleci-example",
+    owner: "qawolf",
+  },
+  sha,
+};
+
+const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey });
+
+const result = await attemptNotifyDeploy(deployConfig);
+if (result.outcome !== "success") {
+  // Fail the job.
+  throw Error(`Failed to notify QAWolf: ${JSON.stringify(result)}`);
+}
+
+// result.runId can be output from the job to be used in a CI-greenlight job.
+```
+
+
+Then run it from a CircleCI job in your workflow. Simple example:
+
+```yaml YAML expandable
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/configuration-reference
+version: 2.1
+
+# Use the latest Node.js orb
+orbs:
+  node: circleci/node@7.0.0
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
+jobs:
+  # build: TODO
+  # deploy: TODO
+  notify-qa-wolf:
+    executor: node/default
+    steps:
+      - checkout
+      - run: node --version
+      - run: node --experimental-network-imports .circleci/notifyQaWolf.mjs
+
+# Orchestrate jobs using workflows
+# See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
+workflows:
+  build-deploy-test-workflow:
+    jobs:
+      # - build
+      # - deploy
+      - notify-qa-wolf
+
+```
+
+The important parts are:
+
+1. Add the `circleci/node` orb.
+2. Create the `notify-qa-wolf` job to run after your deployment is healthy. It must use the `node/default` executor, check out your code, and run `node --experimental-network-imports .circleci/notifyQaWolf.mjs`.
+
+### Option 2: With our GitHub Action
+
+Please refer to [Notify On Deploy Action Documentation](https://github.com/qawolf/notify-qawolf-on-deploy-action) to see details about how implement the action. The action is [available on the Marketplace](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy).
+
+### Option 3: With our API (Not recommended)
+
+Below is a sample “curl” usage:
+
+```bash Shell
+curl -X POST -H "Authorization: Bearer <ApiKey>" \
+     -H "Content-Type: application/json" \
+     "https://app.qawolf.com/api/webhooks/deploy_success" \
+	     -d '{"branch": "<BranchName>", "deployment_type": "staging", "commit_url": "<URL>", "sha": "de12adda500f2bc5a29dbd89f4fb1b0e1a31de81"}'
+```
+
+<Note>
+This command is for illustration purposes. We don’t recommend “curling” without inspecting the result as not all 200 responses imply a successful run trigger. We recommend using the SDK for that purpose as it does the interpretation work for you!
+</Note>
+
+You will find detailed documentation about this API usage here: [Deploy Success Webhook](/qawolf/Deploy-Success-Webhook-dd72e46ceb7f451dae4e9ef06f64a2cc).
+
+### Error Handling
+
+You can see about more about the possible errors [here](/qawolf/Deploy-Success-Webhook-dd72e46ceb7f451dae4e9ef06f64a2cc#http-status-error-codes).
+
+If you would like to use a run artifact to use in your test workflow, follow the instructions below. This is common in mobile testing if your CI pipeline builds an `.apk` or `.aab` or `.ipa` you would like to specifically target. For mobile apps, we recommend the [Fastlane plugin](/qawolf/Triggering-test-runs-on-deployment-0f12fb5260de4362a5ebe33d8a2f9538#option-3:-with-our-fastlane-plugin). We expose an SDK function called `generateSignedUrlForRunInputsExecutablesStorage` that will return a signed url you can use to securely upload your artifact.
+
+You can then send the location of the uploaded file as a variable to the workflow.
+
+### Option 1: With our SDK
+
+```js JavaScript expandable
+import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
+import fs from "fs/promises";
+import path from "path";
+
+const { generateSignedUrlForRunInputsExecutablesStorage, attemptNotifyDeploy } =
+  makeQaWolfSdk({
+    apiKey: "qawolf_xxxxx",
+  });
+
+(async () => {
+  const playgroundFileLocation = await uploadRunArtifact("/FileLocation");
+
+  if (playgroundFileLocation) {
+    const deployConfig: DeployConfig = {
+      branch: undefined,
+      commitUrl: undefined,
+      deduplicationKey: undefined,
+      deploymentType: undefined,
+      deploymentUrl: undefined,
+      ephemeralEnvironment: undefined,
+      hostingService: undefined,
+      sha: undefined,
+      variables: {
+        RUN_INPUT_PATH: playgroundFileLocation,
+        // for mobile apps, the team may request that you use a different
+        // variable name here, such as ANDROID_APP
+      },
+    };
+
+    const result = await attemptNotifyDeploy(deployConfig);
+    if (result.outcome !== "success") {
+      // Fail the job.
+      process.exit(1);
+    }
+    const runId = result.runId;
+  }
+})();
+
+async function uploadRunArtifact(filePath: string): Promise<string> {
+  const fileName = path.basename(filePath);
+
+  const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage({
+	  // for mobile apps, we prefer static filenames based on the environment name
+	  // for example, use `app_staging.apk` for the Staging environment
+    destinationFilePath: fileName,
+  });
+
+  if (
+    signedUrlResponse?.success &&
+    signedUrlResponse.playgroundFileLocation &&
+    signedUrlResponse.uploadUrl
+  ) {
+    const fileBuffer = await fs.readFile(filePath);
+    const url = signedUrlResponse.uploadUrl;
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        body: fileBuffer,
+        headers: {
+          "Content-Type": "application/octet-stream",
+        },
+      });
+
+      if (!response.ok) {
+        return "";
+      }
+    } catch (error) {
+      return "";
+    }
+    
+    // for mobile apps, we request that you include this prefix path
+    // return `/home/wolf/run-inputs-executables/${signedUrlResponse.playgroundFileLocation}`;
+    
+    // for other apps
+    return signedUrlResponse.playgroundFileLocation;
+  }
+  return "";
+}
+```
+
+### Option 2: With our GH Action
+
+Add the upload step as an additional step in the notify job and then set the `RUN_INPUT_PATH` environmental variable in the `qawolf/notify-qawolf-on-deploy-action@v1` action.
+
+```yaml expandable
+name: Deploy and Notify QA Wolf
+on: pull_request
+jobs:
+  ...
+  notify:
+    needs: deploy-preview-environmnent
+    name: Trigger QA Wolf PR testing
+    runs-on: ubuntu-latest
+    steps:
+    ...
+      # Upload the run input file
+      - name: Upload Run Input
+        id: upload-run-inputs-executable
+        uses: qawolf/upload-run-inputs-executable-action@v1
+        with:
+          qawolf-api-key: "${{ secrets.QAWOLF_API_KEY }}"
+          input-file-path: "path/to/file.apk"
+      - name: Notify QA Wolf of deployment
+        uses: qawolf/notify-qawolf-on-deploy-action@v1
+        env:
+          ...
+          # Use the output in the RUN_INPUT_PATH environmental variable
+          RUN_INPUT_PATH: "${{ steps.upload-run-inputs-executable.outputs.destination-file-path }}"
+          ...
+        with: ...
+
+```
+
+### Option 3: With our Fastlane plugin
+
+Use our official [Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) if you use [Fastlane](https://fastlane.tools/) to upload your app and trigger test runs.
+
+First, update your Gemfile:
+
+```ruby Ruby
+# ./Gemfile
+gem "fastlane-plugin-qawolf", git: "https://github.com/qawolf/fastlane-plugin-qawolf", tag: "0.3.1"
+```
+
+Next, make sure the plugin is installed:
+
+```bash
+bundle update
+```
+
+Update the Fastlane file:
+
+```ruby Ruby expandable
+# ./fastlane/Fastlane
+lane :build do
+    # It's recommended to only trigger builds with a clean git status.
+    # See https://docs.fastlane.tools/actions/#source-control for other source control actions
+    ensure_git_status_clean
+
+    # Build your app
+    # Ensure the APK/AAB file has been created. Your use case may vary.
+    # Check Fastlane's docs for alternative build methods.
+    gradle(
+        task: "assemble",
+        build_type: "Release",
+    )
+
+    # Upload the artifact to QA Wolf
+    upload_to_qawolf(
+        # Must be set or available as env var QAWOLF_API_KEY
+        qawolf_api_key: "qawolf_...",
+
+        # Must be set to guarantee the uploaded file is replaced.
+        # Typically, this should include a git branch name or a QA Wolf environment name.
+        # Reach out to QA Wolf if you're unsure.
+        # Do NOT include a file extension, it'll be appended based on the build output file.
+        executable_file_basename: "calculator_app_staging",
+
+        # Only set this if you have not built the artifact in the same lane,
+        # e.g. via gradle or similar, check official Fastlane docs for details.
+        file_path: "./build/app-bundle.apk",
+    )
+
+    # Trigger a test run on QA Wolf
+    # Optional, only use when deployment triggers are enabled in QA Wolf
+    notify_deploy_qawolf(
+        # Must be set or available as env var QAWOLF_API_KEY
+        qawolf_api_key: "qawolf_...",
+
+        # Optional, but set if requested by the QA Wolf team.
+        # This is mostly to help distinguish between multiple apps within the same team/environment.
+        executable_environment_key: "RUN_INPUT_PATH",
+
+        # Optional, defaults to the current git branch, if available. Set to false to skip.
+        branch: git_branch,
+
+        # URL to your VCS commit URL
+        commit_url: "https://github.com/team/repo/commit/ec78d7d81a6a66e9e89fd29f6e0616d5ba09840a",
+
+        # Set to cancel ongoing test runs with the same value
+        deduplication_key: "some_idempotent_value",
+
+        # Must be set if configured in the QA Wolf deployment trigger
+        deployment_type: "deployment_name",
+
+        # Can be left empty as it's mostly for web tests
+        # If set, will be available as `process.env.URL`
+        deployment_url: nil,
+
+        # If configured in QA Wolf, set to GitHub or GitLab as needed
+        hosting_service: "GitHub",
+
+        # Optional, defaults to current git commit hash if available. Set to false to skip
+        sha: last_git_commit[:commit_hash],
+
+        # Additional hash of key-value pairs to set as environment variables for test runs
+        variables: {
+          FOO: "bar"
+        },
+
+        # Only set this if your lane does not include `upload_to_qawolf`
+        executable_filename: "calculator_app_staging.apk",
+    )
+end
+```
+
+Trigger a Fastlane build as usual and it will upload the `.apk` or `.aab` or `.ipa` file:
+
+```bash
+bundle exec fastlane build
+```
+
+### Option 4 (Not Recommended): With our API
+
+```bash Shell
+curl --location 'https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=myFile' \
+--header 'Authorization: Bearer qawolf_xxxxx'
+```

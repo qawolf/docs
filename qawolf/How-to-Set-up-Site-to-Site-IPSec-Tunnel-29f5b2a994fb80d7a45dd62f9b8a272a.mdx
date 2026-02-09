@@ -1,0 +1,33 @@
+---
+title: "How to: Set up Site-to-Site IPSec Tunnel"
+---
+
+<Steps>
+<Step>
+Configure your VPN gateway to support:
+    - **IPsec site-to-site tunnels**
+    - **Pre-shared key (PSK) authentication**
+    - **Static routing** (dynamic routing is not supported)
+    - **IKEv1 or IKEv2**
+</Step>
+<Step>
+Configure your firewall and VPN gateway to allow IPsec traffic:
+    - **Ports:** UDP 500 and UDP 4500
+</Step>
+<Step>
+Use the information provided by QA Wolf to complete your VPN configuration:
+    - **QA Wolf VPN gateway public IP address(es):** Configure these as the remote IPsec peer
+    - **Pre-shared key (PSK):** Set as the tunnel authentication secret
+    - **Assigned subnet:** Add static routes to allow traffic to and from QA Wolf
+</Step>
+</Steps>
+
+#### Compatibility
+
+- **Fully supported:** AWS Site-to-Site VPN, Google Cloud VPN, Azure VPN Gateway
+- **Supported with configuration:** Cisco ASA, Palo Alto, FortiGate
+- **Not supported:** Dynamic-routing-only VPNs (for example, BGP-only)
+
+<Danger>
+If your VPN solution is not listed as fully compatible, contact your QA Wolf engineering lead to confirm interoperability before setup.
+</Danger>

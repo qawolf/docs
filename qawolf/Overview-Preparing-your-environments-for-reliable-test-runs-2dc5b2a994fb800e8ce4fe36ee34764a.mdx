@@ -1,0 +1,108 @@
+---
+title: "Overview: Preparing your environments for reliable test runs"
+---
+
+
+## Why the stability of your CI environments is essential
+
+QA Wolf automatically retries failed tests, but unstable environments and excessive flakiness can slow runs and delay releases. Most test failures caused by infrastructure issues are preventable with the right environment setup.
+
+The guidance below focuses on keeping your environment predictable, scalable, and ready for concurrent automated testing.
+
+If you’re unsure how to size your environment or choose the right concurrency level, contact your Customer Success Manager.
+
+Based on your application and usage patterns, they can review your setup and recommend:
+
+- Concurrency limits
+
+- Infrastructure sizing
+
+- Alerting thresholds
+
+<AccordionGroup>
+<Accordion title="Overview: Right-size and monitor your environment">
+
+Your test environment must handle bursts of concurrent users and background activity during test runs.
+
+### Use scalable infrastructure
+
+- For every **500 concurrent tests**, allocate at least **4–8 vCPUs and 8–16 GB of memory**.
+
+- If you use a cloud provider (AWS, GCP, Azure), size instance groups or containers accordingly and enable auto-scaling.
+
+### Monitor performance
+
+Set up basic telemetry (CloudWatch, Datadog, New Relic, etc.) to track CPU, memory, and network usage.
+
+- If utilization regularly exceeds 75%, increase capacity or temporarily reduce concurrency in QA Wolf.
+
+### Isolate test traffic
+
+Run QA Wolf tests in a **dedicated staging or test environment**.
+
+Avoid sharing environments with:
+
+- Demo traffic
+
+- Manual QA
+
+- Feature branch verification
+
+</Accordion>
+<Accordion title="Overview: Configure concurrency safely">
+
+Each QA Wolf flow runs in its own container and behaves like a separate user. Your systems must support that level of concurrency.
+
+### Match concurrency to capacity
+
+If your environment slows down or times out under load, reduce concurrency in QA Wolf. Many teams start at **25% of total flows per batch** and increase as stability improves.
+
+### Avoid data collisions
+
+Prevent tests from interfering with each other:
+
+- Use unique login credentials per run.
+
+- Prefix generated data with a run ID or timestamp.
+
+- Use separate tenants or domains if supported.
+
+### Control deployments during test runs
+
+Avoid deploying to test environments while QA Wolf runs are in progress. Many teams enforce this with a CI/CD “deployment hold” or environment flag.
+
+### Use ephemeral environments when possible
+
+Preview or ephemeral environments (Vercel, Render, custom Terraform, etc.) provide a clean surface for each run and reduce cross-test interference.
+</Accordion>
+<Accordion title="Overview: Prepare the app for automated testing">
+
+Automated tests must be able to run end-to-end without manual setup.
+
+### Ensure dependencies are reliable
+
+- Databases, authentication providers, email services, and queues must be available during runs.
+
+- Temporary outages often appear as test failures.
+
+### Align feature flags
+
+- Keep feature flags in a consistent, test-ready state. If you use tools like LaunchDarkly or Optimizely, create a dedicated configuration for QA Wolf.
+
+### Provision test users and data
+
+- Maintain at least one QA Wolf account with sufficient permissions.
+
+- Provide an API or scriptable way to create and clean up test users.
+
+- This allows tests to start from a clean state and run concurrently.
+
+### Configure email and messaging
+
+- Allow emails from [@qawolfworkflows.com](mailto:qawolfworkflows.com) and [@qawolf.email](mailto:qawolf.email).
+
+- Support plus addressing (e.g., [user+test123@example.com](mailto:user+test123@example.com)) or another delimiter.
+
+- Aim for email and SMS delivery within **one minute** to avoid timeouts.
+</Accordion>
+</AccordionGroup>

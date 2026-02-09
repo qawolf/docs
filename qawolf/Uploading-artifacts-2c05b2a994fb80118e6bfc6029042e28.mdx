@@ -1,0 +1,83 @@
+---
+title: "Uploading artifacts"
+---
+
+## Uploading run input executables
+
+This endpoint is for uploading executables, such as mobile apps and browser extensions, that we execute tests against. It is done in two steps:
+
+1. Generate a signed URL to upload the executable file to.
+2. Upload the file to the signed URL.
+
+Once uploaded, you may want to trigger a run against the new executable. Please reference the [Deploy Success Webhook](/qawolf/Deploy-Success-Webhook-dd72e46ceb7f451dae4e9ef06f64a2cc) page for details on that.
+
+<Warning>
+Only certain file types are allowed: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`
+</Warning>
+
+### 1. Generate signed URL
+
+#### Recommended: Using the CI SDK
+
+```js TypeScript
+const { generateSignedUrlForRunInputsExecutablesStorage } =
+  makeQaWolfSdk({
+    apiKey: params.QA_WOLF_API_KEY,
+  });
+
+// Upload build artifact
+const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage({
+  destinationFilePath: params['destination-file-path'],
+});
+
+if (!signedUrlResponse?.uploadUrl) {
+  throw new Error('No upload URL received from QA Wolf');
+}
+
+console.log(signedUrlResponse.uploadUrl);
+console.log(signedUrlResponse.playgroundFileLocation);
+```
+
+#### Alternative: Using an API call
+
+The `DESTINATION_FILE_PATH` should at minimum be the filename and extension, but may also include directories. Reach out to QA Wolf for what this should be set to.
+
+```bash Shell
+GET https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH
+Authorization: Bearer $QAWOLF_API_KEY
+```
+
+On success, it responds with this JSON:
+
+```bash Shell
+{
+  "fileLocation": "$TEAM_ID/$DESTINATION_FILE_PATH",
+  "playgroundFileLocation": "$DESTINATION_FILE_PATH",
+  "signedUrl": "https://..."
+}
+```
+
+### 2. Upload the file
+
+This requires the `signedUrl` or `uploadUrl` from the first step.
+
+#### Recommended: Using the CI SDK
+
+```js JavaScript
+const fileBuffer = await fs.readFile(filePath);
+
+await fetch(SIGNED_URL, {
+  body: fileBuffer,
+  headers: { 'content-type': 'application/octet-stream' },
+  method: 'PUT',
+});
+```
+
+#### Alternative: Using Curl
+
+```bash Shell
+curl -X PUT \
+  --header "Content-Type:application/octet-stream" \
+  --data-binary @some_file.zip \
+  $SIGNED_URL
+```  

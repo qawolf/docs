@@ -1,0 +1,111 @@
+---
+title: "How to use Workflow Run Rules"
+description: "Workflow Run Rules allow you to sequence the order in which workflows run."
+---
+
+
+Example scenario: I have a login workflow that I need an `auth token` from to run before all of the other workflows on my team.
+
+## General overview of Workflow Run Rules
+
+How do I accomplish this? Well, let's jump into it.
+
+<Steps>
+<Step>
+First, you need to create a Rule for your team. Please be aware that all rules will apply to all runs on all branches.
+
+<Warning>
+Only create rules that the team as a whole needs
+</Warning>
+
+Navigate to Runs > Rules.
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-9.png"/>
+</Frame>
+
+Click the **Create rule** button.
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-10.png"/>
+</Frame>
+
+You will then be able to define which workflows should run before which. Please notice that you can also define this by the groups or tags that the workflows belong to. In the above rule, I have chosen to run all workflows that have the `Auth` tag, before `Dependent Test` and `Failing Test`
+
+<Warning>
+Please be aware of creating loops within rules. The UI will prevent you from doing this, but it is good to be thinking of this ahead of time. Heres an example: I have two rules (Rule A) and (Rule B). Rule A runs a workflow Start before all CI tags, Rule B runs a workflow Delete after all CI tags. It is important that you do not add the CI tag to the Start or Delete workflows, as that would create a loop in the rules. If you do accidentally create a loop, the UI will notify you
+</Warning>
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-11.png"/>
+</Frame>
+
+There is also a checkbox that says `Fail workflows if any priors fail` this checkbox determines what should happen to dependent workflows when a prerequisite fails. If this checkbox is not checked, the dependent workflows will still run.
+
+<Warning>
+Note that only active workflows can appear in Triggered Suites, so if you are trying to run a selected workflow and it’s in Draft it won’t actually run before the tests in the suite.
+</Warning>
+</Step>
+<Step>
+After defining your rules, you will sometimes need to access information from one of the workflows that needs to run first. This can be done by using the `setOutput` function available in all runners. 
+
+You can use the `setOutput` function like so:
+
+```json JSON
+// General signature
+setOutput(key, value);
+
+// The value can be anything serializable, including objects and arrays.
+setOutput("teamId", teamId);
+setOutput("auth", { token, userId });
+
+// To set additional output properties, call setOutput multiple times.
+```
+
+<Warning>
+Note that the key used in the setOutput function must be unique. If you use the same key again it will overwrite the previous key value pair
+</Warning>
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-12.png"/>
+</Frame>
+</Step>
+
+<Step>
+You can then access the output in runs that depend on the above workflow by accessing the `workflowInputs` object:
+
+```bash
+const { auth, teamId } = workflowInputs;
+```
+
+</Step>
+
+<Step>
+When a workflow that has dependencies fails and the `Fail workflows if any priors fail` checkbox is selected for the rule, all workflows that require that workflow will immediately fail.
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-13.png"/>
+</Frame>
+
+There will also be a failure reason surfaced in the run result
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-14.png"/>
+</Frame>
+</Step>
+
+</Steps>
+
+## Common edge cases
+
+There are some situations where the usage of rules may not be obvious. These are documented below.
+
+- Imagine you have a workflow you need to run before all CI flows, and a workflow you need to run after all CI flows. More or less a beforeAll and afterAll, if you are familiar with jest. You just created some rules that look like the ones below:
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-15.png"/>
+</Frame>
+
+    When the CI suite is run you would expect that Start test Session runs before all CI tags, and Delete Test session runs afterwards! However, you notice that the Delete Test Session workflow was not included in the CI run. Why? You’ve defined a rule that says it needs to run after CI flows, it definitely should be included, right?
+
+    The Delete Test Session workflow does depend on all of the CI flows to be able to run, but if it is not included in the suite run, it doesn’t affect any of the CI flows so everything will proceed. In this situation, it is important to ensure the trigger running the CI suite includes all of the workflows you need it to run. This can be accomplished by adding a unique tag to both the Start Test Session Workflow and Delete Test Session workflow.

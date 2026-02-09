@@ -1,0 +1,136 @@
+---
+title: "How to: Clear a release with non-bug test failures"
+description: "Resolving failures is about deliberately clearing a release, not about achieving 100% passing results."
+---
+
+An environment enters **Needs investigation** when one or more flows fail in a run. An environment enters **Failed** status when one or more flows mapped to high-priority bug reports fail. These states indicate that one or more runs require resolution before the release should proceed.
+
+<Tip>
+Failed flows and environment status provide a release signal. If you want runs in *Failed* status to block releases, ask your Customer Success Manager about our CI Greenlight feature.
+</Tip>
+
+A run that contains failed flows remains in **Investigating** or **Failed** as long as any failed flow has not been resolved. A failed flow is considered resolved when one of the following occurs:
+
+- The flow passes on a subsequent attempt, including when a temporary environmental issue resolves.
+- The flow is fixed, and the updated version is applied to the run.
+- The underlying application issue causing the failure is fixed.
+- A maintenance report is filed, preventing the flow from being included in runs until it is fixed.
+
+A run transitions to *Completed* only after all failed flows have been resolved. Once all runs are completed, the environment exits the *Needs investigation or Failed* status and can be considered ready for release.
+
+<AccordionGroup>
+<Accordion title="How to: Reattempt a failure caused by a flake">
+
+Reattempting all failures in a run is appropriate when all failures in the run are believed to be caused by a bug or a temporary environment glitch.
+<Steps>
+<Step>
+Open the **Runs** tab and click the run that is in **Investigating** or **Failed** status. This will open the Investigation view
+</Step>
+<Step>
+Click the <Icon icon="ellipsis"/> icon to open the context menu.
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-30.png"/>
+</Frame>
+</Step>
+<Step>
+Choose **Reattempt with latest version**. This will take you to the investigation view and run only the failed flows. Use this option when you want to quickly check that the suspected temporary glitch has resolved
+</Step>
+<Step>
+Choose **Duplicate run**. This will be a full retry of all flows, including up to three attempts. Use this option after you have validated that the temporary problem has been resolved, but you want to see if the issue was blocking any deeper problems
+</Step>
+</Steps>
+</Accordion>
+<Accordion title="How to: Bypass a failing flow to clear a release">
+
+Bypassing a failed flow is appropriate when the failure is understood and should not block the release, even if the flow has not passed (e.g., an understood failure in a third-party dependency). Bypassing does not fix the flow or the underlying issue. Instead, it records that the failure has been reviewed and does not require further investigation for the current release.
+
+To bypass a failed flow:
+<Steps>
+<Step>
+Open the **Runs** tab and select a run in **Investigating** or **Failed** status.
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-31.png"/>
+</Frame>
+</Step>
+<Step>
+Select the failed run that contains the flow that doesn’t need further investigation
+</Step>
+<Step>
+Click **Diagnose** in the center panel.
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-32.png"/>
+</Frame>
+</Step>
+<Step>
+Select **Do not investigate**.
+</Step>
+</Steps>
+
+Once a failed flow is marked as **Do not investigate**, it is considered resolved for the run. When all failed flows in the run have either passed or been bypassed, the run transitions to **Completed**.
+
+<Tip>
+You can also find **Diagnose** by hovering over the failing flow to show the <Icon icon="square"/> icon, then clicking it to show the <Icon icon="square-check"/> icon. Diagnose will appear below the Flow list
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-33.png"/>
+</Frame>
+</Tip>
+</Accordion>
+<Accordion title="How to: Repair a broken test using AI to unblock a release">
+<Steps>
+<Step>
+From the **Runs** tab, select the environment in the from list on the upper left.
+</Step>
+<Step>
+In the center panel, select a run from **Investigating** list.
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-34.png"/>
+</Frame>
+</Step>
+<Step>
+In the Investigation view, click **Edit code** to open the flow for changes.
+</Step>
+<Step>
+Click **Run code**.
+</Step>
+<Step>
+When the flow fails, click the **Ask** <Icon icon="/images/execution-scheduling-bugs-and-maintenance/QA_Wolf_mark.svg" size={18}/> next to the failed line to get AI help analyzing and updating the code. AI will make changes to your code in place and show its reasoning in the right panel.
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-35.png"/>
+</Frame>
+
+<Frame>
+<img src="/images/execution-scheduling-bugs-and-maintenance/image-36.png"/>
+</Frame>
+</Step>
+<Step>
+When satisfied with the changes, [review and publish](/qawolf/Overview-Reviews-publishing-revision-history-2c65b2a994fb8073826be9391a8e2238) your changes.
+</Step>
+<Step>
+Click **Use as reattempt**. The flow should pass and will move to the **Completed** section of the runs tab.
+</Step>
+</Steps>
+</Accordion>
+<Accordion title="See also: Clearing the release when there's a bug in the app or test that can’t be fixed immediately">
+
+Some failures represent real issues but are not practical to fix during the current release. In these cases, the appropriate action is to document the work required and allow the release to proceed.
+
+Follow-up work generally falls into two categories:
+
+**For bugs**
+
+- [File a bug report](/qawolf/How-to-File-review-edit-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f) 
+
+    When you file a bug report, the severity is used to display warnings about the safety of a given release.
+
+**For flow maintenance**
+- [File a maintenance report](/qawolf/How-to-File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa) 
+
+    This prevents the flow from being executed in runs until it is fixed, which resolves the investigation state without requiring an immediate fix.
+</Accordion>
+</AccordionGroup>

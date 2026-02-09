@@ -1,0 +1,166 @@
+---
+title: "Xray"
+description: "Leverage the power of [Xray Test Management for Jira](https://marketplace.atlassian.com/apps/1211769/xray-test-management-for-jira?tab=overview&hosting=cloud) to sync your automated test results with Jira issues. This integration connects your test automation pipeline directly with your Xray-enabled Jira project to streamline visibility, traceability, and reporting."
+---
+
+
+### Overview
+
+This integration allows your automated test suite to:
+
+- **Create test executions** and link them to Xray test plans or test cases
+- **Sync test results** (e.g., passed, failed, skipped) to Jira/Xray
+- **Update Jira issues** with test execution results for better traceability
+
+<Note>
+Note: The integration currently supports syncing results to a single Xray/Jira project.
+</Note>
+
+### How It Works
+<Steps>
+<Step>
+Your automated test suite is executed.
+</Step>
+<Step>
+The integration identifies matching Xray test cases (or creates executions if configured).
+</Step>
+<Step>
+A test execution is created in your Xray project, linked to the appropriate test plan (optional).
+</Step>
+<Step>
+Results from each test case are posted to Xray via the REST API.
+</Step>
+</Steps>
+
+#### What Gets Synced
+
+- **Test executions:** Created under a specified Jira/Xray project
+- **Test case results:** Passed, failed, skipped, etc.
+- **Metadata:** Execution start/end times, environment info, and optionally test evidence (e.g., logs, screenshots)
+
+### Requirements
+
+Before you can use this integration, ensure the following setup is complete:
+
+#### Xray/Jira Configuration
+
+- ✅ **Xray installed in your Jira Cloud instance**
+- ✅ **A Jira project configured for use with Xray**
+- ✅ **API access enabled**
+    - Requires Admin access to generate and authorize API credentials
+
+#### Authentication
+
+Provide the following credentials:
+
+- **Client ID & Client Secret** (for the Xray Cloud API)
+    - These are generated in the Xray API settings via the Xray Developer Portal
+- **Jira project key or URL** where test executions should be created
+
+### Setup Instructions (Step-by-Step)
+
+#### 1. Enable API Access and Generate Credentials
+<Steps>
+<Step>
+Visit the Xray Developer Portal.
+</Step>
+<Step>
+Log in with an administrator-level Xray/Jira account.
+</Step>
+<Step>
+Navigate to the **API Keys** section.
+</Step>
+<Step>
+Click **"Create API Key"** and note the generated **Client ID** and **Client Secret**.
+</Step>
+</Steps>
+
+<Info>
+These credentials are used for OAuth2-style API access via the Xray Cloud API.
+</Info>
+
+#### 2. Identify Target Project in Jira
+
+- Choose or create a **Jira project** with Xray test cases and plans already configured.
+- Share the **project key** (e.g., `QA`, `TESTPROJ`) and/or base project URL.
+
+#### 3. Configure Xray Test Cases
+
+- Ensure all automated test cases are already created in Xray, or can be matched via identifiers (e.g., test keys like `TEST-123`).
+- Optionally organize your tests into test sets or plans.
+
+#### 4. Configure custom Xray test statuses
+
+- Add custom statuses for more accurate test results (see [below](https://qawolf.notion.site/1ee5b2a994fb80118a7cd4d18a8f3ede?pvs=25#2f55b2a994fb801caf51f7ecfebb7251) for more details)
+    - [Xray documentation on how to add statuses as test run custom fields](https://docs.getxray.app/space/XRAY/301665668/Configuring+Test+Run+Custom+Fields)
+- Custom statuses to add:
+    - `SKIPPED`
+    - `MAINTENANCE`
+    - `EXISTING ISSUE`
+
+#### 5. Share Credentials Securely
+
+Provide the following to QA Wolf:
+
+- **Client ID**
+- **Client Secret**
+- **Jira project key**
+- (Optional) default test plan to link executions
+
+<Info>
+🔐 Avoid sharing credentials over email or unsecured channels.
+</Info>
+
+#### 5. Trigger and Verify
+
+- Run a sample test suite and verify a **Test Execution** appears in Xray.
+- Validate that test cases are correctly mapped and statuses appear as expected.
+
+### Frequently Asked Questions (FAQ)
+<AccordionGroup>
+<Accordion title="Can the integration create new test cases in Xray?">
+
+No. This integration assumes test cases already exist in Xray. Matching is based on test keys (e.g., `TEST-123`) or titles. Unmatched tests will be skipped.
+</Accordion>
+<Accordion title="Can I post results to multiple Jira projects?">
+
+Not currently. This version supports posting to one configured Jira/Xray project per integration.
+</Accordion>
+<Accordion title="What if a test case fails to sync?">
+
+The integration will log a warning and continue processing other cases. Common reasons for failure include missing test keys, incorrect credentials, or lack of API permissions.
+</Accordion>
+</AccordionGroup>
+
+### Known Limitations
+
+- ✅ **Cloud-hosted Jira/Xray only** (Data Center and Server not currently supported)
+- ⚠️ **Only one project supported per integration**
+- ⚠️ **Test cases must pre-exist in Xray**
+- ⚠️ **Custom fields are not supported unless explicitly configured**
+
+#### Custom Status Configuration
+
+- The relationship between QAW and Xray tests is important to consider in order understand how QAW test results will sync with your Xray test runs.
+- Xray test runs have the following default statuses available:
+    - `PASSED`
+        - Passing test
+    - `FAILED`
+        - Bugged test
+    - `TODO`
+        - Not yet synced/executed
+    - `EXECUTING`
+        - Not typically used in our current integration but can be used as a substitute for a test in maintenance (or another status) upon request.
+- Our current integration syncs the results of individual QAW tests within flows to individual test runs.
+    - I.e. for a bugged QAW flow, `QAW Test 1` will get a status of `PASSED`, `QAW Test 2`, `QAW Test 3`, and `QAW Test 4` will get a status of `FAILED`.
+        <Frame>
+        <img src="/images/qa-wolf-docs/image-61.png"/>
+        </Frame>
+    - An added custom status of `SKIPPED` is useful to differentiate between failed tests and tests that didn’t run due to a preceding test failing. I.e. `QAW Test 3` and `QAW Test 4` would get a status of `SKIPPED`.
+- The custom status of `MAINTENANCE` is to indicate when a flow is placed under maintenance by your QAW team.
+- `EXISTING ISSUE` is used to indicate that a previously reported bug is still present.
+    - We have a custom implementation to automatically close highly prioritized bug reports found in previous test executions on request.
+
+### Support
+
+Need help configuring your Xray integration? Our team is here to guide you through setup, troubleshoot issues, and ensure your test automation connects seamlessly with your Jira workflow.

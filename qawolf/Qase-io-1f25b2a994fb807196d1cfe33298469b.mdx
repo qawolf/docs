@@ -1,0 +1,138 @@
+---
+title: "Qase.io"
+description: "Seamlessly connect your automated test suite with [Qase.io](https://qase.io/), a modern test management platform built for simplicity and speed. This integration automatically syncs test results with Qase projects, enabling visibility into your QA process and linking automation with test case management."
+---
+
+
+### Overview
+
+With this integration, you can:
+
+- **Create and update test runs** within a specified Qase project
+- **Sync test results** (passed, failed, skipped, etc.) automatically
+- **Map automated test cases** to their corresponding Qase test cases for centralized tracking
+
+<Note>
+Note: This integration currently supports syncing with a single Qase project.
+</Note>
+
+### How It Works
+
+<Steps>
+<Step>
+Your automated test suite executes.
+</Step>
+<Step>
+The integration identifies the related test cases in Qase (based on test case IDs or titles).
+</Step>
+<Step>
+A **test run** is created in your Qase project.
+</Step>
+<Step>
+Results (pass/fail/skipped) are posted to Qase via its REST API.
+</Step>
+<Step>
+Test cases in Qase are updated with the latest execution status and metadata.
+</Step>
+</Steps>
+
+#### What Gets Synced
+
+- **Test run metadata:** Title, run/bug link, environment
+- **Test results:** Passed, Failed, Skipped, Blocked, Invalid
+
+### Requirements
+
+Before setting up the integration, ensure the following:
+
+#### Qase Account Setup
+
+- ✅ **Active Qase.io account**
+- ✅ **An existing Qase project** to receive test runs
+- ✅ **API access enabled** (available for all paid Qase plans)
+
+#### Authentication
+
+You will need to provide:
+
+- **Qase API token**
+    - Can be generated from your Qase account settings
+- **Project code** (e.g., `WEBAPP`, `API`, `MOBILE`)
+    - Used to identify the destination project for syncing
+
+### Setup Instructions (Step-by-Step)
+
+#### 1. Generate Your API Token
+
+<Steps>
+<Step>
+Log into your Qase account.
+</Step>
+<Step>
+Go to **Account Settings > API**.
+</Step>
+<Step>
+Click **"Create API token"**, name it appropriately, and copy the token.
+</Step>
+</Steps>
+
+<Info>
+🔐 API tokens act as authentication credentials. Do not share them in unsecured formats.
+</Info>
+
+#### 2. Identify Your Target Project
+
+- Use or create a Qase project to receive your automated test results.
+- Note the project code (visible in the project’s URL or settings).
+    - For example, if your project URL is `https://app.qase.io/project/WEBAPP`, your project code is `WEBAPP`.
+
+#### 3. Configure Test Case Mapping
+
+- Your automated tests must correspond to Qase test cases by:
+    - **Case ID** (e.g., `C1`, `C42`)
+    - Or consistent naming conventions (e.g., test titles)
+- Ensure your test suite outputs case references that can be matched to Qase entries.
+
+#### 4. Share Configuration Securely
+
+Provide the following to QA Wolf:
+
+- **API token**
+- **Qase project code**
+- (Optional) Tags or environments you'd like associated with the test runs
+
+#### 5. Run and Verify
+
+- Trigger your test suite.
+- Confirm a **new test run** appears in Qase.
+- Verify that each test result is correctly mapped and statuses reflect properly in the UI.
+
+### Frequently Asked Questions (FAQ)
+<AccordionGroup>
+<Accordion title="Does this integration create new test cases in Qase?">
+
+No. Test cases must already exist in Qase. The integration maps test results based on case IDs or titles. Unmatched tests will be skipped or logged as warnings.
+</Accordion>
+<Accordion title="Can I use this integration across multiple Qase projects?">
+
+Not currently. The integration is scoped to a single project per configuration. Multi-project support may be considered in the future.
+</Accordion>
+<Accordion title="What if a test result fails to post?">
+
+Failed posts will be logged and skipped. Common issues include:
+
+- Invalid case references
+- Expired or incorrect API tokens
+- Network or authentication issues
+</Accordion>
+</AccordionGroup>
+### Known Limitations
+
+- ✅ **Supports all paid Qase plans with API access**
+- ⚠️ **Only one project per integration configuration**
+- ⚠️ **No automatic test case creation**
+- ⚠️ **Limited support for custom fields unless specifically configured**
+
+### Support
+
+Need help setting up your Qase integration? Our team is available to walk you through configuration, test run verification, and troubleshooting.

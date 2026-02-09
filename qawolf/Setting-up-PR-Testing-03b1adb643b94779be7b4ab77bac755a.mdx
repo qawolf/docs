@@ -1,0 +1,28 @@
+---
+title: "Setting up PR Testing"
+---
+
+<Note>
+See our [Introduction to PR Testing](/qawolf/Introduction-to-PR-Testing-45be5d10d93249aeb8c1f995d26356ec) to get familiar with the concepts required to understand the setup.
+</Note>
+
+## 1. Configure GitHub/GitLab Integration
+
+Configure the GitHub/GitLab integration in the team’s settings page.
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-34.png"/>
+</Frame>
+## 2\. Notify preview deployments
+
+### 2.1 GitHub Action
+
+Configure [<Icon icon="github"/> GitHubNotify QA Wolf on Deploy - GitHub Marketplace](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy) to inform us when new preview environment deployments are released and are ready to be tested.
+
+### 2.2 SDK
+
+When GHAs are not an option, the
+
+@qawolf/ci-sdk
+
+npm package offers a flexible alternative. See the relevant documentation in the [NPM package](https://www.npmjs.com/package/@qawolf/ci-sdk).

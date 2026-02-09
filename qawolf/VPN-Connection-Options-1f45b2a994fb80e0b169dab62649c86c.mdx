@@ -1,0 +1,43 @@
+---
+title: "VPN Connection Options"
+description: "We offer multiple flexible VPN connection options to support secure access between our infrastructure and your internal network. Below are the primary methods we currently support:"
+---
+
+
+## 1. OpenVPN Configuration
+
+If you provide an OpenVPN configuration file (.ovpn), we can securely load it onto your team’s dedicated test runners. These runners have built-in support for OpenVPN, allowing them to initiate a secure connection directly to your private network.
+
+- Typically UDP 1194 but up to you how you want to configure this as long as we have a client configuration file.
+- Expect source ips from our range `199.4.212.0/23`.
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-4.jpg"/>
+</Frame>
+
+## 2. Site-to-Site IPSec Tunnel
+
+We support establishing site-to-site IPSec tunnels with customers whose network appliances or cloud environments support it. This method creates a persistent, encrypted tunnel between our infrastructure and yours. For context the tunnel will be coming from [GCP Cloud VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/overview).
+
+- Tunnel protocols: UDP 500, UDP 4500
+- We will provide local subnet during configuration to ensure it doesn’t overlap
+- We will exchange a Pre-shared key (PSK) during configuration
+- We will exchange public gateway IPs during configuration
+- Supports IKEv2 or IKEv1
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-5.jpg"/>
+</Frame>
+
+## 3. Linux Client-Based Solutions
+
+If your organization uses Twingate, Tailscale, or similar VPN mesh services, we can install the appropriate Linux client on a dedicated proxy machine. This proxy can then securely relay traffic from your team’s test runners to your internal network.
+
+Known supported options:
+
+- Tailscale
+- Twingate
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-6.jpg"/>
+</Frame>

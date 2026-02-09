@@ -1,0 +1,28 @@
+---
+title: "Minimizing test flakes"
+description: "Although QA Wolf investigates all test failures and re-runs flaky tests automatically, flakes can increase the overall runtime of your suite and slow your release velocity. Here’s how you can minimize the likelihood of test flakes:"
+---
+
+
+- **Maintain a testing infrastructure that can handle large, parallel test suites.** 
+
+    If your environment gets bogged down by the thousands of concurrent tests that we’re running, some of those tests may fail and need to re-start. 
+    
+    See also: [🎯Preparing an environment for QA Wolf test runs](/qawolf/Preparing-an-environment-for-QA-Wolf-test-runs-1e0e3653aba94d29a0309ca0c83998ad)
+
+- **Reduce your concurrency rate.** 
+
+    While this means that your test suite takes longer to run, it may ultimately be less expensive than provisioning additional resources to your test environment.
+
+- **Enable multiple accounts, teams, tenants, or domains to prevent collisions** 
+
+    QA Wolf tests are designed to avoid collisions, but the possibility of a race condition (e,g., one test creates data while another deletes it) remains unless the tests can be separated into different user accounts.
+
+- **Ensure the availability of the application and dependencies** 
+    
+    You can do this one of two ways:
+
+    - Configure your CI/CD to prevent deployments to QA Wolf’s target environments while tests are running.
+    - Use ephemeral/preview environments that contain SUT and its dependencies.
+
+If you are unsure about which improvements are optimal for your environment, contact your Customer Success Manager or QA Lead for recommendations.

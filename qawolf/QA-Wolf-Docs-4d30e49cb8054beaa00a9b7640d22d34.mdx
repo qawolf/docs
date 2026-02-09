@@ -1,0 +1,157 @@
+---
+title: "QA Wolf Docs"
+---
+
+### Onboarding
+
+<CardGroup>
+<Card title="Getting started: Onboarding with QA Wolf" icon="door-open" horizontal href="/qawolf/Getting-started-Onboarding-with-QA-Wolf-2bb2bb8b2ff14b0aa0a23c44b6a2c00c"/>
+</CardGroup>
+
+### Integrations
+
+<CardGroup>
+<Card title="Integrating QA Wolf into your CI/CD" icon="code-branch" horizontal href="/qawolf/Integrating-QA-Wolf-into-your-CI-CD-8e629fbadd394cbab28d1e2c0aa7521e"/>
+<Card title="Issue Tracker Integrations" icon="bell" horizontal href="/qawolf/Issue-Tracker-Integrations-03386d9a4a82482f9194b5443d2d8a92"/>
+<Card title="Test Management Systems" icon="clipboard-list" horizontal href="/qawolf/Test-Management-Systems-1ee5b2a994fb80fb88c6fe3e91164a50"/>
+<Card title="VPN Connection Options" icon="globe" horizontal href="/qawolf/VPN-Connection-Options-1f45b2a994fb80e0b169dab62649c86c"/>
+<Card title="Static IP Addresses" icon="network-wired" horizontal href="/qawolf/Static-IP-Addresses-2565b2a994fb80dcb090f17b3bb881c9"/>
+</CardGroup>
+
+### How-to guides
+
+<CardGroup>
+<Card title="Minimizing test maintenance" icon="wrench" horizontal href="/qawolf/Minimizing-test-maintenance-d23cea82f1334b5a880c1d0522490344"/>
+<Card title="Requesting new test coverage" icon="layer-group" horizontal href="/qawolf/Requesting-new-test-coverage-e3f7a448a44f4263ae10a1f6054d94c7"/>
+<Card title="Preparing an environment for QA Wolf test runs" icon="bullseye" horizontal href="/qawolf/Preparing-an-environment-for-QA-Wolf-test-runs-1e0e3653aba94d29a0309ca0c83998ad"/>
+<Card title="Minimizing test flakes" icon="puzzle-piece" horizontal href="/qawolf/Minimizing-test-flakes-69ad9a8115d447a0b518460b6f345dc8"/>
+<Card title="How to use Workflow Run Rules" icon="gears" horizontal href="/qawolf/How-to-use-Workflow-Run-Rules-15b5b2a994fb80178ce3f31e70c19824"/>
+</CardGroup>
+
+### Frequently asked questions
+<AccordionGroup>
+<Accordion title="In what order does QA Wolf build our automated tests?">
+
+Unless there are certain high-priority tests need to be done first, we typically start with the most complex test cases because they take longer to build and may require more communication with your team.
+
+It’s important to mention that test creation is not linear. Because we focus on the most complex tests first, construction of your test suite will look something like this:
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-1.png"/>
+</Frame>
+</Accordion>
+<Accordion title="Which environment should we run our tests on?">
+
+We recommend starting with the most stable environment before Production and expanding coverage to lower environments later if needed, but there are pros and cons to every approach.
+
+**Staging (aka QA or Test) environments**
+
+Staging environments typically strikes the right balance between Development and Production environments. Applications pushed to Staging are usually more stable, have more resources, and have consistent data.
+
+| Pros |  Cons |
+|:---|:---|
+|  Generally, it is a stable environment with additional infrastructure to support things like E2E testing, internal QA efforts, and, in some cases, load testing.  |  Depending on your release schedule, Staging may not be updated as often as the Development branch, so regressions are caught later in the SDLC.  |
+|  Ability to facilitate E2E testing (e.g., allowlist specific email domains) that you may not want to include in other environments.  |    |
+|  Data is generally more predictable and less likely to become corrupted.  |    |
+
+
+
+**Production environments**
+
+Production environments are the most stable, which means the test suite will finish faster — but any bugs that are caught testing in Production have already escaped.
+
+| Pros |  Cons |
+|:---|:---|
+| Production is the actual end-user experience, so E2E flows will test exactly what the user is getting.  |  Too late to prevent end users from being impacted by bugs.  |
+| Production infrastructure is meant for scale, so parallelization is less likely to be an issue and may highlight load-testing opportunities.  |  There may be financial consequences of testing in production (for example, checkout flows must use real money).  |
+
+
+**Development environments**
+
+Development environments are the most commonly found type of environment, so teams are often tempted to use this environment because of its availability. However, these environments are frequently chaotic and uncontrolled.
+
+
+| Pros |  Cons |
+|:---|:---|
+| Testing quickly after merging a feature branch gives developers quick feedback on possible regressions, enabling quicker fixes. |  Dev environments are often less stable, which may slow down test creation.  |
+|  |  Tests flag bugs that you may not be concerned about yet. |
+
+
+See also: [🎯Preparing an environment for QA Wolf test runs](/qawolf/Preparing-an-environment-for-QA-Wolf-test-runs-1e0e3653aba94d29a0309ca0c83998ad)
+
+</Accordion>
+<Accordion title="When will our tests start running?">
+
+Tests start running as soon as they’re built, and our goal is to provide as much value as quickly as possible, starting with your business-critical workflows. To expedite the process, make sure that your team is available for the Product Tour meeting, and that you approve the coverage outline as soon as it’s ready.
+</Accordion>
+<Accordion title="Who will we be working with from QA Wolf?">
+
+Every customer gets a dedicated team of Wolves to make sure that they’re successful:
+
+**Account Executive** 
+
+Your AE will take you through contracting, security reviews, and any other internal procedures your company needs to go through.
+
+**Customer Success Manager** 
+
+Strategic owner on QA Wolf's side for our partnership, helping ensure we are aligned on your goals and helping you get the most out of our service.
+
+**QA Lead** 
+
+Primary point of contact for technical implementation, including your test plan and implementation and testing of new features.
+
+**QA Team** 
+
+Responsible for implementing tests, investigating failures, maintaining tests, and reporting bugs.
+</Accordion>
+<Accordion title="How often does a QA Wolf test suite run?">
+
+Unlimited test runs are included in the service cost — you can run them as often as you like. By default, your suite will run once a day, which is where most companies start. As their deployment processes mature they increase the frequency of testing.
+
+You can ask your QA Lead about increasing or decreasing your test runs to best fit your process.
+</Accordion>
+<Accordion title="What happens when a test fails?">
+
+When tests fail, a QA Wolf engineer investigates what happened and determines if there’s a bug in the application, or simply a problem with the test.
+
+If there’s a bug in the application, we will file a bug report through your messaging system (e.g., Slack, Teams) and issue tracker (e.g., Jira, Linear).
+
+If there’s a problem with the test, it can usually be resolved on the fly. However, there will be tests that need to be disabled for more substantial maintenance work.
+
+You can monitor the status of failed tests in the QA Wolf application.
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-2.png"/>
+</Frame>
+</Accordion>
+<Accordion title="What’s included in a bug report?">
+
+1. Expected behavior and actual behavior.
+2. Steps to reproduce.
+3. Loom video walk-through of the bug and relevant additional information.
+4. A link to the failing test run, which has a video replay of the headful browser run and includes Playwright trace logs.
+
+<Frame>
+<img src="/images/qa-wolf-docs/image-3.png"/>
+</Frame>
+</Accordion>
+<Accordion title="How does QA Wolf handle flaky tests?">
+
+As a customer, you’ll never have to deal with flaky tests, which are tests that fail one or more times before eventually passing. Since flaky tests create noise that would otherwise slow down your release velocity, our dedicated QA team will take care of everything and make sure that you only see real, human-verified bugs. That’s our Zero Flake Guarantee.
+
+To keep things moving as quickly as possible, any test that fails is automatically re-run. That’s because anything from a simple network hiccup to a slow email server could cause a flake. After multiple failures in a row, a human steps in to investigate the root cause.
+
+See also: [🧩 *Minimizing test flakes*](/qawolf/Minimizing-test-flakes-69ad9a8115d447a0b518460b6f345dc8)
+</Accordion>
+<Accordion title="Can I integrate QA Wolf into our CI/CD pipeline?">
+
+Yes. QA Wolf can be integrated with any CI/CD system, and support any deployment pipeline. Talk to your QA Lead or Customer Success Manager for help getting set up.
+
+See also: [Integrating QA Wolf into your CI/CD](/qawolf/Integrating-QA-Wolf-into-your-CI-CD-8e629fbadd394cbab28d1e2c0aa7521e)
+
+</Accordion>
+<Accordion title="How do you test features that send or receive emails?">
+
+    [<Icon icon="file-text"/> How we test features that send or receive emails](/qawolf/How-we-test-features-that-send-or-receive-emails-1b65b2a994fb80d38eddedb0989bfa00)
+</Accordion>
+</AccordionGroup>

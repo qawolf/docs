@@ -1,0 +1,157 @@
+---
+title: "How to: Integrate a mobile build with Fastlane"
+---
+## Overview: When to use the Fastlane integration
+
+This guide is for teams that already use Fastlane to build Android or iOS apps.
+
+If your mobile builds are defined as Fastlane lanes, the QA Wolf Fastlane plugin lets you upload build artifacts and trigger test runs within your existing mobile automation. This is the recommended option for mobile teams that use Fastlane today.
+
+If you do not use Fastlane, use the QA Wolf CI SDK instead. QA Wolf does not set up Fastlane or create build lanes—this guide assumes Fastlane is already installed and producing a mobile build artifact.
+
+<Check>
+Before configuring the Fastlane integration, make sure you have the following in place:
+
+- A working Fastlane setup for your Android or iOS app
+- A Fastlane lane that produces a mobile build artifact (APK, AAB, or IPA)
+- A [QA Wolf API key](/qawolf/How-to-Integrate-a-mobile-build-with-Fastlane-2db5b2a994fb802186a3d88573899c78#to-find-the-qawolf_api_key:) stored as a secret in your CI environment
+- [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments
+
+Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
+</Check>
+<AccordionGroup>
+<Accordion title="Overview: How the Fastlane integration works">
+
+The Fastlane integration uses a QA Wolf Fastlane plugin to perform two actions:
+<Steps>
+<Step>
+Upload a mobile build artifact to QA Wolf
+</Step>
+<Step>
+Notify QA Wolf of a deployment event so a test run can be triggered
+</Step>
+</Steps>
+
+You can upload builds without triggering runs, which is useful during initial setup or validation.
+
+The artifact name you provide is used to associate the build with the correct environment. QA Wolf automatically applies the file extension.
+</Accordion>
+<Accordion title="How to: Install & configure Fastlane for QA Wolf">
+
+<Steps>
+<Step>
+Add the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) to your project if it is not already installed. This is typically done in your **Fastfile** or plugin configuration, depending on how your project manages Fastlane plugins. Follow the instructions on the `README` to install.
+</Step>
+<Step>
+Make sure your CI environment exports the **QAWOLF_API_KEY** environment variable so Fastlane can authenticate with QA Wolf.
+</Step>
+</Steps>
+
+#### To find the QAWOLF_API_KEY:
+
+<Steps>
+<Step>
+Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-13.png"/>
+</Frame>
+</Step>
+<Step>
+Choose **Integrations**,
+</Step>
+<Step>
+Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard"/> icon to the right of API Key under **API Access**.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-14.png"/>
+</Frame>
+</Step>
+</Steps>
+</Accordion>
+<Accordion title="How to: Upload a mobile build artifact">
+
+Once your Fastlane lane produces a build artifact, you can upload it to QA Wolf.
+<Steps>
+<Step>
+Add the `upload_to_qawolf` action to your lane and provide the artifact basename that matches your naming conventions. If this step completes successfully, the artifact has been uploaded and is available for use in test runs.
+</Step>
+</Steps>
+#### Example:
+
+```bash
+lane :qawolf do
+  # Build your app
+  gradle(
+    task: "assemble",
+    build_type: "Release"
+  )
+
+  # Upload the artifact to QA Wolf
+  upload_to_qawolf(
+    executable_file_basename: "app-staging"
+  )
+end
+```
+
+</Accordion>
+<Accordion title="How to: Trigger a test run">
+
+After uploading a build artifact, you can notify QA Wolf that a new deployment is ready for testing.
+<Steps>
+<Step>
+Add the `notify_deploy_qawolf` action to your lane. This step is optional and is required only if you want a test run to start automatically.
+</Step>
+</Steps>
+<Tip>
+The environment key must match the value configured by QA Wolf for your workspace.
+</Tip>
+
+If mobile triggers have not yet been enabled, this step will complete without starting a test run.
+
+#### Example:
+
+```bash
+notify_deploy_qawolf(
+  executable_environment_key: "ANDROID_APP"
+)
+```
+</Accordion>
+<Accordion title="How to: Verify the integration">
+
+To verify the integration:
+<Steps>
+<Step>
+Run the Fastlane lane in CI.
+</Step>
+<Step>
+Confirm the artifact upload step completes successfully.
+</Step>
+<Step>
+Confirm the deploy notification step runs without errors.
+</Step>
+<Step>
+Once mobile triggers are enabled, check the **Runs** tab to see the triggered test run.
+</Step>
+</Steps>
+
+If no run appears, the most common cause is a missing or incomplete QA Wolf platform configuration.
+</Accordion>
+<Accordion title="Overview: Troubleshooting and common issues">
+
+- **Artifact uploads succeed, but no runs start**
+
+    Mobile triggers may not be enabled yet. Contact QA Wolf to complete platform configuration.
+
+- **Artifact not found during test execution**
+
+    Verify the artifact basename matches the expected naming conventions.
+
+- **Authentication errors**
+
+    Confirm QAWOLF_API_KEY is set correctly in your CI environment.
+
+- **Incorrect environment used**
+    
+    Verify the environment key passed to notify_deploy_qawolf matches the configured value.
+</Accordion>
+</AccordionGroup>
