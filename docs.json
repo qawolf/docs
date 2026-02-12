@@ -2,6 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "aspen",
   "name": "QA Wolf Docs",
+  "icons": { "library": "lucide" },
   "colors": {
     "primary": "#3b3cef",
     "light": "#08edcb",
@@ -23,8 +24,8 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Overview",
-        "icon": "house",
+        "tab": "Key Concepts",
+        "icon": "key",
         "pages": [
           "qawolf/key-concepts",
           "qawolf/How-to-get-the-most-out-of-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0",
@@ -34,8 +35,8 @@
         ]
       },
       {
-        "tab": "Setup",
-        "icon": "key",
+        "tab": "Set up",
+        "icon": "wrench",
         "pages": [
           "qawolf/access-and-setup",
           "qawolf/How-to-Personalize-QA-Wolf-29c5b2a994fb8017b822ee1942b10297",
@@ -55,49 +56,80 @@
         ]
       },
       {
-        "tab": "Basic flows",
+        "tab": "Automation",
         "icon": "code",
-        "pages": [
-          "qawolf/building-and-maintaining-flows",
-          "qawolf/Overview-Get-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
-          "qawolf/Overview-Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
-          "qawolf/How-to-Create-and-write-tests-2c15b2a994fb802193a5c05e0219eb59",
-          "qawolf/How-to-Verify-and-debug-your-test-2c15b2a994fb805c9e92eec7a4a3e83e",
-          "qawolf/How-to-Use-the-Elements-tab-to-pick-a-locator-2c35b2a994fb80a681baca4f6acf3179",
-          "qawolf/How-to-Call-environment-variables-in-your-test-2c15b2a994fb8070926ac3adf9bcc57c",
-          "qawolf/How-to-Reuse-code-in-multiple-tests-2c15b2a994fb804eba81d95cede273b8",
-          "qawolf/How-to-Import-a-third-party-library-2c15b2a994fb8005ade6f0523aa5e798",
-          "qawolf/How-to-Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
-          "qawolf/How-to-Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4"
+        "groups": [
+          {
+            "group": "Basic flows",
+            "icon": "route",
+            "pages":
+            [
+              "qawolf/building-and-maintaining-flows",
+              "qawolf/Overview-Get-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
+              "qawolf/Overview-Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
+              "qawolf/How-to-Create-and-write-tests-2c15b2a994fb802193a5c05e0219eb59",
+              "qawolf/How-to-Verify-and-debug-your-test-2c15b2a994fb805c9e92eec7a4a3e83e",
+              "qawolf/How-to-Use-the-Elements-tab-to-pick-a-locator-2c35b2a994fb80a681baca4f6acf3179",
+              "qawolf/How-to-Call-environment-variables-in-your-test-2c15b2a994fb8070926ac3adf9bcc57c",
+              "qawolf/How-to-Reuse-code-in-multiple-tests-2c15b2a994fb804eba81d95cede273b8",
+              "qawolf/How-to-Import-a-third-party-library-2c15b2a994fb8005ade6f0523aa5e798",
+              "qawolf/How-to-Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
+              "qawolf/How-to-Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4"
+            ]
+          },
+          {
+            "group": "Maintenance",
+            "icon": "hammer",
+            "pages": [
+              "qawolf/How-to-Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
+              "qawolf/How-to-Clear-a-release-with-non-bug-test-failures-2c55b2a994fb808fa5ddfa157a89adcd",
+              "qawolf/How-to-File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa"
+            ]
+          },
+          {
+            "group": "Advanced flows",
+            "icon": "share-2",
+            "pages": [
+              "qawolf/advanced-flows-and-tests",
+              "qawolf/How-to-Test-a-feature-that-sends-or-receives-emails-29c5b2a994fb81cf8a03de3eb25ed68e",
+              "qawolf/Pass-data-between-flows-during-a-run-aka-Hopper-Flows-29d5b2a994fb801080bce743ab552931"
+            ]
+          }
         ]
       },
       {
-        "tab": "Advanced flows",
+        "tab": "Running",
+        "icon": "play",
+        "groups": [
+          {
+            "group": "Execution",
+            "icon": "activity",
+            "pages":
+            [
+              "qawolf/Overview-Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
+              "qawolf/Overview-How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
+              "qawolf/How-to-Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318"
+            ]
+          },
+          {
+            "group": "Scheduling",
+            "icon": "clock",
+            "pages": [
+              "qawolf/How-to-Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Bug reporting",
         "icon": "bug",
         "pages": [
-          "qawolf/advanced-flows-and-tests",
-          "qawolf/How-to-Test-a-feature-that-sends-or-receives-emails-29c5b2a994fb81cf8a03de3eb25ed68e",
-          "qawolf/Pass-data-between-flows-during-a-run-aka-Hopper-Flows-29d5b2a994fb801080bce743ab552931"
-        ]
-      },
-      {
-        "tab": "Execution, Scheduling, Bugs & Maintenance",
-        "icon": "gear",
-        "pages": [
-          "qawolf/execution-scheduling-bugs-and-maintenance",
-          "qawolf/Overview-Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
-          "qawolf/Overview-How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
-          "qawolf/How-to-Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
-          "qawolf/How-to-Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
-          "qawolf/How-to-Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
-          "qawolf/How-to-Clear-a-release-with-non-bug-test-failures-2c55b2a994fb808fa5ddfa157a89adcd",
-          "qawolf/How-to-File-review-edit-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f",
-          "qawolf/How-to-File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa"
+          "qawolf/How-to-File-review-edit-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
         ]
       },
       {
         "tab": "Integrations",
-        "icon": "bug",
+        "icon": "plug",
         "pages": [
           {
             "group": "Connect your VPN",
@@ -113,7 +145,7 @@
           },
           {
             "group": "Test Management Systems",
-            "icon": "ballot-check",
+            "icon": "list-check",
             "pages": [
               "qawolf/integrate-your-test-management-system",
               "qawolf/How-to-Integrate-Testmo-29c5b2a994fb810bb096c46ec45512fb",
@@ -125,7 +157,7 @@
           },
           {
             "group": "CI/CD",
-            "icon": "code-compare",
+            "icon": "git-compare",
             "pages": [
               "qawolf/integrating-with-CI-CD",
               "qawolf/How-to-Integrate-GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
@@ -141,7 +173,7 @@
           },
           {
             "group": "Issue Trackers",
-            "icon": "bug",
+            "icon": "search-code",
             "pages": [
               "qawolf/integrate-your-issue-tracker",
               "qawolf/How-to-Integrate-with-Jira-29c5b2a994fb81d18a87f23808479de0",
@@ -154,7 +186,7 @@
         ]
       },
       {
-        "tab": "Coverage as a Service",
+        "tab": "Full Service",
         "icon": "shield",
         "pages": [
           "qawolf/coverage-as-a-service",
