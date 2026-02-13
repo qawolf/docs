@@ -1,15 +1,14 @@
 ---
-title: "How to: Configure environments"
+title: "How to configure environments"
 ---
 
-## Overview: Environments
+## Environments
 
 In the QA Wolf platform, an [environment](/qawolf/Overview-Glossary-29c5b2a994fb806d93f2ce4554a2fcfc) corresponds to a specific version of your app, such as development, staging, or production.
 
 Each environment can be configured with separate variables (e.g., base URL, users), concurrency rates, and other settings relevant to the application version you’re testing. Flows and tests are unique to each environment and are not shared across environments.
 
-<AccordionGroup>
-<Accordion title="How to: Create, rename, and delete environments">
+## How to create, rename, and delete environments
 ### To create a new environment:
 
 <Steps>
@@ -40,7 +39,7 @@ Click **Create environment** in the upper-right corner. Give it a unique name an
 </Step>
 </Steps>
 
-### To rename an environment: 
+### To rename an environment:
 
 <Steps>
 <Step>
@@ -71,8 +70,7 @@ You can also access **Environment settings** from the **Runs** tab by hovering o
 </Frame>
 </Tip>
 
-</Accordion>
-<Accordion title="How to: Change your default environment">
+## How to change your default environment
 <Tip>
 Both the **Flows** and **Runs** tabs require a default environment. Set this to the environment you use most often for running and debugging tests.
 </Tip>
@@ -111,9 +109,7 @@ If your team is using PR testing environments, select the default environment fr
 Contact your QA Wolf Customer Success Manager to assist with PR testing configuration.
 </Note>
 
-</Accordion>
-
-<Accordion title="How to: Limit the concurrency on an environment">
+## How to limit the concurrency on an environment
 
 <Tip>
 By default, QA Wolf executes all flows in a run concurrently. You can change this by capping concurrency per environment.
@@ -141,16 +137,13 @@ Scroll to **Run Concurrency Limit** and select selecting the maximum number of f
 Click **Save**.
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Declare and manage environment variables">
+## How to declare and manage environment variables
 
-### Overview: Environment variables
 
 In the QA Wolf platform, environment variables are encrypted constants scoped to a specific environment.
 
 You can use the same variable across environments by reusing the same name in each environment and setting the appropriate value for that environment (for example, BASE\_URL in Staging vs Production). QA Wolf doesn't enforce cross-environment consistency—this pattern relies on naming conventions.
 
-### How to:
 
 <Steps>
 <Step>
@@ -184,5 +177,3 @@ Environment Variables can also be accessed from Workspace Settings.
 </Tip>
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>
