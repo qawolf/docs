@@ -1,10 +1,7 @@
 ---
 title: "Scheduling"
-sidebarTitle: "Overview"
+sidebarTitle: "How to schedule and order flows"
 ---
-
-<AccordionGroup>
-<Accordion title="How to: Create a simple scheduled run">
 
 <Steps>
 <Step>
@@ -46,9 +43,8 @@ A drawer opens where you can configure your schedule:
      d. **Concurrency limit** lets you set a maximum number of concurrent flows to control load on your system.
 
     <Danger>
-    By setting the concurrency limit here, you will override the value in [Workspace name](/qawolf/How-to-Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92) [→ Workspace settings → Environment](/qawolf/How-to-Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92)
-    </Danger>
-
+    By setting the concurrency limit here, you will override the value in **`Workspace name` → Workspace settings → Environment**
+  </Danger>
      e. **Frequency** lets you choose to schedule runs *Every day* or *Every hour*.
 
     <Note>
@@ -56,8 +52,7 @@ A drawer opens where you can configure your schedule:
     </Note>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Controlling flow execution order with Run rules">
+## How to control flow execution order with Run rules
 
 <Tip>
 The order that flows run in doesn’t always matter, but when it does — for example, when you want to run quick sanity checks before longer or more complex flows — you can set that sequence with **Run Rules**.
@@ -114,8 +109,7 @@ The UI prevents most circular setups, but it’s still good practice to double-c
 
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Manage schedules">
+## How to manage schedules
 
 #### To see all the schedules you have created:
 <Steps>
@@ -139,8 +133,7 @@ Click the icon to the right of the schedule, then click **Pause**. Paused jobs w
 Click the icon to the right of the schedule, then click Edit. A drawer opens where you can edit your schedule:
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Manage run rules">
+## How to manage run rules
 
 #### To see all the rules you have created:
 <Steps>
@@ -158,5 +151,3 @@ Open the **Runs** tab and click **Rules** from the lower left.
 Click the icon to the right of the rule, then click **Edit**. A drawer opens where you can edit your rule:
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>

@@ -1,5 +1,5 @@
 ---
-title: "How to: Clear a release with non-bug test failures"
+title: "How to clear a release with non-bug test failures"
 description: "Resolving failures is about deliberately clearing a release, not about achieving 100% passing results."
 ---
 
@@ -18,8 +18,7 @@ A run that contains failed flows remains in **Investigating** or **Failed** as l
 
 A run transitions to *Completed* only after all failed flows have been resolved. Once all runs are completed, the environment exits the *Needs investigation or Failed* status and can be considered ready for release.
 
-<AccordionGroup>
-<Accordion title="How to: Reattempt a failure caused by a flake">
+## How to reattempt a failure caused by a flake
 
 Reattempting all failures in a run is appropriate when all failures in the run are believed to be caused by a bug or a temporary environment glitch.
 <Steps>
@@ -40,8 +39,7 @@ Choose **Reattempt with latest version**. This will take you to the investigatio
 Choose **Duplicate run**. This will be a full retry of all flows, including up to three attempts. Use this option after you have validated that the temporary problem has been resolved, but you want to see if the issue was blocking any deeper problems
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Bypass a failing flow to clear a release">
+## How to bypass a failing flow to clear a release
 
 Bypassing a failed flow is appropriate when the failure is understood and should not block the release, even if the flow has not passed (e.g., an understood failure in a third-party dependency). Bypassing does not fix the flow or the underlying issue. Instead, it records that the failure has been reviewed and does not require further investigation for the current release.
 
@@ -78,8 +76,7 @@ You can also find **Diagnose** by hovering over the failing flow to show the <Ic
 <img src="/images/execution-scheduling-bugs-and-maintenance/image-33.png"/>
 </Frame>
 </Tip>
-</Accordion>
-<Accordion title="How to: Repair a broken test using AI to unblock a release">
+## How to repair a broken test using AI to unblock a release
 <Steps>
 <Step>
 From the **Runs** tab, select the environment in the from list on the upper left.
@@ -115,8 +112,7 @@ When satisfied with the changes, [review and publish](/qawolf/Overview-Reviews-p
 Click **Use as reattempt**. The flow should pass and will move to the **Completed** section of the runs tab.
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="See also: Clearing the release when there's a bug in the app or test that can’t be fixed immediately">
+## Clearing the release when there's a bug in the app or test that can’t be fixed immediately
 
 Some failures represent real issues but are not practical to fix during the current release. In these cases, the appropriate action is to document the work required and allow the release to proceed.
 
@@ -124,13 +120,11 @@ Follow-up work generally falls into two categories:
 
 **For bugs**
 
-- [File a bug report](/qawolf/How-to-File-review-edit-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f) 
+- [File a bug report](/qawolf/How-to-File-review-edit-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f)
 
     When you file a bug report, the severity is used to display warnings about the safety of a given release.
 
 **For flow maintenance**
-- [File a maintenance report](/qawolf/How-to-File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa) 
+- [File a maintenance report](/qawolf/How-to-File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa)
 
     This prevents the flow from being executed in runs until it is fixed, which resolves the investigation state without requiring an immediate fix.
-</Accordion>
-</AccordionGroup>
