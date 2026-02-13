@@ -25,15 +25,34 @@
     "timestamp": true
   },
   "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Status",
+          "icon": "signal",
+          "href": "https://status.qawolf.com/"
+        },
+        {
+          "anchor": "Blog",
+          "icon": "newspaper",
+          "href": "https://www.qawolf.com/blog"
+        },
+        {
+          "anchor": "Contact Us",
+          "icon": "mail",
+          "href": "mailto:hello@qawolf.com"
+        }
+      ]
+    },
     "tabs": [
       {
         "tab": "Key Concepts",
         "icon": "key",
         "pages": [
           "qawolf/How-to-get-the-most-out-of-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0",
-          "qawolf/Overview-Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8",
           "qawolf/Overview-Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
-          "qawolf/Overview-Reviews-publishing-revision-history-2c65b2a994fb8073826be9391a8e2238"
+          "qawolf/Overview-Reviews-publishing-revision-history-2c65b2a994fb8073826be9391a8e2238",
+          "qawolf/Overview-Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
         ]
       },
       {
@@ -62,8 +81,7 @@
           {
             "group": "Basic flows",
             "icon": "route",
-            "pages":
-            [
+            "pages": [
               "qawolf/Overview-Get-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
               "qawolf/Overview-Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
               "qawolf/How-to-Create-and-write-tests-2c15b2a994fb802193a5c05e0219eb59",
@@ -102,8 +120,7 @@
           {
             "group": "Execution",
             "icon": "activity",
-            "pages":
-            [
+            "pages": [
               "qawolf/Overview-Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
               "qawolf/Overview-How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
               "qawolf/How-to-Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318"
@@ -132,8 +149,7 @@
           {
             "group": "Connect your VPN",
             "icon": "lock",
-            "pages":
-            [
+            "pages": [
               "qawolf/Overview-QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
               "qawolf/How-to-Set-up-an-OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
               "qawolf/How-to-Set-up-Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
@@ -189,26 +205,7 @@
           "qawolf/How-to-Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47"
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Status",
-          "href": "https://status.qawolf.com/",
-          "icon": "signal"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://www.qawolf.com/blog",
-          "icon": "newspaper"
-        },
-        {
-          "anchor": "Contact Us",
-          "href": "mailto:hello@qawolf.com",
-          "icon": "mail"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",

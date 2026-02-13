@@ -1,5 +1,5 @@
 ---
-title: "Overview: Glossary"
+title: "Glossary"
 ---
 
 ## Workspace
@@ -7,7 +7,7 @@ title: "Overview: Glossary"
 A **workspace** is the top-level in the QA Wolf platform. All environments, groups, and related settings live inside a workspace.
 
 <Note>
-Use workspaces for separate applications, such as the web, iOS, and Android versions of your product. Or when different business units are responsible for completely separate test suites.
+  Use workspaces for separate applications, such as the web, iOS, and Android versions of your product. Or when different business units are responsible for completely separate test suites.
 </Note>
 
 ## Environment
@@ -21,7 +21,7 @@ Each environment can be [configured](/qawolf/How-to-Configure-environments-2cd5b
 Under each environment are groups, which are collections of flows. Every flow must belong to a group. Each environment can include multiple groups, which makes it easier to navigate, report on, and maintain your flows.
 
 <Note>
-Use groups to organize tests by module, feature, or functionality, such as *Authentication*, *Checkout*, or *Billing*.
+  Use groups to organize tests by module, feature, or functionality, such as _Authentication_, _Checkout_, or _Billing_.
 </Note>
 
 ## Flow
@@ -37,14 +37,14 @@ Only flows can be scheduled, tagged, and run individually during a QA cycle.
 A test is a part of a flow that verifies specific behaviors in your application. Each test focuses on a single feature or action and runs within a flow.
 
 <Tip>
-**Example: QA Wolf application hierarchy**
+  **Example: QA Wolf application hierarchy**
 
-| Workspace | Wolf Corp |
-| :--- | :--- |
-| Environment | Staging |
-| Group | Accounts |
-| Flow | User Registration |
-| Tests | Email validation step<br/> Password rules step<br/> Successful account creation step |
+  | Workspace   | Wolf Corp                                                                              |
+  | :---------- | :------------------------------------------------------------------------------------- |
+  | Environment | Staging                                                                                |
+  | Group       | Accounts                                                                               |
+  | Flow        | User Registration                                                                      |
+  | Tests       | Email validation step<br /> Password rules step<br /> Successful account creation step |
 </Tip>
 
 ## Run
@@ -62,5 +62,5 @@ QA Wolf will attempt to run a flow up to three times. Each attempt has its own v
 A schedule defines when and how often runs occur automatically. Scheduling is limited to flows. Individual tests can be run manually for debugging, but they cannot be scheduled independently.
 
 <Note>
-Use schedules to execute flows at specific times (12:00a midnight) or at recurring intervals (every hour), or when a build is deployed.
+  Use schedules to execute flows at specific times (12:00a midnight) or at recurring intervals (every hour), or when a build is deployed.
 </Note>

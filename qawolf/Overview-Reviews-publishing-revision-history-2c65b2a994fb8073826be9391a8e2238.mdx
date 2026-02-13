@@ -1,30 +1,27 @@
 ---
-title: "Overview: Reviews, publishing, and revision history"
+title: "Reviews, publishing, and revision history"
 description: "QA Wolf uses a Git-like change model for flows and groups: changes are reviewable, publish-controlled, and reversible. This ensures test updates are intentional and don’t affect scheduled runs until explicitly published."
 ---
 
 **Only changes to the current structure of behavior of your test suite require a review step:**
 
 - Adding a new group
-
 - Editing an existing group (moving flows in and out)
-
 - Renaming a flow or group
-
 - Editing an existing flow (code)
 
 <Tip>
-New flows are automatically committed and published upon creation. They don’t modify any existing behavior, so no review is needed.
+  New flows are automatically committed and published upon creation. They don’t modify any existing behavior, so no review is needed.
 </Tip>
 
 A <Icon icon="/images/image-1.png" /> Green dot indicates that a flow or group has unpublished changes
 
 <Frame>
-<img src="/images/image-2.png" alt="Green dot" />
+  ![Green dot](/images/image-2.png)
 </Frame>
 
 A strikethrough + red <Icon icon="square-minus" /> indicates the flow or group is marked for deletion.
 
 <Frame>
-<img src="/images/image-4.png" alt="Strikethrough + red" />
+  ![Strikethrough + red](/images/image-4.png)
 </Frame>
