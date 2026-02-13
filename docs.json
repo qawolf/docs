@@ -2,6 +2,9 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "aspen",
   "name": "QA Wolf Docs",
+  "redirects": [
+    { "source": "/", "destination": "/qawolf/How-to-get-the-most-out-of-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0" }
+  ],
   "icons": { "library": "lucide" },
   "colors": {
     "primary": "#3b3cef",
