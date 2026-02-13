@@ -199,10 +199,11 @@
         "tab": "Full Service",
         "icon": "shield",
         "pages": [
-          "qawolf/Coverage-as-a-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
-          "qawolf/Coverage-as-a-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
+          "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
           "qawolf/How-to-Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae",
+          "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
           "qawolf/How-to-Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47"
+
         ]
       }
     ]
@@ -231,10 +232,7 @@
       "view",
       "chatgpt",
       "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
+      "perplexity"
     ]
   },
   "footer": {

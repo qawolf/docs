@@ -1,8 +1,8 @@
 ---
-title: "How to: Integrate with Microsoft Teams"
+title: "How to integrate with Microsoft Teams"
 ---
 
-## Overview: Completion Checklist
+## Completion Checklist
 
 <Card>
 In the [Teams Admin Center](https://admin.teams.microsoft.com/):
@@ -19,8 +19,7 @@ In the [Microsoft Entra admin center](https://entra.microsoft.com/) (**as a Secu
 
 <Icon icon="square"/> Share your Microsoft Entra tenant ID with QA Wolf
 </Card>
-<AccordionGroup>
-<Accordion title="How to: Enable shared channels in Teams">
+### How to enable shared channels in Teams
 
 <Note>
 Shared channels are **enabled by default** in Teams.
@@ -44,8 +43,7 @@ Click **Apply** to save your changes.
 </Frame>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Enabling external access">
+### How to enable external access
 
 You must enable external access so QA Wolf team members can join your **Teams meetings** and your team can see QA Wolf's presence status (online/offline/away) in shared channels.
 <Steps>
@@ -63,8 +61,7 @@ Choose the appropriate option for allowing **Teams and Skype for Business users 
 </Frame>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Enable cross-tenant access in Microsoft Entra">
+### How to enable cross-tenant access in Microsoft Entra
 
 To use a shared channel with QA Wolf, you must allow our Microsoft Entra tenant by adding QA Wolf as an allowed organization using our Microsoft Entra tenant ID.
 
@@ -95,7 +92,14 @@ Still under Organizational Setting, you should see QA Wolf listed under `n` **or
 <img src="/images/coverage-as-a-service/image-7.png"/>
 </Frame>
 
-To check access, click on the **Configured** link underneath **Inbound access** or **Outbound access**. Click the **B2B direct connect** tab, then select the **Customize settings** radio button. On the **External users and groups** tab:
+#### To check access:
+<Steps>
+<Step>click on the **Configured** link underneath **Inbound access** or **Outbound access**.</Step>
+<Step>Click the **B2B direct connect** tab</Step>
+<Step>Select the **Customize settings** radio button.</Step>
+</Steps>
+
+On the **External users and groups** tab:
 
 - For **Access status**, select *Allow access*
 
@@ -125,5 +129,3 @@ We need your **Microsoft Entra tenant ID** and **domain name** so we can configu
 <Frame>
 <img src="/images/coverage-as-a-service/image-9.png"/>
 </Frame>
-</Accordion>
-</AccordionGroup>
