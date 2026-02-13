@@ -1,11 +1,11 @@
 ---
-title: "Overview: Choose the right CI environment to execute your tests"
+title: "Choose the right CI environment to execute your tests"
 description: "QA Wolf supports testing across any CI environment, so you can align testing goals with your existing release process."
 ---
 
-<Accordion title="Overview: Match your testing goals to the environment you run them in">
+## Match your testing goals to the environment you run them in
 
-#### Goal: Test Stability
+### Goal: Test Stability
 
 Use your **Staging** (QA or Test) environment for the best balance between reliability and safety.
 
@@ -19,7 +19,7 @@ Use your **Staging** (QA or Test) environment for the best balance between relia
 Staging may lag behind active development. If releases are infrequent, regressions might not surface until later in testing.
 </Note>
 
-#### Goal: Get rapid feedback during test development
+### Goal: Get rapid feedback during test development
 
 Run tests in your **Development** environment to identify regressions early.
 
@@ -33,7 +33,7 @@ Run tests in your **Development** environment to identify regressions early.
 Development environments can be unstable or inconsistent. Failing tests here often point to temporary issues rather than actual defects.
 </Note>
 
-#### Goal: Verify the real user experience
+### Goal: Verify the real user experience
 
 Run tests in **Production** when you need complete confidence in real-world behavior.
 
@@ -47,7 +47,7 @@ Run tests in **Production** when you need complete confidence in real-world beha
 Bugs discovered here have already reached users. Some flows (such as payments) may trigger real transactions or a financial risk.
 </Danger>
 
-#### Goal: Validate changes before merging code
+### Goal: Validate changes before merging code
 
 Ask QA Wolf to help you enable **PR testing** to run your flows automatically on each pull request.
 
@@ -64,4 +64,3 @@ PR testing requires dedicated or isolated environments. Shared resources or reus
 <Tip>
 QA Wolf recommends using r[elease candidates (RCs](https://www.qawolf.com/blog/rcs-over-prs-how-rc-testing-aligns-velocity-and-quality)) for PR testing.
 </Tip>
-</Accordion>

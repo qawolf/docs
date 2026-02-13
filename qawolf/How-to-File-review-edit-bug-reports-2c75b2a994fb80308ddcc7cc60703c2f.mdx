@@ -1,7 +1,7 @@
 ---
-title: "How to: File, review & edit bug reports"
+title: "How to file, review & edit bug reports"
 ---
-## Overview: Bug reports
+## Bug reports
 
 Bug reports track confirmed product defects, specifically unexpected application behavior rather than test or setup issues.
 
@@ -16,8 +16,7 @@ Once the test issues are fixed, you can attempt to clear the bug report by runni
 - Allow flows with known bugs to continue running to detect when the issue is fixed
 - Avoid quarantining flows for known bugs unless execution is causing operational issues.
 </Tip>
-<AccordionGroup>
-<Accordion title="Overview: Get to know the bug report tab">
+## Get to know the bug report tab
 
 You can find all bug reports for your workspace in the **Bugs** tab. This page lists both open and closed reports and allows you to create new ones or open existing ones for editing.
 
@@ -30,8 +29,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
     <Frame>
     <img src="/images/execution-scheduling-bugs-and-maintenance/image-38.png"/>
     </Frame>
-</Accordion>
-<Accordion title="How to: File a bug report">
+## How to file a bug report
 <Steps>
 <Step>
 In the Investigation view, select the failing flow.
@@ -80,16 +78,15 @@ You can also file bug reports from the **Bugs** tab by clicking **Report bug** t
 <img src="/images/execution-scheduling-bugs-and-maintenance/image-40.png"/>
 </Frame>
 </Tip>
-</Accordion>
-<Accordion title="How to: Review or edit an existing bug report">
+## How to review or edit an existing bug report
 
 - From the **Bugs** tab, find the bug report you’d like to open and click on it.
     <Frame>
     <img src="/images/execution-scheduling-bugs-and-maintenance/image-41.png"/>
     </Frame>
 - The only field you can change here is the **Priority** field. All other fields are read-only.
-</Accordion>
-<Accordion title="How to: Clear bug reports">
+
+## How to clear bug reports
 
 A bug report should close automatically on the next scheduled run once you apply the fix. However, you can also manually run all flows associated with a given bug; if they pass, the bug report will close automatically.
 <Steps>
@@ -108,8 +105,7 @@ Click **Run all flows**. This opens the **Runs** tab in a separate browser tab a
 </Frame>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Update the diagnosis of a test failure">
+## How to update the diagnosis of a test failure
 
 Sometimes, a run will still fail after an application fix is deployed. This can happen when the original issue masked a different problem, or when the fix changes behavior in a way that affects the test.
 
@@ -127,11 +123,9 @@ Review the failure evidence:
 - If the flow already has a bug filed and the failure points to a new application issue upstream of the existing one, click **Update diagnosis**, then select **Report a bug** to file a new bug report.
 - If the flow already has a bug filed but the failure now indicates the test needs to be updated, click **Update diagnosis**, then select **Report as needing maintenance**.
 </Step>
-</Steps>  
+</Steps>
 This keeps diagnoses accurate as failures evolve, without tying the new failure too closely to the original issue.
 
 <Frame>
 <img src="/images/execution-scheduling-bugs-and-maintenance/image-44.png"/>
 </Frame>
-</Accordion>
-</AccordionGroup>
