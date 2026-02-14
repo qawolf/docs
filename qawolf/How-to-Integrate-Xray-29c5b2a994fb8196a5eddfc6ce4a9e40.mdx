@@ -1,8 +1,7 @@
 ---
 title: "How to: Integrate Xray"
 ---
-<AccordionGroup>
-<Accordion title="Overview: Features, constraints and limitations">
+## Features, constraints and limitations
 
 Integrate QA Wolf with [Xray Test Management for Jira](https://marketplace.atlassian.com/apps/1211769/xray-test-management-for-jira) to sync automated test results directly to Jira.
 
@@ -16,7 +15,7 @@ For each QA Wolf run, the integration can:
 
 Results are synced after runs reach Completed status in QA Wolf.
 
-#### Limitations:
+### Limitations:
 
 - Cloud-hosted only (Jira Cloud + Xray Cloud).
 - Only one Jira/Xray project can be configured per QA Wolf workspace.
@@ -24,8 +23,7 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Test executions are created at the execution level (no test plan management).
 - Custom fields are not supported unless specially configured.
 
-</Accordion>
-<Accordion title="Overview: Configure Xray / Jira">
+## Configure Xray / Jira
 
 Customers configure Xray and Jira. QA Wolf uses the provided credentials to sync results and enable the integration.
 
@@ -33,14 +31,14 @@ Customers configure Xray and Jira. QA Wolf uses the provided credentials to sync
 Generating Xray API credentials requires administrator access in Jira/Xray. If you’re not a Jira/Xray admin, ask one to create the credentials.
 </Tip>
 
-#### Set up in Xray:
+### Set up in Xray:
 
 - Jira Cloud instance with Xray installed.
 - Xray-enabled Jira project to receive test executions.
 - Xray Cloud API access enabled.
 - Xray test cases already created (tests are not created automatically).
 
-#### Credentials to share with QA Wolf:
+### Credentials to share with QA Wolf:
 
 Once Xray is configured, provide QA Wolf with:
 
@@ -48,8 +46,8 @@ Once Xray is configured, provide QA Wolf with:
 - Xray Client Secret.
 - Jira project key (for example, QA or MOBILE).
 - *(Optional)* Default test plan to link executions.
-</Accordion>
-<Accordion title="How to: Verify the integration:">
+
+## How to verify the integration
 
 After QA Wolf enables the integration:
 <Steps>
@@ -67,5 +65,3 @@ If executions do not appear as expected, or if test cases are not mapping correc
 </Tip>
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>

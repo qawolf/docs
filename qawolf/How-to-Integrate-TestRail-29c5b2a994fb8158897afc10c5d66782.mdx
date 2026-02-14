@@ -1,5 +1,5 @@
 ---
-title: "How to: Integrate TestRail"
+title: "How to integrate TestRail"
 ---
 ## What QA Wolf syncs to TestRail
 
@@ -14,31 +14,31 @@ For each QA Wolf run, the integration can:
 
 Results are synced after runs reach Completed status in QA Wolf.
 
-#### Limitation notes:
+### Limitation notes:
 
 - Only one TestRail project can be configured per QA Wolf workspace.
 - Test runs are created at the run level (no test plan–level updates).
 - The *Skipped* test status must exist in TestRail.
 
-## How to: Configure TestRail for QA Wolf integration
+## How to configure TestRail for QA Wolf integration
 
 <Tip>
 Enabling TestRail API access requires an **Administrator** user. If you’re not a TestRail admin, ask one to enable the API before generating your credentials.
 </Tip>
-#### Set up in TestRail:
+### Set up in TestRail:
 
 - Active TestRail account.
 - API access enabled.
 - Target TestRail project to receive QA Wolf runs.
 - Custom test status *Skipped* is configured in TestRail.
 
-#### Share with QA Wolf:
+### Share with QA Wolf:
 
 - TestRail username or login email.
 - TestRail API key or password (depending on your account configuration).
 - Target TestRail project (project ID or URL).
 
-#### Verify the integration:
+### Verify the integration:
 
 After QA Wolf enables the integration:
 <Steps>

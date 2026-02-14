@@ -1,8 +1,9 @@
 ---
-title: "How to: Integrate Zephyr"
+title: "How to integrate Zephyr"
+sideTitle: "How to integrate Zephyr"
+
 ---
-<AccordionGroup>
-<Accordion title="Overview: What QA Wolf syncs to Zephyr">
+## What QA Wolf syncs to Zephyr
 
 Integrate QA Wolf with [Zephyr Test Management for Jira](https://marketplace.atlassian.com/apps/1213259/zephyr-test-management-and-automation-for-jira) to sync automated test results directly to Jira.
 
@@ -15,21 +16,20 @@ For each QA Wolf run, the integration can:
 
 Results are synced after runs reach Completed status in QA Wolf.
 
-#### Known limitations
+### Known limitations
 
 - Cloud-hosted only (Jira Cloud + Zephyr Squad or Scale).
 - Only one Zephyr-enabled Jira project can be configured per QA Wolf workspace.
 - Zephyr test cases must already exist.
 - Custom fields are not supported unless specially configured.
-</Accordion>
-<Accordion title="How to: Configure in Jira / Zephyr">
+##  How to configure in Jira / Zephyr
 
 Customers configure Jira and Zephyr. QA Wolf uses the provided credentials to sync results and enable the integration.
 
 <Tip>
 Generating Jira API tokens requires administrator access to the Atlassian account. If you’re not an admin, ask one to create the token.
 </Tip>
-#### JIRA/Zephyr set up:
+### JIRA/Zephyr set up:
 
 - Jira Cloud instance.
 - Zephyr installed and licensed (Squad or Scale).
@@ -37,7 +37,7 @@ Generating Jira API tokens requires administrator access to the Atlassian accoun
 - API access enabled (via Atlassian REST API).
 - Zephyr test cases already created (tests are not created automatically).
 
-#### Credentials to share with QA Wolf
+### Credentials to share with QA Wolf
 
 Once Jira and Zephyr are configured, provide QA Wolf with:
 
@@ -46,8 +46,7 @@ Once Jira and Zephyr are configured, provide QA Wolf with:
 - Jira base URL.
 - Zephyr project key (for example, QA, MOBILE).
 - *(Optional)* Default test cycle name or naming convention.
-</Accordion>
-<Accordion title="How to: Verifying the integration">
+## How to verify the integration
 
 After QA Wolf enables the integration:
 <Steps>
@@ -65,5 +64,3 @@ If executions do not appear as expected, or if test cases are not mapping correc
 </Tip>
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>

@@ -19,8 +19,7 @@ This guide assumes your mobile builds already run in GitHub Actions and produce 
 Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
 </Tip>
 
-<AccordionGroup>
-<Accordion title="Overview: How the GitHub Actions integration works">
+## How the GitHub Actions integration works
 
 The GitHub Actions integration uses two QA Wolf-provided actions:
 <Steps>
@@ -37,8 +36,7 @@ You can upload builds without triggering runs, which is useful during initial se
 
 You provide the [artifact basename](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
 
-</Accordion>
-<Accordion title="How to: Add QA Wolf actions to your workflow">
+## How to add QA Wolf actions to your workflow
 
 Add the QA Wolf actions to an existing GitHub Actions workflow that builds your mobile app. The workflow must run after the build artifact has been created.
 
@@ -76,8 +74,7 @@ Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard"/> icon t
 </Frame>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Upload a mobile build artifact">
+## How to upload a mobile build artifact
 
 After your workflow produces a mobile build artifact, upload it to QA Wolf using the upload action.
 
@@ -89,7 +86,7 @@ After your workflow produces a mobile build artifact, upload it to QA Wolf using
     qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
     input-file-path: ./path/to/build.apk
     executable-file-basename: app-staging
-```    
+```
 
 If this step completes successfully, the artifact is uploaded and available for test runs.
 
@@ -119,9 +116,8 @@ jobs:
           RUN_INPUT_PATH: "${{ steps.upload-run-inputs-executable.outputs.destination-file-path }}"
           ...
         with: ...
-```        
-</Accordion>
-<Accordion title="How to: Trigger a test run">
+```
+## How to trigger a test run
 
 After uploading the artifact, notify QA Wolf that a new deployment is ready for testing.
 
@@ -140,8 +136,7 @@ The deployment type and environment key must match the values configured by QA W
 </Danger>
 
 If mobile triggers have not yet been enabled, this step will complete without starting a test run.
-</Accordion>
-<Accordion title="How to: Verify the integration">
+## How to verify the integration
 <Steps>
 <Step>
 Run the GitHub Actions workflow
@@ -156,12 +151,9 @@ Confirm that the deployment notification step runs without errors
 Once mobile triggers are enabled, check the **Runs** tab for the triggered test run
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="Overview: Troubleshooting and common issues">
+## Troubleshooting and common issues
 
 - **If uploads succeed but no runs start:** Mobile triggers may not yet be enabled. Contact QA Wolf to complete platform configuration
 - **If the artifact is not found during execution:** Verify that the artifact basename matches your naming conventions and that the destination file path from the upload step is used to trigger the run.
 - **If you see authentication errors:** Verify that **QAWOLF_API_KEY** is configured correctly as a GitHub Actions secret.
 - **If the workflow fails before the QA Wolf steps run:** Verify that the mobile build step completes successfully and produces the expected artifact.
-</Accordion>
-</AccordionGroup>

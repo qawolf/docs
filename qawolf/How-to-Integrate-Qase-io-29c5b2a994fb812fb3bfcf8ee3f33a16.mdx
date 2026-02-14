@@ -2,8 +2,7 @@
 title: "How to: Integrate Qase.io"
 ---
 
-<AccordionGroup>
-<Accordion title="Overview: What QA Wolf syncs to Qase">
+## What QA Wolf syncs to Qase
 
 Integrate QA Wolf with [Qase.io](https://qase.io/) to sync automated test results with your Qase project.
 
@@ -16,14 +15,13 @@ For each QA Wolf run, the integration can:
 
 Results are synced after runs reach Completed status in QA Wolf.
 
-#### Known limitations:
+### Known limitations:
 
 - [Qase.io](http://qase.io/) Cloud.
 - Only one Qase project can be configured per QA Wolf workspace.
 - Qase test cases must already exist.
 - Custom fields are not supported unless specially configured.
-</Accordion>
-<Accordion title="How to: Configure Qase">
+## How to configure Qase
 
 Customers configure Qase. QA Wolf uses the provided credentials to sync results and enable the integration.
 
@@ -31,22 +29,22 @@ Customers configure Qase. QA Wolf uses the provided credentials to sync results 
 API tokens are generated at the account level in Qase. If you don’t have permission to create one, ask a project or account admin.
 </Tip>
 
-#### Set up in Qase:
+### Set up in Qase
 
 - Active Qase.io account.
 - Existing Qase project to receive test runs.
 - API access enabled (available on paid Qase plans).
 - Qase test cases already created (tests are not created automatically).
 
-#### Credentials to share with QA Wolf
+### Credentials to share with QA Wolf
 
 Once Qase is configured, provide QA Wolf with:
 
 - Qase API token.
 - Qase project code (for example, WEBAPP, API, MOBILE).
 - *(Optional)* tags or environment values to associate with test runs.
-</Accordion>
-<Accordion title="How to: Verify the integration">
+
+## How to verify the integration
 
 After QA Wolf enables the integration:
 <Steps>
@@ -64,5 +62,3 @@ If runs do not appear as expected, or if test cases are not mapping correctly, c
 </Tip>
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>
