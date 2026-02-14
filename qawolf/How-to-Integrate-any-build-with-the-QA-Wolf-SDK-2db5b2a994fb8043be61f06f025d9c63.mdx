@@ -1,5 +1,5 @@
 ---
-title: "How to: Integrate any build with the QA Wolf SDK"
+title: "How to integrate any build with the QA Wolf SDK"
 description: "When you deploy a new version of your application, you can notify QA Wolf so that a test run starts for that deployment."
 ---
 
@@ -20,8 +20,7 @@ Make sure you have:
 - A QA Wolf API key stored as a CI secret (QAWOLF\_API\_KEY)
 - A deployment trigger configured by QA Wolf for your environment
 </Check>
-<AccordionGroup>
-<Accordion title="How to: Install the CI SDK">
+AccHow to install the CI SDK
 
 Install the SDK in the CI job that will notify QA Wolf:
 
@@ -30,8 +29,7 @@ npm install @qawolf/ci-sdk
 ```
 
 Ensure the job has access to the QAWOLF_API_KEY environment variable.
-</Accordion>
-<Accordion title="How to: Notify QA Wolf of a deployment">
+## How to notify QA Wolf of a deployment
 
 After your deployment completes successfully, use the SDK to notify QA Wolf.
 
@@ -63,11 +61,8 @@ Including `branch`, `sha`, and `commitUrl` is recommended and improves traceabil
 </Tip>
 
 If the notification succeeds and a matching trigger exists, QA Wolf creates a new deployment run.
-</Accordion>
-<Accordion title="Overview: Validation and troubleshooting">
+## Validation and troubleshooting
 
 - **If the SDK call succeeds but no run appears in QA Wolf:** Confirm that a deployment trigger has been configured for your environment.
 - **If authentication fails:** Verify that QAWOLF_API_KEY is set correctly and available to the CI job.
 - **If a Node.js errors occur:** Confirm that Node.js 18 or later is available in the CI environment.
-</Accordion>
-</AccordionGroup>
