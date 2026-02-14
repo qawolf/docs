@@ -15,7 +15,7 @@ You cannot use GitHub actions if your team:
 
 - Self-hosts GitHub Enterprise Server without internet access.
 - Explicitly disables GitHub Actions by policy.
-- If either applies, see the [SDK Integration Guide](/2a15b2a994fb802fb918e8d675421252?pvs=25) for an alternative.
+- If either applies, see the [SDK Integration Guide](/qawolf/How-to-Integrate-any-build-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63) for an alternative.
 </Danger>
 
 <AccordionGroup>
@@ -107,7 +107,7 @@ Choose **Set up a workflow yourself**.
 </Frame>
 </Step>
 <Step>
-Copy either the [example](/qawolf/How-to-Integrate-GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0) from the Action’s Marketplace page or the example below into your workflow file (usually .github/workflows/deploy.yml). Replace the values in `deployment-type` and `deployment-url` with your actual values. 
+Copy either the [example](/qawolf/How-to-Integrate-GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0) from the Action’s Marketplace page or the example below into your workflow file (usually .github/workflows/deploy.yml). Replace the values in `deployment-type` and `deployment-url` with your actual values.
 
 To get the value for `deployment-type`, reach out to QA Wolf, and we will provide this value for you.
 
@@ -117,7 +117,7 @@ To get the value for `deployment-type`, reach out to QA Wolf, and we will provid
   with:
     qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
     deployment-type: "staging"
-    deployment-url: "https://staging.example.com"  
+    deployment-url: "https://staging.example.com"
 ```
 </Step>
 </Steps>

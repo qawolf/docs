@@ -1,5 +1,5 @@
 ---
-title: "How to: Integrate a mobile build with Fastlane"
+title: "How to integrate a mobile build with Fastlane"
 ---
 ## Overview: When to use the Fastlane integration
 
@@ -15,7 +15,7 @@ Before configuring the Fastlane integration, make sure you have the following in
 - A working Fastlane setup for your Android or iOS app
 - A Fastlane lane that produces a mobile build artifact (APK, AAB, or IPA)
 - A [QA Wolf API key](/qawolf/How-to-Integrate-a-mobile-build-with-Fastlane-2db5b2a994fb802186a3d88573899c78#to-find-the-qawolf_api_key:) stored as a secret in your CI environment
-- [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments
+- [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2#artifact-naming-conventions) are defined for your environments
 
 Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
 </Check>
@@ -151,7 +151,7 @@ If no run appears, the most common cause is a missing or incomplete QA Wolf plat
     Confirm QAWOLF_API_KEY is set correctly in your CI environment.
 
 - **Incorrect environment used**
-    
+
     Verify the environment key passed to notify_deploy_qawolf matches the configured value.
 </Accordion>
 </AccordionGroup>

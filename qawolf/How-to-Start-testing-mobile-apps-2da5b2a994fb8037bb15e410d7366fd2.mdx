@@ -15,9 +15,7 @@ Before mobile test runs can execute, QA Wolf must enable mobile triggers for you
 
 Until this step is complete, CI jobs can upload artifacts and send deployment notifications, but mobile test runs will not start automatically.
 
-### Available triggers
-<AccordionGroup>
-<Accordion title="Overview: Choosing an upload and trigger method">
+## Choosing an upload and trigger method
 
 QA Wolf supports multiple methods for uploading mobile build artifacts and triggering test runs. Each option is designed to fit a different type of setup. The test coverage and results are the same—the difference is how well each option fits into your existing workflow.
 
@@ -46,8 +44,7 @@ The CI SDK works with any CI system that supports Node.js, offering the greatest
 - Your build artifacts are already produced in a GitHub Actions workflow
 
 GitHub Actions are a good fit for teams that want to stay entirely within GitHub.
-</Accordion>
-<Accordion title="Overview: Preparing a mobile build for testing">
+## Preparing a mobile build for testing
 
 Before mobile test runs can be triggered, your CI pipeline must produce a build artifact that QA Wolf can upload and use for testing.
 
@@ -80,7 +77,7 @@ This allows QA Wolf to associate the correct build with the correct test environ
 
 Once your CI pipeline reliably produces a correctly named mobile artifact, you can upload it using one of the supported integration methods. Enabling artifact-based triggers on the QA Wolf platform is handled separately by the QA Wolf team.
 
-<Accordion title="Overview: Artifact naming conventions">
+## Artifact naming conventions
 
 Mobile build artifacts must follow consistent naming conventions so QA Wolf can correctly associate each build with the right environment and make failures easier to diagnose.
 
@@ -129,10 +126,7 @@ Including the organization, repository, and pull request number ensures each bui
 <Tip>
 QA Wolf applies the file extension (.apk, .aab, or .ipa) automatically based on the uploaded artifact. You only need to provide the basename
 </Tip>
-</Accordion>
-</Accordion>
-
-<Accordion title="Overview: How mobile test runs are triggered">
+## How mobile test runs are triggered
 
 Mobile test runs are triggered when a new mobile build is uploaded and a deployment event is sent to QA Wolf. This allows tests to run automatically against the specific build produced by your CI pipeline.
 
@@ -144,8 +138,7 @@ Mobile test runs are triggered when a new mobile build is uploaded and a deploym
 On the customer side, the trigger is initiated by CI events such as a staging deploy, a release build, or a pull request build. On the QA Wolf side, the trigger must be enabled and configured for your workspace before mobile test runs will execute.
 
 Until that configuration is in place, CI jobs can still upload artifacts and send deployment notifications, but no test runs will start automatically.
-</Accordion>
-<Accordion title="Overview: What happens after setup">
+## What happens after setup
 
 Once mobile triggers are enabled and your CI pipeline is uploading artifacts correctly, mobile test runs will start automatically when the configured trigger event occurs.
 
@@ -158,5 +151,3 @@ Once mobile triggers are enabled and your CI pipeline is uploading artifacts cor
 If flows fail, the run enters an investigation state and can be reviewed using the same tools used for web testing, including videos, logs, and traces. From there, failures can be retried, fixed, bypassed, or handled as follow-up work, depending on the cause.
 
 Mobile triggers do not change how results are interpreted—they simply automate when runs start and ensure tests run against the correct mobile build.
-</Accordion>
-</AccordionGroup>
