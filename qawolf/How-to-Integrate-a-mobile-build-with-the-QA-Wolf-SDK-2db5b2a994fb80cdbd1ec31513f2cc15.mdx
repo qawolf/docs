@@ -1,5 +1,5 @@
 ---
-title: "How to: Integrate a mobile build with the QA Wolf SDK"
+title: "How to integrate a mobile build with the QA Wolf SDK"
 ---
 ## Overview: When to use the CI SDK
 
@@ -20,8 +20,7 @@ This guide assumes only that your CI system can run Node.js.
 Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
 </Tip>
 
-<AccordionGroup>
-<Accordion title="Overview: How the CI SDK integration works">
+## How the CI SDK integration works
 
 The CI SDK performs two main tasks:
 <Steps>
@@ -38,8 +37,7 @@ You can upload builds without triggering runs, which is useful during initial se
 
 You provide the [artifact basename](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
 
-</Accordion>
-<Accordion title="How to: Install the CI SDK">
+## How to install the CI SDK
 
 Install the SDK in your CI job:
 
@@ -49,7 +47,7 @@ npm install @qawolf/ci-sdk
 
 Make sure the job has access to the QAWOLF_API_KEY environment variable.
 
-#### To find the QAWOLF_API_KEY:
+### To find the QAWOLF_API_KEY:
 <Steps>
 <Step>
 Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
@@ -69,8 +67,7 @@ Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard"/> icon t
 </Frame>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Upload a mobile build artifact">
+## How to upload a mobile build artifact
 
 After your CI pipeline produces a mobile build artifact, upload it to QA Wolf using the SDK.
 
@@ -176,18 +173,17 @@ async function uploadRunArtifact(filePath: string): Promise<string> {
     } catch (error) {
       return "";
     }
-    
+
     // for mobile apps, we request that you include this prefix path
     // return `/home/wolf/run-inputs-executables/${signedUrlResponse.playgroundFileLocation}`;
-    
+
     // for other apps
     return signedUrlResponse.playgroundFileLocation;
   }
   return "";
 }
 ```
-</Accordion>
-<Accordion title="How to: Trigger a test run">
+## How to trigger a test run
 
 After uploading the artifact, notify QA Wolf that a new deployment is ready for testing.
 
@@ -205,8 +201,7 @@ The deployment type and environment key must match the values configured by QA W
 </Tip>
 
 If mobile triggers have not yet been enabled, this step will complete without starting a test run.
-</Accordion>
-<Accordion title="How to: Verify the integration">
+## How to verify the integration
 <Steps>
 <Step>
 Run the CI job
@@ -221,12 +216,9 @@ Confirm that the deployment notification step runs without errors.
 Once mobile triggers are enabled, check the Runs tab for the test run that was triggered.
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="Troubleshooting and common issues">
+## Troubleshooting and common issues
 
 - **If uploads succeed but no runs start:** Mobile triggers may not yet be enabled. Contact QA Wolf to complete platform configuration.
 - **If the artifact is not found during execution:** Verify that the artifact basename matches your naming conventions, and the returned path is used when triggering the run.
 - **If you see authentication errors:** Verify that **QAWOLF_API_KEY** is configured correctly in your CI environment.
 - **If you encounter Node.js errors:** Ensure Node.js 18 or later is available in the CI job.
-</Accordion>
-</AccordionGroup>

@@ -1,5 +1,5 @@
 ---
-title: "How to: Integrate with GitLab"
+title: "How to integrate with GitLab"
 description: "QA Wolf integrates directly with GitLab to automatically run tests when you deploy code. This integration uses your GitLab CI/CD pipeline to notify QA Wolf when a deployment is complete and ready to test."
 ---
 
@@ -19,8 +19,7 @@ Make sure you have:
 - A QA Wolf API key
 </Check>
 
-<AccordionGroup>
-<Accordion title="How to: Enable the GitLab integration in QA Wolf">
+## How to enable the GitLab integration in QA Wolf
 <Steps>
 <Step>
 Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
@@ -44,8 +43,7 @@ The Maintainer role is required because Developer tokens cannot create pipeline 
 Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Add your QA Wolf API key to GitLab">
+## How to add your QA Wolf API key to GitLab
 <Steps>
 <Step>
 Open your GitLab project.
@@ -65,7 +63,7 @@ Paste your QA Wolf API key and save.
 </Steps>
 You can also define additional variables, such as a deployment URL, if your pipeline uses them.
 
-#### To find your QA Wolf API key:
+### To find your QA Wolf API key:
 <Steps>
 <Step>
 Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
@@ -82,8 +80,7 @@ Choose **Integrations** and then click the <Icon icon="clipboard"/> to copy the 
 </Frame>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Add the deploy success notification to GitLab CI/CD">
+## How to add the deploy success notification to GitLab CI/CD
 
 QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment.
 
@@ -118,11 +115,10 @@ notify_qawolf:
         }"
   when: on_success
   needs: ["deploy"]
-```  
+```
 
 This job tells QA Wolf that a new deployment is ready for testing.
-</Accordion>
-<Accordion title="How to: Verify the integration">
+## How to verify the integration
 <Steps>
 <Step>
 Run your GitLab CI/CD pipeline to trigger a deployment.
@@ -134,5 +130,3 @@ Wait for the pipeline to complete successfully.
 Open QA Wolf and confirm a new run appears under the expected environment.
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>

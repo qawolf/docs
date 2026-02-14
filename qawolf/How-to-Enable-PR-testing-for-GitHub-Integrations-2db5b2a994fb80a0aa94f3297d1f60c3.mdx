@@ -1,7 +1,7 @@
 ---
-title: "How to: Enable PR testing for GitHub Integrations"
+title: "How to enable PR testing for GitHub Integrations"
 ---
-## Overview: What QA Wolf configures
+## What QA Wolf configures
 
 PR testing runs QA Wolf tests against preview environments before changes are merged. Tests run when a pull request enters the merge queue, and results are reported back to GitHub as a required status check.
 
@@ -17,8 +17,7 @@ PR testing won’t work until QA Wolf configures your workspace to support it. Q
 
 - Confirm the preview URL variable and the status check name (for example, **QA Wolf Test Results**)
 
-<AccordionGroup>
-<Accordion title="How to: Add a default passing PR check">
+## How to add a default passing PR check
 
 <Check>
 Each pull request must deploy a preview environment that QA Wolf can reach. Your CI should provide a stable preview URL per PR and a step that waits until the preview is live before tests start.
@@ -57,9 +56,8 @@ jobs:
                 summary: 'QA Wolf tests will run in the merge queue.'
               }
             });
-```            
-</Accordion>
-<Accordion title="How to: Trigger QA Wolf tests in the merge queue">
+```
+## How to trigger QA Wolf tests in the merge queue
 
 Add a GitHub Actions workflow that notifies QA Wolf only during merge queue execution.
 
@@ -84,9 +82,9 @@ jobs:
           deployment-url: "${{ env.PREVIEW_URL }}"
           deployment-type: "provided-by-qawolf"
           deduplication-key: "${{ github.ref }}"
-```          
+```
 
-#### What this workflow assumes
+### What this workflow assumes
 
 - Your CI pipeline already creates a preview environment per pull request.
 
@@ -96,8 +94,7 @@ jobs:
 
 When the pull request enters the merge queue, this workflow sends the preview URL to QA Wolf, which starts a test run against that environment.
 
-</Accordion>
-<Accordion title="How to: Require QA Wolf tests before merge">
+## How to require QA Wolf tests before merge
 
 <Steps>
 <Step>
@@ -125,8 +122,8 @@ Add QA **Wolf Test Results** to the list of required checks.
 Save the rule.
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Verify your PR testing setup">
+
+## How to verify your PR testing setup
 
 <Steps>
 <Step title="Open a pull request in GitHub.">
@@ -148,5 +145,3 @@ Back in **GitHub**, watch the **QA Wolf Test Results** check update from its pla
 The merge completes only after this check finishes successfully.
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>

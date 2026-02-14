@@ -1,5 +1,5 @@
 ---
-title: "How to: Integrate GitHub/GitHub Actions"
+title: "How to integrate GitHub/GitHub Actions"
 ---
 <Check>
 To proceed in this guide, you need:
@@ -18,8 +18,7 @@ You cannot use GitHub actions if your team:
 - If either applies, see the [SDK Integration Guide](/qawolf/How-to-Integrate-any-build-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63) for an alternative.
 </Danger>
 
-<AccordionGroup>
-<Accordion title="How to: Integrate QA Wolf and GitHub Actions">
+## How to integrate QA Wolf and GitHub Actions
 <Steps>
 <Step>
 Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
@@ -74,10 +73,9 @@ This key allows your workflow to authenticate with QA Wolf when the Action runs.
 </Note>
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: Install the action">
+## How to install the action
 
-#### Installing the action
+### Installing the action
 
 QA Wolf’s official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy), will notify QA Wolf whenever a new deployment is ready for testing.
 
@@ -122,7 +120,7 @@ To get the value for `deployment-type`, reach out to QA Wolf, and we will provid
 </Step>
 </Steps>
 
-#### Validating the action
+### Validating the action
 
 <Steps>
 <Step>
@@ -132,5 +130,3 @@ Push a new commit to your main branch. Wait for your deployment to complete.
 Check your **Runs** tab in the QA Wolf app. If everything is working correctly, you see a new run created for that environment.
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>
