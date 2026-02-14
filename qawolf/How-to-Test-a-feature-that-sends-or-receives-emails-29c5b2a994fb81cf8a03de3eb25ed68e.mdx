@@ -1,8 +1,8 @@
 ---
-title: "How to: Test a feature that sends or receives emails"
+title: "How to test a feature that sends or receives emails"
 ---
 
-## Overview: Email addresses and inboxes
+## Email addresses and inboxes
 
 When your app sends confirmation links, password resets, or invitation emails, you can test those flows directly inside QA Wolf using the built-in getInbox function.
 
@@ -18,16 +18,14 @@ In addition, it includes helper functions to:
 `getInbox()` returns the following objects: `{ emailAddress, sendMessage, waitForMessage, waitForMessages }`.
 </Tip>
 
-<AccordionGroup>
-    <Accordion title="The Email Allowlist">
+## The Email Allowlist
     Our platform includes an **Email Allowlist** to ensure test emails are delivered only to approved addresses or domains. The allowlist prevents unintended delivery and keeps your testing environments secure and controlled. You must add any email address you use in a flow to the allowlist.
 
     QA Wolf provides internal email domains—**qawolf.email** and **qawolfworkflows.com**—for email testing. We recommend using these instead of public email services because we control the servers, which allows us to stabilize tests that rely on email interactions and prevent the sporadic failures that can occur when using external providers.
 
     Our platform sets an automatic default. You cannot delete the default.
-    </Accordion>
 
-    <Accordion title="How to: Change the default email">
+    How to change the default email
     When you set a default email address, any test or helper that accepts an email can omit the address and will fall back to the default. You can still override per test by specifying a different address.
 
     <Steps>
@@ -50,7 +48,7 @@ In addition, it includes helper functions to:
     Enter the username and domain in the appropriate fields, then click **Add**.
 
         a. You can create as many email addresses as you like in the allowlist.
-    
+
         b. To change the default mail address in the allowlist, hover the email you'd like to set as the default, then click the <Icon icon="ellipsis" /> icon and select Make default.
 
     <Frame>
@@ -58,10 +56,9 @@ In addition, it includes helper functions to:
     </Frame>
     </Step>
     </Steps>
-    </Accordion>
-</AccordionGroup>
 
-## How to: Get the contents of an email inbox
+
+## How to get the contents of an email inbox
 
 The simplest way to access your test inbox is to add this line to your flow:
 
@@ -129,7 +126,7 @@ const messages = await waitForMessages({ wait: 10000 });
 console.log(`Received ${messages.length} messages`);
 ```
 
-## How to: Send an email from a test
+## How to send an email from a test
 Our platform includes the `sendMessage` helper for the less common case where your application **receives** or **reacts to incoming emails**. You can use it to simulate an external sender and verify how your app processes inbound messages (like replies, support emails, or automated triggers).
 
 ```javascript

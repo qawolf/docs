@@ -1,9 +1,8 @@
 ---
-title: "How to: File, edit & review maintenance reports"
+title: "How to file, edit & review maintenance reports"
 ---
 
-<AccordionGroup>
-<Accordion title="Overview: What is a maintenance report?">
+## What is a maintenance report?
 
 Maintenance reports track bugs in tests, not bugs in the product. They are used when a failure is caused by incorrect, outdated, or fragile test logic rather than an issue in the application under test.
 
@@ -14,8 +13,7 @@ Minor test fixes should be made quickly when possible. File a maintenance report
 </Tip>
 
 Maintenance reports are linked to one or more flows. While a maintenance report is open, those flows are skipped in scheduled runs. When the flows pass in a manual run, the maintenance report automatically closes, and the flows are included in schedules again.
-</Accordion>
-<Accordion title="How to: Create a maintenance report">
+## How to create a maintenance report
 
 <Tip>
 Use a maintenance report for any failing flow that will take more than about 15 minutes to fix (a guideline, not a rule), and quarantine the flow.
@@ -73,8 +71,7 @@ After selecting a name, fill out the remaining form.
 Submitting this change removes the flow from all runs.
 </Step>
 </Steps>
-</Accordion>
-<Accordion title="How to: View a maintenance report">
+## How to view a maintenance report
 - To view all maintenance reports, open the **Maintenance** tab.
 
 - The tab includes two subtabs:
@@ -83,8 +80,7 @@ Submitting this change removes the flow from all runs.
 <Frame>
 <img src="/images/execution-scheduling-bugs-and-maintenance/image-48.png"/>
 </Frame>
-</Accordion>
-<Accordion title="How to: Close a maintenance report">
+## How to close a maintenance report
 
 A maintenance report must be closed manually. When you fix a test with an open maintenance report:
 
@@ -100,5 +96,3 @@ Open the **Maintenance** tab, then click the maintenance report associated with 
 Click **Run all flows**. This opens the Runs tab in a separate browser tab and starts a manual run of all flows associated with the maintenance report. Any flows that pass will be removed from the maintenance report. If all flows pass, the maintenance report will close automatically.
 </Step>
 </Steps>
-</Accordion>
-</AccordionGroup>
