@@ -82,7 +82,6 @@
           {
             "group": "Basic flows",
             "icon": "route",
-            "public": false,
             "pages": [
               "qawolf/Overview-Get-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
               "qawolf/Overview-Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
