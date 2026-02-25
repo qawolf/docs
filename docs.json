@@ -2,6 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "aspen",
   "name": "QA Wolf Docs",
+  "public": true,
   "redirects": [
     { "source": "/", "destination": "/qawolf/How-to-get-the-most-out-of-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0" }
   ],
@@ -81,6 +82,7 @@
           {
             "group": "Basic flows",
             "icon": "route",
+            "public": false,
             "pages": [
               "qawolf/Overview-Get-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
               "qawolf/Overview-Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
