@@ -53,7 +53,7 @@
           "qawolf/Getting-the-most-out-of-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0",
           "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
           "qawolf/Reviewing-publishing-revision-history-2c65b2a994fb8073826be9391a8e2238",
-          "qawolf/Overview-Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
+          "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
         ]
       },
       {
@@ -151,7 +151,7 @@
             "group": "Connect your VPN",
             "icon": "lock",
             "pages": [
-              "qawolf/Overview-QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
+              "qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
               "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
               "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
               "qawolf/Twingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1",
@@ -204,7 +204,7 @@
           "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
           "qawolf/How-to-Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae",
           "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
-          "qawolf/How-to-Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47"
+          "qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47"
         ]
       }
     ]
