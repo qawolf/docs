@@ -1,13 +1,13 @@
 ---
 title: "How to request new coverage"
+icon: "hand-helping"
+sidebarTitle: "Coverage Requests"
 ---
 
 ## You have three ways to request new test coverage:
 
 - Open a [coverage request](/qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47#what-happens-next) in the platform
-
 - Send a message in Slack, Teams, or Discord
-
 - Tag QA Wolf in Jira or Linear. Tag the ticket with QA Wolf and we’ll pick it up from there.
 
 ## What to include in the coverage request
@@ -18,47 +18,39 @@ We have found that using this format yields the best results for our customers:
 
 **Objective:** Describe the goal of the flow you want created.
 
-*Example: Verify the user registration process to ensure a user can register and receive a confirmation email.*
+_Example: Verify the user registration process to ensure a user can register and receive a confirmation email._
 
 **Preconditions:** List anything that must be set up before the test can run.
 
-*Example: Access to a user with admin permissions.*
+_Example: Access to a user with admin permissions._
 
 **Steps:** Outline the actions required to achieve the objective.
 
-*Example:*
+_Example:_
 
-- *Navigate to the registration page.*
-
-- *Fill out the registration form with valid data.*
-
-- *Submit the form.*
-
-- *Check for a confirmation message.*
-
-- *Verify a confirmation email is sent with correct details.*
-
-- *Confirm that the user is created in the database.*
+- _Navigate to the registration page._
+- _Fill out the registration form with valid data._
+- _Submit the form._
+- _Check for a confirmation message._
+- _Verify a confirmation email is sent with correct details._
+- _Confirm that the user is created in the database._
 
 **Test data:** Include any specific data inputs the test will need.
 
-*Example: A unique email address and user details for registration.*
+_Example: A unique email address and user details for registration._
 
 **Expected results:** Describe what should happen if everything works correctly.
 
-*Example:*
+_Example:_
 
-- *The form submits successfully.*
-
-- *A confirmation message appears.*
-
-- *A confirmation email is received.*
-
-- *The user record is correctly created in the database.*
+- _The form submits successfully._
+- _A confirmation message appears._
+- _A confirmation email is received._
+- _The user record is correctly created in the database._
 
 **Postconditions:** Specify any clean-up work needed after the test.
 
-*Example: Delete the test user from the database.*
+_Example: Delete the test user from the database._
 
 **Priority and timeline:** Indicate the priority of the request (urgent, high, medium, low) and whether you have a deadline.
 
@@ -67,35 +59,36 @@ We have found that using this format yields the best results for our customers:
 ## What happens next
 
 As soon as we receive the coverage request we will begin building tests. If you submitted a request via chat (Slack, Teams, Discord) or an issue tracker, a Coverage Request item will also be created in the QA Wolf platform
+
 ### How to create a new request
 
 <Steps>
-<Step>
-From the **Requests tab**, click **Request coverage** in the top right of the page.
+  <Step>
+    From the **Requests tab**, click **Request coverage** in the top right of the page.
 
-<Frame>
-<img src="/images/coverage-as-a-service/image-10.png"/>
-</Frame>
-</Step>
-<Step>
-A drawer opens.
-</Step>
-<Step>
-Add the details for the flows you're requesting, set a priority, and give the request a name.
-</Step>
-<Step>
-The name will appear in the **Coverage Requests** list.
+    <Frame>
+      ![](/images/coverage-as-a-service/image-10.png)
+    </Frame>
+  </Step>
+  <Step>
+    A drawer opens.
+  </Step>
+  <Step>
+    Add the details for the flows you're requesting, set a priority, and give the request a name.
+  </Step>
+  <Step>
+    The name will appear in the **Coverage Requests** list.
 
-<Tip>
-Keep the name action-oriented (e.g., “Verify OTP autofill on Android and iOS.”)
-</Tip>
-<Frame>
-<img src="/images/coverage-as-a-service/image-11.png"/>
-</Frame>
-</Step>
-<Step>
-Click **Submit request** to save.
-</Step>
+    <Tip>
+      Keep the name action-oriented (e.g., “Verify OTP autofill on Android and iOS.”)
+    </Tip>
+    <Frame>
+      ![](/images/coverage-as-a-service/image-11.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Submit request** to save.
+  </Step>
 </Steps>
 
 ### How to edit a request
@@ -103,24 +96,19 @@ Click **Submit request** to save.
 Coverage requests include a set of fields that control status, priority, ownership, and how the request connects to flows.
 
 <Frame>
-<img src="/images/coverage-as-a-service/image-12.png"/>
+  ![](/images/coverage-as-a-service/image-12.png)
 </Frame>
 
 - **Name.** Edit this by clicking on the name and typing in the box. Press Enter to save the change.
-
 - **Status.** Tracks the request's current state
-
 - **Priority.** Indicates the request's urgency.
-
 - **Requested by.** Shows who opened the request and can be updated if needed.
-
 - **Estimated completion date.** Provides a target date to help with planning.
+- **Requirements.** This is the description of the requested coverage, which you can edit by clicking on the <Icon icon="pencil" /> icon below the name.
+- **Related flows.** Links the request to existing flows or creates a new flow. To connect the request to another flow, click the <Icon icon="plus" /> icon in this field to select from the list of all existing flows.
 
-- **Requirements.** This is the description of the requested coverage, which you can edit by clicking on the <Icon icon="pencil"/> icon below the name.
-
-- **Related flows.** Links the request to existing flows or creates a new flow. To connect the request to another flow, click the <Icon icon="plus"/> icon in this field to select from the list of all existing flows.
 <Frame>
-<img src="/images/coverage-as-a-service/image-13.png"/>
+  ![](/images/coverage-as-a-service/image-13.png)
 </Frame>
 
 ### How to find open coverage requests
@@ -128,25 +116,28 @@ Coverage requests include a set of fields that control status, priority, ownersh
 You can find all requests for your workspace in the **Requests** tab.
 
 - Use the status tabs on the left bar to switch between reports in different statuses.
+
 <Frame>
-<img src="/images/coverage-as-a-service/image-14.png"/>
+  ![](/images/coverage-as-a-service/image-14.png)
 </Frame>
 
-- Use the **Search** bar to filter by report name. Use the <Icon icon="filter"/> icon to filter by report **Priority** or **Creator is me**.
+- Use the **Search** bar to filter by report name. Use the <Icon icon="filter" /> icon to filter by report **Priority** or **Creator is me**.
+
 <Frame>
-<img src="/images/coverage-as-a-service/image-15.png"/>
+  ![](/images/coverage-as-a-service/image-15.png)
 </Frame>
 
 ### How to delete a request
-<Steps>
-<Step>
-Open the **Requests tab** and select the report you want to delete
-</Step>
-<Step>
-Click the <Icon icon="ellipsis"/> in the upper right, then click **Delete**
 
-<Frame>
-<img src="/images/coverage-as-a-service/image-16.png"/>
-</Frame>
-</Step>
+<Steps>
+  <Step>
+    Open the **Requests tab** and select the report you want to delete
+  </Step>
+  <Step>
+    Click the <Icon icon="ellipsis" /> in the upper right, then click **Delete**
+
+    <Frame>
+      ![](/images/coverage-as-a-service/image-16.png)
+    </Frame>
+  </Step>
 </Steps>

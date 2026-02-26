@@ -181,7 +181,7 @@
               "qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2",
               "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
               "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
-              "qawolf/How-to-Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
+              "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
             ]
           },
           {
@@ -202,7 +202,7 @@
         "icon": "shield",
         "pages": [
           "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
-          "qawolf/How-to-Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae",
+          "qawolf/Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae",
           "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
           "qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47"
         ]
