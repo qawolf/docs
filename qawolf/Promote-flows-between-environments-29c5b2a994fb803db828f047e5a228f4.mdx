@@ -1,5 +1,7 @@
 ---
 title: "How to promote flows between environments"
+sidebarTitle: "Promote flows between environments"
+icon: arrow-right-left
 ---
 
 ## Promoting flows
@@ -9,78 +11,73 @@ Promoting a flow means copying it from one environment to another. This allows t
 QA engineers typically promote a flow to validate the same behavior at different stages of delivery—for example, confirming that a critical path behaves the same in a preview environment as it does in a later environment. The goal is consistency: ensuring that a trusted flow continues to deliver value as the application progresses.
 
 <Check>
-Not every flow needs to run in every environment. Promoting flows indiscriminately can introduce noise, increase maintenance, and cause failures unrelated to the environment's purpose
+  Not every flow needs to run in every environment. Promoting flows indiscriminately can introduce noise, increase maintenance, and cause failures unrelated to the environment's purpose
 
-Before promoting a flow, consider whether it adds a meaningful signal in the target environment. Promotion is most effective when it is intentional and aligned with a clear testing goal.
+  Before promoting a flow, consider whether it adds a meaningful signal in the target environment. Promotion is most effective when it is intentional and aligned with a clear testing goal.
 </Check>
 
 ## How to promote a flow
 
 <Warning>
-1. You can promote workflows between environments in either direction.
-
-2. Every environment contains the same Groups. Promoted flows will automatically be assigned to the same group they came from.
-
-3. Changes made to a workflow in one environment aren’t automatically reflected in other environments.
-
-4. Each environment maintains its own version of the workflow unless you manually promote changes between them.
+  1. You can promote workflows between environments in either direction.
+  2. Every environment contains the same Groups. Promoted flows will automatically be assigned to the same group they came from.
+  3. Changes made to a workflow in one environment aren’t automatically reflected in other environments.
+  4. Each environment maintains its own version of the workflow unless you manually promote changes between them.
 </Warning>
 
 ### Promote all flows
 
 <Steps>
-    <Step>
+  <Step>
     Click the **Promote all** button at the bottom of the Flow list. The Promote Changes dialog will appear.
 
     <Frame>
-    ![](/images/building-and-maintaining-flows/image-1.png)
+      ![](/images/building-and-maintaining-flows/image-1.png)
     </Frame>
-    </Step>
-    <Step>
+  </Step>
+  <Step>
     Select the environment the flows should be promoted to.
-    </Step>
-
-    <Step>
+  </Step>
+  <Step>
     Click **Preview promotion**. The review displays code differences for each promoted workflow.
 
     If you promote a workflow to an environment where it doesn’t yet exist, the left side will be empty, and the right side will show the workflow’s complete code.
 
     <Frame>
-    ![](/images/building-and-maintaining-flows/image-2.png)
+      ![](/images/building-and-maintaining-flows/image-2.png)
     </Frame>
-    </Step>
-    <Step>
+  </Step>
+  <Step>
     Click **Promote to** `environment` in the top-right corner.
-    </Step>
+  </Step>
 </Steps>
 
 ### Promote selected flows
 
 <Steps>
-    <Step>
+  <Step>
     Select the flows you want to promote from the Flows list.
-    </Step>
-    <Step>
+  </Step>
+  <Step>
     Click the **Promote selected** button at the bottom of the Flow list. The Promote Changes dialog will appear.
-    </Step>
-
-    <Step>
+  </Step>
+  <Step>
     Select the environment the flows should be promoted to.
 
     <Frame>
-    ![](/images/building-and-maintaining-flows/image-3.png)
+      ![](/images/building-and-maintaining-flows/image-3.png)
     </Frame>
-    </Step>
-    <Step>
+  </Step>
+  <Step>
     Click **Preview promotion**. The review displays code differences for each promoted workflow.
 
     If you promote a workflow to an environment where it doesn’t yet exist, the left side will be empty, and the right side will show the workflow’s complete code.
 
     <Frame>
-    ![](/images/building-and-maintaining-flows/image-4.png)
+      ![](/images/building-and-maintaining-flows/image-4.png)
     </Frame>
-    </Step>
-    <Step>
+  </Step>
+  <Step>
     Click **Promote to** `environment` in the top-right corner.
-    </Step>
+  </Step>
 </Steps>

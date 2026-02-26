@@ -84,15 +84,15 @@
             "icon": "route",
             "pages": [
               "qawolf/Getting-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
-              "qawolf/Overview-Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
-              "qawolf/How-to-Create-and-write-tests-2c15b2a994fb802193a5c05e0219eb59",
-              "qawolf/How-to-Verify-and-debug-your-test-2c15b2a994fb805c9e92eec7a4a3e83e",
-              "qawolf/How-to-Use-the-Elements-tab-to-pick-a-locator-2c35b2a994fb80a681baca4f6acf3179",
-              "qawolf/How-to-Call-environment-variables-in-your-test-2c15b2a994fb8070926ac3adf9bcc57c",
-              "qawolf/How-to-Reuse-code-in-multiple-tests-2c15b2a994fb804eba81d95cede273b8",
-              "qawolf/How-to-Import-a-third-party-library-2c15b2a994fb8005ade6f0523aa5e798",
-              "qawolf/How-to-Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
-              "qawolf/How-to-Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4"
+              "qawolf/Create-and-write-tests-2c15b2a994fb802193a5c05e0219eb59",
+              "qawolf/Run-and-debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
+              "qawolf/Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
+              "qawolf/Using-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
+              "qawolf/Using-environment-variables-2c15b2a994fb8070926ac3adf9bcc57c",
+              "qawolf/Shared-test-helpers-2c15b2a994fb804eba81d95cede273b8",
+              "qawolf/Importing-third-party-libraries-2c15b2a994fb8005ade6f0523aa5e798",
+              "qawolf/Using-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
+              "qawolf/Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4"
             ]
           },
           {
@@ -108,8 +108,8 @@
             "group": "Advanced flows",
             "icon": "share-2",
             "pages": [
-              "qawolf/How-to-Test-a-feature-that-sends-or-receives-emails-29c5b2a994fb81cf8a03de3eb25ed68e",
-              "qawolf/Pass-data-between-flows-during-a-run-aka-Hopper-Flows-29d5b2a994fb801080bce743ab552931"
+              "qawolf/Using-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e",
+              "qawolf/Passing-data-between-flows-29d5b2a994fb801080bce743ab552931"
             ]
           }
         ]
@@ -188,11 +188,11 @@
             "group": "Issue Trackers",
             "icon": "search-code",
             "pages": [
-              "qawolf/How-to-Integrate-with-Jira-29c5b2a994fb81d18a87f23808479de0",
-              "qawolf/How-to-Integrate-with-Linear-29c5b2a994fb81ce85ded6d005d5e7ab",
-              "qawolf/How-to-Integrate-with-Asana-2a15b2a994fb805287acdba6373e6758",
-              "qawolf/How-to-Integrate-with-Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
-              "qawolf/How-to-Integrate-a-non-native-bug-tracker-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
+              "qawolf/Jira-29c5b2a994fb81d18a87f23808479de0",
+              "qawolf/Linear-29c5b2a994fb81ce85ded6d005d5e7ab",
+              "qawolf/Asana-2a15b2a994fb805287acdba6373e6758",
+              "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
+              "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
             ]
           }
         ]

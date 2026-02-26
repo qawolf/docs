@@ -18,7 +18,7 @@ This guide assumes your mobile builds already run in GitHub Actions and produce 
 
   1. Make sure your GitHub Actions workflow produces a mobile build artifact (APK, AAB, or IPA)
   2. A QA Wolf API key is stored as a GitHub secret (**QAWOLF_API_KEY**)
-  3. [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments
+  3. [Artifact naming conventions](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments
 
   Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
 </Tip>
@@ -40,7 +40,7 @@ The GitHub Actions integration uses two QA Wolf-provided actions:
   You can upload builds without triggering runs, which is useful during initial setup or validation.
 </Tip>
 
-You provide the [artifact basename](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
+You provide the [artifact basename](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
 
 ## How to add QA Wolf actions to your workflow
 

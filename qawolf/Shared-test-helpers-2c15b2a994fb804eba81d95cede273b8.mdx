@@ -1,5 +1,7 @@
 ---
 title: "How to reuse code in muliple tests"
+sidebarTitle: "Shared test helpers"
+icon: blocks
 ---
 
 ## Helper functions
@@ -11,33 +13,30 @@ When shared logic changes (for example, your app's URL), update it in the Helper
 For example, the code below will be used in multiple tests.
 
 <Frame>
-![](/images/building-and-maintaining-flows/image-10.png)
+  ![](/images/building-and-maintaining-flows/image-10.png)
 </Frame>
 
 ## How to create a helper file
 
 <Steps>
-    <Step>
+  <Step>
     Open the `Runner Type` Helpers file.
-    </Step>
-
-    <Step>
+  </Step>
+  <Step>
     Create a function you want to reuse (e.g., navigate to your app, log in, reset data).
-    </Step>
-
-    <Step>
+  </Step>
+  <Step>
     Move any repeated logic into this function.
 
     <Frame>
-    ![](/images/building-and-maintaining-flows/image-11.png)
+      ![](/images/building-and-maintaining-flows/image-11.png)
     </Frame>
-    </Step>
-
-    <Step>
+  </Step>
+  <Step>
     Update your test to call the helper function directly.
 
     <Frame>
-    ![](/images/building-and-maintaining-flows/image-12.png)
+      ![](/images/building-and-maintaining-flows/image-12.png)
     </Frame>
-    </Step>
+  </Step>
 </Steps>
