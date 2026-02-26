@@ -60,7 +60,7 @@
         "tab": "Set up",
         "icon": "wrench",
         "pages": [
-          "qawolf/How-to-Personalize-QA-Wolf-29c5b2a994fb8017b822ee1942b10297",
+          "qawolf/Personalize-QA-Wolf-29c5b2a994fb8017b822ee1942b10297",
           "qawolf/Configure-workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
           "qawolf/Configure-environments-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
           "qawolf/Preparing-your-environments-for-reliable-test-runs-2dc5b2a994fb800e8ce4fe36ee34764a"
@@ -72,7 +72,7 @@
         "pages": [
           "qawolf/Getting-familiar-with-the-AI-interface-2cd5b2a994fb80c2919cdfa3d3c62d65",
           "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc",
-          "qawolf/How-to-Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358"
+          "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358"
         ]
       },
       {
@@ -163,10 +163,10 @@
             "icon": "list-check",
             "pages": [
               "qawolf/Testmo-29c5b2a994fb810bb096c46ec45512fb",
-              "qawolf/How-to-Integrate-TestRail-29c5b2a994fb8158897afc10c5d66782",
-              "qawolf/How-to-Integrate-Xray-29c5b2a994fb8196a5eddfc6ce4a9e40",
-              "qawolf/How-to-Integrate-Zephyr-29c5b2a994fb81ed97d9e214c8b177c6",
-              "qawolf/How-to-Integrate-Qase-io-29c5b2a994fb812fb3bfcf8ee3f33a16"
+              "qawolf/TestRail-29c5b2a994fb8158897afc10c5d66782",
+              "qawolf/Xray-29c5b2a994fb8196a5eddfc6ce4a9e40",
+              "qawolf/Zephyr-29c5b2a994fb81ed97d9e214c8b177c6",
+              "qawolf/Qase-io-29c5b2a994fb812fb3bfcf8ee3f33a16"
             ]
           },
           {
