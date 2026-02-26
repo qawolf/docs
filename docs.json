@@ -154,8 +154,8 @@
               "qawolf/Overview-QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
               "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
               "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
-              "qawolf/TailscaleClient-based-VPN-29f5b2a994fb8021a88af5e1c5b21313",
-              "qawolfTwingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1"
+              "qawolf/Twingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1",
+              "qawolf/Tailscale-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-2"
             ]
           },
           {
