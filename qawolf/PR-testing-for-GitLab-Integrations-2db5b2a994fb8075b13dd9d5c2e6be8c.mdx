@@ -1,10 +1,12 @@
 ---
 title: "How to enable PR testing for GitLab  Integrations"
 description: "PR testing runs QA Wolf tests against preview environments before changes are merged. Tests run when a merge request enters your merge pipeline, and results are reported back to GitLab as a pipeline result and (optionally) a merge request status."
+sidebarTitle: "PR testing for GitLab  Integrations"
+icon: git-merge
 ---
 
 <Check>
-Your GitLab integration and deploy notifications must already be set up.
+  Your GitLab integration and deploy notifications must already be set up.
 </Check>
 
 PR testing won’t work until QA Wolf configures your workspace to support it. QA Wolf will:
@@ -17,7 +19,7 @@ PR testing won’t work until QA Wolf configures your workspace to support it. Q
 ## How to ensure merge requests deploy preview environments
 
 <Check>
-Each merge request must deploy a preview environment that QA Wolf can reach. Your pipeline should provide a stable preview URL for each merge request and include a step that waits until the preview is live before tests start.
+  Each merge request must deploy a preview environment that QA Wolf can reach. Your pipeline should provide a stable preview URL for each merge request and include a step that waits until the preview is live before tests start.
 </Check>
 
 Your GitLab pipeline must deploy a preview environment during merge request pipelines (often using Review Apps). The preview URL must be available in the job that triggers the QA Wolf notification.
@@ -57,7 +59,7 @@ notify_qawolf:
 **What this job assumes**
 
 - Your pipeline already creates a preview environment for each merge request.
-- The preview environment URL is available as PREVIEW\_URL when this job runs.
+- The preview environment URL is available as PREVIEW_URL when this job runs.
 - A prior job (such as deploy_preview) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
 
 When the merge request pipeline runs, this job sends the preview URL to QA Wolf, which starts a test run against that environment.
@@ -65,38 +67,37 @@ When the merge request pipeline runs, this job sends the preview URL to QA Wolf,
 ## How to require QA Wolf tests before merge
 
 In GitLab, merge requests are typically blocked unless pipelines pass.
+
 <Steps>
-<Step>
-Open your GitLab project.
-</Step>
-<Step>
-Go to **Settings → Merge requests**.
-</Step>
-<Step>
-Enable **Pipelines must succeed** (wording varies by GitLab version).
-</Step>
-<Step>
-Save the setting.
-</Step>
+  <Step>
+    Open your GitLab project.
+  </Step>
+  <Step>
+    Go to **Settings → Merge requests**.
+  </Step>
+  <Step>
+    Enable **Pipelines must succeed** (wording varies by GitLab version).
+  </Step>
+  <Step>
+    Save the setting.
+  </Step>
 </Steps>
 
 If your project uses approval rules or protected branches, ensure the merge request pipeline is the one required to pass.
+
 ## How to verify your PR testing setup
+
 <Steps>
-<Step title="Open a merge request in GitLab.">
-
-Confirm that your merge request triggers a pipeline that deploys a preview environment.
-</Step>
-<Step title="Confirm the preview environment is created.">
-
-In GitLab, check the merge request’s environment or the Review App link, and confirm that the preview URL is reachable.
-</Step>
-<Step title="Confirm QA Wolf starts a test run.">
-
-In the QA Wolf app, go to the Runs tab and verify that a new run starts for the preview environment associated with the merge request.
-</Step>
-<Step title="Confirm the merge request is blocked on failure.">
-
-In GitLab, confirm the pipeline reflects the final result and that the merge request cannot be merged unless the pipeline succeeds.
-</Step>
+  <Step title="Open a merge request in GitLab.">
+    Confirm that your merge request triggers a pipeline that deploys a preview environment.
+  </Step>
+  <Step title="Confirm the preview environment is created.">
+    In GitLab, check the merge request’s environment or the Review App link, and confirm that the preview URL is reachable.
+  </Step>
+  <Step title="Confirm QA Wolf starts a test run.">
+    In the QA Wolf app, go to the Runs tab and verify that a new run starts for the preview environment associated with the merge request.
+  </Step>
+  <Step title="Confirm the merge request is blocked on failure.">
+    In GitLab, confirm the pipeline reflects the final result and that the merge request cannot be merged unless the pipeline succeeds.
+  </Step>
 </Steps>

@@ -1,25 +1,27 @@
 ---
 title: "How to integrate any build with the QA Wolf SDK"
 description: "When you deploy a new version of your application, you can notify QA Wolf so that a test run starts for that deployment."
+sidebarTitle: "Integrate with the QA Wolf SDK"
+icon: git-merge
 ---
-
 
 Deploy notifications signal that an environment is ready to be tested. When QA Wolf receives the notification, it evaluates it against your configured triggers and initiates a run if the conditions match.
 
 <Tip>
-Deployment notifications should be sent only from your primary environment (e.g., staging or production), as defined in your QA Wolf agreement.
+  Deployment notifications should be sent only from your primary environment (e.g., staging or production), as defined in your QA Wolf agreement.
 
-If you want to trigger test runs from additional environments, contact QA Wolf first. Supporting additional environments requires platform configuration and may affect your account setup; such cases are not covered in this document.
+  If you want to trigger test runs from additional environments, contact QA Wolf first. Supporting additional environments requires platform configuration and may affect your account setup; such cases are not covered in this document.
 </Tip>
 
 <Check>
-Make sure you have:
+  Make sure you have:
 
-- A CI job that runs after your deployment completes successfully
-- Node.js 18 or later available in your CI environment
-- A QA Wolf API key stored as a CI secret (QAWOLF\_API\_KEY)
-- A deployment trigger configured by QA Wolf for your environment
+  - A CI job that runs after your deployment completes successfully
+  - Node.js 18 or later available in your CI environment
+  - A QA Wolf API key stored as a CI secret (QAWOLF_API_KEY)
+  - A deployment trigger configured by QA Wolf for your environment
 </Check>
+
 AccHow to install the CI SDK
 
 Install the SDK in the CI job that will notify QA Wolf:
@@ -29,6 +31,7 @@ npm install @qawolf/ci-sdk
 ```
 
 Ensure the job has access to the QAWOLF_API_KEY environment variable.
+
 ## How to notify QA Wolf of a deployment
 
 After your deployment completes successfully, use the SDK to notify QA Wolf.
@@ -53,14 +56,15 @@ if (result.outcome !== "success") {
 ```
 
 <Note>
-The `deploymentType` value must match the deployment trigger configured by QA Wolf.
+  The `deploymentType` value must match the deployment trigger configured by QA Wolf.
 </Note>
 
 <Tip>
-Including `branch`, `sha`, and `commitUrl` is recommended and improves traceability when reviewing runs.
+  Including `branch`, `sha`, and `commitUrl` is recommended and improves traceability when reviewing runs.
 </Tip>
 
 If the notification succeeds and a matching trigger exists, QA Wolf creates a new deployment run.
+
 ## Validation and troubleshooting
 
 - **If the SDK call succeeds but no run appears in QA Wolf:** Confirm that a deployment trigger has been configured for your environment.

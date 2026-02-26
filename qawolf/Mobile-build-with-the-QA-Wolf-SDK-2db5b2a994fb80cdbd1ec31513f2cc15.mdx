@@ -1,6 +1,10 @@
 ---
 title: "How to integrate a mobile build with the QA Wolf SDK"
+sidebarTitle: "Mobile: QA Wolf SDK"
+icon: smartphone
+
 ---
+
 ## Overview: When to use the CI SDK
 
 This guide is for teams that do not use Fastlane or want a single, flexible way to upload mobile builds and trigger test runs from any CI system.
@@ -10,29 +14,31 @@ Use the QA Wolf CI SDK if your mobile builds are produced directly in CI scripts
 This guide assumes only that your CI system can run Node.js.
 
 <Tip>
-**Before using the CI SDK:**
+  **Before using the CI SDK:**
 
-1. Make sure you have a CI pipeline that produces a mobile build artifact (APK, AAB, or IPA)
-2. Node.js 18 or later is available in your CI environment.
-3. A QA Wolf API key is stored as a CI secret (**QAWOLF_API_KEY**),
-4. [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments.
+  1. Make sure you have a CI pipeline that produces a mobile build artifact (APK, AAB, or IPA)
+  2. Node.js 18 or later is available in your CI environment.
+  3. A QA Wolf API key is stored as a CI secret (**QAWOLF_API_KEY**),
+  4. [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments.
 
-Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
+  Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
 </Tip>
 
 ## How the CI SDK integration works
 
 The CI SDK performs two main tasks:
+
 <Steps>
-<Step>
-Uploading a mobile build artifact to QA Wolf AND
-</Step>
-<Step>
-Notifying QA Wolf of a deployment event to trigger a test run.
-</Step>
+  <Step>
+    Uploading a mobile build artifact to QA Wolf AND
+  </Step>
+  <Step>
+    Notifying QA Wolf of a deployment event to trigger a test run.
+  </Step>
 </Steps>
+
 <Tip>
-You can upload builds without triggering runs, which is useful during initial setup or validation.
+  You can upload builds without triggering runs, which is useful during initial setup or validation.
 </Tip>
 
 You provide the [artifact basename](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
@@ -48,25 +54,27 @@ npm install @qawolf/ci-sdk
 Make sure the job has access to the QAWOLF_API_KEY environment variable.
 
 ### To find the QAWOLF_API_KEY:
+
 <Steps>
-<Step>
-Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+  <Step>
+    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
 
-<Frame>
-<img src="/images/integrating-with-CI-CD/image-15.png"/>
-</Frame>
-</Step>
-<Step>
-Choose **Integrations**,
-</Step>
-<Step>
-Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard"/> icon to the right of **API Key** under **API Access?**.
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-15.png)
+    </Frame>
+  </Step>
+  <Step>
+    Choose **Integrations**,
+  </Step>
+  <Step>
+    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access?**.
 
-<Frame>
-<img src="/images/integrating-with-CI-CD/image-16.png"/>
-</Frame>
-</Step>
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-16.png)
+    </Frame>
+  </Step>
 </Steps>
+
 ## How to upload a mobile build artifact
 
 After your CI pipeline produces a mobile build artifact, upload it to QA Wolf using the SDK.
@@ -183,6 +191,7 @@ async function uploadRunArtifact(filePath: string): Promise<string> {
   return "";
 }
 ```
+
 ## How to trigger a test run
 
 After uploading the artifact, notify QA Wolf that a new deployment is ready for testing.
@@ -197,25 +206,28 @@ await sdk.attemptNotifyDeploy({
 ```
 
 <Tip>
-The deployment type and environment key must match the values configured by QA Wolf for your workspace.
+  The deployment type and environment key must match the values configured by QA Wolf for your workspace.
 </Tip>
 
 If mobile triggers have not yet been enabled, this step will complete without starting a test run.
+
 ## How to verify the integration
+
 <Steps>
-<Step>
-Run the CI job
-</Step>
-<Step>
-Verify that the artifact upload completes successfully,
-</Step>
-<Step>
-Confirm that the deployment notification step runs without errors.
-</Step>
-<Step>
-Once mobile triggers are enabled, check the Runs tab for the test run that was triggered.
-</Step>
+  <Step>
+    Run the CI job
+  </Step>
+  <Step>
+    Verify that the artifact upload completes successfully,
+  </Step>
+  <Step>
+    Confirm that the deployment notification step runs without errors.
+  </Step>
+  <Step>
+    Once mobile triggers are enabled, check the Runs tab for the test run that was triggered.
+  </Step>
 </Steps>
+
 ## Troubleshooting and common issues
 
 - **If uploads succeed but no runs start:** Mobile triggers may not yet be enabled. Contact QA Wolf to complete platform configuration.

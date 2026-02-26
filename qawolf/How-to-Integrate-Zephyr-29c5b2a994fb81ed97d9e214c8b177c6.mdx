@@ -1,8 +1,9 @@
 ---
 title: "How to integrate Zephyr"
-sideTitle: "How to integrate Zephyr"
-
+icon: "square-check-big"
+sidebarTitle: "Zephyr"
 ---
+
 ## What QA Wolf syncs to Zephyr
 
 Integrate QA Wolf with [Zephyr Test Management for Jira](https://marketplace.atlassian.com/apps/1213259/zephyr-test-management-and-automation-for-jira) to sync automated test results directly to Jira.
@@ -22,13 +23,15 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Only one Zephyr-enabled Jira project can be configured per QA Wolf workspace.
 - Zephyr test cases must already exist.
 - Custom fields are not supported unless specially configured.
-##  How to configure in Jira / Zephyr
+
+## How to configure in Jira / Zephyr
 
 Customers configure Jira and Zephyr. QA Wolf uses the provided credentials to sync results and enable the integration.
 
 <Tip>
-Generating Jira API tokens requires administrator access to the Atlassian account. If you’re not an admin, ask one to create the token.
+  Generating Jira API tokens requires administrator access to the Atlassian account. If you’re not an admin, ask one to create the token.
 </Tip>
+
 ### JIRA/Zephyr set up:
 
 - Jira Cloud instance.
@@ -45,22 +48,24 @@ Once Jira and Zephyr are configured, provide QA Wolf with:
 - Jira API token.
 - Jira base URL.
 - Zephyr project key (for example, QA, MOBILE).
-- *(Optional)* Default test cycle name or naming convention.
+- _(Optional)_ Default test cycle name or naming convention.
+
 ## How to verify the integration
 
 After QA Wolf enables the integration:
-<Steps>
-<Step>
-Run your automated tests in QA Wolf
-</Step>
-<Step>
-After the run completes, test executions appear in the configured Zephyr project.
-</Step>
-<Step>
-Executions are grouped under the appropriate test cycle and reflect synced results.
 
-<Tip>
-If executions do not appear as expected, or if test cases are not mapping correctly, contact QA Wolf for verification.
-</Tip>
-</Step>
+<Steps>
+  <Step>
+    Run your automated tests in QA Wolf
+  </Step>
+  <Step>
+    After the run completes, test executions appear in the configured Zephyr project.
+  </Step>
+  <Step>
+    Executions are grouped under the appropriate test cycle and reflect synced results.
+
+    <Tip>
+      If executions do not appear as expected, or if test cases are not mapping correctly, contact QA Wolf for verification.
+    </Tip>
+  </Step>
 </Steps>

@@ -1,5 +1,7 @@
 ---
-title: "How to start testing mobile apps"
+title: "Integrating your CI pipeline for mobile app testing"
+sidebarTitle: "Integrate your mobile CI pipeline"
+icon: smartphone
 ---
 
 ## Integrating your CI pipeline for mobile app testing
@@ -44,6 +46,7 @@ The CI SDK works with any CI system that supports Node.js, offering the greatest
 - Your build artifacts are already produced in a GitHub Actions workflow
 
 GitHub Actions are a good fit for teams that want to stay entirely within GitHub.
+
 ## Preparing a mobile build for testing
 
 Before mobile test runs can be triggered, your CI pipeline must produce a build artifact that QA Wolf can upload and use for testing.
@@ -124,8 +127,9 @@ app-myorg-myrepo-pr123
 Including the organization, repository, and pull request number ensures each build can be traced back to the correct change and environment.
 
 <Tip>
-QA Wolf applies the file extension (.apk, .aab, or .ipa) automatically based on the uploaded artifact. You only need to provide the basename
+  QA Wolf applies the file extension (.apk, .aab, or .ipa) automatically based on the uploaded artifact. You only need to provide the basename
 </Tip>
+
 ## How mobile test runs are triggered
 
 Mobile test runs are triggered when a new mobile build is uploaded and a deployment event is sent to QA Wolf. This allows tests to run automatically against the specific build produced by your CI pipeline.
@@ -138,6 +142,7 @@ Mobile test runs are triggered when a new mobile build is uploaded and a deploym
 On the customer side, the trigger is initiated by CI events such as a staging deploy, a release build, or a pull request build. On the QA Wolf side, the trigger must be enabled and configured for your workspace before mobile test runs will execute.
 
 Until that configuration is in place, CI jobs can still upload artifacts and send deployment notifications, but no test runs will start automatically.
+
 ## What happens after setup
 
 Once mobile triggers are enabled and your CI pipeline is uploading artifacts correctly, mobile test runs will start automatically when the configured trigger event occurs.

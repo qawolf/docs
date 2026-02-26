@@ -152,16 +152,17 @@
             "icon": "lock",
             "pages": [
               "qawolf/Overview-QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
-              "qawolf/How-to-Set-up-an-OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
-              "qawolf/How-to-Set-up-Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
-              "qawolf/How-to-Set-up-Linux-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313"
+              "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
+              "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
+              "qawolf/TailscaleClient-based-VPN-29f5b2a994fb8021a88af5e1c5b21313",
+              "qawolfTwingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1"
             ]
           },
           {
             "group": "Test Management Systems",
             "icon": "list-check",
             "pages": [
-              "qawolf/How-to-Integrate-Testmo-29c5b2a994fb810bb096c46ec45512fb",
+              "qawolf/Testmo-29c5b2a994fb810bb096c46ec45512fb",
               "qawolf/How-to-Integrate-TestRail-29c5b2a994fb8158897afc10c5d66782",
               "qawolf/How-to-Integrate-Xray-29c5b2a994fb8196a5eddfc6ce4a9e40",
               "qawolf/How-to-Integrate-Zephyr-29c5b2a994fb81ed97d9e214c8b177c6",
@@ -172,14 +173,14 @@
             "group": "CI/CD",
             "icon": "git-compare",
             "pages": [
-              "qawolf/How-to-Integrate-GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
-              "qawolf/How-to-Enable-PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
-              "qawolf/How-to-Integrate-with-GitLab-2a15b2a994fb805d9d14ff27726065ae",
-              "qawolf/How-to-Enable-PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c",
-              "qawolf/How-to-Integrate-any-build-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63",
-              "qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2",
-              "qawolf/How-to-Integrate-a-mobile-build-with-Fastlane-2db5b2a994fb802186a3d88573899c78",
-              "qawolf/How-to-Integrate-a-mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
+              "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
+              "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
+              "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
+              "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c",
+              "qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63",
+              "qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2",
+              "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
+              "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
               "qawolf/How-to-Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
             ]
           },

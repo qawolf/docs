@@ -1,6 +1,10 @@
 ---
 title: "How to integrate a mobile build with GitHub Actions"
+sidebarTitle: "Mobile: GitHub Actions"
+icon: smartphone
+
 ---
+
 ## Overview: When to use GitHub Actions
 
 This guide is for teams that use **GitHub Actions** as their CI system and want a simple, declarative way to upload mobile builds and trigger test runs without writing custom scripts.
@@ -10,28 +14,30 @@ Use GitHub Actions if your repository already builds mobile artifacts in a GitHu
 This guide assumes your mobile builds already run in GitHub Actions and produce a build artifact.
 
 <Tip>
-**Before using GitHub Actions:**
+  **Before using GitHub Actions:**
 
-1. Make sure your GitHub Actions workflow produces a mobile build artifact (APK, AAB, or IPA)
-2. A QA Wolf API key is stored as a GitHub secret (**QAWOLF_API_KEY**)
-3. [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments
+  1. Make sure your GitHub Actions workflow produces a mobile build artifact (APK, AAB, or IPA)
+  2. A QA Wolf API key is stored as a GitHub secret (**QAWOLF_API_KEY**)
+  3. [Artifact naming conventions](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments
 
-Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
+  Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
 </Tip>
 
 ## How the GitHub Actions integration works
 
 The GitHub Actions integration uses two QA Wolf-provided actions:
+
 <Steps>
-<Step>
-Uploading a mobile build artifact to QA Wolf
-</Step>
-<Step>
-Notifying QA Wolf of a deployment event to trigger a test run
-</Step>
+  <Step>
+    Uploading a mobile build artifact to QA Wolf
+  </Step>
+  <Step>
+    Notifying QA Wolf of a deployment event to trigger a test run
+  </Step>
 </Steps>
+
 <Tip>
-You can upload builds without triggering runs, which is useful during initial setup or validation.
+  You can upload builds without triggering runs, which is useful during initial setup or validation.
 </Tip>
 
 You provide the [artifact basename](/qawolf/How-to-Start-testing-mobile-apps-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
@@ -43,37 +49,41 @@ Add the QA Wolf actions to an existing GitHub Actions workflow that builds your 
 Make sure the workflow has access to the **QAWOLF_API_KEY** secret.
 
 #### To add the QAWOLF_API_KEY secret:
+
 <Steps>
-<Step>
-Open your GitHub repository and go to Settings.
-</Step>
-<Step>
-Select **Secrets and variables → Actions**.
-</Step>
-<Step>
-Add a new repository secret named **QAWOLF_API_KEY** and paste your API key.
-</Step>
+  <Step>
+    Open your GitHub repository and go to Settings.
+  </Step>
+  <Step>
+    Select **Secrets and variables → Actions**.
+  </Step>
+  <Step>
+    Add a new repository secret named **QAWOLF_API_KEY** and paste your API key.
+  </Step>
 </Steps>
+
 #### To find the QAWOLF_API_KEY:
+
 <Steps>
-<Step>
-Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+  <Step>
+    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
 
-<Frame>
-<img src="/images/integrating-with-CI-CD/image-17.png"/>
-</Frame>
-</Step>
-<Step>
-Choose **Integrations**,
-</Step>
-<Step>
-Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard"/> icon to the right of **API Key** under **API Access**.
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-17.png)
+    </Frame>
+  </Step>
+  <Step>
+    Choose **Integrations**,
+  </Step>
+  <Step>
+    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
 
-<Frame>
-<img src="/images/integrating-with-CI-CD/image-18.png"/>
-</Frame>
-</Step>
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-18.png)
+    </Frame>
+  </Step>
 </Steps>
+
 ## How to upload a mobile build artifact
 
 After your workflow produces a mobile build artifact, upload it to QA Wolf using the upload action.
@@ -90,7 +100,7 @@ After your workflow produces a mobile build artifact, upload it to QA Wolf using
 
 If this step completes successfully, the artifact is uploaded and available for test runs.
 
-```yaml highlight={1-25} expandable
+```yaml expandable {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25}
 name: Deploy and Notify QA Wolf
 on: pull_request
 jobs:
@@ -117,6 +127,7 @@ jobs:
           ...
         with: ...
 ```
+
 ## How to trigger a test run
 
 After uploading the artifact, notify QA Wolf that a new deployment is ready for testing.
@@ -132,25 +143,28 @@ After uploading the artifact, notify QA Wolf that a new deployment is ready for 
 ```
 
 <Danger>
-The deployment type and environment key must match the values configured by QA Wolf for your workspace.
+  The deployment type and environment key must match the values configured by QA Wolf for your workspace.
 </Danger>
 
 If mobile triggers have not yet been enabled, this step will complete without starting a test run.
+
 ## How to verify the integration
+
 <Steps>
-<Step>
-Run the GitHub Actions workflow
-</Step>
-<Step>
-Verify that the artifact upload step completes successfully
-</Step>
-<Step>
-Confirm that the deployment notification step runs without errors
-</Step>
-<Step>
-Once mobile triggers are enabled, check the **Runs** tab for the triggered test run
-</Step>
+  <Step>
+    Run the GitHub Actions workflow
+  </Step>
+  <Step>
+    Verify that the artifact upload step completes successfully
+  </Step>
+  <Step>
+    Confirm that the deployment notification step runs without errors
+  </Step>
+  <Step>
+    Once mobile triggers are enabled, check the **Runs** tab for the triggered test run
+  </Step>
 </Steps>
+
 ## Troubleshooting and common issues
 
 - **If uploads succeed but no runs start:** Mobile triggers may not yet be enabled. Contact QA Wolf to complete platform configuration
