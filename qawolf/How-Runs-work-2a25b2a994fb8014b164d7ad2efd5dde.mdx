@@ -1,5 +1,6 @@
 ---
 title: "How Runs work"
+icon: "circle-play"
 ---
 
 ## What is a Run
@@ -8,16 +9,17 @@ A **run** is an execution of one or more **flows**. Runs can be started manually
 
 At the end of a run, it will be marked as either:
 
-- Completed. Indicating that all flows in the run have *passed* or been marked *Do Not Investigate*.
-- Needs Investigation. Indicating that flows in the run failed but have *not* been marked *Do Not Investigate*.
-    <Note>
+- Completed. Indicating that all flows in the run have _passed_ or been marked _Do Not Investigate_.
+- Needs Investigation. Indicating that flows in the run failed but have _not_ been marked _Do Not Investigate_.
+
+  <Note>
     A flow needing investigation should be reviewed quickly and identified as either a bug (and filed in your issue tracker) or a broken test (and be updated accordingly).
-    </Note>
-- *Canceled*. Indicating that the run was cancelled mid-execution by a subsequent run matching the same branch and environment.
+  </Note>
+- _Canceled_. Indicating that the run was cancelled mid-execution by a subsequent run matching the same branch and environment.
 
 ### Flow orchestration logic
 
-Runs orchestrate the *execution order* of flows and their multiple attempts, while the flows themselves report the *results* of each attempt (including logs and video artifacts).
+Runs orchestrate the _execution order_ of flows and their multiple attempts, while the flows themselves report the _results_ of each attempt (including logs and video artifacts).
 
 ### Attempt retry logic
 
@@ -40,26 +42,26 @@ A run can be initiated three ways:
 ### How to identify environments that need attention
 
 <Note>
+  Environments move into investigation states when flows don’t pass:
 
-Environments move into investigation states when flows don’t pass:
+  - **Needs Investigation:** one or more flows failed all three attempts will be marked with the <Icon icon="circle" iconType="solid" color="yellow" /> icon.
+  - **Failed:** a flow associated with a high-priority bug report failed (based on your settings) will be marked with <Icon icon="circle" iconType="solid" color="red" /> icon,
 
-- **Needs Investigation:** one or more flows failed all three attempts will be marked with the <Icon icon="circle" iconType="solid" color="yellow"/> icon.
-- **Failed:** a flow associated with a high-priority bug report failed (based on your settings) will be marked with <Icon icon="circle" iconType="solid" color="red"/> icon,
-
-These states help you decide what’s safe to release and what needs attention.
+  These states help you decide what’s safe to release and what needs attention.
 </Note>
 
-You can spot environments in *Needs Investigation* or *Failed* in two places:
+You can spot environments in _Needs Investigation_ or _Failed_ in two places:
 
 1. On the **Runs** tab, under the `Type` **environments** list, each environment shows its status icon next to the name. (Type will be either **Static** or **Preview**)
+
 <Columns cols={2}>
-<Frame>
-<img src="/images/execution-scheduling-bugs-and-maintenance/image-1.png"/>
-</Frame>
+  <Frame>
+    ![](/images/execution-scheduling-bugs-and-maintenance/image-1.png)
+  </Frame>
 </Columns>
 
 2. On the **Flows** tab, the `Environment name` dropdown shows the status of the selected environment.
 
 <Frame>
-<img src="/images/execution-scheduling-bugs-and-maintenance/image-2.png"/>
+  ![](/images/execution-scheduling-bugs-and-maintenance/image-2.png)
 </Frame>
