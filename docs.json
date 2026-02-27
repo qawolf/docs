@@ -47,13 +47,11 @@
     },
     "tabs": [
       {
-        "tab": "Key Concepts",
-        "icon": "key",
+        "tab": "Welcome",
+        "icon": "home",
         "pages": [
           "qawolf/Getting-the-most-out-of-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0",
-          "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
-          "qawolf/Reviewing-publishing-revision-history-2c65b2a994fb8073826be9391a8e2238",
-          "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
+          "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc"
         ]
       },
       {
@@ -63,53 +61,53 @@
           "qawolf/Personalize-QA-Wolf-29c5b2a994fb8017b822ee1942b10297",
           "qawolf/Configure-workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
           "qawolf/Configure-environments-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
-          "qawolf/Preparing-your-environments-for-reliable-test-runs-2dc5b2a994fb800e8ce4fe36ee34764a"
+          "qawolf/Preparing-your-environments-for-reliable-test-runs-2dc5b2a994fb800e8ce4fe36ee34764a",
+          "qawolf/Using-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb"
         ]
       },
       {
-        "tab": "QA Wolf AI",
+        "tab": "Mapping",
         "icon": "sparkles",
         "pages": [
           "qawolf/Getting-familiar-with-the-AI-interface-2cd5b2a994fb80c2919cdfa3d3c62d65",
-          "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc",
-          "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358"
+          "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc"
         ]
       },
       {
-        "tab": "Automation",
+        "tab": "Automate",
         "icon": "code",
         "groups": [
+          {
+            "group": "Automate with AI",
+            "icon": "sparkles",
+            "pages": [
+              "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358"
+            ]
+          },
           {
             "group": "Basic flows",
             "icon": "route",
             "pages": [
               "qawolf/Getting-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
               "qawolf/Create-and-write-tests-2c15b2a994fb802193a5c05e0219eb59",
-              "qawolf/Run-and-debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
-              "qawolf/Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
-              "qawolf/Using-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
-              "qawolf/Using-environment-variables-2c15b2a994fb8070926ac3adf9bcc57c",
               "qawolf/Shared-test-helpers-2c15b2a994fb804eba81d95cede273b8",
               "qawolf/Importing-third-party-libraries-2c15b2a994fb8005ade6f0523aa5e798",
-              "qawolf/Using-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
-              "qawolf/Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4"
-            ]
-          },
-          {
-            "group": "Maintenance",
-            "icon": "hammer",
-            "pages": [
-              "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
-              "qawolf/Clear-a-release-with-non-bug-test-failures-2c55b2a994fb808fa5ddfa157a89adcd",
-              "qawolf/File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa"
+              "qawolf/Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4",
+              "qawolf/Reviewing-publishing-revision-history-2c65b2a994fb8073826be9391a8e2238"
             ]
           },
           {
             "group": "Advanced flows",
             "icon": "share-2",
+            "pages": []
+          },
+          {
+            "group": "QA University",
+            "icon": "graduation-cap",
             "pages": [
               "qawolf/Using-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e",
-              "qawolf/Passing-data-between-flows-29d5b2a994fb801080bce743ab552931"
+              "qawolf/Passing-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
             ]
           }
         ]
@@ -124,22 +122,22 @@
             "pages": [
               "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
               "qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
-              "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318"
-            ]
-          },
-          {
-            "group": "Scheduling",
-            "icon": "clock",
-            "pages": [
-              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92"
+              "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
+              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
+              "qawolf/Run-and-debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
+              "qawolf/Get-familiar-with-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
+              "qawolf/Using-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179"
             ]
           }
         ]
       },
       {
-        "tab": "Bug reporting",
-        "icon": "bug",
+        "tab": "Investigation",
+        "icon": "search",
         "pages": [
+          "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
+          "qawolf/Clear-a-release-with-non-bug-test-failures-2c55b2a994fb808fa5ddfa157a89adcd",
+          "qawolf/File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa",
           "qawolf/File-review-edit-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
         ]
       },
