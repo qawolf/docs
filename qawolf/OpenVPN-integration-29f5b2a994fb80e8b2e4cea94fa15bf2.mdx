@@ -1,0 +1,16 @@
+---
+title: "OpenVPN integration"
+icon: "network"
+---
+
+<Steps>
+  <Step>
+    Provide QA Wolf with your .ovpn client configuration file. Refer to your VPN provider’s documentation for instructions on generating or downloading this file.
+  </Step>
+  <Step>
+    Configure your firewall to allow inbound VPN connections to your OpenVPN server from QA Wolf’s static IP range:
+
+    - **Port:** UDP 1194 (default; configurable)
+    - **Source IPs:** `199.4.212.0/23`
+  </Step>
+</Steps>

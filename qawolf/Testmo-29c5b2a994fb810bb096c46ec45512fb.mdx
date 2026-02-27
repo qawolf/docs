@@ -1,0 +1,61 @@
+---
+title: "How to Integrate Testmo"
+description: "Integrate QA Wolf with [Testmo](https://www.testmo.com/) to centralize automated test results and reporting. Customers configure Testmo. QA Wolf uses the provided credentials to sync results and enable the integration."
+icon: "square-check-big"
+sidebarTitle: "Testmo"
+---
+
+For each QA Wolf run, the integration can:
+
+- Create a new test run in Testmo.
+- Sync automated test results (passed, failed, skipped, errored).
+- Include run metadata (title, run link).
+- Apply optional tags to all synced runs.
+
+Results are synced after QA Wolf finishes processing a run.
+
+#### Limitation notes
+
+- Up to two Testmo projects can be configured per QA Wolf workspace.
+- The tags you provide during setup are applied to all synced runs
+
+<Tip>
+  Dynamic tags (for example, different tags for staging vs production or PR vs scheduled runs) require custom configuration by QA Wolf.
+</Tip>
+
+## How to configure Testmo for QA Wolf integration
+
+<Tip>
+  Enabling Testmo API access requires an **Administrator** user. If you’re not a Testmo admin, ask one to enable the API before generating your credentials.
+</Tip>
+
+### Set up in Testmo:
+
+- Active Testmo account.
+- API access enabled.
+- Target Testmo project to receive QA Wolf runs.
+- _(Optional)_ Tags to apply to all synced runs.
+
+### Share with QA Wolf:
+
+- Testmo login email.
+- Testmo API key.
+- Target Testmo project (project ID or URL).
+- _(Optional)_ Tags to apply to runs.
+
+### Verify the integration:
+
+After QA Wolf enables the integration:
+
+<Steps>
+  <Step>
+    Run your automated tests in QA Wolf.
+  </Step>
+  <Step>
+    After QA Wolf finishes processing the run, a new test run appears in your Testmo project with synced results and metadata.
+  </Step>
+</Steps>
+
+<Tip>
+  If runs do not appear as expected, or if you need assistance configuring Testmo, contact QA Wolf for verification.
+</Tip>

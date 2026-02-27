@@ -1,0 +1,305 @@
+---
+title: "Configure workspace settings"
+icon: settings
+---
+
+## How to change your team's display name
+
+<Steps>
+  <Step>
+    Choose Workspace settings from the `Workspace name` dropdown above the flows list.
+
+    <Frame>
+      ![](/images/image-12.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **General** in the left navigation bar; it will be selected by default.
+
+    <Frame>
+      ![](/images/image-13.png)
+    </Frame>
+  </Step>
+  <Step>
+    Enter your new Workspace Name in the field and click Save.
+
+    <Frame>
+      ![](/images/image-14.png)
+    </Frame>
+  </Step>
+</Steps>
+
+## How to change your team's logo
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+
+    <Frame>
+      ![](/images/image-15.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **General** in the left navigation bar; it will be selected by default.
+
+    <Frame>
+      ![](/images/image-16.png)
+    </Frame>
+  </Step>
+  <Step>
+    In the **Workspace Logo** field, if no image is set, select or drag a file and click **Upload**.
+
+    <Frame>
+      ![](/images/image-17.png)
+    </Frame>
+    <Frame>
+      ![](/images/image-18.png)
+    </Frame>
+  </Step>
+</Steps>
+
+## How to invite members
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+
+    <Frame>
+      ![](/images/image-19.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Members** in the left navigation bar.
+
+    <Frame>
+      ![](/images/image-20.png)
+    </Frame>
+  </Step>
+  <Step>
+    In the **Enter emails to invite field**, type the email address of the team members you want to grant access to.
+
+    <Tip>
+      You can type multiple addresses, separated by commas.
+    </Tip>
+  </Step>
+  <Step>
+    Click **Send Invite**. The invited user(s) will receive an email containing a login link to the site.
+  </Step>
+</Steps>
+
+## How to create, rename, and delete environments
+
+<Tip>
+  A workspace can include multiple [environments](qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc#environment).
+
+  Environments can be static or ephemeral (preview). The default environment is called _My Environment_. We recommended that you create a new environment to match the testing environment in your pipeline and delete _My Environment_. Create additional environments if you test at multiple stages of a release.
+</Tip>
+
+### To create a new environment:
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+
+    <Frame>
+      ![](/images/image-21.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Environments** in the left navigation bar.
+
+    <Frame>
+      ![](/images/image-22.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Create environment** in the upper-right corner. Give it a unique name and click **Create**.
+
+    <Frame>
+      ![](/images/image-23.png)
+    </Frame>
+    <br />
+
+    <Frame>
+      ![](/images/image-24.png)
+    </Frame>
+  </Step>
+</Steps>
+
+### To rename an environment:
+
+<Steps>
+  <Step>
+    Click inside the **Environment Name** text box, then type the new name and press **Enter**.
+
+    <Frame>
+      ![](/images/image-25.png)
+    </Frame>
+  </Step>
+</Steps>
+
+### To delete an environment:
+
+<Steps>
+  <Step>
+    Navigate to the environment settings and click the red **Delete** button.
+
+    <Frame>
+      ![](/images/image-26.png)
+    </Frame>
+    <Tip>
+      You can also access **Environment settings** from the **Runs** tab by hovering over any environment listed under `Type` **environments** to show the icon, then clicking it.
+
+      <Frame>
+        ![](/images/image-27.png)
+      </Frame>
+    </Tip>
+  </Step>
+</Steps>
+
+## How to change your default environment
+
+<Tip>
+  Both the **Flows** and **Runs** tabs require a default environment. Set this to the environment you use most often for running and debugging tests.
+</Tip>
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+
+    <Frame>
+      ![](/images/image-28.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **General** in the left navigation bar; it will be selected by default.
+
+    <Frame>
+      ![](/images/image-29.png)
+    </Frame>
+  </Step>
+  <Step>
+    Scroll to **Default environment** and select one from the drop down. This will set the default for any Flow or Run that doesn’t have another environment specified. environment you want the **Flows** and **Runs** tabs to use by default from the **Default team** environment dropdown.
+
+    <Frame>
+      ![](/images/image-30.png)
+    </Frame>
+    If your team is using PR testing environments, select the default environment from the dropdown labeled **Default team PR Testing base environment**.
+
+    <Frame>
+      ![](/images/image-31.png)
+    </Frame>
+    <Note>
+      Contact your QA Wolf Customer Success Manager to assist with PR testing configuration.
+    </Note>
+  </Step>
+</Steps>
+
+### How to configure the default runner
+
+<Note>
+  Node 20 with Playwright is the default runner.
+</Note>
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+
+    <Frame>
+      ![](/images/image-32.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Flows** from the left navigation bar.
+
+    <Frame>
+      ![](/images/image-33.png)
+    </Frame>
+  </Step>
+  <Step>
+    Under **Defaults**, use the **Runner to be used in new flows** dropdown to choose a new default runner.
+
+    <Tip>
+      The default runner can be overwritten for an individual flow in one of two ways:
+
+      When you create a flow, a pop-up allows you to select the runner for the flow.
+
+      When you select a flow from the Flows list on the **Flows** tab in **No-code mode**, the right panel gives you the ability to modify the runner using the _Runs on_ field.
+
+      <Frame>
+        ![](/images/image-34.png)
+      </Frame>
+    </Tip>
+  </Step>
+</Steps>
+
+## How to create and edit tags
+
+### Understanding tags
+
+In the QA Wolf platform, tags serve two purposes:
+
+1. They aggregate flows for scheduled runs, so that all flows with the same tag run together.
+2. Tags are also used by run rules to control execution order.
+
+## How to create and edit tags
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+
+    <Frame>
+      ![](/images/image-35.png)
+    </Frame>
+  </Step>
+  <Step>
+    Select **Tags** from the left menu
+  </Step>
+</Steps>
+
+### Create a tag
+
+<Steps>
+  <Step>
+    To create a new tag, click **Create Tag** in the lower left. A text box will appear. Enter the tag name you want to create, then click **Save**.
+
+    <Frame>
+      ![](/images/image-36.png)
+    </Frame>
+  </Step>
+</Steps>
+
+### Edit a tag
+
+<Steps>
+  <Step>
+    Click the <Icon icon="pencil" /> icon next to its name.
+
+    <Frame>
+      ![](/images/image-37.png)
+    </Frame>
+  </Step>
+</Steps>
+
+### Delete a tag
+
+<Steps>
+  <Step>
+    Click the icon next to its name.
+
+    <Tip>
+      **Tags can also be accessed by:**
+
+      1. Selecting a Flow and clicking Edit tags
+
+      <Frame>
+        ![](/images/image-38.png)
+      </Frame>
+      2. Selecting a flow and clicking the <Icon icon="pencil" /> icon in the right panel.
+
+      <Frame>
+        ![](/images/image-39.png)
+      </Frame>
+    </Tip>
+  </Step>
+</Steps>

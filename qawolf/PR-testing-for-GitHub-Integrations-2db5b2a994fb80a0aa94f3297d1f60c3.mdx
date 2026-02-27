@@ -1,0 +1,141 @@
+---
+title: "How to enable PR testing for GitHub Integrations"
+sidebarTitle: "PR testing for GitHub Integrations"
+icon: git-merge
+---
+
+## What QA Wolf configures
+
+PR testing runs QA Wolf tests against preview environments before changes are merged. Tests run when a pull request enters the merge queue, and results are reported back to GitHub as a required status check.
+
+<Tip>
+  Your [GitHub integration](/qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0) and deploy notifications must already be set up.
+</Tip>
+
+PR testing won’t work until QA Wolf configures your workspace to support it. QA Wolf will:
+
+- Set up a trigger that matches your preview deployments
+- Provide the deployment-type value to use for preview tests
+- Confirm the preview URL variable and the status check name (for example, **QA Wolf Test Results**)
+
+## How to add a default passing PR check
+
+<Check>
+  Each pull request must deploy a preview environment that QA Wolf can reach. Your CI should provide a stable preview URL per PR and a step that waits until the preview is live before tests start.
+</Check>
+
+Add a GitHub Actions workflow that creates a passing **QA Wolf Test Results** check when a PR is opened or updated. This prevents pull requests from being blocked before the merge queue run happens.
+
+```yaml Create .github/workflows/qawolf-pr-check.yml: expandable
+name: Create QA Wolf PR check
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  qawolf_check_creation:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: read
+    steps:
+      - name: Create passing QA Wolf check
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'QA Wolf Test Results',
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'QA Wolf Test Results',
+                summary: 'QA Wolf tests will run in the merge queue.'
+              }
+            });
+```
+
+## How to trigger QA Wolf tests in the merge queue
+
+Add a GitHub Actions workflow that notifies QA Wolf only during merge queue execution.
+
+```yaml Create .github/workflows/qawolf-merge-queue.yml: expandable
+name: Test preview environment
+
+on:
+  merge_group:
+
+jobs:
+  test-preview-environment:
+    name: Trigger QA Wolf tests
+    runs-on: ubuntu-latest
+    needs:
+      - wait-for-preview-environment
+    steps:
+      - name: Notify QA Wolf of deployment
+        uses: qawolf/notify-qawolf-on-deploy-action@v1
+        with:
+          qawolf-api-key: "${{ secrets.QAWOLF_API_KEY }}"
+          deployment-url: "${{ env.PREVIEW_URL }}"
+          deployment-type: "provided-by-qawolf"
+          deduplication-key: "${{ github.ref }}"
+```
+
+### What this workflow assumes
+
+- Your CI pipeline already creates a preview environment per pull request.
+- The preview environment URL is available as PREVIEW_URL when this job runs.
+- A prior job (such as wait-for-preview-environment) ensures the preview environment is fully deployed and reachable before QA Wolf is notified.
+
+When the pull request enters the merge queue, this workflow sends the preview URL to QA Wolf, which starts a test run against that environment.
+
+## How to require QA Wolf tests before merge
+
+<Steps>
+  <Step>
+    Open your **GitHub repository** in the browser.
+  </Step>
+  <Step>
+    Click the **Settings** tab at the top of the repository (next to _Code, Issues, Pull requests_).
+  </Step>
+  <Step>
+    In the left sidebar, do one of the following:
+
+    - Click **Rules** (if your repo uses GitHub’s new rulesets), or
+    - Click **Branches** (for classic branch protection rules).
+  </Step>
+  <Step>
+    Create or edit the rule that applies to your main branch.
+  </Step>
+  <Step>
+    Enable **Require status checks to pass**.
+  </Step>
+  <Step>
+    Add QA **Wolf Test Results** to the list of required checks.
+  </Step>
+  <Step>
+    Save the rule.
+  </Step>
+</Steps>
+
+## How to verify your PR testing setup
+
+<Steps>
+  <Step title="Open a pull request in GitHub.">
+    On the pull request page, confirm that a check named **QA Wolf Test Results** appears in the checks section and initially shows as passing.
+  </Step>
+  <Step title="Add the pull request to the merge queue.">
+    When the PR enters the merge queue, GitHub will trigger the merge-queue workflow.
+  </Step>
+  <Step title="Confirm QA Wolf starts a test run.">
+    In the **QA Wolf app**, go to the **Runs** tab and verify that a new run starts for the preview environment associated with the pull request.
+  </Step>
+  <Step title="Confirm the check updates before merge.">
+    Back in **GitHub**, watch the **QA Wolf Test Results** check update from its placeholder state to the final pass or fail result.
+
+    The merge completes only after this check finishes successfully.
+  </Step>
+</Steps>

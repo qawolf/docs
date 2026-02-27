@@ -1,0 +1,67 @@
+---
+title: "How to verify and debug your test"
+sidebarTitle: "Run and debug tests & flows"
+icon: "bug-play"
+---
+
+### Try out your test
+
+<Steps>
+  <Step>
+    When you're ready to execute your test, click **Run code**. A live browser appears in the right panel, allowing you to watch the code execute and interact with the page just as a user would.
+
+    <Frame>
+      ![](/images/building-and-maintaining-flows/image-16.png)
+    </Frame>
+  </Step>
+</Steps>
+
+### Debugging tests
+
+If your test fails, a red Flow failed banner appears at the top of the editor. The failed line is highlighted in red to make it easy to spot.
+
+<Frame>
+  ![](/images/building-and-maintaining-flows/image-17.png)
+</Frame>
+
+<Frame>
+  ![](/images/building-and-maintaining-flows/image-34.png)
+</Frame>
+
+<Steps>
+  <Step>
+    Make the appropriate changes.
+
+    QA Wolf allows you to execute only selected lines of code to expedite debugging. Reset the app state in the browser, highlight the selected lines, and click Run.
+
+    <Frame>
+      ![](/images/building-and-maintaining-flows/image-18.png)
+    </Frame>
+  </Step>
+  <Step>
+    Re-execute the test. Green checkmarks also appear next to each line of code that ran successfully. When the test runs successfully from start to finish, a green **Flow passed** banner appears at the top of the page.
+
+    <Frame>
+      ![](/images/building-and-maintaining-flows/image-19.png)
+    </Frame>
+    <Note>
+      A **manual run** is a flow run—rather than a test run—started from the **Flows** tab’s **Run all flows**. It’s considered manual because it isn’t scheduled
+    </Note>
+  </Step>
+</Steps>
+
+### Executing the whole flow
+
+<Check>
+  Once a test passes on its own, run the entire flow. This can surface issues that don’t appear when the test runs in isolation.
+</Check>
+
+<Steps>
+  <Step>
+    From the **Flows** tab, teams can manually run all flows by clicking **Run all flows**. Clicking this opens the **Runs** tab, where an icon shows the flow in progress.
+
+    <Frame>
+      ![](/images/building-and-maintaining-flows/image-20.png)
+    </Frame>
+  </Step>
+</Steps>

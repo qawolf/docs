@@ -1,0 +1,133 @@
+---
+title: "How to integrate with GitLab"
+description: "QA Wolf integrates directly with GitLab to automatically run tests when you deploy code. This integration uses your GitLab CI/CD pipeline to notify QA Wolf when a deployment is complete and ready to test."
+sidebarTitle: " GitLab"
+icon: git-merge
+---
+
+If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. The integration connects directly to your QA Wolf environments.
+
+<Tip>
+If your GitLab instance does not allow outbound HTTPS connections (for example, an air-gapped GitLab Enterprise installation), use the QA Wolf CI SDK instead.
+</Tip>
+
+<Check>
+Make sure you have:
+
+- Admin or Maintainer access to the GitLab project
+- Access to your QA Wolf workspace
+- At least one QA Wolf environment already configured
+- A QA Wolf API key
+</Check>
+
+## How to enable the GitLab integration in QA Wolf
+<Steps>
+<Step>
+Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-9.png"/>
+</Frame>
+</Step>
+<Step>
+Click **Integrations**, then click **Enable** next to **GitLab**. This opens GitLab, where you’ll be prompted to sign in if you have not already done so. Follow the prompts to connect your GitLab account or group.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-10.png"/>
+</Frame>
+
+You’ll be asked to provide a **Group Access Token** with the **Maintainer** role and **API** scope.
+
+<Danger>
+The Maintainer role is required because Developer tokens cannot create pipeline checks on protected branches.
+</Danger>
+
+Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
+</Step>
+</Steps>
+## How to add your QA Wolf API key to GitLab
+<Steps>
+<Step>
+Open your GitLab project.
+</Step>
+<Step>
+Go to **Settings → CI/CD → Variables**.
+</Step>
+<Step>
+Click **Add variable**.
+</Step>
+<Step>
+Name the variable QA_WOLF_API_KEY.
+</Step>
+<Step>
+Paste your QA Wolf API key and save.
+</Step>
+</Steps>
+You can also define additional variables, such as a deployment URL, if your pipeline uses them.
+
+### To find your QA Wolf API key:
+<Steps>
+<Step>
+Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-11.png"/>
+</Frame>
+</Step>
+<Step>
+Choose **Integrations** and then click the <Icon icon="clipboard"/> to copy the API Key to your clipboard.
+
+<Frame>
+<img src="/images/integrating-with-CI-CD/image-12.png"/>
+</Frame>
+</Step>
+</Steps>
+## How to add the deploy success notification to GitLab CI/CD
+
+QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment.
+
+Add a job to your .gitlab-ci.yml that runs after your deploy step completes successfully.
+
+```yml expandable
+stages:
+  - build
+  - deploy
+  - notify
+
+deploy:
+  stage: deploy
+  script:
+    - ./deploy.sh
+  environment:
+    name: staging
+
+notify_qawolf:
+  stage: notify
+  script:
+    - |
+      curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
+        -H "Authorization: Bearer $QA_WOLF_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{
+          \"branch\": \"$CI_COMMIT_REF_NAME\",
+          \"deployment_type\": \"staging\",
+          \"deployment_url\": \"$QA_WOLF_DEPLOY_URL\",
+          \"sha\": \"$CI_COMMIT_SHA\",
+          \"hosting_service\": \"GitLab\"
+        }"
+  when: on_success
+  needs: ["deploy"]
+```
+
+This job tells QA Wolf that a new deployment is ready for testing.
+## How to verify the integration
+<Steps>
+<Step>
+Run your GitLab CI/CD pipeline to trigger a deployment.
+</Step>
+<Step>
+Wait for the pipeline to complete successfully.
+</Step>
+<Step>
+Open QA Wolf and confirm a new run appears under the expected environment.
+</Step>
+</Steps>

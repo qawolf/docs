@@ -1,0 +1,104 @@
+---
+title: "File, edit & review maintenance reports"
+icon: workflow
+---
+
+## What is a maintenance report?
+
+Maintenance reports track bugs in tests, not bugs in the product. They are used when a failure is caused by incorrect, outdated, or fragile test logic rather than an issue in the application under test.
+
+Maintenance reports cannot be created directly from the Maintenance tab. They are created from the Investigation view when reviewing a failing flow.
+
+<Tip>
+  Minor test fixes should be made quickly when possible. File a maintenance report when a fix will not be completed before the next deployment or scheduled run, or when the change requires more involved updates to the test, such as refactoring.
+</Tip>
+
+Maintenance reports are linked to one or more flows. While a maintenance report is open, those flows are skipped in scheduled runs. When the flows pass in a manual run, the maintenance report automatically closes, and the flows are included in schedules again.
+
+## How to create a maintenance report
+
+<Tip>
+  Use a maintenance report for any failing flow that will take more than about 15 minutes to fix (a guideline, not a rule), and quarantine the flow.
+</Tip>
+
+From the **Runs** tab, select the environment in the `Type` **environments** list.
+
+<Steps>
+  <Step>
+    In the center panel, select a run from **Investigating**.
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-45.png)
+    </Frame>
+  </Step>
+  <Step>
+    In the Investigation view, select the failing flow.
+  </Step>
+  <Step>
+    In the center panel, click **Diagnose**.
+  </Step>
+  <Step>
+    Click **Report as needing maintenance** to open the drawer for creating a maintenance report.
+  </Step>
+  <Step>
+    Click the **Name** field to open a dropdown of existing maintenance reports. As you type, the list autocompletes to help you find a match. Selecting an existing report will add your flow to that report in the **Assign flows** field below
+
+    a. If you need a new report, type its name and press **Enter**, or choose the top option in the dropdown.
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-46.png)
+    </Frame>
+  </Step>
+  <Step>
+    After selecting a name, fill out the remaining form.
+
+    a. **Description:** Provide a short explanation of why the flow(s) need maintenance. Use this to outline the issue, what’s outdated or broken, and any relevant context
+
+    b. **Effort:** Estimate the effort required to update or repair the flow(s).
+
+    c. **Priority:** Set the urgency for maintenance. Flows associated with higher priority reports appear more prominently in the environment status.
+
+    d. **Reason for Maintenance:** Select the appropriate reason from the predefined list—these standard options help categorize and report on maintenance work consistently.
+
+    e. **Environment (read-only):** This displays the environment affected by the maintenance. The system automatically populates the field.
+
+    f. **Assigned Flows (read-only):** This displays the flows included in the maintenance report.
+
+    i. New reports automatically include only the flow where you initiated the report.
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-47.png)
+    </Frame>
+  </Step>
+  <Step>
+    Submitting this change removes the flow from all runs.
+  </Step>
+</Steps>
+
+## How to view a maintenance report
+
+- To view all maintenance reports, open the **Maintenance** tab.
+- The tab includes two subtabs:
+  1. Filter by readiness status
+  2. Search by report name.
+
+<Frame>
+  ![](/images/execution-scheduling-bugs-and-maintenance/image-48.png)
+</Frame>
+
+## How to close a maintenance report
+
+A maintenance report must be closed manually. When you fix a test with an open maintenance report:
+
+<Steps>
+  <Step>
+    Open the **Maintenance** tab, then click the maintenance report associated with the flow you fixed.
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-49.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Run all flows**. This opens the Runs tab in a separate browser tab and starts a manual run of all flows associated with the maintenance report. Any flows that pass will be removed from the maintenance report. If all flows pass, the maintenance report will close automatically.
+  </Step>
+</Steps>

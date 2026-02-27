@@ -1,0 +1,68 @@
+---
+title: "How to integrate Qase.io"
+icon: "square-check-big"
+sidebarTitle: " Qase.io"
+---
+
+## What QA Wolf syncs to Qase
+
+Integrate QA Wolf with [Qase.io](https://qase.io/) to sync automated test results with your Qase project.
+
+For each QA Wolf run, the integration can:
+
+- Create a test run in Qase.
+- Sync automated test results (passed, failed, skipped, blocked, invalid).
+- Include run metadata (title, run/bug link, environment).
+- Map results to existing Qase test cases.
+
+Results are synced after runs reach Completed status in QA Wolf.
+
+### Known limitations:
+
+- [Qase.io](http://qase.io/) Cloud.
+- Only one Qase project can be configured per QA Wolf workspace.
+- Qase test cases must already exist.
+- Custom fields are not supported unless specially configured.
+
+## How to configure Qase
+
+Customers configure Qase. QA Wolf uses the provided credentials to sync results and enable the integration.
+
+<Tip>
+  API tokens are generated at the account level in Qase. If you don’t have permission to create one, ask a project or account admin.
+</Tip>
+
+### Set up in Qase
+
+- Active Qase.io account.
+- Existing Qase project to receive test runs.
+- API access enabled (available on paid Qase plans).
+- Qase test cases already created (tests are not created automatically).
+
+### Credentials to share with QA Wolf
+
+Once Qase is configured, provide QA Wolf with:
+
+- Qase API token.
+- Qase project code (for example, WEBAPP, API, MOBILE).
+- _(Optional)_ tags or environment values to associate with test runs.
+
+## How to verify the integration
+
+After QA Wolf enables the integration:
+
+<Steps>
+  <Step>
+    Run your automated tests in QA Wolf.
+  </Step>
+  <Step>
+    After the run completes, a new test run appears in your Qase project.
+  </Step>
+  <Step>
+    Test results and run metadata are visible on the mapped test cases.
+
+    <Tip>
+      If runs do not appear as expected, or if test cases are not mapping correctly, contact QA Wolf for verification.
+    </Tip>
+  </Step>
+</Steps>

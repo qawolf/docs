@@ -1,0 +1,103 @@
+---
+title: "How to enable PR testing for GitLab  Integrations"
+description: "PR testing runs QA Wolf tests against preview environments before changes are merged. Tests run when a merge request enters your merge pipeline, and results are reported back to GitLab as a pipeline result and (optionally) a merge request status."
+sidebarTitle: "PR testing for GitLab  Integrations"
+icon: git-merge
+---
+
+<Check>
+  Your GitLab integration and deploy notifications must already be set up.
+</Check>
+
+PR testing won’t work until QA Wolf configures your workspace to support it. QA Wolf will:
+
+- Set up a trigger that matches your preview deployments
+- Provide the deployment_type value to use for preview tests
+- Confirm how QA Wolf should identify the merge request (for example, by branch name or merge request ID)
+- Confirm the preview URL variable name used in your pipeline
+
+## How to ensure merge requests deploy preview environments
+
+<Check>
+  Each merge request must deploy a preview environment that QA Wolf can reach. Your pipeline should provide a stable preview URL for each merge request and include a step that waits until the preview is live before tests start.
+</Check>
+
+Your GitLab pipeline must deploy a preview environment during merge request pipelines (often using Review Apps). The preview URL must be available in the job that triggers the QA Wolf notification.
+
+## How to trigger QA Wolf tests from merge request pipelines
+
+Add a job that notifies QA Wolf after the preview environment is deployed and reachable.
+
+Add a notify_qawolf job to your .gitlab-ci.yml that runs only for merge request pipelines.
+
+```yaml expandable
+stages:
+  - deploy
+  - test
+
+notify_qawolf:
+  stage: test
+  image: curlimages/curl:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  needs:
+    - deploy_preview
+  script:
+    - |
+      curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
+        -H "Authorization: Bearer $QA_WOLF_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{
+          \"branch\": \"$CI_COMMIT_REF_NAME\",
+          \"deployment_type\": \"provided-by-qawolf\",
+          \"deployment_url\": \"$PREVIEW_URL\",
+          \"sha\": \"$CI_COMMIT_SHA\",
+          \"hosting_service\": \"GitLab\"
+        }"
+```
+
+**What this job assumes**
+
+- Your pipeline already creates a preview environment for each merge request.
+- The preview environment URL is available as PREVIEW_URL when this job runs.
+- A prior job (such as deploy_preview) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
+
+When the merge request pipeline runs, this job sends the preview URL to QA Wolf, which starts a test run against that environment.
+
+## How to require QA Wolf tests before merge
+
+In GitLab, merge requests are typically blocked unless pipelines pass.
+
+<Steps>
+  <Step>
+    Open your GitLab project.
+  </Step>
+  <Step>
+    Go to **Settings → Merge requests**.
+  </Step>
+  <Step>
+    Enable **Pipelines must succeed** (wording varies by GitLab version).
+  </Step>
+  <Step>
+    Save the setting.
+  </Step>
+</Steps>
+
+If your project uses approval rules or protected branches, ensure the merge request pipeline is the one required to pass.
+
+## How to verify your PR testing setup
+
+<Steps>
+  <Step title="Open a merge request in GitLab.">
+    Confirm that your merge request triggers a pipeline that deploys a preview environment.
+  </Step>
+  <Step title="Confirm the preview environment is created.">
+    In GitLab, check the merge request’s environment or the Review App link, and confirm that the preview URL is reachable.
+  </Step>
+  <Step title="Confirm QA Wolf starts a test run.">
+    In the QA Wolf app, go to the Runs tab and verify that a new run starts for the preview environment associated with the merge request.
+  </Step>
+  <Step title="Confirm the merge request is blocked on failure.">
+    In GitLab, confirm the pipeline reflects the final result and that the merge request cannot be merged unless the pipeline succeeds.
+  </Step>
+</Steps>

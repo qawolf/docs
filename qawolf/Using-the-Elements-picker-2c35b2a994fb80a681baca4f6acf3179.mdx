@@ -1,0 +1,47 @@
+---
+title: "How to use the Elements tab to pick a locator"
+sidebarTitle: "Using the Element picker"
+icon: "crosshair"
+---
+
+## What is the Elements tab?
+
+The Elements tab is a testing-focused inspection tool designed to help create reliable tests. Unlike standard browser developer tools, it is optimized for identifying elements and creating stable locators rather than for debugging or modifying page structure.
+
+Use the Elements tab to inspect the DOM, evaluate attributes, and design locators that are well-suited for automated testing. This focus helps reduce brittle locators and improves test stability over time.
+
+The Elements tab is read-only and does not modify the page structure.
+
+## How to choose locators for an element
+
+<Note>
+  **Note:**
+
+  You must have an active browser session to use the **Elements** tab.
+</Note>
+
+<Steps>
+  <Step>
+    Click **Open dev tools**.
+  </Step>
+  <Step>
+    Click an element in the browser to inspect. T e elements tab will populate with the platform's recommended locator for that element.
+
+    <Frame>
+      ![](/images/building-and-maintaining-flows/image-15.png)
+    </Frame>
+  </Step>
+  <Step>
+    Pick an alternate locator from the Locator dropdown (the platform's recommended locator floats to the top).
+  </Step>
+  <Step>
+    Use the **Action** dropdown to select a valid element interaction (defaults to click) or assertion. The locator populates in the field below the **Action** dropdown.
+  </Step>
+  <Step>
+    Copy and paste the locator into your test.
+
+    <Check>
+      You can prevent many common test failures caused by changing locators by using a stable `test ID` attribute — one that stays the same even when the UI layout or styling changes.
+    </Check>
+  </Step>
+</Steps>

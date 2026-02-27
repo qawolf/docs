@@ -1,0 +1,42 @@
+---
+title: "How to reuse code in muliple tests"
+sidebarTitle: "Shared test helpers"
+icon: blocks
+---
+
+## Helper functions
+
+Each new flow includes a `Runner type` **Helpers** test. This file acts as a shared location for reusable code across all flows in the same environment. Put common setup work here—such as navigation, login, or cleanup—so every flow can call it instead of duplicating code.
+
+When shared logic changes (for example, your app's URL), update it in the Helpers file; any flow that uses it will automatically use the latest version.
+
+For example, the code below will be used in multiple tests.
+
+<Frame>
+  ![](/images/building-and-maintaining-flows/image-10.png)
+</Frame>
+
+## How to create a helper file
+
+<Steps>
+  <Step>
+    Open the `Runner Type` Helpers file.
+  </Step>
+  <Step>
+    Create a function you want to reuse (e.g., navigate to your app, log in, reset data).
+  </Step>
+  <Step>
+    Move any repeated logic into this function.
+
+    <Frame>
+      ![](/images/building-and-maintaining-flows/image-11.png)
+    </Frame>
+  </Step>
+  <Step>
+    Update your test to call the helper function directly.
+
+    <Frame>
+      ![](/images/building-and-maintaining-flows/image-12.png)
+    </Frame>
+  </Step>
+</Steps>
