@@ -53,10 +53,11 @@
           "qawolf/About-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0",
           "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
           {
-            "group": "Core concepts",
+            "group": "How QA Wolf Works",
+            "icon": "brain",
             "pages": [
               "qawolf/Getting-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
-              "qawolf/Get-to-know-the-AI-interface-2cd5b2a994fb80c2919cdfa3d3c62d65",
+              "qawolf/Get-to-know-our-ai-interface",
               "qawolf/Check-in-changes-2c65b2a994fb8073826be9391a8e2238"
             ]
           },
@@ -73,7 +74,7 @@
             "pages": [
               "qawolf/Personalize-QA-Wolf-29c5b2a994fb8017b822ee1942b10297",
               "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
-              "Target-environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
+              "qawolf/Target-environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
               "qawolf/Shared-test-helpers-2c15b2a994fb804eba81d95cede273b8"
             ]
           },
