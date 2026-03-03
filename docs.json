@@ -26,7 +26,6 @@
     "timestamp": true
   },
   "navigation": {
-
     "tabs": [
       {
         "tab": "Introduction",
@@ -57,6 +56,7 @@
           },
           {
             "group": "Automate",
+            "icon": "route",
             "pages": [
               "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
               "qawolf/Use-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
@@ -64,7 +64,7 @@
             ]
           },
           {
-            "group": "Run",
+            "group": "Runs",
             "icon": "play",
             "pages": [
               "qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
@@ -75,7 +75,7 @@
           },
           {
             "group": "Bugs",
-            "icon": "search",
+            "icon": "bug",
             "pages": [
               "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
             ]
@@ -88,12 +88,14 @@
         "pages": [
           {
             "group": "Map",
+            "icon": "map",
             "pages": [
               "qawolf/Get-to-know-our-ai-interface"
             ]
           },
           {
             "group": "Automate",
+            "icon": "route",
             "pages": [
               "qawolf/Write-tests-by-hand-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
@@ -104,6 +106,7 @@
           },
           {
             "group": "Run",
+            "icon": "play",
             "pages": [
               "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
               "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
@@ -113,13 +116,14 @@
           },
           {
             "group": "Bugs",
+            "icon": "bug",
             "pages": [
               "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5"
             ]
           },
           {
             "group": "Setup",
-            "icon": "gear",
+            "icon": "sliders-horizontal",
             "pages": [
               "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
               "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
