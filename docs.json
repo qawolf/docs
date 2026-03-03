@@ -47,142 +47,165 @@
     },
     "tabs": [
       {
-        "tab": "Welcome",
+        "tab": "Introduction",
         "icon": "house",
         "pages": [
-          "qawolf/About-QA-Wolf-2d25b2a994fb80218253d61e1eaa6fb0",
-          "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
+          "qawolf/Welcome-to-QA-Wolf",
+          "qawolf/quick-start",
           {
-            "group": "Core concepts",
+            "group": "Reference",
             "icon": "brain",
             "pages": [
-              "qawolf/Getting-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
-              "qawolf/Get-to-know-our-ai-interface",
-              "qawolf/Check-in-changes-2c65b2a994fb8073826be9391a8e2238"
-            ]
-          },
-          "qawolf/faq"
-        ]
-      },
-      {
-        "tab": "Setup",
-        "icon": "wrench",
-        "groups": [
-          {
-            "group": "Product setup",
-            "icon": "settings",
-            "pages": [
-              "qawolf/Personalize-QA-Wolf-29c5b2a994fb8017b822ee1942b10297",
-              "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
-              "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
-              "qawolf/Shared-test-helpers-2c15b2a994fb804eba81d95cede273b8"
-            ]
-          },
-          {
-            "group": "Technical Setup",
-            "icon": "server",
-            "pages": [
-              "qawolf/Testing-environments-2dc5b2a994fb800e8ce4fe36ee34764a",
-              {
-                "group": "VPN",
-                "icon": "lock",
-                "pages": [
-                  "qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
-                  "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
-                  "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
-                  "qawolf/Twingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1",
-                  "qawolf/Tailscale-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-2"
-                ]
-              },
-              {
-                "group": "Test Management Systems",
-                "icon": "list-check",
-                "pages": [
-                  "qawolf/Testmo-29c5b2a994fb810bb096c46ec45512fb",
-                  "qawolf/TestRail-29c5b2a994fb8158897afc10c5d66782",
-                  "qawolf/Xray-29c5b2a994fb8196a5eddfc6ce4a9e40",
-                  "qawolf/Zephyr-29c5b2a994fb81ed97d9e214c8b177c6",
-                  "qawolf/Qase-io-29c5b2a994fb812fb3bfcf8ee3f33a16"
-                ]
-              },
-              {
-                "group": "CI/CD",
-                "icon": "git-compare",
-                "pages": [
-                  "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
-                  "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
-                  "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
-                  "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c",
-                  "qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63",
-                  "qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2",
-                  "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
-                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
-                  "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
-                ]
-              },
-              {
-                "group": "Issue Trackers",
-                "icon": "search-code",
-                "pages": [
-                  "qawolf/Jira-29c5b2a994fb81d18a87f23808479de0",
-                  "qawolf/Linear-29c5b2a994fb81ce85ded6d005d5e7ab",
-                  "qawolf/Asana-2a15b2a994fb805287acdba6373e6758",
-                  "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
-                  "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
-                ]
-              }
+              "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
+              "qawolf/faq"
             ]
           }
         ]
       },
       {
-        "tab": "Automate",
+        "tab": "Features",
         "icon": "bot",
-        "pages": [
-          "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc",
-          "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
+        "groups": [
           {
-            "group": "Advanced flows",
-            "icon": "share-2",
+            "group": "Map",
+            "icon": "map",
+            "pages": [
+              "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc"
+            ]
+          },
+          {
+            "group": "Automate",
+            "pages": [
+              "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
+              "qawolf/Use-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
+              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb"
+            ]
+          },
+          {
+            "group": "Run",
+            "icon": "play",
+            "pages": [
+              "qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
+              "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
+              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd"
+            ]
+          },
+          {
+            "group": "Bugs",
+            "icon": "search",
+            "pages": [
+              "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "icon": "book",
+        "pages": [
+          {
+            "group": "Map",
+            "pages": [
+              "qawolf/Get-to-know-our-ai-interface"
+            ]
+          },
+          {
+            "group": "Automate",
             "pages": [
               "qawolf/Write-tests-by-hand-2c15b2a994fb802193a5c05e0219eb59",
-              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
-              "qawolf/Import-third-party-libraries-2c15b2a994fb8005ade6f0523aa5e798",
-              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
-              "qawolf/Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
-              "qawolf/Use-dev-tools-29d5b2a994fb816992d6c6d2b73e3302"
+              "qawolf/Import-third-party-libraries-2c15b2a994fb8005ade6f0523aa5e798",
+              "qawolf/Shared-test-helpers-2c15b2a994fb804eba81d95cede273b8",
+              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e"
+            ]
+          },
+          {
+            "group": "Run",
+            "pages": [
+              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
+              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
+              "qawolf/Promote-flows-between-environments-29c5b2a994fb803db828f047e5a228f4",
+              "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
+            ]
+          },
+          {
+            "group": "Bugs",
+            "pages": [
+              "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5"
+            ]
+          },
+          {
+            "group": "Setup",
+            "icon": "gear",
+            "pages": [
+              "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
+              "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
+              "qawolf/Getting-familiar-with-flows-and-groups-29c5b2a994fb80b292d7cf32e6dfd37d",
+              "qawolf/Check-in-changes-2c65b2a994fb8073826be9391a8e2238"
             ]
           },
           {
             "group": "QA Wolf University",
             "icon": "graduation-cap",
             "pages": [
-              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8",
-              "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e",
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
+              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
             ]
           }
         ]
       },
       {
-        "tab": "Running",
-        "icon": "play",
+        "tab": "Integrations",
+        "icon": "plug",
         "pages": [
-          "qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
-          "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
-          "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
-          "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318"
-        ]
-      },
-      {
-        "tab": "Investigation",
-        "icon": "search",
-        "pages": [
-          "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
-          "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd",
-          "qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa",
-          "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
+          {
+            "group": "VPN",
+            "icon": "lock",
+            "pages": [
+              "qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
+              "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
+              "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
+              "qawolf/Twingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1",
+              "qawolf/Tailscale-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-2"
+            ]
+          },
+          {
+            "group": "Test Management Systems",
+            "icon": "list-check",
+            "pages": [
+              "qawolf/Testmo-29c5b2a994fb810bb096c46ec45512fb",
+              "qawolf/TestRail-29c5b2a994fb8158897afc10c5d66782",
+              "qawolf/Xray-29c5b2a994fb8196a5eddfc6ce4a9e40",
+              "qawolf/Zephyr-29c5b2a994fb81ed97d9e214c8b177c6",
+              "qawolf/Qase-io-29c5b2a994fb812fb3bfcf8ee3f33a16"
+            ]
+          },
+          {
+            "group": "CI/CD",
+            "icon": "git-compare",
+            "pages": [
+              "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
+              "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
+              "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
+              "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c",
+              "qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63",
+              "qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2",
+              "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
+              "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
+              "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
+            ]
+          },
+          {
+            "group": "Issue Trackers",
+            "icon": "search-code",
+            "pages": [
+              "qawolf/Jira-29c5b2a994fb81d18a87f23808479de0",
+              "qawolf/Linear-29c5b2a994fb81ce85ded6d005d5e7ab",
+              "qawolf/Asana-2a15b2a994fb805287acdba6373e6758",
+              "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
+              "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
+            ]
+          }
         ]
       },
       {
@@ -192,7 +215,8 @@
           "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
           "qawolf/Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae",
           "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
-          "qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47"
+          "qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47",
+          "qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa"
         ]
       }
     ]
