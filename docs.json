@@ -26,25 +26,7 @@
     "timestamp": true
   },
   "navigation": {
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Status",
-          "icon": "signal",
-          "href": "https://status.qawolf.com/"
-        },
-        {
-          "anchor": "Blog",
-          "icon": "newspaper",
-          "href": "https://www.qawolf.com/blog"
-        },
-        {
-          "anchor": "Contact Us",
-          "icon": "mail",
-          "href": "mailto:hello@qawolf.com"
-        }
-      ]
-    },
+
     "tabs": [
       {
         "tab": "Introduction",
@@ -227,16 +209,18 @@
     "href": "https://www.qawolf.com"
   },
   "navbar": {
+
+
     "links": [
       {
-        "label": "Get started",
-        "href": "https://www.qawolf.com/get-started"
+        "label": "Blog",
+        "href": "https://www.qawolf.com/blog"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Sign in",
-      "href": "https://app.qawolf.com/sign-in"
+      "label": "Support",
+      "href": "mailto:hello@qawolf.com"
     }
   },
   "contextual": {
