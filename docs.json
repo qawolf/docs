@@ -105,7 +105,7 @@
             ]
           },
           {
-            "group": "Run",
+            "group": "Runs",
             "icon": "play",
             "pages": [
               "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
