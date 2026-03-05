@@ -1,7 +1,8 @@
 ---
-title: "Clear a release with non-bug test failures"
+title: "Clear a release"
 description: "Resolving failures is about deliberately clearing a release, not about achieving 100% passing results."
 icon: "lock-keyhole-open"
+sidebarTitle: "Clear a release"
 ---
 
 An environment enters **Needs investigation** when one or more flows fail in a run. An environment enters **Failed** status when one or more flows mapped to high-priority bug reports fail. These states indicate that one or more runs require resolution before the release should proceed.
@@ -111,7 +112,7 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
     </Frame>
   </Step>
   <Step>
-    When satisfied with the changes, [review and publish](/qawolf/Reviewing-publishing-revision-history-2c65b2a994fb8073826be9391a8e2238) your changes.
+    When satisfied with the changes, [review and publish](/qawolf/Check-in-changes-2c65b2a994fb8073826be9391a8e2238) your changes.
   </Step>
   <Step>
     Click **Use as reattempt**. The flow should pass and will move to the **Completed** section of the runs tab.
@@ -126,12 +127,12 @@ Follow-up work generally falls into two categories:
 
 **For bugs**
 
-- [File a bug report](/qawolf/File-review-edit-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f)
+- [File a bug report](/qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f)
 
   When you file a bug report, the severity is used to display warnings about the safety of a given release.
 
 **For flow maintenance**
 
-- [File a maintenance report](/qawolf/File-edit-review-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa)
+- [File a maintenance report](/qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa)
 
   This prevents the flow from being executed in runs until it is fixed, which resolves the investigation state without requiring an immediate fix.

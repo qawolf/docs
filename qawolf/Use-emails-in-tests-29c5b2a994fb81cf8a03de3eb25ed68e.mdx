@@ -1,6 +1,6 @@
 ---
 title: "How to test a feature that sends or receives emails"
-sidebarTitle: "Using emails in tests"
+sidebarTitle: "Use emails in tests"
 icon: "mail"
 ---
 
@@ -17,48 +17,46 @@ In addition, it includes helper functions to:
 - Wait for multiple messages over a period of time
 
 <Tip>
-`getInbox()` returns the following objects: `{ emailAddress, sendMessage, waitForMessage, waitForMessages }`.
+  `getInbox()` returns the following objects: `{ emailAddress, sendMessage, waitForMessage, waitForMessages }`.
 </Tip>
 
 ## The Email Allowlist
-    Our platform includes an **Email Allowlist** to ensure test emails are delivered only to approved addresses or domains. The allowlist prevents unintended delivery and keeps your testing environments secure and controlled. You must add any email address you use in a flow to the allowlist.
 
-    QA Wolf provides internal email domains—**qawolf.email** and **qawolfworkflows.com**—for email testing. We recommend using these instead of public email services because we control the servers, which allows us to stabilize tests that rely on email interactions and prevent the sporadic failures that can occur when using external providers.
+Our platform includes an **Email Allowlist** to ensure test emails are delivered only to approved addresses or domains. The allowlist prevents unintended delivery and keeps your testing environments secure and controlled. You must add any email address you use in a flow to the allowlist.
 
-    Our platform sets an automatic default. You cannot delete the default.
+QA Wolf provides internal email domains—**qawolf.email** and **qawolfworkflows.com**—for email testing. We recommend using these instead of public email services because we control the servers, which allows us to stabilize tests that rely on email interactions and prevent the sporadic failures that can occur when using external providers.
 
-    How to change the default email
-    When you set a default email address, any test or helper that accepts an email can omit the address and will fall back to the default. You can still override per test by specifying a different address.
+Our platform sets an automatic default. You cannot delete the default.
 
-    <Steps>
-    <Step>
+How to change the default email When you set a default email address, any test or helper that accepts an email can omit the address and will fall back to the default. You can still override per test by specifying a different address.
+
+<Steps>
+  <Step>
     Click the <Icon icon="envelope" /> icon on the upper right. A drawer opens
-    <Frame>
-    ![](/images/advanced-flows-and-tests/image-1.png)
-    </Frame>
-    </Step>
 
-    <Step>
+    <Frame>
+      ![](/images/advanced-flows-and-tests/image-1.png)
+    </Frame>
+  </Step>
+  <Step>
     Click **Addresses**.
 
     <Frame>
-    ![](/images/advanced-flows-and-tests/image-2.png)
+      ![](/images/advanced-flows-and-tests/image-2.png)
     </Frame>
-    </Step>
-
-    <Step>
+  </Step>
+  <Step>
     Enter the username and domain in the appropriate fields, then click **Add**.
 
-        a. You can create as many email addresses as you like in the allowlist.
+    a. You can create as many email addresses as you like in the allowlist.
 
-        b. To change the default mail address in the allowlist, hover the email you'd like to set as the default, then click the <Icon icon="ellipsis" /> icon and select Make default.
+    b. To change the default mail address in the allowlist, hover the email you'd like to set as the default, then click the <Icon icon="ellipsis" /> icon and select Make default.
 
     <Frame>
-    ![](/images/advanced-flows-and-tests/image-3.png)
+      ![](/images/advanced-flows-and-tests/image-3.png)
     </Frame>
-    </Step>
-    </Steps>
-
+  </Step>
+</Steps>
 
 ## How to get the contents of an email inbox
 
@@ -71,7 +69,7 @@ const { emailAddress } = await getInbox();
 If you don’t pass any options to `getInbox`, QA Wolf uses your **team’s default email address**, which you can find by going to the **Flows** tab, selecting **Workspace settings** from the `Workspace name` dropdown, choosing Flows from the left navigation, and finding the email address marked as **default** under the **Email Allowlist**
 
 <Tip>
-Any email address used with `getInbox` must be on your team’s [Email Allowlist](/qawolf/Using-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e#the-email-allowlist).
+  Any email address used with `getInbox` must be on your team’s [Email Allowlist](/qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e#the-email-allowlist).
 </Tip>
 
 If you need to access a specific allow-listed email address:
@@ -92,7 +90,6 @@ const { emailAddress } = await getInbox({
 
 If your test needs a brand-new inbox each run, set `new: true`.
 
-
 ```javascript
 const { emailAddress } = await getInbox({ new: true });
 // Example: my-team+a25sa5q@qawolf.email
@@ -101,11 +98,11 @@ const { emailAddress } = await getInbox({ new: true });
 QA Wolf automatically appends a random suffix after a + sign (i.e., plus addressing).
 
 <Tip>
-Your application may not allow + symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
+  Your application may not allow + symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
 
-`const { emailAddress } = await getInbox({ new: true, delimiter: - });`
+  `const { emailAddress } = await getInbox({ new: true, delimiter: - });`
 
-The above generates new emails with random strings after the \- symbol.
+  The above generates new emails with random strings after the - symbol.
 </Tip>
 
 ## How to: Wait for an email in a test
@@ -129,6 +126,7 @@ console.log(`Received ${messages.length} messages`);
 ```
 
 ## How to send an email from a test
+
 Our platform includes the `sendMessage` helper for the less common case where your application **receives** or **reacts to incoming emails**. You can use it to simulate an external sender and verify how your app processes inbound messages (like replies, support emails, or automated triggers).
 
 ```javascript

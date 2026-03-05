@@ -15,7 +15,7 @@ A **workspace** is the top-level in the QA Wolf platform. All environments, grou
 
 Under each workspace is an **environment** which corresponds to a specific version of your app, such as development, staging, or production.
 
-Each environment can be [configured](/qawolf/Configure-environments-2cd5b2a994fb8014ba8bd7aa25f3ed0f) with separate variables (e.g., base URL, users, etc.), concurrency rates, and other settings relevant to the version of the application you’re testing. Flows and tests are unique for each environment and not shared between environments.
+Each environment can be [configured](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f) with separate variables (e.g., base URL, users, etc.), concurrency rates, and other settings relevant to the version of the application you’re testing. Flows and tests are unique for each environment and not shared between environments.
 
 ## Group
 
@@ -54,7 +54,7 @@ A [run](/qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde) is an executio
 
 ## Attempt
 
-Within a run, a flow may be attempted multiple times. As a tester, you will occasionally have flows that flake — attempting a run multiple times ensures that the failure is not a temporary fluke.
+Within a run, a flow may be attempted multiple times. As a tester, you will occasionally have flows that flake — attempting to run a failed flow multiple times ensures that the failure is not a temporary fluke.
 
 QA Wolf will attempt to run a flow up to three times. Each attempt has its own video, logs, and results, allowing you to isolate issues precisely.
 
