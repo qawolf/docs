@@ -21,6 +21,11 @@
       "dark": "#0b0b2f"
     }
   },
+  "seo": {
+    "metatags": {
+      "canonical": "https://docs.qawolf.com"
+    }
+  },
   "metadata": {
     "timestamp": true
   },
