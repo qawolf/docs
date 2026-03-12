@@ -6,22 +6,24 @@ description: "Connect your application, generate your first flow, and run your f
 
 ⏱ **Time to complete:** 10–15 minutes
 
-This guide walks you through the fastest way to get started with QA Wolf.
+## Before you begin
 
-By the end of this guide you will have:
+Before getting started, make sure the following are set up:
 
-- connected your application
-- mapped the workflows in your product
-- generated your first automated flow
-- executed a test run and reviewed the results
+- **You have access to a QA Wolf workspace.**\
+  Your team’s QA Wolf administrator must invite you before you can log in and configure environments.
+- **QA Wolf can access the application you want to test.**\
+  If your application is behind a firewall or private network, a **VPN or network allowlist** must be configured so QA Wolf infrastructure can reach it.
 
----
+Once these prerequisites are complete, you can begin setting up your first tests.
 
 ## Step 1: Connect your application
 
-Start by connecting the version of your application you want QA Wolf to test.
+Start by connecting to the version of your application you want QA Wolf to test.
 
-An **environment** defines the app QA Wolf interacts with, along with configuration such as base URLs, users, and environment variables.
+An **environment** configures how QA Wolf accesses and interacts with your application, including base URLs, users, and environment variables.
+
+Environments are typically configured once for each application environment, such as staging or production. and reused across all flows.
 
 Once connected, QA Wolf can begin exploring your application.
 
@@ -33,7 +35,7 @@ Continue to: [Configure your workspace and environment →](/qawolf/Workspace-se
 
 After your environment is connected, QA Wolf can map the workflows in your application.
 
-The **Map** provides a structured view of the user journeys that exist in your product. This helps you decide which paths should be automated first.
+The **Map** provides a structured view of the user journeys that exist in your product. This helps you decide which paths to automate first.
 
 Continue to: [Map your application's workflows →](/qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc)
 
@@ -41,7 +43,7 @@ Continue to: [Map your application's workflows →](/qawolf/Map-your-app-s-workf
 
 ## Step 3: Generate your first flow
 
-Choose a user journey and describe it in plain language.
+Choose a user journey from the map or describe one in plain language.
 
 QA Wolf generates the Playwright or Appium automation needed to validate that workflow. The resulting tests live in your **GitHub repository**, where your team can review and modify them like any other code.
 
@@ -57,7 +59,6 @@ Runs execute tests across QA Wolf infrastructure and can be triggered:
 
 - manually
 - on a schedule
-- from CI pipelines
 
 Continue to: [Learn how runs work →](/qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde)
 
