@@ -11,8 +11,6 @@ Using AI, QA Wolf maps your application, generates tests from natural-language p
 
 QA Wolf supports the full lifecycle of end-to-end testing—from identifying the user journeys that matter, to generating automation, to continuously validating releases as your product evolves.
 
-Tests are organized within shared workspaces, where teams collaborate across environments and flows to validate critical user journeys. Runs can be triggered on demand, scheduled, or integrated into CI pipelines so teams always know whether their application is working as expected.
-
 ---
 
 ## How QA Wolf works
@@ -21,11 +19,11 @@ Testing with QA Wolf happens in three steps.
 
 ### Map
 
-AI explores your application and identifies the user paths that can be tested. This creates a structured view of your product so teams can understand what to cover first.
+AI explores your application and identifies the user paths that can be tested. This creates a structured view of your product so teams can understand what to cover first, and where new features create gaps in coverage.
 
 ### Automate
 
-Describe a flow in plain language and QA Wolf generates Playwright and Appium tests that validate the behavior of your application. The resulting tests are standard code that your team owns and can modify.
+Describe a flow in plain language, and QA Wolf generates Playwright tests (Appium coming soon) to validate the behavior of your application. The resulting tests are standard code that your team owns and can modify.
 
 ### Run
 
@@ -35,7 +33,7 @@ Tests run in parallel across QA Wolf infrastructure. Runs can be triggered on de
 
 ## Why use QA Wolf
 
-QA Wolf helps teams build reliable end-to-end coverage without managing testing infrastructure or maintaining fragile automation.
+QA Wolf helps teams build reliable end-to-end coverage without managing testing infrastructure or maintaining fragile automation.  Our deterministic tests make results trustworthy, so teams can move faster without second-guessing failures. And because we can handle the most complex test cases, teams can cover critical user journeys that other tools can't cover.
 
 ### AI-generated automation
 
@@ -65,77 +63,51 @@ QA Wolf is designed to validate the workflows that matter most in modern applica
 
 ### Web applications
 
-Automate critical paths across modern web applications.
+QA Wolf supports complex browser-based interactions and modern web application architectures. Examples include:
 
-Examples include:
+- Canvas and WebGL interfaces
+- Drag-and-drop interactions
+- File uploads and downloads
+- PDF generation and validation
+- Visual regression and UI diffing
+- Multi-user workflows across multiple sessions
+- Multi-site flows that move across domains
+- Browser extensions and plugins
+- Electron and hybrid desktop applications
 
-- User registration and authentication
-- Checkout and payment flows
-- Onboarding experiences
-- Account management
-- Cross-browser behavior
-- Accessibility
-- Performance
+### iOS applications
 
-### Native mobile applications
-
-Test native mobile apps using Appium across Android emulators and real iOS devices.
-
-QA Wolf supports:
+Test native iOS apps on **real iPhones and iPads**. Examples include:
 
 - Gestures, layouts, and device orientation
 - Push notifications and deep links
-- camera, photos, and video interactions
-- system permissions and prompts
-- sensors such as GPS, Bluetooth, and Wi-Fi
+- Apple Pay transactions
+- Apple ID authentication
+- Camera, photos, and video interactions
+- System permissions and OS dialogs
+- Sensors such as GPS, Bluetooth, and Wi-Fi
+- Cross-device journeys between web and mobile
 
-### Multi-user workflows
+### Android applications
 
-Some systems require coordination between multiple users.
+Test native Android apps in **isolated device environments designed for automation scale**. Examples include:
 
-QA Wolf supports flows where separate users interact with the same system, such as:
-
-- Marketplace buyer and seller interactions
-- Approval workflows
-- Collaborative product features
-- Messaging and communication flows
-
-### Cross-device journeys
-
-Real user workflows often move across devices.
-
-QA Wolf can automate scenarios such as:
-
-- Starting a flow on desktop and finishing on mobile
-- Email verification or push notification handoffs
-- Journeys that move between web, iOS, and Android
-
-### Desktop and extension environments
-
-QA Wolf can automate applications beyond the browser, including:
-
-- Electron applications
-- Browser extensions and plugins
-- Hybrid desktop applications built with web technologies
-
-### Hardware and IoT integrations
-
-QA Wolf can validate workflows that interact with connected systems and devices, including:
-
-- Device pairing and provisioning
-- Companion mobile app experiences
-- Hardware-triggered backend events
+- Google Pay transactions
+- Push notifications and deep links
+- Android permission prompts
+- Camera and sensor interactions
+- Device orientation and layout changes
+- Native authentication flows
+- Companion app workflows for connected systems
 
 ---
 
 ## Who QA Wolf is for
 
-QA Wolf works best for teams that want reliable end-to-end testing while keeping full ownership of their automation.
-
-It is commonly used by:
+ 
 
 - **QA teams** building scalable end-to-end coverage
-- **Engineering teams** generating Playwright and Appium tests from prompts. (Appium coming soon!) 
+- **Engineering teams** generating Playwright and Appium tests from prompts. (Appium coming soon!)
 - **Product teams** that need confidence before releases
 
 ---
