@@ -37,40 +37,26 @@ After your environment is connected, QA Wolf can map the workflows in your appli
 
 The **Map** provides a structured view of the user journeys that exist in your product. This helps you decide which paths to automate first.
 
+After mapping is complete, QA Wolf generates the Playwright or Appium automation needed to validate that workflow (_Appium coming soon_). The resulting tests live in your **GitHub repository**, where your team can review and modify them like any other code.
+
+After the AI generates the code for each flow, it runs it to ensure all tests pass. 
+
 Continue to: [Map your application's workflows →](/qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc)
 
 ---
 
-## Step 3: Generate your first flow
+## Step 3: Review results
 
-Choose a user journey from the map or describe one in plain language.
+Before checking the code in, you can review the resulting logs, videos, and traces from AI runs using QA Wolf's dev tools.
 
-QA Wolf generates the Playwright or Appium automation needed to validate that workflow (_Appium coming soon_). The resulting tests live in your **GitHub repository**, where your team can review and modify them like any other code.
+Continue to: [Using dev tools →](/qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318)
 
-Continue to: [Build and maintain flows using AI →](/qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358)
+## \
+Step 4:  Check-in your code
 
----
+Once you have completed your review, check you changes in to the repository
 
-## Step 4: Run your tests
-
-Once your flow is created, run it to verify the workflow behaves as expected.
-
-Runs execute tests across QA Wolf infrastructure and can be triggered:
-
-- manually
-- on a schedule
-
-Continue to: [Learn how runs work →](/qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde)
-
----
-
-## Step 5: Review results
-
-Each run produces detailed results so you can understand what happened during execution.
-
-Use the results to confirm your flow passed or to diagnose failures.
-
-Continue to: [Interpret run results →](/qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318)
+Continue to: [Check-in changes →](/qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318)
 
 ---
 
@@ -80,10 +66,11 @@ Continue to: [Interpret run results →](/qawolf/Interpret-run-results-2d55b2a99
   <Card href="/qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc" title="Key concepts">
     Learn how workspaces, environments, flows, and runs are organized.
   </Card>
+  <Card href="/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5">
+    Let QA Wolf build and maintain your test suite for you.
+  </Card>
   <Card href="/guides" title="Automation guides">
     Learn how to write, debug, and maintain flows.
   </Card>
-  <Card href="/qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294" title="Full Service testing">
-    Let QA Wolf build and maintain your test suite for you.
-  </Card>
+
 </CardGroup>

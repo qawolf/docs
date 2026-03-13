@@ -4,125 +4,31 @@ icon: "layers"
 sidebarTitle: "Workspace settings"
 ---
 
-## Environments
-
-<Tip>
-  A workspace can include multiple [environments](/qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc#environment).
-
-  Environments can be static or ephemeral (preview). The default environment is called _My Environment_. We recommended that you create a new environment to match the testing environment in your pipeline and delete _My Environment_. Create additional environments if you test at multiple stages of a release.
-</Tip>
-
-### Create a new environment
-
-<Steps>
-  <Step>
-    Open the `Workspace name` dropdown and click **Workspace settings**.
-
-    <Frame>
-      ![](/images/image-21.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **Environments** in the left navigation bar.
-
-    <Frame>
-      ![](/images/image-22.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **Create environment** in the upper-right corner. Give it a unique name and click **Create**.
-
-    <Frame>
-      ![](/images/image-23.png)
-    </Frame>
-    <br />
-
-    <Frame>
-      ![](/images/image-24.png)
-    </Frame>
-  </Step>
-</Steps>
-
-### Rename an environment
-
-<Steps>
-  <Step>
-    Click inside the **Environment Name** text box, then type the new name and press **Enter**.
-
-    <Frame>
-      ![](/images/image-25.png)
-    </Frame>
-  </Step>
-</Steps>
-
-### Delete an environment
-
-<Steps>
-  <Step>
-    Navigate to the environment settings and click the red **Delete** button.
-
-    <Frame>
-      ![](/images/image-26.png)
-    </Frame>
-  </Step>
-</Steps>
-
-### Change your default environment
-
-<Tip>
-  Both the **Flows** and **Runs** tabs require a default environment. Set this to the environment you use most often for running and debugging tests.
-</Tip>
-
-<Steps>
-  <Step>
-    Open the `Workspace name` dropdown and click **Workspace settings**.
-
-    <Frame>
-      ![](/images/image-28.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **General** in the left navigation bar; it will be selected by default.
-
-    <Frame>
-      
-    </Frame>
-  </Step>
-  <Step>
-    Scroll to **Default environment** and select one from the drop down. This will set the default for any Flow or Run that doesn’t have another environment specified. environment you want the **Flows** and **Runs** tabs to use by default from the **Default team** environment dropdown.
-
-    <Frame>
-      ![](/images/image-30.png)
-    </Frame>
-    If your team is using PR testing environments, select the default environment from the dropdown labeled **Default team PR Testing base environment**.
-
-    <Frame>
-      ![](/images/image-31.png)
-    </Frame>
-  </Step>
-</Steps>
-
-## Configuring the default runner
-
-<Note>
-  Node 20 with Playwright is the default runner.
-</Note>
+## Inviting members
 
 <Steps>
   <Step>
     Open the `Workspace name` dropdown and click **Workspace settings**.
   </Step>
   <Step>
-    Click **Flows** from the left navigation bar.
+    Click **Members** in the left navigation bar.
 
     <Frame>
-      ![](/images/image-33.png)
+      ![](/images/image-20.png)
     </Frame>
   </Step>
   <Step>
-    Under **Defaults**, use the **Runner to be used in new flows** dropdown to choose a new default runner.
+    In the **Enter emails to invite field**, type the email address of the team members you want to grant access to.
+
+    <Tip>
+      You can type multiple addresses, separated by commas.
+    </Tip>
+  </Step>
+  <Step>
+    Click **Send Invite**. The invited user(s) will receive an email containing a login link to the site.
   </Step>
 </Steps>
+
 
 ## Tags
 
@@ -166,27 +72,24 @@ In the QA Wolf platform, tags serve two purposes:
   </Step>
 </Steps>
 
-## Inviting members
+## Configuring your default runner
+
+<Note>
+  Node 20 with Playwright is the default runner.
+</Note>
 
 <Steps>
   <Step>
     Open the `Workspace name` dropdown and click **Workspace settings**.
   </Step>
   <Step>
-    Click **Members** in the left navigation bar.
+    Click **Flows** from the left navigation bar.
 
     <Frame>
-      ![](/images/image-20.png)
+      ![](/images/image-33.png)
     </Frame>
   </Step>
   <Step>
-    In the **Enter emails to invite field**, type the email address of the team members you want to grant access to.
-
-    <Tip>
-      You can type multiple addresses, separated by commas.
-    </Tip>
-  </Step>
-  <Step>
-    Click **Send Invite**. The invited user(s) will receive an email containing a login link to the site.
+    Under **Defaults**, use the **Runner to be used in new flows** dropdown to choose a new default runner.
   </Step>
 </Steps>
