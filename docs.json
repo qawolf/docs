@@ -195,7 +195,8 @@
               "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
               "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
             ]
-          }
+          },
+          "sso"
         ]
       },
       {
