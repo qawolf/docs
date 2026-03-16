@@ -1,12 +1,10 @@
 ---
-title: "File, edit & review maintenance reports"
+title: "Managing maintenance reports"
 icon: "workflow"
-sidebarTitle: "Manage maintenance reports"
+sidebarTitle: "Maintenance reports"
 ---
 
-## What is a maintenance report?
-
-Maintenance reports track bugs in tests, not bugs in the product. They are used when a failure is caused by incorrect, outdated, or fragile test logic rather than an issue in the application under test.
+Maintenance reports are used when a failure is caused by incorrect, outdated, or fragile test logic rather than an issue in the application under test.
 
 Maintenance reports cannot be created directly from the Maintenance tab. They are created from the Investigation view when reviewing a failing flow.
 
@@ -16,7 +14,7 @@ Maintenance reports cannot be created directly from the Maintenance tab. They ar
 
 Maintenance reports are linked to one or more flows. While a maintenance report is open, those flows are skipped in scheduled runs. When the flows pass in a manual run, the maintenance report automatically closes, and the flows are included in schedules again.
 
-## How to create a maintenance report
+## Creating a maintenance report
 
 <Tip>
   Use a maintenance report for any failing flow that will take more than about 15 minutes to fix (a guideline, not a rule), and quarantine the flow.
@@ -76,7 +74,7 @@ From the **Runs** tab, select the environment in the `Type` **environments** lis
   </Step>
 </Steps>
 
-## How to view a maintenance report
+## Viewing a maintenance report
 
 - To view all maintenance reports, open the **Maintenance** tab.
 - The tab includes two subtabs:
@@ -87,7 +85,7 @@ From the **Runs** tab, select the environment in the `Type` **environments** lis
   ![](/images/execution-scheduling-bugs-and-maintenance/image-48.png)
 </Frame>
 
-## How to close a maintenance report
+## Closing a maintenance report
 
 A maintenance report must be closed manually. When you fix a test with an open maintenance report:
 

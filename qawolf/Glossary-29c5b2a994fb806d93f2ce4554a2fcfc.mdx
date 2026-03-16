@@ -17,35 +17,31 @@ Under each workspace is an **environment** which corresponds to a specific versi
 
 Each environment can be [configured](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f) with separate variables (e.g., base URL, users, etc.), concurrency rates, and other settings relevant to the version of the application you’re testing. Flows and tests are unique for each environment and not shared between environments.
 
-## Group
+## Map
 
-Under each environment are groups, which are collections of flows. Every flow must belong to a group. Each environment can include multiple groups, which makes it easier to navigate, report on, and maintain your flows.
 
-<Note>
-  Use groups to organize tests by module, feature, or functionality, such as _Authentication_, _Checkout_, or _Billing_.
-</Note>
+The **map** shows the flows in an environment and how they are organized into folders. It provides a structured view of your tests so you can navigate and manage flows and tests more easily.
 
 ## Flow
 
-Within a group are flows. As a tester, you will need to validate several assertions throughout a user journey (or workflow). Flows are designed so that each assertion can be tested independently.
+A **flow** is a sequence of tests that validates a user journey in your application.
 
-Flows are the primary unit of E2E testing in QA Wolf. They consist of individual tests, support helpers (shared logic or actions), and library dependencies (used to extend framework behavior) that all tests in the flow use.
-
-Only flows can be scheduled, tagged, and run individually during a QA cycle.
+Flows are the primary unit of end-to-end testing in QA Wolf. Flows can be run individually, scheduled, and tagged.
 
 ## Test
 
-A test is a part of a flow that verifies specific behaviors in your application. Each test focuses on a single feature or action and runs within a flow.
+A **test** verifies a specific behavior or step in your application. Multiple tests combine to form a flow that validates a complete user journey.
 
 <Tip>
-  **Example: QA Wolf application hierarchy**
+**Example: QA Wolf application hierarchy**
 
-  | Workspace   | Wolf Corp                                                                              |
-  | :---------- | :------------------------------------------------------------------------------------- |
-  | Environment | Staging                                                                                |
-  | Group       | Accounts                                                                               |
-  | Flow        | User Registration                                                                      |
-  | Tests       | Email validation step<br /> Password rules step<br /> Successful account creation step |
+| Item        | Example                |
+| :---------- | :--------------------- |
+| Workspace   | Wolf Corp              |
+| Environment | Staging                |
+| Folder      | accounts               |
+| Flow        | happy-path-ios.flow.js |
+
 </Tip>
 
 ## Run

@@ -5,52 +5,35 @@ icon: "map"
 
 A coverage map defines the scope required to test an application end-to-end. A strong testing strategy starts with a clear map of what needs to be tested.  Without visibility into an application’s surface area—key user paths, important states, and system boundaries, it’s difficult to know whether coverage is complete or where it isn't.
 
-Our AI mapping agent creates and maintains a structured view of coverage based on how users interact with the product. As features change or new ones are added, the AI updates the map, so teams can prioritize test creation, reason about completeness, and clearly communicate coverage.
+Our AI mapping agent creates and maintains a structured view of coverage based on user interactions with the product. As features change or new ones are added, the AI updates the map, so teams can prioritize test creation, reason about completeness, and clearly communicate coverage.
 
-## How to map an entire application
+## How to map a feature or an application
 
 <Steps>
   <Step>
     Navigate to the AI agent chat by selecting the Map tab
   </Step>
+</Steps>
+
+<Frame>
+  ![](/images/map-home-page.png)
+</Frame>
+
+<Steps>
   <Step>
-    Type “Create a test plan for \`target URL\`”. The Agent will launch a browser if one is not currently live. Our Mapping AI will begin creating groups and corresponding flow stubs that represent the main areas of your application.
+    Click New Flows on the right side
+  </Step>
+  <Step>
+    Type “Create a test plan for \`target URL\`”. You can specify a base URL or describe a specific journey or set of journeys.  The Agent will launch a browser if one is not currently live. Our Mapping AI will begin creating folders and flows stubs that represent the main areas of your application.
 
     <Frame>
       ![Screenshot of the agent chat](/images/image-60.png)
     </Frame>
   </Step>
   <Step>
-    Provide real time guidance. As the Mapping AI works, you can provide it with real-time guidance. For example, if the Mapping AI encounters a login prompt, it will ask for your credentials, which you can provide.
+    Provide real-time guidance. As the Mapping AI works, you can provide it with real-time guidance. For example, if the Mapping AI encounters a login prompt, it will ask for your credentials, which you can provide.
   </Step>
   <Step>
     Manually adjust the coverage map or instruct the Agent to make changes for you.
-  </Step>
-</Steps>
-
-## How to map a single feature or functional area
-
-You can also generate full or partial plans for any site you already have open in the QA Wolf platform.
-
-<Steps>
-  <Step>
-    Navigate to the AI agent chat
-  </Step>
-  <Step>
-    Request a coverage map for a specific feature. For example:
-
-    a. “Create a coverage plan for user onboarding.”
-
-    b. “Outline grouped flows for the checkout process.”
-
-    <Tip>
-      Tip for best results
-
-      Use clear, descriptive group names that match your product’s features (e.g., _Checkout, Billing, Authentication_).
-
-      Start small — you can refine or expand coverage later.
-
-      The Mapping AI can add to existing groups and flows; you don’t have to start from a blank state.
-    </Tip>
   </Step>
 </Steps>

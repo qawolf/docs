@@ -1,70 +1,138 @@
 ---
 title: "Welcome To QA Wolf"
-description: "QA Wolf is a test automation platform that helps teams find bugs earlier and make confident release decisions. It combines AI-assisted test creation with code-based control, so you can move quickly without sacrificing accuracy."
 icon: "rocket"
 sidebarTitle: "Welcome"
+description: "Create, run, and maintain end-to-end tests automatically with QA Wolf."
 ---
 
-## Use AI and code together
+QA Wolf helps teams plan, create, run, and maintain end-to-end tests automatically as part of the AI-driven software development lifecycle.
 
-QA Wolf is most effective when AI and code are used together.
+Using AI, QA Wolf maps your application, generates tests from natural-language prompts, and runs them in parallel on managed infrastructure. The tests are written as standard Playwright and Appium code and live in your GitHub repository, so your team keeps full ownership and can review, modify, and version them like any other code.
 
-**Use AI to:**
+QA Wolf supports the full lifecycle of end-to-end testing—from identifying the user journeys that matter, to generating automation, to continuously validating releases as your product evolves.
 
-- Plan coverage and identify gaps
-- Scaffold new flows
-- Make quick updates as the product changes
+---
 
-**Use code to:**
+## How QA Wolf works
 
-- Add precise logic and assertions
-- Create reusable helpers
-- Handle complex or conditional behavior
+Testing with QA Wolf happens in three steps.
 
-While editing, you can switch between AI-assisted No-code mode and Code mode at any time, making it easy to start fast and refine over time.
+### Map
 
-## Organize tests around real user paths
+AI explores your application and identifies the user paths that can be tested. This creates a structured view of your product so teams can understand what to cover first, and where new features create gaps in coverage.
 
-Group related tests into flows that represent meaningful user journeys. This makes failures easier to understand and investigation faster.
+### Automate
 
-- Keep flows focused on a single user goal
-- Expand coverage incrementally as the product evolves
-- Quarantine broken flows when a fix will take time, so scheduled runs remain useful
+Describe a flow in plain language, and QA Wolf generates Playwright and Appium tests to validate the behavior of your application. The resulting tests are standard code that your team owns and can modify.
 
-The goal is a signal-rich test suite that highlights real risk, not noise.
+### Run
 
-## Let runs work for you
+Tests run in parallel across QA Wolf infrastructure. Runs can be triggered on demand, scheduled, or executed automatically from CI pipelines.
 
-Scheduled runs automatically execute your flows and record detailed results for each attempt. Use tags and schedules to run the right tests at the right time, such as on every commit or nightly.
+---
 
-Run history becomes a reliable source for:
+## Why use QA Wolf
 
-- Regression tracking
-- Flakiness detection
-- Performance trends
+QA Wolf helps teams build reliable end-to-end coverage without managing testing infrastructure or maintaining fragile automation.  Our deterministic tests make results trustworthy, so teams can move faster without second-guessing failures. And because we can handle the most complex test cases, teams can cover critical user journeys that other tools can't cover.
 
-## Share results where work happens
+### AI-generated automation
 
-QA Wolf integrates with Slack, so test results are visible as soon as they’re available.
+Describe user journeys in natural language, and QA Wolf generates test in Playwright and Appium.
 
-- Get notified when runs fail
-- Share links to runs and failing flows
-- Coordinate investigation without leaving your team’s main communication channel
+### Customer-owned test code
 
-This keeps quality signals part of everyday development work.
+Tests live in your GitHub repository and remain fully accessible to your team.
+
+### Parallel execution by default
+
+Run large suites quickly without managing browsers, devices, or test runners.
+
+### Continuous validation
+
+Tests run automatically across environments, so teams know when changes break critical user journeys.
+
+### Clear coverage of critical paths
+
+AI mapping helps teams understand what parts of the product are tested and where additional coverage may be needed.
+
+---
+
+## What you can test with QA Wolf
+
+QA Wolf is designed to validate the workflows that matter most in modern applications—from simple journeys to complex multi-system interactions.
+
+### Web applications
+
+QA Wolf supports complex browser-based interactions and modern web application architectures.
+
+- Canvas and WebGL interfaces.
+- Drag-and-drop interactions.
+- File uploads and downloads.
+- PDF generation and validation.
+- Visual regression and UI diffing.
+- Multi-user workflows across multiple sessions.
+- Multi-site flows that move across domains.
+- Browser extensions and plugins.
+- Electron and hybrid desktop applications.
+
+### iOS applications
+
+Test native iOS apps on **real iPhones and iPads**. 
+
+- Gestures, layouts, and device orientation.
+- Push notifications and deep links.
+- Apple Pay transactions.
+- Apple ID authentication.
+- Camera, photos, and video interactions.
+- System permissions and OS dialogs.
+- Sensors such as GPS, Bluetooth, and Wi-Fi.
+- Cross-device journeys between web and mobile.
+
+### Android applications
+
+Test native Android apps in **isolated device environments designed for automation scale.** Google Pay transactions.
+
+- Push notifications and deep links.
+- Android permission prompts.
+- Camera and sensor interactions.
+- Device orientation and layout changes.
+- Native authentication flows.
+- Companion app workflows for connected systems.
+
+---
 
 ## Who QA Wolf is for
 
-QA Wolf supports multiple roles involved in release quality. Each role uses the platform differently, but all work from the same runs and results.
+- **Manual QA.** Map user journeys, generate end-to-end tests with AI, and validate behavior across releases without needing to write code.
+- **Test Automators / SDET.** Build, extend, and maintain Playwright and Appium test suites with full access to the underlying code and infrastructure.
+- **Developers.** Generate tests from prompts, modify the underlying code when needed, and run tests in CI to validate application behavior on every change.
+- **Product and Design teams.** Map critical user flows and validate the experience before releases to ensure key journeys work as expected.
 
-- QA Engineers build and maintain flows using AI and code, manage retries and Run Rules, and keep the test suite reliable.
-- Manual testers use AI-assisted editing to turn exploratory testing into repeatable coverage and validate recent changes.
-- Product/Project managers review run results to assess release readiness and risk—without writing tests.
+---
 
-QA Wolf works best when these roles collaborate around the same automated runs.
+## Security and data protection
 
-## Get set up early and grow intentionally
+QA Wolf is designed to support teams building secure applications.
 
-[Start](https://app.qawolf.com) with a small set of high-value flows.
+- **SOC 2 Type II compliant.** QA Wolf meets rigorous security and operational standards verified through independent audits.
+- **HIPAA-ready infrastructure.** QA Wolf supports teams building and testing applications that must meet HIPAA requirements.
+- **Secure infrastructure.** Tests run in isolated environments managed by QA Wolf.
+- **Secure credential storage.** Sensitive credentials are stored securely and can be safely used in automated tests.
 
-Expand coverage as your product evolves. QA Wolf is most effective when the test suite grows alongside the application, not all at once.
+Learn more in the [Security](https://trust.qawolf.com) documentation.
+
+---
+
+## Explore QA Wolf
+
+<CardGroup cols={3}>
+  <Card href="/qawolf/quick-start" title="Quickstart">
+    Connect your application and create your first tests.
+  </Card>
+  <Card href="/qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc" title="Key concepts">
+    Learn how workspaces, environments, flows, and runs are organized.
+  </Card>
+  <Card href="/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5" title="Full Service">
+    Let QA Wolf build and maintain your test suite for you.
+  </Card>
+</CardGroup>

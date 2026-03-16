@@ -10,9 +10,7 @@ In the QA Wolf platform, an [environment](/qawolf/Glossary-29c5b2a994fb806d93f2c
 
 Each environment can be configured with separate variables (e.g., base URL, users), concurrency rates, and other settings relevant to the application version you’re testing. Flows and tests are unique to each environment and are not shared across environments.
 
-## Managing environments
-
-### Create a new environment
+## Create an environment
 
 <Steps>
   <Step>
@@ -22,31 +20,12 @@ Each environment can be configured with separate variables (e.g., base URL, user
     Click **Environments** in the left navigation bar.
   </Step>
   <Step>
-    Click **Create environment** in the upper-right corner. Give it a unique name and click **Create**.
-
-    <br />
+    Click **Create environment** in the upper-right corner. Give it a unique name and click **Create**
+  </Step>
+  <Step title="Optional: Rename environment">
+    Replace the existing Environment Name and press Enter.
   </Step>
 </Steps>
-
-### Rename an environment
-
-<Steps>
-  <Step>
-    Click inside the **Environment Name** text box, then type the new name and press **Enter**.
-  </Step>
-</Steps>
-
-### Delete an environment
-
-<Steps>
-  <Step>
-    Click the red **Delete** button.
-  </Step>
-</Steps>
-
-<Tip>
-  You can also access **Environment settings** from the **Runs** tab by hovering over any environment listed under **Static environments** to show the icon, then clicking it.
-</Tip>
 
 ## Change your default environment
 
@@ -59,7 +38,7 @@ Each environment can be configured with separate variables (e.g., base URL, user
     Open the `Workspace name` dropdown and click **Workspace settings**.
   </Step>
   <Step>
-    Click **General** in the left navigation bar; it will be selected by default.
+    Go to **General**
   </Step>
   <Step>
     Under **Default environments**, choose the environment you want the **Flows** and **Runs** tabs to use by default from the **Default team environment** dropdown.
@@ -102,27 +81,16 @@ You can use the same variable across environments by reusing the same name in ea
 
 <Steps>
   <Step>
-    From the **Flows tab**, turn the Code editor on.
-
-    <Frame>
-      ![](/images/image-52.png)
-    </Frame>
+    Open the **Workspace name** dropdown and click **Workspace settings**.
   </Step>
   <Step>
-    Click the **Env vars** button below the code editing window. The **Environment Variables** tab opens in a side drawer. Here, you'll see all existing environment variables for the selected environment.
+    Click Environments in the left navigation bar.
   </Step>
   <Step>
-    Click **Add variable**.
-  </Step>
-  <Step>
-    Type the name and value, then click the <Icon icon="check" /> icon to save.
-
-    <Tip>
-      Environment Variables can also be accessed from Workspace Settings.
-
-      1. Open the **Workspace name** dropdown and click **Workspace settings**.
-      2. Click Environments in the left navigation bar.
-      3. Click the **Environment variables** tab
-    </Tip>
+    Click the **Environment variables** tab
   </Step>
 </Steps>
+
+<Tip>
+  These can also be updated from the code editor.
+</Tip>
