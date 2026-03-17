@@ -139,7 +139,13 @@
             "group": "QA Wolf University",
             "icon": "graduation-cap",
             "pages": [
-              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
+              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8",
+              {
+                "group": "Test Library",
+                "pages": [
+                  "using-an-android-tablet"
+                ]
+              }
             ]
           }
         ]
@@ -194,13 +200,6 @@
               "qawolf/Asana-2a15b2a994fb805287acdba6373e6758",
               "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
               "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
-            ]
-          },
-          {
-            "group": "SSO",
-            "icon": "shield-check",
-            "pages": [
-              "qawolf/sso"
             ]
           }
         ]
