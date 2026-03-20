@@ -1,0 +1,309 @@
+---
+title: "Anatomy of a Test in the QA Wolf platform"
+description: "Understanding the structure of a QA Wolf test and where it diverges from vanilla Playwright and Appium."
+icon: "puzzle"
+---
+
+If your team has written Playwright or Appium tests before, QA Wolf tests will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
+
+## The import statement
+
+<CodeGroup>
+
+```javascript Web
+import { flow, expect } from "@qawolf/flows/web";
+```
+
+```javascript iOS
+import { flow } from "@qawolf/flows/ios";
+```
+
+```javascript Android
+import { flow, expect } from "@qawolf/flows/android";
+```
+
+</CodeGroup>
+
+`flow` is the outer container for every QA Wolf test. Import it from the package that matches your target platform. On web and Android, also import `expect` from the same package — this ensures assertions are wired into QA Wolf's reporting.
+
+<Warning>
+  On web and Android, importing `expect` from `@playwright/test` instead of the flows package will cause assertions to bypass QA Wolf's reporting. Always import from the flows package.
+</Warning>
+
+## The flow wrapper
+
+`flow()` takes three arguments: a name, a platform string, and an async function containing the test logic.
+
+<CodeGroup>
+
+```javascript Web
+export default flow(
+  "Test Name",
+  "Web - Chrome",
+  async ({ test, ...testContext }) => {
+    const { launch } = testContext;
+    // test steps go here
+  },
+);
+```
+
+```javascript iOS
+export default flow(
+  "Test Name",
+  "iOS - iPhone 15 (iOS 18)",
+  async ({ test, wdio, ...testContext }) => {
+    // test steps go here
+  },
+);
+```
+
+```javascript Android
+export default flow(
+  "Test Name",
+  "Android - Pixel 9 (Android 15)",
+  async ({ test, wdio, ...testContext }) => {
+    // test steps go here
+  },
+);
+```
+
+</CodeGroup>
+
+**Name** — what this test is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing test name tells you where to look.
+
+**Platform string** — the device and environment the test runs on. The format is `"Platform - Device (OS Version)"` for mobile and `"Web - Browser"` for web. The system resolves this at runtime into a running session. No additional configuration required.
+
+**Test function** — the async function containing your test logic. It receives `test` for defining named steps and `testContext` for utilities. Web tests destructure `launch` from `testContext` to start a browser session. Mobile tests receive `wdio` for driver sessions.
+
+<Note>
+  In vanilla Playwright, you configure browsers in `playwright.config.js`. In vanilla Appium, you configure the target device through desired capabilities. In QA Wolf, the platform string handles both. The infrastructure resolves it at runtime.
+</Note>
+
+## Starting a session
+
+<CodeGroup>
+
+```javascript Web
+const { launch } = testContext;
+const { context } = await launch();
+context.setDefaultTimeout(8000);
+const page = await context.newPage();
+await page.goto("https://www.example.com");
+```
+
+```javascript iOS
+const driver = await wdio.startIos({
+  "appium:app": process.env.APP_STAGING,
+  "appium:autoAcceptAlerts": true,
+});
+```
+
+```javascript Android
+const driver = await wdio.startAndroid();
+```
+
+</CodeGroup>
+
+Web tests use `launch()` from `testContext` to start a browser session. `context` and `page` are standard Playwright primitives — everything you know about Playwright page interactions works here.
+
+`wdio.startIos()` and `wdio.startAndroid()` start an Appium session on the target device. Pass Appium capabilities as needed — app path, alert handling, and so on. For Android browser testing, pass `appium:browserName`. For native app testing, pass `appium:app` with a path to your app.
+
+<Note>
+  `launch()` replaces the `browser.newContext()` pattern from vanilla Playwright. It handles session setup and wires the context into QA Wolf's infrastructure.
+</Note>
+
+<Note>
+  In vanilla Appium, you initialize the driver with a full capabilities object including device selection. In QA Wolf, `wdio.startIos()` and `wdio.startAndroid()` handle driver initialization. The platform string handles device selection. You only pass capabilities specific to your test.
+</Note>
+
+## Named test steps
+
+```javascript
+await test("Step Name", async () => {
+  // step logic here
+});
+```
+
+Each `test()` block is a named step that appears in your results and bug reports.
+
+<Tip>
+  Keep steps focused on one logical action. A step named "Submit login form" is easier to investigate when it fails than a step named "Test login".
+</Tip>
+
+## The AAA framework
+
+QA Wolf generates tests in the Arrange, Act, Assert(AAA) format. 
+
+**Arrange** sets up the state and launches the session. 
+
+**Act** performs the interaction being tested. 
+
+**Assert** verifies the expected outcome.
+
+<CodeGroup>
+
+```javascript Web
+await test("Complete checkout", async () => {
+  //--------------------------------
+  // Arrange:
+  //--------------------------------
+  const { context } = await launch();
+  context.setDefaultTimeout(8000);
+  const page = await context.newPage();
+  await page.goto("https://www.example.com/checkout");
+
+  //--------------------------------
+  // Act:
+  //--------------------------------
+  await page.fill("[data-testid='email']", "test@example.com");
+  await page.click("[data-testid='submit']");
+
+  //--------------------------------
+  // Assert:
+  //--------------------------------
+  await expect(page).toHaveURL("https://www.example.com/confirmation");
+});
+```
+
+```javascript iOS
+await test("Log in", async () => {
+  //--------------------------------
+  // Arrange:
+  //--------------------------------
+  const driver = await wdio.startIos({
+    "appium:app": process.env.APP_STAGING,
+    "appium:autoAcceptAlerts": true,
+  });
+  await driver.$("~username").waitForDisplayed();
+
+  //--------------------------------
+  // Act:
+  //--------------------------------
+  await driver.$("~username").setValue("test@example.com");
+  await driver.$("~password").setValue("password");
+  await driver.$("~submit").click();
+
+  //--------------------------------
+  // Assert:
+  //--------------------------------
+  await driver.$("~dashboard").waitForDisplayed();
+});
+```
+
+```javascript Android
+await test("Log in", async () => {
+  //--------------------------------
+  // Arrange:
+  //--------------------------------
+  const driver = await wdio.startAndroid();
+  await driver.$("~username").waitForDisplayed();
+
+  //--------------------------------
+  // Act:
+  //--------------------------------
+  await driver.$("~username").setValue("test@example.com");
+  await driver.$("~password").setValue("password");
+  await driver.$("~submit").click();
+
+  //--------------------------------
+  // Assert:
+  //--------------------------------
+  await driver.$("~dashboard").waitForDisplayed();
+});
+```
+
+</CodeGroup>
+
+## Putting it together
+
+Here is a complete, minimal QA Wolf test for each platform:
+
+<CodeGroup>
+
+```javascript Web
+import { flow, expect } from "@qawolf/flows/web";
+
+export default flow(
+  "Happy Path",
+  "Web - Chrome",
+  async ({ test, ...testContext }) => {
+    const { launch } = testContext;
+
+    await test("Load homepage", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      const { context } = await launch();
+      context.setDefaultTimeout(8000);
+      const page = await context.newPage();
+      await page.goto("https://www.qawolf.com/");
+
+      //--------------------------------
+      // Act:
+      //--------------------------------
+
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+    });
+  },
+);
+```
+
+```javascript iOS
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "iOS Test",
+  "iOS - iPhone 15 (iOS 18)",
+  async ({ wdio, test, ...testContext }) => {
+    await test("Step Name", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      const driver = await wdio.startIos({
+        "appium:app": process.env.APP_STAGING,
+        "appium:autoAcceptAlerts": true,
+      });
+
+      //--------------------------------
+      // Act:
+      //--------------------------------
+
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+    });
+  },
+);
+```
+
+```javascript Android
+import { flow, expect } from "@qawolf/flows/android";
+
+export default flow(
+  "Android Test",
+  "Android - Pixel 9 (Android 15)",
+  async ({ test, wdio, ...testContext }) => {
+    await test("Step Name", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      await wdio.startAndroid();
+
+      //--------------------------------
+      // Act:
+      //--------------------------------
+
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+    });
+  },
+);
+```
+
+</CodeGroup>
+
+```text
+```

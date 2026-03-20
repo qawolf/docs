@@ -4,11 +4,8 @@ icon: "tablet"
 ---
 
 ```javascript
-// import the flow function from the Android flows module
+// import QA's custom Appium library Android flows module
 import { flow } from "@qawolf/flows/android";
-
-// import helper functions specific to Node.js 20 environment
-import node20Helpers from "../../utilities/node-20-helpers.js";
 
 // export the default flow with a given name and platform
 export default flow(
@@ -18,7 +15,7 @@ export default flow(
   "Android - Tablet",
   // define the asynchronous test function
   async ({ test, wdio, ...testContext }) => {
-    // start an Android driver session using Appium with Chrome browser
+    // start QA Wolf's custom Android driver session using Appium with Chrome browser
     const driver = wdio.startAndroid({
       "appium:browserName": "Chrome",
     });

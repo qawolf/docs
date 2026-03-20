@@ -1,0 +1,88 @@
+---
+title: "Uploading files"
+description: "Manually upload files to QA Wolf using the signed URL API."
+icon: "upload"
+---
+
+## Overview
+
+QA Wolf accepts file uploads via a two-step signed URL process:
+
+1. Request a signed upload URL from the QA Wolf API
+2. Upload your file directly to that URL
+
+This method works for any supported file type and can be used for one-off uploads or as part of a custom automation.
+
+<Warning>
+  Only the following file types are accepted: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`, `.csv`, `.pdf`
+</Warning>
+
+---
+
+## Prerequisites
+
+- Your `QAWOLF_API_KEY` — available under **Workspace Settings → Integrations → API Access**
+
+---
+
+## Step 1: Generate a signed URL
+
+Make a `GET` request with the filename (including extension) as the `file` query parameter.
+
+```bash
+curl -X GET \
+  "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=YOUR_FILENAME" \
+  -H "Authorization: Bearer $QAWOLF_API_KEY"
+```
+
+On success, you'll receive:
+
+```json
+{
+  "fileLocation": "$TEAM_ID/YOUR_FILENAME",
+  "playgroundFileLocation": "YOUR_FILENAME",
+  "signedUrl": "https://..."
+}
+```
+
+Copy the `signedUrl` — you'll use it in the next step.
+
+<Note>
+  The signed URL is temporary. Upload your file promptly after generating it.
+</Note>
+
+---
+
+## Step 2: Upload the file
+
+Use the `signedUrl` from Step 1 to upload your file via a `PUT` request.
+
+```bash
+curl -X PUT \
+  --header "Content-Type: application/octet-stream" \
+  --data-binary @./path/to/your/file \
+  "$SIGNED_URL"
+```
+
+Once this completes successfully, the file is available in QA Wolf.
+
+---
+
+## File-specific notes
+
+<AccordionGroup>
+  <Accordion title="Mobile apps (.apk, .aab, .ipa)">
+    Use a static filename based on the environment (e.g. `app-staging.ipa`) so tests always reference the latest build. See [Integrating your mobile CI pipeline](/ci-cd/integrate-mobile-ci-pipeline) for how to automate this as part of your build process.
+  </Accordion>
+
+  <Accordion title="ZIP archives (.zip)">
+    ZIP files can be used to bundle multiple assets for a single upload. Ensure the contents follow any structure expected by the tests that will consume them.
+  </Accordion>
+
+  <Accordion title="CSV files (.csv)">
+    CSV files are typically used as test data inputs. Use a consistent filename so flows always pick up the latest version.
+  </Accordion>
+
+  <Accordion title="PDF files (.pdf)">
+  </Accordion>
+</AccordionGroup>
