@@ -1,7 +1,11 @@
 ---
-title: "Using an Android Tablet"
+title: "Test with Android tablets"
 icon: "tablet"
 ---
+
+<Warning>
+  **Prerequisite**: [Anatomy of a test](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition)
+</Warning>
 
 ```javascript
 // import QA's custom Appium library Android flows module
@@ -12,12 +16,12 @@ export default flow(
   // define the name of the flow
   "<FlowNameHere>",
   // specify the platform for the flow
-  "Android - Tablet",
+  "Android - Tablet (Android 14)",
   // define the asynchronous test function
   async ({ test, wdio, ...testContext }) => {
     // start QA Wolf's custom Android driver session using Appium with Chrome browser
     const driver = wdio.startAndroid({
-      "appium:browserName": "Chrome",
+      "appium:browserName": "Chrome"
     });
   	
 	//the rest of your test goes here
