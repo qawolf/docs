@@ -22,11 +22,11 @@ A run transitions to _Completed_ only after all failed flows have been resolved.
 
 ## How to reattempt a failure caused by a flake
 
-Reattempting all failures in a run is appropriate when all failures in the run are believed to be caused by a bug or a temporary environment glitch.
+Reattempting all failures in a run is appropriate when all failures in the run are believed to be caused by a flake or a temporary environment glitch.
 
 <Steps>
   <Step>
-    Open the **Runs** tab and click the run that is in **Investigating** or **Failed** status. This will open the Investigation view
+    Open the **Runs** tab and click the run that is in **Investigating** or **Failed** status. This will open the Investigation view.
   </Step>
   <Step>
     Click the <Icon icon="ellipsis" /> icon to open the context menu.
@@ -36,10 +36,10 @@ Reattempting all failures in a run is appropriate when all failures in the run a
     </Frame>
   </Step>
   <Step>
-    Choose **Reattempt with latest version**. This will take you to the investigation view and run only the failed flows. Use this option when you want to quickly check that the suspected temporary glitch has resolved
+    Choose **Reattempt with latest version**. This will take you to the investigation view and run only the failed flows. Use this option when you want to quickly check that the suspected temporary glitch has resolved.
   </Step>
   <Step>
-    Choose **Duplicate run**. This will be a full retry of all flows, including up to three attempts. Use this option after you have validated that the temporary problem has been resolved, but you want to see if the issue was blocking any deeper problems
+    Choose **Duplicate run**. This will be a full retry of all flows, including up to three attempts. Use this option after you have validated that the temporary problem has been resolved, but you want to see if the issue was blocking any deeper problems.
   </Step>
 </Steps>
 
@@ -58,7 +58,7 @@ To bypass a failed flow:
     </Frame>
   </Step>
   <Step>
-    Select the failed run that contains the flow that doesn’t need further investigation
+    Select the failed run that contains the flow that doesn’t need further investigation.
   </Step>
   <Step>
     Click **Diagnose** in the center panel.
@@ -75,7 +75,7 @@ To bypass a failed flow:
 Once a failed flow is marked as **Do not investigate**, it is considered resolved for the run. When all failed flows in the run have either passed or been bypassed, the run transitions to **Completed**.
 
 <Tip>
-  You can also find **Diagnose** by hovering over the failing flow to show the <Icon icon="square" /> icon, then clicking it to show the <Icon icon="square-check" /> icon. Diagnose will appear below the Flow list
+  You can also find **Diagnose** by hovering over the failing flow to show the <Icon icon="square" /> icon, then clicking it to show the <Icon icon="square-check" /> icon. Diagnose will appear below the Flow list.
 
   <Frame>
     ![](/images/execution-scheduling-bugs-and-maintenance/image-33.png)
@@ -89,7 +89,7 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
     From the **Runs** tab, select the environment from the list on the upper left.
   </Step>
   <Step>
-    In the center panel, select a run from **Investigating** list.
+    In the center panel, select a run from the **Investigating** list.
 
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-34.png)

@@ -29,7 +29,7 @@ icon: "calendar-clock"
       ![](/images/execution-scheduling-bugs-and-maintenance/image-5.png)
     </Frame>
     <Danger>
-      The other three options require some setup from QA Wolf. These are :
+      The other three options require some setup from QA Wolf. These are:
 
       - _Deployment_ – Triggers a run from a version control system (VCS) deployment hook.
       - _Pull Request Testing Button_ – Triggers a run from a custom button configured in your VCS.
@@ -84,7 +84,7 @@ icon: "calendar-clock"
     </Frame>
   </Step>
   <Step>
-    Click the **Fail workflows if any priors fail** to automatically skip downstream flows when an earlier flow fails. This option is enabled by default.
+    Click the **Fail workflows if any priors fail** toggle to automatically skip downstream flows when an earlier flow fails. This option is enabled by default.
 
     <Tip>
       Use **Fail workflows if any priors fail** when failures in an earlier set of tests (for example, sanity tests) make later tests likely to fail for the same reason. Skipping those later tests reduces noise, shortens run time, and keeps the failure list focused on the root cause.

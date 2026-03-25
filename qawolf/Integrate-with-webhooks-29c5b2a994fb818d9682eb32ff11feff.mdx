@@ -1,9 +1,8 @@
 ---
 title: "How to integrate a non-native bug tracker with webhooks"
 description: "If we don’t support your bug tracker through a native integration, you can still use webhooks to integrate."
-sidebarTitle: "Integrate with web hooks"
+sidebarTitle: "Integrate with webhooks"
 icon: ticket
-
 ---
 
 <Tip>
@@ -42,7 +41,7 @@ icon: ticket
     </Frame>
   </Step>
   <Step>
-    Define a webhook title
+    Define a webhook title.
 
     <Frame>
       ![](/images/integrate-your-issue-tracker/image-26.png)
@@ -94,10 +93,10 @@ icon: ticket
     </Frame>
   </Step>
   <Step>
-    Make your webhook respond to the `POST` request a payload containing these fields:
+    Make your webhook respond to the `POST` request with a payload containing these fields:
 
     - `externalId` (`string`): ID of the issue for the QA Wolf bug report in your issue tracker. It will be used to identify issues that will need to be updated in the future.
-    - `humanId` (`string`): Human friendly issue ID that will be used on QA Wolf UI, Slack messages and other integrations.
+    - `humanId` (`string`): Human-friendly issue ID that will be used on QA Wolf UI, Slack messages and other integrations.
     - `url` (`string`): Link to the issue.
   </Step>
   <Step>
