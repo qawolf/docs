@@ -86,7 +86,7 @@ Once your Fastlane lane produces a build artifact, you can upload it to QA Wolf.
 
 ### Example:
 
-```bash
+```ruby
 lane :qawolf do
   # Build your app
   gradle(
@@ -119,7 +119,7 @@ If mobile triggers have not yet been enabled, this step will complete without st
 
 ### Example:
 
-```bash
+```ruby
 notify_deploy_qawolf(
   executable_environment_key: "ANDROID_APP"
 )
