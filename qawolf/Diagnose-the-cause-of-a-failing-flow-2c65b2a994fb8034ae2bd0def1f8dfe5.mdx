@@ -9,9 +9,9 @@ When a flow fails, the next step is to determine why. Identifying the cause dete
 
 Failures generally fall into one of the following categories:
 
-- **Flakes** Failures caused by infrastructure outages, network instability, or failed dependent services. These issues often resolve without changes to the flow or the application.
-- **Bugs** Failures that reveal incorrect or unexpected behavior in the application under test. These indicate a product issue rather than a problem with the flow itself.
-- **Broken tests** Failures caused by flow logic, bad selectors, incorrect assertions, or assumptions that no longer match the application. These may be simple to correct or may require more substantial maintenance.
+- **Flakes:** Failures caused by infrastructure outages, network instability, or failed dependent services. These issues often resolve without changes to the flow or the application.
+- **Bugs:** Failures that reveal incorrect or unexpected behavior in the application under test. These indicate a product issue rather than a problem with the flow itself.
+- **Broken tests:** Failures caused by flow logic, bad selectors, incorrect assertions, or assumptions that no longer match the application. These may be simple to correct or may require more substantial maintenance.
 
 Correctly identifying the cause helps you determine whether the failing flow should be retried, fixed, deferred, or accepted to clear the release.
 
