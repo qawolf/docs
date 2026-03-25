@@ -46,7 +46,7 @@ const userId = workflowInputs["**USER_ID**"];
 ## How to run Hopper flows
 
 - To run flows together, create a [schedule](/qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92) that targets **all flows** or flows with a **shared tag**. A scheduled run can include either all flows in the environment or only flows with a specific tag.
-- To control execution order, create a Run Rule that runs producers before consumers. Run Rules ensure producers run before consumers. They can be defined using groups, tags, or specific flow names.
+- To control execution order, create a Run Rule that ensures producers run before consumers. Run Rules can be defined using groups, tags, or specific flow names.
 
 <Danger>
   Producers and consumers must be included in the same scheduled run.
