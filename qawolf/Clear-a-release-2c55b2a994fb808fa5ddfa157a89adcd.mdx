@@ -18,7 +18,7 @@ A run that contains failed flows remains in **Investigating** or **Failed** as l
 - The underlying application issue causing the failure is fixed.
 - A maintenance report is filed, preventing the flow from being included in runs until it is fixed.
 
-A run transitions to _Completed_ only after all failed flows have been resolved. Once all runs are completed, the environment exits the _Needs investigation or Failed_ status and can be considered ready for release.
+A run transitions to _Completed_ only after all failed flows have been resolved. Once all runs are completed, the environment exits the _Needs investigation_ or _Failed_ status and can be considered ready for release.
 
 ## How to reattempt a failure caused by a flake
 
@@ -36,7 +36,7 @@ Reattempting all failures in a run is appropriate when all failures in the run a
     </Frame>
   </Step>
   <Step>
-    Choose **Reattempt with latest version**. This will take you to the investigation view and run only the failed flows. Use this option when you want to quickly check that the suspected temporary glitch has resolved.
+    Choose **Reattempt with latest version**. This will take you to the Investigation view and run only the failed flows. Use this option when you want to quickly check that the suspected temporary glitch has resolved.
   </Step>
   <Step>
     Choose **Duplicate run**. This will be a full retry of all flows, including up to three attempts. Use this option after you have validated that the temporary problem has been resolved, but you want to see if the issue was blocking any deeper problems.

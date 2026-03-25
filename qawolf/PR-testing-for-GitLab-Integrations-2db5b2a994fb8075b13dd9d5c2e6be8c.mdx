@@ -2,7 +2,7 @@
 title: "How to enable PR testing for GitLab Integrations"
 description: "PR testing runs QA Wolf tests against preview environments before changes are merged. Tests run when a merge request enters your merge pipeline, and results are reported back to GitLab as a pipeline result and (optionally) a merge request status."
 sidebarTitle: "PR testing for GitLab Integrations"
-icon: git-merge
+icon: "git-merge"
 ---
 
 <Check>
@@ -28,7 +28,7 @@ Your GitLab pipeline must deploy a preview environment during merge request pipe
 
 Add a job that notifies QA Wolf after the preview environment is deployed and reachable.
 
-Add a notify_qawolf job to your .gitlab-ci.yml that runs only for merge request pipelines.
+Add a `notify_qawolf` job to your `.gitlab-ci.yml` that runs only for merge request pipelines.
 
 ```yaml expandable
 stages:
@@ -45,7 +45,7 @@ notify_qawolf:
   script:
     - |
       curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
-        -H "Authorization: Bearer $QA_WOLF_API_KEY" \
+        -H "Authorization: Bearer $QAWOLF_API_KEY" \
         -H "Content-Type: application/json" \
         -d "{
           \"branch\": \"$CI_COMMIT_REF_NAME\",
@@ -59,7 +59,7 @@ notify_qawolf:
 **What this job assumes**
 
 - Your pipeline already creates a preview environment for each merge request.
-- The preview environment URL is available as PREVIEW_URL when this job runs.
+- The preview environment URL is available as `PREVIEW_URL` when this job runs.
 - A prior job (such as deploy_preview) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
 
 When the merge request pipeline runs, this job sends the preview URL to QA Wolf, which starts a test run against that environment.

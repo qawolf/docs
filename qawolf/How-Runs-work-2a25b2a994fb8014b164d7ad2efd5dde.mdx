@@ -1,5 +1,6 @@
 ---
 title: "How Runs work"
+description: "Learn how QA Wolf executes runs, retries failed flows, and reports results as completed or needs investigation."
 icon: "circle-play"
 ---
 
@@ -45,7 +46,7 @@ A run can be initiated three ways:
   Environments move into investigation states when flows don’t pass:
 
   - **Needs Investigation:** one or more flows that failed all three attempts will be marked with the <Icon icon="circle" iconType="solid" color="yellow" /> icon.
-  - **Failed:** a flow associated with a high-priority bug report that failed (based on your settings) will be marked with <Icon icon="circle" iconType="solid" color="red" /> icon.
+  - **Failed:** a flow associated with a high-priority bug report that failed (based on your settings) will be marked with the <Icon icon="circle" iconType="solid" color="red" /> icon.
 
   These states help you decide what’s safe to release and what needs attention.
 </Note>

@@ -1,5 +1,6 @@
 ---
 title: "How to pass data between flows during a run (aka Hopper Flows)"
+description: "Share data between flows using Hopper Flows to coordinate multi-user, multi-device test scenarios in a single run."
 sidebarTitle: "Pass data between flows"
 icon: "share-2"
 ---
@@ -25,7 +26,7 @@ We will call Flow A the **producer** and Flow B the **consumer**.
 
 In Flow A, use `setOutput` to publish key–value pairs that other flows can access. The example uses the `TOKEN` and `USER_ID` keys.
 
-```bash
+```javascript
 // Flow A — publishing values
 setOutput("**TOKEN**", "abc123", "**USER_ID**", "42");
 ```
@@ -36,16 +37,16 @@ If the same flow calls `setOutput` multiple times, it will simply overwrite the 
 
 Now, go to Flow B and use `workflowInputs` to read values published by Flow A.
 
-```bash
+```javascript
 // Flow B — consuming values
 const token = workflowInputs["**TOKEN**"];
-const userId = workflowInputs["**USER_ID**"]
+const userId = workflowInputs["**USER_ID**"];
 ```
 
 ## How to run Hopper flows
 
 - To run flows together, create a [schedule](/qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92) that targets **all flows** or flows with a **shared tag**. A scheduled run can include either all flows in the environment or only flows with a specific tag.
-- To control execution order, create a Run Rule that runs producers before consumers. Run Rules ensure producers run before consumers. They can be defined using groups, tags, or specific flow names.
+- To control execution order, create a Run Rule that ensures producers run before consumers. Run Rules can be defined using groups, tags, or specific flow names.
 
 <Danger>
   Producers and consumers must be included in the same scheduled run.

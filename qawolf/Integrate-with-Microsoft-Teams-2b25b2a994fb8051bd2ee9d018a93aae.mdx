@@ -1,5 +1,6 @@
 ---
 title: "Integrating with Microsoft Teams"
+description: "Set up Microsoft Teams to receive QA Wolf notifications by configuring external access and shared channels."
 icon: "messages-square"
 sidebarTitle: "Integrate MS Teams"
 ---
@@ -32,7 +33,7 @@ QA Wolf provides a shared channel for your Teams integration. To use it, your or
 
 <Steps>
   <Step>
-    In the [Microsoft Teams admin center](https://admin.teams.microsoft.com/), expand **Teams** in the left navigation bar and choose **Teams policies**.
+    In the [Microsoft Teams admin center](https://admin.teams.microsoft.com/), expand **Teams** in the left navigation bar and choose **Teams policies**.
   </Step>
   <Step>
     Click the policy you want to confirm or change.
@@ -71,7 +72,7 @@ You must enable external access so QA Wolf team members can join your **Teams me
 
 ### How to enable cross-tenant access in Microsoft Entra
 
-To use a shared channel with QA Wolf, you must allow our Microsoft Entra tenant by adding QA Wolf as an allowed organization using our Microsoft Entra tenant ID.
+To use a shared channel with QA Wolf, you must allow our Microsoft Entra tenant by adding QA Wolf as an allowed organization using our Microsoft Entra tenant ID.
 
 <Steps>
   <Step>
@@ -94,7 +95,7 @@ To use a shared channel with QA Wolf, you must allow our Microsoft Entra tenant 
 
 If your default access settings restrict access, update your inbound and outbound B2B direct connect settings to allow QA Wolf.
 
-Still under **Organizational settings**, you should see QA Wolf listed under `n` **organizations found**.
+Still under Organizational Settings, you should see QA Wolf listed under `n` **organizations found**.
 
 <Frame>
   ![](/images/coverage-as-a-service/image-7.png)
@@ -106,10 +107,10 @@ Still under **Organizational settings**, you should see QA Wolf listed under `n`
   <Step>
     Click on the Configured link underneath Inbound access or Outbound access.
   </Step>
-   <Step>
+  <Step>
     Click the B2B direct connect tab.
   </Step>
-   <Step>
+  <Step>
     Select the Customize settings radio button.
   </Step>
 </Steps>

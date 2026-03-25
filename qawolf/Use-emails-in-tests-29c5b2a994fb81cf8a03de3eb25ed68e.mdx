@@ -1,5 +1,6 @@
 ---
 title: "How to test a feature that sends or receives emails"
+description: "Use the built-in getInbox function to send, receive, and verify emails during your QA Wolf test flows."
 sidebarTitle: "Use emails in tests"
 icon: "mail"
 ---
@@ -102,7 +103,7 @@ QA Wolf automatically appends a random suffix after a + sign (i.e., plus address
 <Tip>
   Your application may not allow + symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
 
-  `const { emailAddress } = await getInbox({ new: true, delimiter: - });`
+  `const { emailAddress } = await getInbox({ new: true, delimiter: "-" });`
 
   The above generates new emails with random strings after the - symbol.
 </Tip>

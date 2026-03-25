@@ -1,7 +1,8 @@
 ---
 title: "How to enable PR testing for GitHub Integrations"
+description: "Run QA Wolf tests against preview environments on pull requests and report results as GitHub status checks."
 sidebarTitle: "PR testing for GitHub Integrations"
-icon: git-merge
+icon: "git-merge"
 ---
 
 ## What QA Wolf configures
@@ -87,7 +88,7 @@ jobs:
 ### What this workflow assumes
 
 - Your CI pipeline already creates a preview environment per pull request.
-- The preview environment URL is available as PREVIEW_URL when this job runs.
+- The preview environment URL is available as `PREVIEW_URL` when this job runs.
 - A prior job (such as wait-for-preview-environment) ensures the preview environment is fully deployed and reachable before QA Wolf is notified.
 
 When the pull request enters the merge queue, this workflow sends the preview URL to QA Wolf, which starts a test run against that environment.

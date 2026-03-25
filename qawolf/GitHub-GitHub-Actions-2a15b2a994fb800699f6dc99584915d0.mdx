@@ -1,7 +1,8 @@
 ---
 title: "How to integrate GitHub/GitHub Actions"
+description: "Connect QA Wolf to GitHub Actions to automatically trigger test runs when you deploy code from your repository."
 sidebarTitle: "GitHub/GitHub Actions"
-icon: git-merge
+icon: "git-merge"
 ---
 
 <Check>
@@ -18,7 +19,8 @@ QA Wolf integrates directly with GitHub to automatically run tests when you depl
 
   - Self-hosts GitHub Enterprise Server without internet access.
   - Explicitly disables GitHub Actions by policy.
-  - If either applies, see the [SDK Integration Guide](/qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63) for an alternative.
+
+  If either applies, see the [SDK Integration Guide](/qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63) for an alternative.
 </Danger>
 
 ## How to integrate QA Wolf and GitHub Actions
@@ -113,7 +115,7 @@ QA Wolf’s official GitHub Action, [Notify QA Wolf on Deploy](https://github.co
 
     To get the value for `deployment-type`, reach out to QA Wolf, and we will provide this value for you.
 
-    ```bash
+    ```yaml
     - name: Notify QA Wolf
       uses: qawolf/notify-qawolf-on-deploy-action@v1
       with:
