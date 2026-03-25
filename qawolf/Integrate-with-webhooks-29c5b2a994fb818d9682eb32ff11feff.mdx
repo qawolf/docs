@@ -84,7 +84,7 @@ icon: ticket
 
     #### Authentication
 
-    If username and password are set, those will be used for basic HTTP authorization when performing the `POST`request against your webhook.
+    If username and password are set, those will be used for basic HTTP authorization when performing the `POST` request against your webhook.
   </Step>
   <Step>
     Enable the “Notify when bug report is closed” toggle:
@@ -94,7 +94,7 @@ icon: ticket
     </Frame>
   </Step>
   <Step>
-    Make your webhook respond to the `POST` request a payload containing these fields:
+    Make your webhook respond to the `POST` request with a payload containing these fields:
 
     - `externalId` (`string`): ID of the issue for the QA Wolf bug report in your issue tracker. It will be used to identify issues that will need to be updated in the future.
     - `humanId` (`string`): Human friendly issue ID that will be used on QA Wolf UI, Slack messages and other integrations.

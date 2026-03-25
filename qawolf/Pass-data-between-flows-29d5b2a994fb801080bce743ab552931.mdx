@@ -19,7 +19,7 @@ By connecting flows in this way, QA Wolf expands what’s possible in automated 
 
 ## How to share data across flows
 
-To create a Hopper you flow, you need two tests in separate flows.  Those flows can belong to the same group and even share tags.
+To create a Hopper flow, you need two tests in separate flows. Those flows can belong to the same group and even share tags.
 
 We will call Flow A the **producer** and Flow B the **consumer**.
 
@@ -34,7 +34,7 @@ setOutput("**TOKEN**", "abc123", "**USER_ID**", "42");
   If the same flow calls `setOutput` multiple times, it will simply overwrite the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail to run with the error `Workflow run failed due to conflicting dependency outputs`
 </Note>
 
-Now, go to Flow B and use `workflowInputs` to read values published by  Flow A.
+Now, go to Flow B and use `workflowInputs` to read values published by Flow A.
 
 ```bash
 // Flow B — consuming values
