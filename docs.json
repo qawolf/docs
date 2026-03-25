@@ -101,6 +101,7 @@
             "group": "Automate",
             "icon": "route",
             "pages": [
+              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
               "qawolf/Write-tests-by-hand-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
               "qawolf/Import-third-party-libraries-2c15b2a994fb8005ade6f0523aa5e798",
@@ -139,7 +140,9 @@
             "group": "QA Wolf University",
             "icon": "graduation-cap",
             "pages": [
-              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
+              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8",
+              "qawolf/Uploading-manually",
+              "qawolf/using-an-android-tablet"
             ]
           }
         ]
@@ -178,9 +181,10 @@
               "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
               "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
               "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c",
-              "qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63",
+              "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
               "qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2",
               "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
+              "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
               "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
               "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
             ]
@@ -194,13 +198,6 @@
               "qawolf/Asana-2a15b2a994fb805287acdba6373e6758",
               "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
               "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
-            ]
-          },
-          {
-            "group": "SSO",
-            "icon": "shield-check",
-            "pages": [
-              "qawolf/sso"
             ]
           }
         ]

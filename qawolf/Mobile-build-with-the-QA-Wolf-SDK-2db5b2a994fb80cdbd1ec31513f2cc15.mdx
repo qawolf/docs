@@ -3,7 +3,6 @@ title: "How to integrate a mobile build with the QA Wolf SDK"
 description: "Upload mobile build artifacts and trigger test runs from any CI system using the QA Wolf CI SDK."
 sidebarTitle: "Mobile: QA Wolf SDK"
 icon: smartphone
-
 ---
 
 ## Overview: When to use the CI SDK
@@ -19,7 +18,7 @@ This guide assumes only that your CI system can run Node.js.
 
   1. Make sure you have a CI pipeline that produces a mobile build artifact (APK, AAB, or IPA)
   2. Node.js 18 or later is available in your CI environment.
-  3. A QA Wolf API key is stored as a CI secret (**QAWOLF_API_KEY**),
+   3. A QA Wolf API key is stored as a CI secret (**QAWOLF_API_KEY**).
   4. [Artifact naming conventions](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments.
 
   Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
@@ -65,10 +64,10 @@ Make sure the job has access to the QAWOLF_API_KEY environment variable.
     </Frame>
   </Step>
   <Step>
-    Choose **Integrations**,
+    Choose **Integrations**.
   </Step>
   <Step>
-    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access?**.
+    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
 
     <Frame>
       ![](/images/integrating-with-CI-CD/image-16.png)
@@ -197,7 +196,7 @@ async function uploadRunArtifact(filePath: string): Promise<string> {
 
 After uploading the artifact, notify QA Wolf that a new deployment is ready for testing.
 
-```bash
+```javascript
 await sdk.attemptNotifyDeploy({
   deploymentType: "android_app",
   variables: {
@@ -216,10 +215,10 @@ If mobile triggers have not yet been enabled, this step will complete without st
 
 <Steps>
   <Step>
-    Run the CI job
+    Run the CI job.
   </Step>
   <Step>
-    Verify that the artifact upload completes successfully,
+    Verify that the artifact upload completes successfully.
   </Step>
   <Step>
     Confirm that the deployment notification step runs without errors.

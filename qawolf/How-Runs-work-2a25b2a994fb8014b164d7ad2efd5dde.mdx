@@ -4,19 +4,19 @@ description: "Learn how QA Wolf executes runs, retries failed flows, and reports
 icon: "circle-play"
 ---
 
-## What is a Run
+## What is a Run?
 
 A **run** is an execution of one or more **flows**. Runs can be started manually or invoked automatically by a schedule. Each flow in a run is attempted up to three times in case a failure is the result of a temporary flake.
 
 At the end of a run, it will be marked as either:
 
-- Completed. Indicating that all flows in the run have _passed_ or been marked _Do Not Investigate_.
-- Needs Investigation. Indicating that flows in the run failed but have _not_ been marked _Do Not Investigate_.
+- Completed, indicating that all flows in the run have _passed_ or been marked _Do Not Investigate_.
+- Needs Investigation, indicating that flows in the run failed but have _not_ been marked _Do Not Investigate_.
 
   <Note>
     A flow needing investigation should be reviewed quickly and identified as either a bug (and filed in your issue tracker) or a broken test (and be updated accordingly).
   </Note>
-- _Canceled_. Indicating that the run was cancelled mid-execution by a subsequent run matching the same branch and environment.
+- _Canceled_, indicating that the run was canceled mid-execution by a subsequent run matching the same branch and environment.
 
 ### Flow orchestration logic
 
@@ -45,8 +45,8 @@ A run can be initiated three ways:
 <Note>
   Environments move into investigation states when flows don’t pass:
 
-  - **Needs Investigation:** one or more flows failed all three attempts will be marked with the <Icon icon="circle" iconType="solid" color="yellow" /> icon.
-  - **Failed:** a flow associated with a high-priority bug report failed (based on your settings) will be marked with <Icon icon="circle" iconType="solid" color="red" /> icon,
+  - **Needs Investigation:** one or more flows that failed all three attempts will be marked with the <Icon icon="circle" iconType="solid" color="yellow" /> icon.
+  - **Failed:** a flow associated with a high-priority bug report that failed (based on your settings) will be marked with <Icon icon="circle" iconType="solid" color="red" /> icon.
 
   These states help you decide what’s safe to release and what needs attention.
 </Note>

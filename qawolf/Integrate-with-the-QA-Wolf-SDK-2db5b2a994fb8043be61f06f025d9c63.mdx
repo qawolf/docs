@@ -22,7 +22,7 @@ Deploy notifications signal that an environment is ready to be tested. When QA W
   - A deployment trigger configured by QA Wolf for your environment
 </Check>
 
-AccHow to install the CI SDK
+## How to install the CI SDK
 
 Install the SDK in the CI job that will notify QA Wolf:
 
@@ -69,4 +69,4 @@ If the notification succeeds and a matching trigger exists, QA Wolf creates a ne
 
 - **If the SDK call succeeds but no run appears in QA Wolf:** Confirm that a deployment trigger has been configured for your environment.
 - **If authentication fails:** Verify that QAWOLF_API_KEY is set correctly and available to the CI job.
-- **If a Node.js errors occur:** Confirm that Node.js 18 or later is available in the CI environment.
+- **If Node.js errors occur:** Confirm that Node.js 18 or later is available in the CI environment.
