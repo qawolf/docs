@@ -31,7 +31,7 @@ setOutput("**TOKEN**", "abc123", "**USER_ID**", "42");
 ```
 
 <Note>
-  If the same flow calls `setOutput` multiple times, it will simply overwrite the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail to run with the error `Workflow run failed due to conflicting dependency outputs`
+If the same flow calls `setOutput` multiple times, it will simply overwrite the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail to run with the error `Workflow run failed due to conflicting dependency outputs`.
 </Note>
 
 Now, go to Flow B and use `workflowInputs` to read values published by Flow A.
@@ -44,8 +44,8 @@ const userId = workflowInputs["**USER_ID**"]
 
 ## How to run Hopper flows
 
-- To run flows together, create a [schedule](/qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92) that targets **all flows** or flows with a **shared tag**. A scheduled run that includes all producers and consumers. A scheduled run can include either all flows in the environment or only flows with a specific tag.
-- To control execution order, create a Run Rule that runs producers before consumers. Run Rules that define execution order. Run Rules ensure producers run before consumers. They can be defined using groups, tags, or specific flow names.
+- To run flows together, create a [schedule](/qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92) that targets **all flows** or flows with a **shared tag**. A scheduled run can include either all flows in the environment or only flows with a specific tag.
+- To control execution order, create a Run Rule that runs producers before consumers. Run Rules ensure producers run before consumers. They can be defined using groups, tags, or specific flow names.
 
 <Danger>
   Producers and consumers must be included in the same scheduled run.
