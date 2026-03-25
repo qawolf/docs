@@ -102,7 +102,7 @@ QA Wolf automatically appends a random suffix after a + sign (i.e., plus address
 <Tip>
   Your application may not allow + symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
 
-  `const { emailAddress } = await getInbox({ new: true, delimiter: - });`
+  `const { emailAddress } = await getInbox({ new: true, delimiter: "-" });`
 
   The above generates new emails with random strings after the - symbol.
 </Tip>
@@ -111,7 +111,7 @@ QA Wolf automatically appends a random suffix after a + sign (i.e., plus address
 
 Often, you want your test to wait for a specific email to arrive and then verify its content. This approach is ideal for verifying signup confirmations or password reset links.
 
-```
+```javascript
 const { waitForMessage } = await getInbox({ new: true });
 
 const message = await waitForMessage({ subject: /Welcome to QA Wolf/ });
