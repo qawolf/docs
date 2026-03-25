@@ -56,7 +56,7 @@ Go to **Settings → CI/CD → Variables**.
 Click **Add variable**.
 </Step>
 <Step>
-Name the variable QA_WOLF_API_KEY.
+Name the variable `QAWOLF_API_KEY`.
 </Step>
 <Step>
 Paste your QA Wolf API key and save.
@@ -85,7 +85,7 @@ Choose **Integrations** and then click the <Icon icon="clipboard"/> to copy the 
 
 QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment.
 
-Add a job to your .gitlab-ci.yml that runs after your deploy step completes successfully.
+Add a job to your `.gitlab-ci.yml` that runs after your deploy step completes successfully.
 
 ```yml expandable
 stages:
@@ -105,7 +105,7 @@ notify_qawolf:
   script:
     - |
       curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
-        -H "Authorization: Bearer $QA_WOLF_API_KEY" \
+        -H "Authorization: Bearer $QAWOLF_API_KEY" \
         -H "Content-Type: application/json" \
         -d "{
           \"branch\": \"$CI_COMMIT_REF_NAME\",
