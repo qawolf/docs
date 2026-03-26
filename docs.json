@@ -111,12 +111,14 @@
         "groups": [
           {
             "group": "Email & SMS",
+            "icon": "voicemail",
             "pages": [
               "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
             ]
           },
           {
             "group": "Device hardware & compatibility",
+            "icon": "monitor-smartphone",
             "pages": [
               "qawolf/using-an-android-tablet"
             ]
@@ -176,6 +178,8 @@
           },
           {
             "group": "Messaging",
+            "icon": "messages-square",
+
             "pages": [
               "qawolf/Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae"
             ]
