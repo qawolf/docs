@@ -2,6 +2,7 @@
 title: "How Runs work"
 description: "Learn how QA Wolf executes runs, retries failed flows, and reports results as completed or needs investigation."
 icon: "circle-play"
+sidebarTitle: "Run a flow or suite"
 ---
 
 ## What is a Run?
@@ -12,7 +13,6 @@ At the end of a run, it will be marked as either:
 
 - Completed, indicating that all flows in the run have _passed_ or been marked _Do Not Investigate_.
 - Needs Investigation, indicating that flows in the run failed but have _not_ been marked _Do Not Investigate_.
-
   <Note>
     A flow needing investigation should be reviewed quickly and identified as either a bug (and filed in your issue tracker) or a broken test (and be updated accordingly).
   </Note>
