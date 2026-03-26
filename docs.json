@@ -36,7 +36,17 @@
         "icon": "house",
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
-          "qawolf/quick-start"
+          "qawolf/quick-start",
+          {
+            "group": "Reference",
+            "icon": "brain",
+            "pages": [
+              "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
+              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
+              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8",
+              "qawolf/faq"
+            ]
+          }
         ]
       },
       {
@@ -60,8 +70,9 @@
               "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
               "qawolf/Use-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
-              "qawolf/Import-third-party-libraries-2c15b2a994fb8005ade6f0523aa5e798",
-              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e"
+              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
+              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
+              "qawolf/Uploading-manually"
             ]
           },
           {
@@ -70,6 +81,7 @@
             "pages": [
               "qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
               "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
+              "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
               "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd",
               "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92"
             ]
@@ -106,56 +118,6 @@
             "group": "Device hardware & compatibility",
             "pages": [
               "qawolf/using-an-android-tablet"
-            ]
-          },
-          {
-            "group": "Homeless",
-            "pages": [
-              {
-                "group": "Map",
-                "icon": "map",
-                "pages": [
-                  "qawolf/Get-to-know-our-ai-interface"
-                ]
-              },
-              {
-                "group": "Automate",
-                "icon": "route",
-                "pages": [
-                  "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb"
-                ]
-              },
-              {
-                "group": "Runs",
-                "icon": "play",
-                "pages": [
-                  "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be"
-                ]
-              },
-              {
-                "group": "Bugs",
-                "icon": "bug",
-                "pages": [
-                  "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5"
-                ]
-              },
-              "qawolf/Check-in-changes-2c65b2a994fb8073826be9391a8e2238",
-              {
-                "group": "QA Wolf University",
-                "icon": "graduation-cap",
-                "pages": [
-                  "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8",
-                  "qawolf/Uploading-manually"
-                ]
-              },
-              {
-                "group": "Reference",
-                "icon": "brain",
-                "pages": [
-                  "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
-                  "qawolf/faq"
-                ]
-              }
             ]
           }
         ]
