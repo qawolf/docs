@@ -67,11 +67,11 @@
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
               "qawolf/Write-tests-by-hand-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
               "qawolf/Use-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
               "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
-              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
+              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
               "qawolf/Uploading-manually"
             ]
           },
@@ -80,10 +80,11 @@
             "icon": "play",
             "pages": [
               "qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
+              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
+              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92-copied-1",
               "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
               "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
-              "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd",
-              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92"
+              "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd"
             ]
           },
           {
