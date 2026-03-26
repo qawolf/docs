@@ -1,7 +1,7 @@
 ---
 title: "Schedule and order flows"
 description: "Create scheduled and event-based runs, choose which flows to include, and set the execution order."
-sidebarTitle: "Schedule and order flows"
+sidebarTitle: "Scheduling and order flows"
 icon: "calendar-clock"
 ---
 
@@ -22,6 +22,7 @@ icon: "calendar-clock"
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-4.png)
     </Frame>
+
     a. **Name** lets you give your schedule a descriptive name.
 
     b. Set the Type to **Scheduled**.
@@ -29,6 +30,7 @@ icon: "calendar-clock"
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-5.png)
     </Frame>
+
     <Danger>
       The other three options require some setup from QA Wolf. These are:
 
@@ -36,6 +38,7 @@ icon: "calendar-clock"
       - _Pull Request Testing Button_ – Triggers a run from a custom button configured in your VCS.
       - _GitHub Deployment_ – Available for teams using GitHub-based deployments specifically.
     </Danger>
+
     c. **Flows to run** lets you run _All flows_ or _Flows with selected tags_.
 
     d. **Concurrency limit** lets you set a maximum number of concurrent flows to control load on your system.
@@ -43,6 +46,7 @@ icon: "calendar-clock"
     <Danger>
       By setting the concurrency limit here, you will override the value in **`Workspace name → Workspace settings → Environment`**
     </Danger>
+
     e. **Frequency** lets you choose to schedule runs _Every day_ or _Every hour_.
 
     <Note>
@@ -90,15 +94,18 @@ icon: "calendar-clock"
     <Tip>
       Use **Fail workflows if any priors fail** when failures in an earlier set of tests (for example, sanity tests) make later tests likely to fail for the same reason. Skipping those later tests reduces noise, shortens run time, and keeps the failure list focused on the root cause.
     </Tip>
+
     <Note>
       Only **active** flows execute in a run. Drafts are ignored even if they’re part of a rule.
     </Note>
+
     <Tip>
       Create as many rules as you need. For example, if you want flows to run **A → B → C**, create two rules:
 
       - Run **A** before **B**
       - Run **B** before **C**
     </Tip>
+
     <Tip>
       The UI prevents most circular setups, but it’s still good practice to double-check your before/after sets.
     </Tip>
