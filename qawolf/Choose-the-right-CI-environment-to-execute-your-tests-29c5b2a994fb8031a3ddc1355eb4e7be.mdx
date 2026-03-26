@@ -5,9 +5,9 @@ icon: "layers"
 sidebarTitle: "Choose the target environment"
 ---
 
-## Match your testing goals to the environment you run them in
+When deciding which environment to run your test in, match your testing goals to the environment you run them in
 
-### Goal: Test Stability
+### Staging: When test stability matters most
 
 Use your **Staging** (QA or Test) environment for the best balance between reliability and safety.
 
@@ -21,7 +21,7 @@ Use your **Staging** (QA or Test) environment for the best balance between relia
   Staging may lag behind active development. If releases are infrequent, regressions might not surface until later in testing.
 </Note>
 
-### Goal: Get rapid feedback during test development
+### Development: Get rapid feedback during test development
 
 Run tests in your **Development** environment to identify regressions early.
 
@@ -35,7 +35,7 @@ Run tests in your **Development** environment to identify regressions early.
   Development environments can be unstable or inconsistent. Failing tests here often point to temporary issues rather than actual defects.
 </Note>
 
-### Goal: Verify the real user experience
+### Production: Verify the real user experience
 
 Run tests in **Production** when you need complete confidence in real-world behavior.
 
@@ -49,9 +49,9 @@ Run tests in **Production** when you need complete confidence in real-world beha
   Bugs discovered here have already reached users. Some flows (such as payments) may trigger real transactions or pose a financial risk.
 </Danger>
 
-### Goal: Validate changes before merging code
+### Preview environments: Validate changes before merging code
 
-Ask QA Wolf to help you enable **PR testing** to run your flows automatically on each pull request.
+Ask QA Wolf to help you enable **PR testing** to run your flows automatically on each pull request in ephemeral preview environments.
 
 **What this gives you**
 
@@ -60,7 +60,7 @@ Ask QA Wolf to help you enable **PR testing** to run your flows automatically on
 - Faster, safer release cycles.
 
 <Note>
-  PR testing requires dedicated or isolated environments. Shared resources or reused credentials can cause flaky results.
+  PR testing requires dedicated, isolated environments. Shared resources or reused credentials can cause flaky results.
 </Note>
 
 <Tip>
