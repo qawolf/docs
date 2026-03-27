@@ -64,9 +64,9 @@
             "group": "Automate",
             "icon": "route",
             "pages": [
-              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/Write-tests-by-hand-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
+              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
+              "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
               "qawolf/Use-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
@@ -179,7 +179,6 @@
           {
             "group": "Messaging",
             "icon": "messages-square",
-
             "pages": [
               "qawolf/Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae"
             ]
