@@ -5,42 +5,35 @@ sidebarTitle: "Element picker"
 icon: "crosshair"
 ---
 
-## What is the Elements tab?
+The Elements tab is a testing-focused inspection tool built into the Automate tab. Unlike standard browser developer tools, it is optimized for identifying elements and generating stable locators rather than for debugging or modifying page structure. It is read-only and does not modify the page structure.
 
-The Elements tab is a testing-focused inspection tool designed to help create reliable tests. Unlike standard browser developer tools, it is optimized for identifying elements and creating stable locators rather than for debugging or modifying page structure.
-
-Use the Elements tab to inspect the DOM, evaluate attributes, and design locators that are well-suited for automated testing. This focus helps reduce brittle locators and improves test stability over time.
-
-The Elements tab is read-only and does not modify the page structure.
-
-## How to choose locators for an element
+Use it while writing or debugging a flow to find and verify selectors before adding them to your code.
 
 <Note>
   You must have an active browser session to use the **Elements** tab.
 </Note>
 
+## Pick a locator
+
 <Steps>
   <Step>
-    Click **Open dev tools**.
-  </Step>
-  <Step>
-    Click an element in the browser to inspect. The Elements tab will populate with the platform's recommended locator for that element.
+    Click an element in the browser to inspect it. The Elements tab populates with the platform's recommended locator for that element.
 
     <Frame>
-      ![](/images/building-and-maintaining-flows/image-15.png)
+      ![Element Picker 1](/images/element-picker-1.png)
     </Frame>
   </Step>
   <Step>
-    Pick an alternate locator from the Locator dropdown (the platform's recommended locator floats to the top).
+    To use a different locator, open the **Locator** dropdown. The platform's recommended locator appears at the top.
   </Step>
   <Step>
-    Use the **Action** dropdown to select a valid element interaction (defaults to click) or assertion. The locator populates in the field below the **Action** dropdown.
+    Use the **Action** dropdown to select an interaction or assertion. The locator populates in the field below.
   </Step>
   <Step>
-    Copy and paste the locator into your test.
+    Copy and paste the locator into your flow.
 
     <Check>
-      You can prevent many common test failures caused by changing locators by using a stable `test ID` attribute — one that stays the same even when the UI layout or styling changes.
+      Use a stable `test ID` attribute where possible — one that stays the same even when the UI layout or styling changes. This prevents many common test failures caused by shifting locators.
     </Check>
   </Step>
 </Steps>

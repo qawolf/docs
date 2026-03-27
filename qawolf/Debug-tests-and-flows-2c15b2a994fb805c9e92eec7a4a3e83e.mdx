@@ -5,66 +5,64 @@ sidebarTitle: "Debug tests & flows"
 icon: "bug-play"
 ---
 
-![Automate Failed Flow](/images/automate-failed-flow.png)
+## Run your flow
 
-### Try out your flow
-
-<Steps>
-  <Step>
-    When you’re ready to execute your test, click **Run code**. A live browser appears in the right panel, allowing you to watch the code execute and interact with the page just as a user would.
-
-    <Frame>
-    </Frame>
-  </Step>
-</Steps>
-
-### Debugging tests
-
-If your test fails, a red Flow failed banner appears at the top of the editor. The failed line is highlighted in red to make it easy to spot.
+Click **Run** to execute the flow. A live browser appears in the right panel where you can watch the code execute in real time.
 
 <Frame>
-  ![](/images/building-and-maintaining-flows/image-17.png)
+  ![Automate Run Flow](/images/automate-run-flow.png)
 </Frame>
+
+When the flow completes successfully, a green **Flow passed** banner appears at the top of the editor.
+
+## Debug a failure
+
+If something goes wrong, a red **Flow failed** banner appears at the top of the editor and the failed line is highlighted in red.
 
 <Frame>
-  ![](/images/building-and-maintaining-flows/image-34.png)
+  ![Automate Failed Flow](/images/automate-failed-flow.png)
 </Frame>
 
-<Steps>
-  <Step>
-    Make the appropriate changes.
+You have three options for fixing it:
 
-    QA Wolf allows you to execute only selected lines of code to expedite debugging. Reset the app state in the browser, highlight the selected lines, and click Run.
+**Fix with AI** — click **Fix with AI** in the banner to let Automation AI diagnose and repair the failure automatically. You can also describe the problem in the AI chat panel or paste the error directly from the **Logs** tab.
 
-    <Frame>
-      ![](/images/building-and-maintaining-flows/image-18.png)
-    </Frame>
-  </Step>
-  <Step>
-    Re-execute the test. Green checkmarks also appear next to each line of code that ran successfully. When the test runs successfully from start to finish, a green **Flow passed** banner appears at the top of the page.
+**Run selected lines** — reset the app state in the browser, select the lines you want to test, and click **Run**. This lets you iterate on a specific section without re-running the entire flow.
 
-    <Frame>
-      ![](/images/building-and-maintaining-flows/image-19.png)
-    </Frame>
+**Run a test block** — select an entire `test()` function and click **Run** to execute that step in isolation.
 
-    <Note>
-      A **manual run** is a flow run—rather than a test run—started from the **Flows** tab’s **Run all flows**. It’s considered manual because it isn’t scheduled.
-    </Note>
-  </Step>
-</Steps>
+## Use the debugging panels
 
-### Executing the whole flow
+The bottom right panel has four tabs that provide different views into your flow's execution.
 
-<Check>
-  Once a test passes on its own, run the entire flow. This can surface issues that don’t appear when the test runs in isolation.
-</Check>
+**Problems** — the default tab when you open a flow. Appears when QA Wolf detects issues such as naming conflicts. Affected files and folders are marked with a yellow dot in the file tree. Resolve any problems listed before running or publishing to avoid confusing output.
 
-<Steps>
-  <Step>
-    From the **Flows** tab, teams can manually run all flows by clicking **Run all flows**. Clicking this opens the **Runs** tab, where an icon shows the flow in progress.
+<Frame>
+  ![Automate Problems](/images/automate-problems.png)
+</Frame>
 
-    <Frame>
-      ![](/images/building-and-maintaining-flows/image-20.png)
-    </Frame>
-  </Step>
-</Steps>
+**Logs** — shows a timestamped execution log. When a flow fails, the error message here is the fastest way to understand what went wrong. You can paste the log output directly into the AI chat panel to get a fix.
+
+**Elements** — lets you enter a locator or CSS selector to highlight matching elements in the live browser. Useful for verifying selectors while writing or debugging a flow. See [Element picker](#) for more detail.
+
+<Frame>
+  ![Element Picker](/images/element-picker.png)
+</Frame>
+
+**Details** — shows tags and readiness status for the current flow. Both fields can be edited directly from this tab. After a run, switches to show individual run steps with timing, useful for identifying slow or hung steps.
+
+<Frame>
+  ![Automate Browser Details](/images/automate-browser-details.png)
+</Frame>
+
+## Check run history
+
+The **Run History** tab shows a pass/fail chart and the result of the most recent run.
+
+<Frame>
+  ![Automate Run History 1](/images/automate-run-history-1.png)
+</Frame>
+
+<Note>
+  Run History only shows results from scheduled runs. Manual runs from the editor or Map tab do not appear here. See [Run a flow or suite](/qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel) for a full explanation of run types.
+</Note>
