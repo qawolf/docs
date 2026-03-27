@@ -69,7 +69,6 @@
               "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
-              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
               "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
               "qawolf/Uploading-manually"
             ]
@@ -79,8 +78,9 @@
             "icon": "play",
             "pages": [
               "qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel",
-              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
-              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92-copied-1",
+              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
+              "qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92",
+              "qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1",
               "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
               "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
               "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd"
