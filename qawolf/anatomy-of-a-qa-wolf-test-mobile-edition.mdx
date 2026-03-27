@@ -5,7 +5,7 @@ icon: "puzzle"
 sidebarTitle: "Anatomy of a flow"
 ---
 
-If Automation AI generated a flow for you and you want to understand what it produced, this page explains each part" — would bridge that gap without changing anything else.
+If Automation AI generated a flow for you and you want to understand what it produced, this page explains each part.
 
 If your team has written Playwright or Appium tests before, QA Wolf tests will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
 
@@ -81,6 +81,37 @@ export default flow(
 <Note>
   In vanilla Playwright, you configure browsers in `playwright.config.js`. In vanilla Appium, you configure the target device through desired capabilities. In QA Wolf, the platform string handles both. The infrastructure resolves it at runtime.
 </Note>
+
+Here are the three platform variants:
+
+## Environment variables
+
+Use `process.env.VAR_NAME` to reference environment variables in your flow. They are typically used in the Arrange section before the session launches.
+
+<CodeGroup>
+
+```javascript Web
+const { context } = await launch();
+const page = await context.newPage();
+await page.goto(process.env.BASE_URL);
+```
+
+```javascript iOS
+const driver = await wdio.startIos({
+  "appium:app": process.env.APP_STAGING,
+  "appium:autoAcceptAlerts": true,
+});
+```
+
+```javascript Android
+const driver = await wdio.startAndroid({
+  "appium:app": process.env.APP_STAGING,
+});
+```
+
+</CodeGroup>
+
+To set environment variables for your flows, see [Environment setup](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f#create-and-manage-environment-variables).
 
 ## The AAA framework
 
