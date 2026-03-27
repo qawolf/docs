@@ -16,7 +16,7 @@ Failures generally fall into one of the following categories:
 
 Correctly identifying the cause helps you determine whether the failing flow should be retried, fixed, deferred, or accepted to clear the release.
 
-## How to use the Investigation view to diagnose a failure
+## Use the Investigation view to diagnose a failure
 
 The **Investigation view** is where you diagnose flows that failed during a scheduled or event-based run. It brings together everything you need to understand what happened in a single run and decide what to do next.
 
@@ -26,7 +26,7 @@ You reach the Investigation view by opening a run from the **Runs** tab when tha
   ![](/images/execution-scheduling-bugs-and-maintenance/image-16.png)
 </Frame>
 
-### To find failing flows:
+### Find failing flows
 
 <Steps>
   <Step>
@@ -41,7 +41,7 @@ You reach the Investigation view by opening a run from the **Runs** tab when tha
   </Step>
 </Steps>
 
-### To identify the failing line of code:
+### Identify the failing line of code
 
 <Steps>
   <Step>
@@ -56,7 +56,7 @@ You reach the Investigation view by opening a run from the **Runs** tab when tha
   </Step>
 </Steps>
 
-### To compare attempts in a single run:
+### Compare attempts in a single run
 
 If a flow was retried multiple times during a run, you can switch between attempts to determine whether the failure was consistent or occurred only under certain conditions.
 
@@ -64,7 +64,7 @@ If a flow was retried multiple times during a run, you can switch between attemp
   ![](/images/execution-scheduling-bugs-and-maintenance/image-19.png)
 </Frame>
 
-### To review what happened in the browser during the most recent run:
+### Rview what happened in the browser during the most recent run
 
 Recorded video shows exactly what happened in the browser during the selected attempt, which is often the fastest way to understand unexpected behavior.
 
@@ -72,7 +72,7 @@ Recorded video shows exactly what happened in the browser during the selected at
   ![](/images/execution-scheduling-bugs-and-maintenance/image-20.png)
 </Frame>
 
-### To compare previous runs:
+### Compare previous runs
 
 To review video of up to the last 100 runs of a flow, including all attempts, use the flow’s **Run History** tab.
 
@@ -80,7 +80,7 @@ To review video of up to the last 100 runs of a flow, including all attempts, us
   ![](/images/execution-scheduling-bugs-and-maintenance/image-21.png)
 </Frame>
 
-### To get access to Playwright traces:
+### Access Playwright traces
 
 <Steps>
   <Step>
@@ -92,13 +92,14 @@ To review video of up to the last 100 runs of a flow, including all attempts, us
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-22.png)
     </Frame>
+
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-23.png)
     </Frame>
   </Step>
 </Steps>
 
-## How to use the run history, activity, and notes to diagnose failures
+## Use the run history, activity, and notes to diagnose failures
 
 Some issues only become clear when you look beyond a single run. **Run History** shows the last 100 runs for a flow, including each attempt. Reviewing this history helps you spot patterns such as intermittent failures, regressions after changes, or flows that consistently fail in the same place.
 
@@ -109,11 +110,12 @@ You’ll typically access these tools from the **Flows** tab in **No-code Mode**
 </Frame>
 
 <Tip>
-    You can also review Run History in the Code editor. Select the flow you want to debug, then click the **Run History** tab in the right panel.
+  You can also review Run History in the Code editor. Select the flow you want to debug, then click the **Run History** tab in the right panel.
 
   <Frame>
     ![](/images/execution-scheduling-bugs-and-maintenance/image-25.png)
   </Frame>
+
   In addition, you can access the Run History tab from the Investigation view.
 
   <Frame>
@@ -121,7 +123,7 @@ You’ll typically access these tools from the **Flows** tab in **No-code Mode**
   </Frame>
 </Tip>
 
-### To focus on a specific flow:
+### Focus on a specific flow
 
 <Steps>
   <Step>
@@ -139,7 +141,7 @@ You’ll typically access these tools from the **Flows** tab in **No-code Mode**
   </Step>
 </Steps>
 
-### To review change history:
+### Review change history
 
 The **Activity tab** shows changes made to a flow over time, including Readiness updates and maintenance reports. This helps explain _when_ a flow was modified or temporarily removed from runs and why.
 
@@ -147,7 +149,7 @@ The **Activity tab** shows changes made to a flow over time, including Readiness
   ![](/images/execution-scheduling-bugs-and-maintenance/image-28.png)
 </Frame>
 
-### To record and review notes specific to the flow:
+### Record and review notes specific to the flow
 
 The **Notes** tab lets you record context about a flow, such as known issues, edge cases, or investigation findings. Notes are saved per flow and can help guide future diagnosis and maintenance.
 

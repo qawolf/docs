@@ -20,7 +20,7 @@ A run that contains failed flows remains in **Investigating** or **Failed** as l
 
 A run transitions to _Completed_ only after all failed flows have been resolved. Once all runs are completed, the environment exits the _Needs investigation_ or _Failed_ status and can be considered ready for release.
 
-## How to reattempt a failure caused by a flake
+## Reattempt a failure caused by a flake
 
 Reattempting all failures in a run is appropriate when all failures in the run are believed to be caused by a flake or a temporary environment glitch.
 
@@ -43,7 +43,7 @@ Reattempting all failures in a run is appropriate when all failures in the run a
   </Step>
 </Steps>
 
-## How to bypass a failing flow to clear a release
+## Bypass a failing flow to clear a release
 
 Bypassing a failed flow is appropriate when the failure is understood and should not block the release, even if the flow has not passed (e.g., an understood failure in a third-party dependency). Bypassing does not fix the flow or the underlying issue. Instead, it records that the failure has been reviewed and does not require further investigation for the current release.
 
@@ -82,7 +82,7 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
   </Frame>
 </Tip>
 
-## How to repair a broken test using AI to unblock a release
+## Repair a broken test using AI to unblock a release
 
 <Steps>
   <Step>
@@ -101,16 +101,11 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
   <Step>
     Click **Run code**.
   </Step>
-  <Step>
-    When the flow fails, click the **Ask** <Icon icon="/images/execution-scheduling-bugs-and-maintenance/QA_Wolf_mark.svg" size={18} /> next to the failed line to get AI help analyzing and updating the code. AI will make changes to your code in place and show its reasoning in the right panel.
-
-    <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-35.png)
-    </Frame>
-    <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-36.png)
-    </Frame>
+  <Step title="When the flow fails, click Fix with AI in the banner at the top of the editor. Describe the problem or let the AI interpret the error automatically.">
   </Step>
+</Steps>
+
+<Steps>
   <Step>
     When satisfied with the changes, [review and publish](/qawolf/Write-tests-by-hand-2c15b2a994fb802193a5c05e0219eb59#publishing-changes) your changes.
   </Step>
@@ -119,7 +114,7 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
   </Step>
 </Steps>
 
-## Clearing the release when there’s a bug in the app or test that can’t be fixed immediately
+## Clear the release when there’s a bug in the app or test that can’t be fixed immediately
 
 Some failures represent real issues but are not practical to fix during the current release. In these cases, the appropriate action is to document the work required and allow the release to proceed.
 
@@ -127,12 +122,8 @@ Follow-up work generally falls into two categories:
 
 **For bugs**
 
-- [File a bug report](/qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f)
-
-  When you file a bug report, the severity is used to display warnings about the safety of a given release.
+- [File a bug report](/qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f) When you file a bug report, the severity is used to display warnings about the safety of a given release.
 
 **For flow maintenance**
 
-- [File a maintenance report](/qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa)
-
-  This prevents the flow from being executed in runs until it is fixed, which resolves the investigation state without requiring an immediate fix.
+- [File a maintenance report](/qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa) This prevents the flow from being executed in runs until it is fixed, which resolves the investigation state without requiring an immediate fix.
