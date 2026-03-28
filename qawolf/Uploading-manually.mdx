@@ -4,8 +4,6 @@ description: "Manually upload files to QA Wolf using the signed URL API."
 icon: "upload"
 ---
 
-## Overview
-
 QA Wolf accepts file uploads via a two-step signed URL process:
 
 1. Request a signed upload URL from the QA Wolf API
@@ -13,17 +11,9 @@ QA Wolf accepts file uploads via a two-step signed URL process:
 
 This method works for any supported file type and can be used for one-off uploads or as part of a custom automation.
 
-<Warning>
-  Only the following file types are accepted: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`, `.csv`, `.pdf`
-</Warning>
-
----
-
 ## Prerequisites
 
-- Your `QAWOLF_API_KEY` — available under `Workspace Name`**→** **Workspace Settings → Integrations → API Access**
-
----
+- Your `QAWOLF_API_KEY` — available under `Workspace Name` **→ Workspace Settings → Integrations → API Access**
 
 ## Step 1: Generate a signed URL
 
@@ -51,8 +41,6 @@ Copy the `signedUrl` — you'll use it in the next step.
   The signed URL is temporary. Upload your file promptly after generating it.
 </Note>
 
----
-
 ## Step 2: Upload the file
 
 Use the `signedUrl` from Step 1 to upload your file via a `PUT` request.
@@ -60,19 +48,73 @@ Use the `signedUrl` from Step 1 to upload your file via a `PUT` request.
 ```bash
 curl -X PUT \
   --header "Content-Type: application/octet-stream" \
-  --data-binary @./path/to/your/file \
+  --data-binary @/path/to/your/file \
   "$SIGNED_URL"
 ```
 
 Once this completes successfully, the file is available in QA Wolf.
 
----
+## Use an uploaded file in a flow
 
-## File-specific notes
+### Mobile apps
+
+Reference the uploaded file using the `RUN_INPUT_PATH` environment variable, which is set automatically when a file is uploaded via the API.
+
+```javascript
+const APK_PATH = `/home/wolf/run-inputs-executables/${process.env.RUN_INPUT_PATH || "default-file.apk"}`;
+
+const driver = await wdio.startAndroid({
+  "appium:app": APK_PATH,
+});
+```
+
+<Note>
+  For mobile testing, the best approach is to upload new builds automatically as part of your CI/CD pipeline rather than uploading manually. See [Integrating your mobile CI pipeline](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) for how to set this up.
+</Note>
+
+### Web file upload
+
+Use Playwright's `filechooser` event to intercept the file dialog and set the uploaded file programmatically.
+
+```javascript
+const fileName = `${process.env.TEAM_STORAGE_DIR}/fileNameHere`;
+
+page.once(
+  "filechooser",
+  (chooser) => void chooser.setFiles(fileName).catch(console.error)
+);
+
+await page.getByText("Upload file").click();
+```
+
+<Note>
+  Use `page.once` rather than `page.on`. `page.once` registers a one-time event listener that automatically unregisters after the first use. Using `page.on` adds a persistent listener that may interfere with subsequent file uploads in the same flow.
+</Note>
+
+### PDF viewing
+
+Use the internal PDF viewer to open an uploaded PDF file in a flow.
+
+```javascript
+const invoicePath = `${process.env.TEAM_STORAGE_DIR}/invoices/invoice-1.pdf`;
+
+const pdfPage = await context.newPage();
+await pdfPage.goto("http://pdf-viewer.psc.qaw.internal");
+
+pdfPage.once(
+  "filechooser",
+  (chooser) => void chooser.setFiles(invoicePath).catch(console.error)
+);
+
+await pdfPage.waitForTimeout(4000);
+await pdfPage.click("#openFile");
+```
+
+## Supported file types
 
 <AccordionGroup>
   <Accordion title="Mobile apps (.apk, .aab, .ipa)">
-    Use a static filename based on the environment (e.g., `app-staging.ipa`) so tests always reference the latest build. See [Integrating your mobile CI pipeline](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) for how to automate this as part of your build process.
+    Use a static filename based on the environment (e.g., `app-staging.ipa`) so tests always reference the latest build. See [Integrating your mobile CI pipeline](#) for how to automate this as part of your build process.
   </Accordion>
 
   <Accordion title="ZIP archives (.zip)">
