@@ -1,6 +1,6 @@
 ---
 title: "Scheduling flows"
-description: "Create scheduled and event-based runs, choose which flows to include."
+description: "Create scheduled and event-based runs, choose which flows to include, and set the execution order."
 sidebarTitle: "Scheduling flows"
 icon: "calendar-clock"
 ---
@@ -15,7 +15,7 @@ icon: "calendar-clock"
     Click **Scheduled**, then **Schedule a run** on the right.
 
     <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-3.png)
+      ![Runs Scheduled](/images/runs-scheduled.png)
     </Frame>
   </Step>
   <Step>
@@ -25,61 +25,57 @@ icon: "calendar-clock"
       ![](/images/execution-scheduling-bugs-and-maintenance/image-4.png)
     </Frame>
 
-    a. **Name** lets you give your schedule a descriptive name.
+    a. **Name** — give your schedule a descriptive name.
 
-    b. Set the Type to **Scheduled**.
+    b. **Type** — set to **Scheduled** for a time-based run.
 
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-5.png)
     </Frame>
 
     <Note>
-      The other three options require some setup from QA Wolf. These are:
+      The other three options require setup from QA Wolf:
 
-      - _Deployment_ – Triggers a run from a version control system (VCS) deployment hook.
-      - _Pull Request Testing Button_ – Triggers a run from a custom button configured in your VCS.
-      - _GitHub Deployment_ – Available for teams using GitHub-based deployments specifically.
+      - _Deployment_ — triggers a run from a VCS deployment hook
+      - _Pull Request Testing Button_ — triggers a run from a custom button in your VCS
+      - _GitHub Deployment_ — available for teams using GitHub-based deployments
     </Note>
 
-    c. **Flows to run** lets you run _All flows_ or _Flows with selected tags_.
+    c. **Flows to run** — run _All flows_ or _Flows with selected tags_. See [Use tags effectively](#) to learn how to tag your flows.
 
-    d. **Concurrency limit** lets you set a maximum number of concurrent flows to control load on your system.
+    d. **Concurrency limit** — sets the maximum number of concurrent flows to control load on your system. This overrides the value set in **Workspace settings → Environment**.
 
-    <Danger>
-      By setting the concurrency limit here, you will override the value in **`Workspace name → Workspace settings → Environment`**
-    </Danger>
-
-    e. **Frequency** lets you choose to schedule runs _Every day_ or _Every hour_.
+    e. **Frequency** — choose _Every day_ or _Every hour_.
 
     <Note>
-      Once you’ve set up schedules for an environment, runs will appear in the Scheduled tab as soon as they are started.
+      Once you've set up schedules for an environment, runs will appear in the Scheduled tab as soon as they are started.
     </Note>
   </Step>
 </Steps>
 
-## Managing schedules
+## Manage schedules
 
-#### See all the schedules you have created
+### See all schedules
 
 <Steps>
   <Step>
     Open the **Runs** tab and click **Scheduled** from the lower left.
 
     <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-9.png)
+      ![Runs Schedules](/images/runs-schedules.png)
     </Frame>
   </Step>
 </Steps>
 
-#### Pause a schedule
+### Pause a schedule
 
 <Steps>
   <Step>
-    Click the icon to the right of the schedule, then click **Pause**. Paused jobs will appear in grey text with a status of **Paused**.
+    Click the icon to the right of the schedule, then click **Pause**. Paused schedules appear in grey text with a status of **Paused**.
   </Step>
 </Steps>
 
-#### Edit a schedule
+### Edit a schedule
 
 <Steps>
   <Step>

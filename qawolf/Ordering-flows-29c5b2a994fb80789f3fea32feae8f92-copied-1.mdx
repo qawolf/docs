@@ -1,77 +1,70 @@
 ---
 title: "Ordering flows"
-description: "Run Rules allow you to control the order flows that depend others run in.."
+description: "Use Run Rules to control the order that dependent flows run in."
 sidebarTitle: "Ordering flows"
-icon: "calendar-clock"
+icon: "arrow-down-up"
 ---
 
-## Create Run Rules
+Run Rules let you control the sequence flows run in. Each rule defines one **before** set and one **after** set of flows. You can select flows by name, group, or tag.
 
-<Tip>
-  The order that flows run in doesn’t always matter, but when it does — for example, when you want to run quick sanity checks before longer or more complex flows — you can set that sequence with **Run Rules**.
+The order flows run in doesn't always matter, but when it does — for example, when you want quick sanity checks to complete before longer or more complex flows — Run Rules give you that control.
 
-  Each **Run Rule** defines one **before** set and one **after** set of flows. You can choose which flows belong in each set — either pick them by name or include them using their groups or tags.
-</Tip>
+## Create a Run Rule
 
 <Steps>
   <Step>
-    From the **Runs** tab, click **Rules** (under **Scheduled**).
+    From the **Runs** tab, click **Rules** under **Scheduled**.
   </Step>
   <Step>
-    You’ll see a list of existing rules for your workspace.
-
-    <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-6.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **Create Rule** to open a drawer where you will define the rule.
+    Click **Create Rule** to open a drawer.
 
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-7.png)
     </Frame>
   </Step>
   <Step>
-    Click **Create Rule** to define which flows, groups, or tags should run before and after the others.
+    Define which flows, groups, or tags should run before and after the others.
+
+    See [Use tags effectively](/qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb) if you want to use tags to select flows.
+  </Step>
+  <Step>
+    Toggle **Fail workflows if any priors fail** to automatically skip downstream flows when an earlier flow fails. This is enabled by default.
+
+    <Note>
+      Use this when failures in an earlier set of flows — for example, sanity tests — make later flows likely to fail for the same reason. Skipping those later flows reduces noise, shortens run time, and keeps the failure list focused on the root cause.
+    </Note>
 
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-8.png)
     </Frame>
   </Step>
   <Step>
-    Click the **Fail workflows if any priors fail** toggle to automatically skip downstream flows when an earlier flow fails. This option is enabled by default.
-
-    <Tip>
-      Use **Fail workflows if any priors fail** when failures in an earlier set of tests (for example, sanity tests) make later tests likely to fail for the same reason. Skipping those later tests reduces noise, shortens run time, and keeps the failure list focused on the root cause.
-    </Tip>
-
-    <Note>
-      Only **active** flows execute in a run. Drafts are ignored even if they’re part of a rule.
-    </Note>
-
-    <Tip>
-      Create as many rules as you need. For example, if you want flows to run **A → B → C**, create two rules:
-
-      - Run **A** before **B**
-      - Run **B** before **C**
-    </Tip>
-
-    <Tip>
-      The UI prevents most circular setups, but it’s still good practice to double-check your before/after sets.
-    </Tip>
+    Click **Create Rule** to save.
   </Step>
 </Steps>
 
+<Note>
+  Only **active** flows execute in a run. Drafts are ignored even if they're part of a rule.
+</Note>
+
+<Tip>
+  To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
+</Tip>
+
+<Tip>
+  The UI prevents most circular setups, but it's good practice to double-check your before and after sets.
+</Tip>
+
 ## Manage Run Rules
 
-#### To see all the rules you have created
+### See all rules
 
 Open the **Runs** tab and click **Rules** from the lower left.
 
 <Frame>
-  ![](/images/execution-scheduling-bugs-and-maintenance/image-10.png)
+  ![Runs Rules List](/images/runs-rules-list.png)
 </Frame>
 
-#### To edit a run rule
+### Edit a rule
 
 Click the icon to the right of the rule, then click **Edit**. A drawer opens where you can edit your rule.
