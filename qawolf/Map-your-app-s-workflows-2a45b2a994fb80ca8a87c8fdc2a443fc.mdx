@@ -1,42 +1,69 @@
 ---
-title: "Map your workflows"
+title: "Create a product map"
 description: "Use the AI mapping agent to build and maintain a structured coverage map of your application's user journeys."
 icon: "map"
 sidebarTitle: "Create a product map"
 ---
 
-![Map Tab while mapping](/images/map_tab_mapping.png)
+A coverage map defines the scope required to test an application end-to-end. Without visibility into an application's surface area — key user paths, important states, and system boundaries — it's difficult to know whether coverage is complete or where it isn't.
 
-A coverage map defines the scope required to test an application end-to-end. A strong testing strategy starts with a clear map of what needs to be tested. Without visibility into an application’s surface area—key user paths, important states, and system boundaries—it’s difficult to know whether coverage is complete or where it isn't.
+The AI mapping agent creates and maintains a structured view of coverage by exploring your application and generating flow stubs that represent the main areas and user journeys. As features change or new ones are added, you can run the agent again to update the map.
 
-Our AI mapping agent creates and maintains a structured view of coverage based on user interactions with the product. As features change or new ones are added, the AI updates the map, so teams can prioritize test creation, reason about completeness, and clearly communicate coverage.
-
-## How to map a feature or an application
+## Start a mapping session
 
 <Steps>
   <Step>
-    Navigate to the AI agent chat by selecting the Map tab.
-  </Step>
-</Steps>
-
-<Frame>
-  ![Map tab](/images/map-home-page.png)
-</Frame>
-
-<Steps>
-  <Step>
-    Click New Flows on the right side.
-  </Step>
-  <Step>
-    Type “Create a test plan for \`target URL\`”. You can specify a base URL or describe a specific journey or set of journeys. The Agent will launch a browser if one is not currently live. Our Mapping AI will begin creating folders and flow stubs that represent the main areas of your application.
+    From the **Map** tab, click **New Flows** on the right side of the screen, or click the <Icon icon="plus" /> icon in the left sidebar and select **Mapping session**.
 
     <Frame>
+      ![Map tab home](/images/map-home-page.png)
     </Frame>
   </Step>
   <Step>
-    Provide real-time guidance. As the Mapping AI works, you can provide it with real-time guidance. For example, if the Mapping AI encounters a login prompt, it will ask for your credentials, which you can provide.
+    A new mapping session opens with a live browser panel in the center. The agent will ask you to confirm the URL you want to explore, or you can type your own instructions into the chat box.
+
+    <Frame>
+      ![Mapping Session](/images/mapping-session.png)
+    </Frame>
   </Step>
   <Step>
-    Manually adjust the coverage map or instruct the Agent to make changes for you.
+    Type a description of what you want to map. For example: _"Create a test plan for `https://yourapp.com`"_. You can specify a base URL, describe a specific journey, or ask the agent to focus on a particular feature area.
+  </Step>
+  <Step>
+    Provide real-time guidance as the agent works. If the agent encounters a login prompt or needs clarification, it will ask you directly in the chat. You can respond at any time to redirect or refine the exploration.
   </Step>
 </Steps>
+
+## Review and publish mapped flows
+
+As the agent maps your application, newly discovered flows appear in the right panel. Review them before publishing.
+
+<Steps>
+  <Step>
+    Review the flows in the **New** tab on the right panel. These are the flow stubs the agent has created.
+
+    <Frame>
+      ![Map New Flows Discovered](/images/map-new-flows-discovered.png)
+    </Frame>
+  </Step>
+  <Step>
+    When satisfied, click **Publish** to add the flows to your coverage map. This creates the folder structure and empty flow files in the Automate tab.
+
+    <Note>
+      Publishing during mapping creates folder structure and empty flow stubs automatically. You don't need to review and publish manually — this happens as part of the mapping process.
+    </Note>
+  </Step>
+</Steps>
+
+## Continue or revisit a mapping session
+
+Previous mapping sessions are saved and accessible from the left sidebar. Click any session to reopen it and continue the conversation or review what was mapped.
+
+To find more flows in an area that's already been mapped, type instructions into the chat or click **Find more flows** at the bottom of the chat panel.
+
+## Manually adjust the coverage map
+
+You can adjust the coverage map at any time without running the agent:
+
+- Add, rename, or delete folders and flows from the **Automate** tab — see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)
+- Ask the agent to make changes by typing instructions into the chat
