@@ -5,7 +5,7 @@ icon: "bug-play"
 sidebarTitle: "Bug reports"
 ---
 
-## Bug reports
+## Overview
 
 Bug reports track confirmed product defects, specifically unexpected application behavior rather than test or setup issues.
 
@@ -27,12 +27,9 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
 
 - Use the **Open** and **Closed** tabs to switch between active and resolved reports.
   <Frame>
-    ![](/images/execution-scheduling-bugs-and-maintenance/image-37.png)
+    ![Bug Report List](/images/bug-report-list.png)
   </Frame>
 - Use the **Search** bar to filter by report name. Use the <Icon icon="filter" /> icon to filter by report **Priority** or **Creator is me**.
-  <Frame>
-    ![](/images/execution-scheduling-bugs-and-maintenance/image-38.png)
-  </Frame>
 
 ## File a bug report
 
@@ -51,7 +48,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
     A drawer appears, displaying a pre-populated form in QA Wolf’s standard bug-report format.
 
     <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-39.png)
+      ![Bug Report Drawer](/images/bug-report-drawer.png)
     </Frame>
   </Step>
   <Step>
@@ -83,7 +80,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
   You can also file bug reports from the **Bugs** tab by clicking **Report bug** to open the form for filing a new bug. However, bugs you open from this method will not be associated with any flows. To associate this bug with flows, you must follow the **Diagnose** steps above.
 
   <Frame>
-    ![](/images/execution-scheduling-bugs-and-maintenance/image-40.png)
+    ![](#)
   </Frame>
 </Tip>
 
@@ -91,7 +88,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
 
 - From the **Bugs** tab, find the bug report you’d like to open and click on it.
   <Frame>
-    ![](/images/execution-scheduling-bugs-and-maintenance/image-41.png)
+    ![](#)
   </Frame>
 - The only field you can change here is the **Priority** field. All other fields are read-only.
 
@@ -102,10 +99,6 @@ A bug report should close automatically on the next scheduled run once you apply
 <Steps>
   <Step>
     Open the **Bugs** tab and click the report you’d like to close.
-
-    <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-42.png)
-    </Frame>
   </Step>
   <Step>
     Click **Run all flows**. This opens the **Runs** tab in a separate browser tab and starts a manual run of all flows associated with the bug report. Any flows that pass will be removed from the bug report. If all flows pass, the bug report will close automatically.
