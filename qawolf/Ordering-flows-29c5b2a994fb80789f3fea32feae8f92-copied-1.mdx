@@ -1,0 +1,70 @@
+---
+title: "Ordering flows"
+description: "Use Run Rules to control the order that dependent flows run in."
+sidebarTitle: "Ordering flows"
+icon: "arrow-down-up"
+---
+
+Run Rules let you control the sequence flows run in. Each rule defines one **before** set and one **after** set of flows. You can select flows by name, group, or tag.
+
+The order flows run in doesn't always matter, but when it does — for example, when you want quick sanity checks to complete before longer or more complex flows — Run Rules give you that control.
+
+## Create a Run Rule
+
+<Steps>
+  <Step>
+    From the **Runs** tab, click **Rules** under **Scheduled**.
+  </Step>
+  <Step>
+    Click **Create Rule** to open a drawer.
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-7.png)
+    </Frame>
+  </Step>
+  <Step>
+    Define which flows, groups, or tags should run before and after the others.
+
+    See [Use tags effectively](/qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb) if you want to use tags to select flows.
+  </Step>
+  <Step>
+    Toggle **Fail workflows if any priors fail** to automatically skip downstream flows when an earlier flow fails. This is enabled by default.
+
+    <Note>
+      Use this when failures in an earlier set of flows — for example, sanity tests — make later flows likely to fail for the same reason. Skipping those later flows reduces noise, shortens run time, and keeps the failure list focused on the root cause.
+    </Note>
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-8.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Create Rule** to save.
+  </Step>
+</Steps>
+
+<Note>
+  Only **active** flows execute in a run. Drafts are ignored even if they're part of a rule.
+</Note>
+
+<Tip>
+  To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
+</Tip>
+
+<Tip>
+  The UI prevents most circular setups, but it's good practice to double-check your before and after sets.
+</Tip>
+
+## Manage Run Rules
+
+### See all rules
+
+Open the **Runs** tab and click **Rules** from the lower left.
+
+<Frame>
+  ![Runs Rules List](/images/runs-rules-list.png)
+</Frame>
+
+### Edit a rule
+
+Click the icon to the right of the rule, then click **Edit**. A drawer opens where you can edit your rule.

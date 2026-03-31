@@ -1,0 +1,84 @@
+---
+title: "Scheduling flows"
+description: "Create scheduled and event-based runs, choose which flows to include, and set the execution order."
+sidebarTitle: "Scheduling flows"
+icon: "calendar-clock"
+---
+
+## Create a schedule
+
+<Steps>
+  <Step>
+    In the **Runs** tab, choose the environment for your scheduled run from the list on the left.
+  </Step>
+  <Step>
+    Click **Scheduled**, then **Schedule a run** on the right.
+
+    <Frame>
+      ![Runs Scheduled](/images/runs-scheduled.png)
+    </Frame>
+  </Step>
+  <Step>
+    A drawer opens where you can configure your schedule:
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-4.png)
+    </Frame>
+
+    a. **Name** — give your schedule a descriptive name.
+
+    b. **Type** — set to **Scheduled** for a time-based run.
+
+    <Frame>
+      ![](/images/execution-scheduling-bugs-and-maintenance/image-5.png)
+    </Frame>
+
+    <Note>
+      The other three options require setup from QA Wolf:
+
+      - _Deployment_ — triggers a run from a VCS deployment hook
+      - _Pull Request Testing Button_ — triggers a run from a custom button in your VCS
+      - _GitHub Deployment_ — available for teams using GitHub-based deployments
+    </Note>
+
+    c. **Flows to run** — run _All flows_ or _Flows with selected tags_. See [Use tags effectively](/qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb) to learn how to tag your flows.
+
+    d. **Concurrency limit** — sets the maximum number of concurrent flows to control load on your system. This overrides the value set in **Workspace settings → Environment**.
+
+    e. **Frequency** — choose _Every day_ or _Every hour_.
+
+    <Note>
+      Once you've set up schedules for an environment, runs will appear in the Scheduled tab as soon as they are started.
+    </Note>
+  </Step>
+</Steps>
+
+## Manage schedules
+
+### See all schedules
+
+<Steps>
+  <Step>
+    Open the **Runs** tab and click **Scheduled** from the lower left.
+
+    <Frame>
+      ![Runs Schedules](/images/runs-schedules.png)
+    </Frame>
+  </Step>
+</Steps>
+
+### Pause a schedule
+
+<Steps>
+  <Step>
+    Click the icon to the right of the schedule, then click **Pause**. Paused schedules appear in grey text with a status of **Paused**.
+  </Step>
+</Steps>
+
+### Edit a schedule
+
+<Steps>
+  <Step>
+    Click the icon to the right of the schedule, then click **Edit**. A drawer opens where you can edit your schedule.
+  </Step>
+</Steps>

@@ -33,20 +33,19 @@ Flows are the primary unit of end-to-end testing in QA Wolf. Flows can be run in
 A **test** verifies a specific behavior or step in your application. Multiple tests combine to form a flow that validates a complete user journey.
 
 <Tip>
-**Example: QA Wolf application hierarchy**
+  **Example: QA Wolf application hierarchy**
 
-| Item        | Example                |
-| :---------- | :--------------------- |
-| Workspace   | Wolf Corp              |
-| Environment | Staging                |
-| Folder      | accounts               |
-| Flow        | happy-path-ios.flow.js |
-
+  | Item | Example |
+  | :-- | :-- |
+  | Workspace | Wolf Corp |
+  | Environment | Staging |
+  | Folder | accounts |
+  | Flow | happy-path-ios.flow.js |
 </Tip>
 
 ## Run
 
-A [run](/qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde) is an execution of one or more flows. Each flow is attempted up to three times per run if it fails. Runs can be started manually or invoked automatically by a schedule. The status and results of every flow in a run are recorded and reported back.
+A [run](/qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel) is an execution of one or more flows. Each flow is attempted up to three times per run if it fails. Runs can be started manually or invoked automatically by a schedule. The status and results of every flow in a run are recorded and reported back.
 
 ## Attempt
 

@@ -35,18 +35,10 @@ When you set a default email address, any test or helper that accepts an email c
 
 <Steps>
   <Step>
-    Click the <Icon icon="envelope" /> icon on the upper right. A drawer opens.
-
-    <Frame>
-      ![](/images/advanced-flows-and-tests/image-1.png)
-    </Frame>
+    Click the <Icon icon="mail" /> icon on the upper right. A drawer opens.
   </Step>
   <Step>
     Click **Addresses**.
-
-    <Frame>
-      ![](/images/advanced-flows-and-tests/image-2.png)
-    </Frame>
   </Step>
   <Step>
     Enter the username and domain in the appropriate fields, then click **Add**.
@@ -98,10 +90,10 @@ const { emailAddress } = await getInbox({ new: true });
 // Example: my-team+a25sa5q@qawolf.email
 ```
 
-QA Wolf automatically appends a random suffix after a + sign (i.e., plus addressing).
+QA Wolf automatically appends a random suffix after a \+ sign (i.e., plus addressing).
 
 <Tip>
-  Your application may not allow + symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
+  Your application may not allow \+ symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
 
   `const { emailAddress } = await getInbox({ new: true, delimiter: "-" });`
 

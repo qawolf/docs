@@ -5,6 +5,8 @@ icon: "puzzle"
 sidebarTitle: "Anatomy of a flow"
 ---
 
+If Automation AI generated a flow for you and you want to understand what it produced, this page explains each part.
+
 If your team has written Playwright or Appium tests before, QA Wolf tests will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
 
 ## The import statement
@@ -72,13 +74,44 @@ export default flow(
 
 **Name** — what this test is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing test name tells you where to look.
 
-**Platform string** — the device and environment the test runs on. The format is `"Platform - Device (OS Version)"` for mobile and `"Web - Browser"` for web. The system resolves this at runtime into a running session. No additional configuration required.
+**Platform string** — the device and environment the test runs on. The format is `"Platform - Device (OS Version)"` for mobile and `"Web - Browser"` for web. The system resolves this at runtime into a running session. No additional configuration required. 
 
-**Test function** — the async function containing your test logic. It receives `test` for defining named steps and `testContext` for utilities. Web tests destructure `launch` from `testContext` to start a browser session. Mobile tests receive `wdio` for driver sessions.
+**Test function** — the `async` function containing your test logic. It receives `test` for defining named steps and `testContext` for utilities. Web tests destructure `launch` from `testContext` to start a browser session. Mobile tests receive `wdio` for driver sessions.
 
 <Note>
   In vanilla Playwright, you configure browsers in `playwright.config.js`. In vanilla Appium, you configure the target device through desired capabilities. In QA Wolf, the platform string handles both. The infrastructure resolves it at runtime.
 </Note>
+
+Here are the three platform variants:
+
+## Environment variables
+
+Use `process.env.VAR_NAME` to reference environment variables in your flow. They are typically used in the Arrange section before the session launches.
+
+<CodeGroup>
+
+```javascript Web
+const { context } = await launch();
+const page = await context.newPage();
+await page.goto(process.env.BASE_URL);
+```
+
+```javascript iOS
+const driver = await wdio.startIos({
+  "appium:app": process.env.APP_STAGING,
+  "appium:autoAcceptAlerts": true,
+});
+```
+
+```javascript Android
+const driver = await wdio.startAndroid({
+  "appium:app": process.env.APP_STAGING,
+});
+```
+
+</CodeGroup>
+
+To set environment variables for your flows, see [Environment setup](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f#create-and-manage-environment-variables).
 
 ## The AAA framework
 

@@ -1,45 +1,48 @@
 ---
-title: "How to use tags effectively"
+title: "Use tags effectively"
 description: "Apply tags to flows for scheduling purposes, such as grouping by test type, priority, or expected run duration."
 icon: "tag"
 sidebarTitle: "Use tags effectively"
 ---
 
-## Using tags the right way
+Tags group flows for scheduled runs and control execution order in run rules. They are primarily intended to express **run intent** rather than application structure.
 
-Tags can be used in many ways, but they are primarily intended for scheduling. They let you select which flows run together and describe the characteristics of a scheduled run.
+Because QA Wolf supports full concurrency by default, organizing flows by feature area rarely makes sense. Instead, use tags to describe the characteristics of a run — common examples include test type (e.g., _sanity_ or _smoke_) and expected duration (e.g., _long-running_).
 
-Because QA Wolf supports full concurrency by default, using tags to organize flows by feature rarely makes sense. Feature-based tagging is generally only useful when concurrency is limited and execution must be constrained.
+Before applying tags, make sure the tags you need exist. See [Workspace settings](/qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f#tags) to create and manage tags.
 
-<Tip>
-  We strongly recommend using tags to express **run intent** rather than application structure. Common examples include test type (e.g., _sanity_ or _smoke_) and expected duration (e.g., _long-running_).
-</Tip>
+## Apply tags to a single flow
 
-## How to apply tags when automating a test
+You can apply tags to a single flow from two places:
 
-<Check>
-  **Pre-req:** [How to create and edit tags](/qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f#tags)
-</Check>
+**In Automate** — open the flow in the editor and click the **Details** tab in the right panel. Tags can be edited directly from there.
+
+**In Map** — select a flow from the Flows tree. The **Details** panel on the right shows the flow's tags. Tags can be edited directly from there.
+
+## Apply tags to multiple flows
 
 <Steps>
   <Step>
-    In the Flows list on the **Flows** tab:
-
-    a. Hover over the check space next to a flow's status icon ( <Icon icon="check" /> or <Icon icon="square-pen" />).
-
-    b. Click the <Icon icon="square" /> icon to show the <Icon icon="square-check" /> icon.
-
-    c. Click the <Icon icon="tag" /> icon that appears below the list.
+    In the **Map** tab, hover over the check space next to a flow's status icon and click to select it. Repeat for each flow you want to tag.
 
     <Frame>
-      ![](/images/building-and-maintaining-flows/image-5.png)
+      ![Map Multitag](/images/map-multitag.png)
     </Frame>
   </Step>
   <Step>
-    Click the <Icon icon="check" /> to the left of those tags.
+    Click the <Icon icon="tag" /> icon that appears at the bottom of the flow list.
+  </Step>
+  <Step>
+    Click the tags you want to apply.
 
     <Frame>
-      ![](/images/building-and-maintaining-flows/image-6.png)
+      ![Tag Picker](/images/tag-picker.png)
     </Frame>
   </Step>
 </Steps>
+
+## How tags are used
+
+**Scheduling** — when creating a schedule, you can choose to run all flows or only flows with selected tags. See [Scheduling flows](qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92) for more details.
+
+**Ordering** — tags can be used in run rules to control execution order. See [Ordering flows](qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1) for more details.

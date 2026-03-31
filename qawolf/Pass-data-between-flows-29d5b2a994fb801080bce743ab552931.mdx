@@ -1,56 +1,47 @@
 ---
-title: "How to pass data between flows during a run (aka Hopper Flows)"
+title: "Passing data between flows"
 description: "Share data between flows using Hopper Flows to coordinate multi-user, multi-device test scenarios in a single run."
 sidebarTitle: "Passing data between flows"
 icon: "share-2"
 ---
 
-## What are Hopper flows?
+QA Wolf runs all flows in parallel by default, but some workflows require coordination and data sharing among concurrently running flows. During a run, any flow can both produce data for other flows and consume data from other flows.
 
-QA Wolf runs all flows in parallel by default, but some workflows require the ability to coordinate and share data asynchronously through declared relationships, even while running concurrently across multiple users and multiple devices.
+For example, one flow might create a new user, another might log in as that user, and a third might verify the user's activity — all within the same coordinated run. We call these linked user journeys **Hopper Flows**.
 
-During a run, any QA Wolf flow can both **produce data** for another flow and **consume data** from others. For example, one flow might create a new user, another might log in as that user, and a third might verify the user’s activity — all within the same coordinated run.
+Hopper Flows enable end-to-end, multi-user, multi-platform testing — the kind of real-world scenarios that single-flow testing can't reproduce.
 
-- As a **producer**, a flow uses `setOutput` to publish data.
-- As a **consumer**, it reads published data from `workflowInputs`.
+## Share data across flows
 
-This cross-flow communication powers a capability unique to QA Wolf: linked user journeys, which we call **Hopper Flows**. **Hopper Flows** enable true end-to-end, multi-user, multi-platform testing — the kind of real-world scenarios that traditional, single-flow testing simply can’t reproduce.
+To create a Hopper flow, you need two flows — a **producer** and a **consumer**. They can belong to the same folder and share tags.
 
-By connecting flows in this way, QA Wolf expands what’s possible in automated testing. You can model complete customer experiences that span devices, roles, and systems — all while keeping the speed and reliability of parallel execution.
-
-## How to share data across flows
-
-To create a Hopper flow, you need two tests in separate flows. Those flows can belong to the same group and even share tags.
-
-We will call Flow A the **producer** and Flow B the **consumer**.
-
-In Flow A, use `setOutput` to publish key–value pairs that other flows can access. The example uses the `TOKEN` and `USER_ID` keys.
+**In the producer flow**, use `setOutput` to publish key-value pairs that other flows can access:
 
 ```javascript
-// Flow A — publishing values
-setOutput("**TOKEN**", "abc123", "**USER_ID**", "42");
+setOutput("TOKEN", "abc123", "USER_ID", "42");
+```
+
+**In the consumer flow**, use `workflowInputs` to read values published by the producer:
+
+```javascript
+const token = workflowInputs["TOKEN"];
+const userId = workflowInputs["USER_ID"];
 ```
 
 <Note>
-If the same flow calls `setOutput` multiple times, it will simply overwrite the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail to run with the error `Workflow run failed due to conflicting dependency outputs`.
+  A consumer flow will not run until its producer has published. This is why Run Rules ordering matters — see below.
 </Note>
 
-Now, go to Flow B and use `workflowInputs` to read values published by Flow A.
+<Note>
+  If the same flow calls `setOutput` multiple times, it overwrites the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail with the error `Workflow run failed due to conflicting dependency outputs`.
+</Note>
 
-```javascript
-// Flow B — consuming values
-const token = workflowInputs["**TOKEN**"];
-const userId = workflowInputs["**USER_ID**"];
-```
+## Run Hopper flows
 
-## How to run Hopper flows
+Producers and consumers must be included in the same scheduled run.
 
-- To run flows together, create a [schedule](/qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92) that targets **all flows** or flows with a **shared tag**. A scheduled run can include either all flows in the environment or only flows with a specific tag.
-- To control execution order, create a Run Rule that ensures producers run before consumers. Run Rules can be defined using groups, tags, or specific flow names.
-
-<Danger>
-  Producers and consumers must be included in the same scheduled run.
-</Danger>
+- To run flows together, create a [schedule](/qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92) that targets **all flows** or flows with a **shared tag**
+- To control execution order, create a [Run Rule](/qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1) that ensures producers run before consumers. Run Rules can be defined using groups, tags, or specific flow names
 
 <Tip>
   If a flow acts as both a producer and a consumer, create two Run Rules: one to run it after its producer and another to run it before its consumer.

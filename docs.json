@@ -64,14 +64,11 @@
             "group": "Automate",
             "icon": "route",
             "pages": [
+              "qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/Write-tests-by-hand-2c15b2a994fb802193a5c05e0219eb59",
-              "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
-              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
+              "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
-              "qawolf/Use-dev-tools-29d5b2a994fb816992d6c6d2b73e3302",
-              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
               "qawolf/Uploading-manually"
             ]
           },
@@ -79,9 +76,10 @@
             "group": "Runs",
             "icon": "play",
             "pages": [
-              "qawolf/How-Runs-work-2a25b2a994fb8014b164d7ad2efd5dde",
-              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92",
-              "qawolf/Schedule-and-order-runs-29c5b2a994fb80789f3fea32feae8f92-copied-1",
+              "qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel",
+              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
+              "qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92",
+              "qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1",
               "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
               "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
               "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd"
@@ -122,6 +120,13 @@
             "pages": [
               "qawolf/using-an-android-tablet"
             ]
+          },
+          {
+            "group": "Multi-user, multi-device",
+            "icon": "arrow-right-left",
+            "pages": [
+              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
+            ]
           }
         ]
       },
@@ -159,8 +164,8 @@
               "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
               "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
               "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c",
-              "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
               "qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2",
+              "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
               "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
               "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
             ]
@@ -179,7 +184,6 @@
           {
             "group": "Messaging",
             "icon": "messages-square",
-
             "pages": [
               "qawolf/Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae"
             ]

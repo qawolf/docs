@@ -1,0 +1,56 @@
+---
+title: "How Runs work"
+description: "Learn how QA Wolf executes runs, retries failed flows, and reports results as completed or needs investigation."
+icon: "circle-play"
+sidebarTitle: "How runs work"
+---
+
+A **run** is an execution of one or more **flows**. Runs can be started manually or triggered automatically by a schedule. Each flow in a run is attempted up to three times in case a failure is the result of a temporary flake.
+
+At the end of a run, it will be marked as one of:
+
+- **Completed** — all flows in the run have passed or been marked _Do Not Investigate_
+- **Needs Investigation** — one or more flows failed and have not been marked _Do Not Investigate_
+  <Note>
+    A flow needing investigation should be reviewed quickly and identified as either a bug (filed in your issue tracker) or a broken test (updated accordingly).
+  </Note>
+- **Canceled** — the run was canceled mid-execution by a subsequent run matching the same branch and environment
+
+## Where runs can be performed
+
+There are several ways to execute flows in QA Wolf. What you can run, where feedback appears, and whether results are recorded differs by method.
+
+| Method | How | Feedback | Appears in <br />Run <br />History |
+| --- | --- | --- | --- |
+| Individual lines | Select lines in editor \+ Run | Editor only | No |
+| A test block | Select `test()` function \+ Run | Editor only | No |
+| A full flow | Run button in Automate | Editor only | No |
+| All flows in environment | Map | Runs tab | No |
+| Select flows in environment | Select flows in Map | Runs tab | No |
+| Scheduled run | Automatic | Runs tab<br />Run <br />History | Yes |
+
+<Note>
+  Run History in the Automate tab only shows results from scheduled runs. See [Scheduling flows](#) to set up a schedule.
+</Note>
+
+## How to start a manual run
+
+A run can be initiated in three ways:
+
+- Manually from the **Runs** tab
+- On a schedule — see [Scheduling flows](/qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92)
+- When a build is deployed — for example, from GitHub Actions or another CI/CD system
+
+## Flow orchestration logic
+
+Runs orchestrate the _execution order_ of flows and their multiple attempts, while the flows themselves report the _results_ of each attempt, including logs and video artifacts.
+
+## Attempt retry logic
+
+Flows are attempted up to three times to ensure that a failure was not due to an accidental or temporary environment issue. All flows must report a result before any of them are re-attempted. The concurrency of each wave decreases to further reduce the impact of environmental issues.
+
+1. **First attempt** — each flow executes concurrently unless run rules specify an alternate order
+2. **Second attempt** — failed flows execute in batches of five
+3. **Final attempt** — remaining failing flows execute serially
+
+Logs and video artifacts for each attempt are available immediately after that attempt.
