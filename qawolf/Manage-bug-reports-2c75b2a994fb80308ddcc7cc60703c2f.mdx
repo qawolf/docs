@@ -26,17 +26,15 @@ Once the test issues are fixed, you can attempt to clear the bug report by runni
 You can find all bug reports for your workspace in the **Bugs** tab. This page lists both open and closed reports and allows you to create new ones or open existing ones for editing.
 
 - Use the **Open** and **Closed** tabs to switch between active and resolved reports.
-
   <Frame>
     ![](/images/execution-scheduling-bugs-and-maintenance/image-37.png)
   </Frame>
 - Use the **Search** bar to filter by report name. Use the <Icon icon="filter" /> icon to filter by report **Priority** or **Creator is me**.
-
   <Frame>
     ![](/images/execution-scheduling-bugs-and-maintenance/image-38.png)
   </Frame>
 
-## How to file a bug report
+## File a bug report
 
 <Steps>
   <Step>
@@ -78,7 +76,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
   **Flows with open bugs are still included in scheduled runs.**
 
   - If any bug associated with a flow has a blocking **Priority** (_Urgent_ or _High_) and at least one flow in the run fails all three attempts, the run ends in a _Failed_ status. The environment’s status will appear with the <Icon icon="circle" iconType="solid" color="red" /> icon on both the **Flows** and **Runs** tabs.
-  - If the flow has only non-blocking bugs, and at least one flow in the run fails all three attempts, the run ends as _Needs investigation_. The environment’s status will appear with the <Icon icon="circle" iconType="solid" color="yellow" /> icon on both the **Flows** and **Runs** tabs.
+  - If the flow has only non-blocking bugs, and at least one flow in the run fails all three attempts, the run ends as _Needs investigation_. The environment’s status will appear with the <Icon icon="circle" iconType="solid" color="gold" /> icon on both the **Flows** and **Runs** tabs.
 </Note>
 
 <Tip>
@@ -89,16 +87,15 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
   </Frame>
 </Tip>
 
-## How to review or edit an existing bug report
+## Review or edit an existing bug report
 
 - From the **Bugs** tab, find the bug report you’d like to open and click on it.
-
   <Frame>
     ![](/images/execution-scheduling-bugs-and-maintenance/image-41.png)
   </Frame>
 - The only field you can change here is the **Priority** field. All other fields are read-only.
 
-## How to clear bug reports
+## Clear bug reports
 
 A bug report should close automatically on the next scheduled run once you apply the fix. However, you can also manually run all flows associated with a given bug; if they pass, the bug report will close automatically.
 
@@ -119,7 +116,7 @@ A bug report should close automatically on the next scheduled run once you apply
   </Step>
 </Steps>
 
-## How to update the diagnosis of a test failure
+## Update the diagnosis of a test failure
 
 Sometimes, a run will still fail after an application fix is deployed. This can happen when the original issue masked a different problem, or when the fix changes behavior in a way that affects the test.
 

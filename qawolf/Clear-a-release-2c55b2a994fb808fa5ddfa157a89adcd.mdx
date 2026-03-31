@@ -32,7 +32,7 @@ Reattempting is appropriate when all failures in the run are believed to be caus
     Click the <Icon icon="ellipsis" /> icon to open the context menu.
 
     <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-30.png)
+      ![Runs Investigating](/images/runs-investigating-1.png)
     </Frame>
   </Step>
   <Step>
@@ -50,20 +50,16 @@ Bypassing a failed flow is appropriate when the failure is understood and should
 <Steps>
   <Step>
     Open the **Runs** tab and select a run in **Investigating** or **Failed** status.
-
-    <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-31.png)
-    </Frame>
   </Step>
   <Step>
     Select the failed run that contains the flow that doesn't need further investigation.
-  </Step>
-  <Step>
-    Click **Diagnose** in the center panel.
 
     <Frame>
       ![](/images/execution-scheduling-bugs-and-maintenance/image-32.png)
     </Frame>
+  </Step>
+  <Step>
+    Click **Diagnose** in the center panel.
   </Step>
   <Step>
     Select **Do not investigate**.
@@ -80,7 +76,7 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
   </Frame>
 </Tip>
 
-## Repair a broken test using AI to unblock a release
+## Repair a broken test to unblock a release
 
 <Steps>
   <Step>
@@ -88,10 +84,6 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
   </Step>
   <Step>
     In the center panel, select a run from the **Investigating** list.
-
-    <Frame>
-      ![](/images/execution-scheduling-bugs-and-maintenance/image-34.png)
-    </Frame>
   </Step>
   <Step>
     In the Investigation view, click **Edit code** to open the flow for changes.
@@ -101,9 +93,11 @@ Once a failed flow is marked as **Do not investigate**, it is considered resolve
   </Step>
   <Step>
     When the flow fails, click **Fix with AI** in the banner at the top of the editor. Describe the problem or let the AI interpret the error automatically.
+
+    You can also repair the test manually by modifying the code yourself.
   </Step>
   <Step>
-    When satisfied with the changes, review and publish your changes.
+    When satisfied with the changes, review and publish your changes. You **must** publish your changes to enable **Use as reattempt**.
   </Step>
   <Step>
     Click **Use as reattempt**. The flow should pass and will move to the **Completed** section of the Runs tab.

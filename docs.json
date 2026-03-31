@@ -64,12 +64,11 @@
             "group": "Automate",
             "icon": "route",
             "pages": [
-              "qawolf/Build-and-maintain-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
+              "qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
               "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
-              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
               "qawolf/Uploading-manually"
             ]
           },
@@ -120,6 +119,13 @@
             "icon": "monitor-smartphone",
             "pages": [
               "qawolf/using-an-android-tablet"
+            ]
+          },
+          {
+            "group": "Multi-user, multi-device",
+            "icon": "arrow-right-left",
+            "pages": [
+              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
             ]
           }
         ]

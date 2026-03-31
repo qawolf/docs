@@ -11,11 +11,10 @@ At the end of a run, it will be marked as one of:
 
 - **Completed** — all flows in the run have passed or been marked _Do Not Investigate_
 - **Needs Investigation** — one or more flows failed and have not been marked _Do Not Investigate_
+  <Note>
+    A flow needing investigation should be reviewed quickly and identified as either a bug (filed in your issue tracker) or a broken test (updated accordingly).
+  </Note>
 - **Canceled** — the run was canceled mid-execution by a subsequent run matching the same branch and environment
-
-<Note>
-  A flow needing investigation should be reviewed quickly and identified as either a bug (filed in your issue tracker) or a broken test (updated accordingly).
-</Note>
 
 ## Where runs can be performed
 
