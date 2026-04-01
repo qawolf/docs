@@ -74,7 +74,7 @@ export default flow(
 
 **Name** — what this test is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing test name tells you where to look.
 
-**Platform string** — the device and environment the test runs on. The format is `"Platform - Device (OS Version)"` for mobile and `"Web - Browser"` for web. The system resolves this at runtime into a running session. No additional configuration required. 
+**Platform string** — the device and environment the test runs on. The format is `"Platform - Device (OS Version)"` for mobile and `"Web - Browser"` for web. The system resolves this at runtime into a running session. No additional configuration required.
 
 **Test function** — the `async` function containing your test logic. It receives `test` for defining named steps and `testContext` for utilities. Web tests destructure `launch` from `testContext` to start a browser session. Mobile tests receive `wdio` for driver sessions.
 
