@@ -1,8 +1,26 @@
-export const GithubCodeBlock = ({ url, language = "typescript", filename }) => {
+import { useState, useEffect } from "react";
+
+const loadHighlighter = async () => {
+  const [{ Light: SyntaxHighlighter }, { default: ts }, { githubGist }] = await Promise.all([
+    import("https://esm.sh/react-syntax-highlighter"),
+    import("https://esm.sh/react-syntax-highlighter/dist/esm/languages/hljs/typescript"),
+    import("https://esm.sh/react-syntax-highlighter/dist/esm/styles/hljs/github-gist"),
+  ]);
+  SyntaxHighlighter.registerLanguage("typescript", ts);
+  return { SyntaxHighlighter, githubGist };
+};
+
+export const GithubCodeBlock = ({
+  url,
+  language = "typescript",
+  filename,
+  badgeUrl,
+}) => {
   const displayName = filename || url.split("/").pop();
   const [code, setCode] = useState(null);
   const [error, setError] = useState(null);
-  const [highlighted, setHighlighted] = useState(null);
+  const [Highlighter, setHighlighter] = useState(null);
+  const [style, setStyle] = useState(null);
 
   useEffect(() => {
     fetch(url)
@@ -10,70 +28,60 @@ export const GithubCodeBlock = ({ url, language = "typescript", filename }) => {
         if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
         return res.text();
       })
-      .then((text) => setCode(text))
+      .then(setCode)
+      .catch((err) => setError(err.message));
+
+    loadHighlighter()
+      .then(({ SyntaxHighlighter, githubGist }) => {
+        setHighlighter(() => SyntaxHighlighter);
+        setStyle(githubGist);
+      })
       .catch((err) => setError(err.message));
   }, [url]);
 
-  useEffect(() => {
-    if (!code) return;
-
-    if (window.hljs) {
-      const result = window.hljs.highlight(code, { language, ignoreIllegals: true });
-      setHighlighted(result.value);
-      return;
-    }
-
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
-    document.head.appendChild(link);
-
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js";
-    script.onload = () => {
-      const result = window.hljs.highlight(code, { language, ignoreIllegals: true });
-      setHighlighted(result.value);
-    };
-    document.head.appendChild(script);
-  }, [code, language]);
-
   if (error) {
     return (
-      <div style={{ padding: "1rem", color: "red", fontFamily: "monospace", fontSize: "13px" }}>
+      <p className="font-mono text-sm text-red-500 p-4">
         Failed to load {displayName}: {error}
-      </div>
+      </p>
     );
   }
 
-  if (!code) {
+  if (!code || !Highlighter) {
     return (
-      <div style={{ padding: "1rem", color: "#888", fontFamily: "monospace", fontSize: "13px" }}>
+      <p className="font-mono text-sm text-zinc-400 p-4">
         Loading {displayName}...
-      </div>
+      </p>
     );
   }
 
   return (
-    <div style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid rgba(0,0,0,0.1)", marginBottom: "1rem" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 16px", background: "rgba(0,0,0,0.05)", borderBottom: "1px solid rgba(0,0,0,0.1)", fontFamily: "monospace", fontSize: "12px", color: "#666" }}>
-        <span>{displayName}</span>
-        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#666", textDecoration: "none", fontSize: "11px" }}>
+    <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden mb-4">
+      <div className="flex items-center justify-between px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400">{displayName}</span>
+          {badgeUrl && (
+            <img src={badgeUrl} alt="CI status" className="h-4" />
+          )}
+        </div>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 no-underline"
+        >
           View on GitHub ↗
         </a>
       </div>
-      <pre style={{ margin: 0, overflowX: "auto" }}>
-        {highlighted ? (
-          <code
-            className={`hljs language-${language}`}
-            dangerouslySetInnerHTML={{ __html: highlighted }}
-            style={{ display: "block", padding: "1rem", fontSize: "13px", lineHeight: "1.6" }}
-          />
-        ) : (
-          <code style={{ display: "block", padding: "1rem", fontSize: "13px", lineHeight: "1.6" }}>
-            {code}
-          </code>
-        )}
-      </pre>
+      <Highlighter
+        language={language}
+        style={style}
+        customStyle={{ margin: 0, borderRadius: 0 }}
+        className="text-sm leading-relaxed"
+        showLineNumbers
+      >
+        {code}
+      </Highlighter>
     </div>
   );
 };
