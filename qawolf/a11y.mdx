@@ -1,0 +1,40 @@
+---
+title: "Run an axe-core accessibility scan"
+description: "Assert zero WCAG violations on any page using the axe-core library."
+icon: "universal-access"
+---
+
+import { GithubCodeBlock } from "/snippets/github-code-block.jsx";
+
+Use `axe-core` to scan a page for WCAG violations and fail the test if any are found. This is the foundation for all automated accessibility testing in QA Wolf.
+
+<Info>
+  `axe-core` is already available in the QAW runner. Set `BASE_URL` as an environment variable before running.
+</Info>
+
+## Basic page scan
+
+Scans the full page after load, dismisses common UI interrupts (cookie banners, notification bars), and logs any violations found.
+
+<GithubCodeBlock
+  url="https://raw.githubusercontent.com/qawolf/qaw-cookbook/main/tests/example.spec.ts"
+  language="typescript"
+  filename="example.spec.ts"
+/>
+
+## Related examples
+
+<CardGroup cols={2}>
+  <Card title="VoiceOver interaction (iOS)" icon="apple" href="/examples/accessibility/voiceover-ios">
+    Test screen reader navigation on iOS.
+  </Card>
+  <Card title="TalkBack interaction (Android)" icon="android" href="/examples/accessibility/talkback-android">
+    Test screen reader navigation on Android.
+  </Card>
+  <Card title="Color contrast assertion" icon="palette" href="/examples/accessibility/color-contrast">
+    Assert contrast ratios meet WCAG AA standards.
+  </Card>
+  <Card title="Keyboard navigation" icon="keyboard" href="/examples/accessibility/keyboard-nav">
+    Verify all interactive elements are reachable by keyboard.
+  </Card>
+</CardGroup>
