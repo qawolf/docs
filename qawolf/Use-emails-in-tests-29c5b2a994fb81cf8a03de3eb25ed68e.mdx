@@ -45,7 +45,7 @@ When you set a default email address, any test or helper that accepts an email c
 
     a. You can create as many email addresses as you like in the allowlist.
 
-    b. To change the default email address in the allowlist, hover over the email you’d like to set as the default, then click the <Icon icon="ellipsis" /> icon and select Make default.
+    b. To change the default email address in the allowlist, hover over the email you'd like to set as the default, then click the <Icon icon="ellipsis" /> icon and select Make default.
 
     <Frame>
       ![](/images/advanced-flows-and-tests/image-3.png)
@@ -61,10 +61,10 @@ The simplest way to access your test inbox is to add this line to your flow:
 const { emailAddress } = await getInbox();
 ```
 
-If you don’t pass any options to `getInbox`, QA Wolf uses your **team’s default email address**, which you can find by going to the **Flows** tab, selecting **Workspace settings** from the `Workspace name` dropdown, choosing Flows from the left navigation, and finding the email address marked as **default** under the **Email Allowlist**.
+If you don't pass any options to `getInbox`, QA Wolf uses your **team's default email address**, which you can find by going to the **Flows** tab, selecting **Workspace settings** from the `Workspace name` dropdown, choosing Flows from the left navigation, and finding the email address marked as **default** under the **Email Allowlist**.
 
 <Tip>
-  Any email address used with `getInbox` must be on your team’s [Email Allowlist](/qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e#the-email-allowlist).
+  Any email address used with `getInbox` must be on your team's [Email Allowlist](/qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e#the-email-allowlist).
 </Tip>
 
 If you need to access a specific allowlisted email address:
