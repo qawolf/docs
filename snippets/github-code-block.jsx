@@ -1,24 +1,7 @@
 // Note: useState and useEffect are injected globally by Mintlify's JSX runtime.
 // react-syntax-highlighter is loaded via an injected <script type="module"> tag
-// because Mintlify's MDX compiler does not support dynamic import() calls.
-
-const loadSyntaxHighlighter = () =>
-  new Promise((resolve, reject) => {
-    if (window.__SyntaxHighlighter) return resolve(window.__SyntaxHighlighter);
-    const s = document.createElement("script");
-    s.type = "module";
-    s.textContent = [
-      'import { Light as SHL } from "https://esm.sh/react-syntax-highlighter";',
-      'import ts from "https://esm.sh/react-syntax-highlighter/dist/esm/languages/hljs/typescript";',
-      'import { githubGist } from "https://esm.sh/react-syntax-highlighter/dist/esm/styles/hljs/github-gist";',
-      'SHL.registerLanguage("typescript", ts);',
-      'window.__SyntaxHighlighter = { SHL, githubGist };',
-      'window.dispatchEvent(new Event("syntaxHighlighterReady"));',
-    ].join("\n");
-    window.addEventListener("syntaxHighlighterReady", () => resolve(window.__SyntaxHighlighter), { once: true });
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
+// because Mintlify's MDX compiler does not support dynamic import() calls,
+// and helper functions must be defined inside the exported component.
 
 export const GithubCodeBlock = ({
   url,
@@ -31,6 +14,24 @@ export const GithubCodeBlock = ({
   const [error, setError] = useState(null);
   const [Highlighter, setHighlighter] = useState(null);
   const [hlStyle, setHlStyle] = useState(null);
+
+  const loadSyntaxHighlighter = () =>
+    new Promise((resolve, reject) => {
+      if (window.__SyntaxHighlighter) return resolve(window.__SyntaxHighlighter);
+      const s = document.createElement("script");
+      s.type = "module";
+      s.textContent = [
+        'import { Light as SHL } from "https://esm.sh/react-syntax-highlighter";',
+        'import ts from "https://esm.sh/react-syntax-highlighter/dist/esm/languages/hljs/typescript";',
+        'import { githubGist } from "https://esm.sh/react-syntax-highlighter/dist/esm/styles/hljs/github-gist";',
+        'SHL.registerLanguage("typescript", ts);',
+        'window.__SyntaxHighlighter = { SHL, githubGist };',
+        'window.dispatchEvent(new Event("syntaxHighlighterReady"));',
+      ].join("\n");
+      window.addEventListener("syntaxHighlighterReady", () => resolve(window.__SyntaxHighlighter), { once: true });
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
 
   useEffect(() => {
     fetch(url)
