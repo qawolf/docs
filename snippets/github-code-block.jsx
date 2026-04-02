@@ -1,14 +1,24 @@
-import { useState, useEffect } from "react";
+// Note: useState and useEffect are injected globally by Mintlify's JSX runtime.
+// react-syntax-highlighter is loaded via an injected <script type="module"> tag
+// because Mintlify's MDX compiler does not support dynamic import() calls.
 
-const loadHighlighter = async () => {
-  const [{ Light: SyntaxHighlighter }, { default: ts }, { githubGist }] = await Promise.all([
-    import("https://esm.sh/react-syntax-highlighter"),
-    import("https://esm.sh/react-syntax-highlighter/dist/esm/languages/hljs/typescript"),
-    import("https://esm.sh/react-syntax-highlighter/dist/esm/styles/hljs/github-gist"),
-  ]);
-  SyntaxHighlighter.registerLanguage("typescript", ts);
-  return { SyntaxHighlighter, githubGist };
-};
+const loadSyntaxHighlighter = () =>
+  new Promise((resolve, reject) => {
+    if (window.__SyntaxHighlighter) return resolve(window.__SyntaxHighlighter);
+    const s = document.createElement("script");
+    s.type = "module";
+    s.textContent = [
+      'import { Light as SHL } from "https://esm.sh/react-syntax-highlighter";',
+      'import ts from "https://esm.sh/react-syntax-highlighter/dist/esm/languages/hljs/typescript";',
+      'import { githubGist } from "https://esm.sh/react-syntax-highlighter/dist/esm/styles/hljs/github-gist";',
+      'SHL.registerLanguage("typescript", ts);',
+      'window.__SyntaxHighlighter = { SHL, githubGist };',
+      'window.dispatchEvent(new Event("syntaxHighlighterReady"));',
+    ].join("\n");
+    window.addEventListener("syntaxHighlighterReady", () => resolve(window.__SyntaxHighlighter), { once: true });
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
 
 export const GithubCodeBlock = ({
   url,
@@ -20,21 +30,21 @@ export const GithubCodeBlock = ({
   const [code, setCode] = useState(null);
   const [error, setError] = useState(null);
   const [Highlighter, setHighlighter] = useState(null);
-  const [style, setStyle] = useState(null);
+  const [hlStyle, setHlStyle] = useState(null);
 
   useEffect(() => {
     fetch(url)
       .then((res) => {
-        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+        if (!res.ok) throw new Error("Failed to fetch: " + res.status);
         return res.text();
       })
       .then(setCode)
       .catch((err) => setError(err.message));
 
-    loadHighlighter()
-      .then(({ SyntaxHighlighter, githubGist }) => {
-        setHighlighter(() => SyntaxHighlighter);
-        setStyle(githubGist);
+    loadSyntaxHighlighter()
+      .then(({ SHL, githubGist }) => {
+        setHighlighter(() => SHL);
+        setHlStyle(githubGist);
       })
       .catch((err) => setError(err.message));
   }, [url]);
@@ -75,7 +85,7 @@ export const GithubCodeBlock = ({
       </div>
       <Highlighter
         language={language}
-        style={style}
+        style={hlStyle}
         customStyle={{ margin: 0, borderRadius: 0 }}
         className="text-sm leading-relaxed"
         showLineNumbers
