@@ -23,7 +23,7 @@ export const GithubCodeBlock = ({
       s.textContent = [
         'import { Light as SHL } from "https://esm.sh/react-syntax-highlighter";',
         'import ts from "https://esm.sh/react-syntax-highlighter/dist/esm/languages/hljs/typescript";',
-        'import githubGist from "https://esm.sh/react-syntax-highlighter/dist/esm/styles/hljs/github-gist";',
+        'import { githubGist } from "https://esm.sh/react-syntax-highlighter/dist/esm/styles/hljs/github-gist";',
         'SHL.registerLanguage("typescript", ts);',
         'window.__SyntaxHighlighter = { SHL, githubGist };',
         'window.dispatchEvent(new Event("syntaxHighlighterReady"));',
