@@ -45,7 +45,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
     </Tip>
   </Step>
   <Step>
-    A drawer appears, displaying a pre-populated form in QA Wolf’s standard bug-report format.
+    A drawer appears, displaying a pre-populated form in QA Wolf's standard bug-report format.
 
     <Frame>
       ![Bug Report Drawer](/images/bug-report-drawer.png)
@@ -61,7 +61,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
 
     a. **Description:** Provide a clear summary of the issue. This field includes a built-in template to help you capture the most important details—such as expected behavior, actual behavior, and steps to reproduce. You can also include a link to a cloud-hosted video (e.g., Loom) in the **Video** field to illustrate the problem.
 
-    b. **Priority:** Set the bug’s urgency. **Urgent** and **High** represent blocking priorities and will affect the overall environment status.
+    b. **Priority:** Set the bug's urgency. **Urgent** and **High** represent blocking priorities and will affect the overall environment status.
 
     c. **Environment (read-only):** Indicates the environment where you observed the bug.
 
@@ -72,8 +72,8 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
 <Note>
   **Flows with open bugs are still included in scheduled runs.**
 
-  - If any bug associated with a flow has a blocking **Priority** (_Urgent_ or _High_) and at least one flow in the run fails all three attempts, the run ends in a _Failed_ status. The environment’s status will appear with the <Icon icon="circle" iconType="solid" color="red" /> icon on both the **Flows** and **Runs** tabs.
-  - If the flow has only non-blocking bugs, and at least one flow in the run fails all three attempts, the run ends as _Needs investigation_. The environment’s status will appear with the <Icon icon="circle" iconType="solid" color="gold" /> icon on both the **Flows** and **Runs** tabs.
+  - If any bug associated with a flow has a blocking **Priority** (_Urgent_ or _High_) and at least one flow in the run fails all three attempts, the run ends in a _Failed_ status. The environment's status will appear with the <Icon icon="circle" iconType="solid" color="red" /> icon on both the **Flows** and **Runs** tabs.
+  - If the flow has only non-blocking bugs, and at least one flow in the run fails all three attempts, the run ends as _Needs investigation_. The environment's status will appear with the <Icon icon="circle" iconType="solid" color="gold" /> icon on both the **Flows** and **Runs** tabs.
 </Note>
 
 <Tip>
@@ -82,7 +82,7 @@ You can find all bug reports for your workspace in the **Bugs** tab. This page l
 
 ## Review or edit an existing bug report
 
-- From the **Bugs** tab, find the bug report you’d like to open and click on it.
+- From the **Bugs** tab, find the bug report you'd like to open and click on it.
 - The only field you can change here is the **Priority** field. All other fields are read-only.
 
 ## Clear bug reports
@@ -91,7 +91,7 @@ A bug report should close automatically on the next scheduled run once you apply
 
 <Steps>
   <Step>
-    Open the **Bugs** tab and click the report you’d like to close.
+    Open the **Bugs** tab and click the report you'd like to close.
   </Step>
   <Step>
     Click **Run all flows**. This opens the **Runs** tab in a separate browser tab and starts a manual run of all flows associated with the bug report. Any flows that pass will be removed from the bug report. If all flows pass, the bug report will close automatically.
