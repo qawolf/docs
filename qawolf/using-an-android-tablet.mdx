@@ -21,7 +21,7 @@ export default flow(
   // define the asynchronous test function
   async ({ test, wdio, ...testContext }) => {
     // start QA Wolf's custom Android driver session using Appium with Chrome browser
-    const driver = wdio.startAndroid({
+    const driver = await wdio.startAndroid({
       "appium:browserName": "Chrome"
     });
 
