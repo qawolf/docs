@@ -9,7 +9,7 @@ icon: "git-merge"
   Your GitLab integration and deploy notifications must already be set up.
 </Check>
 
-PR testing won’t work until QA Wolf configures your workspace to support it. QA Wolf will:
+PR testing won't work until QA Wolf configures your workspace to support it. QA Wolf will:
 
 - Set up a trigger that matches your preview deployments
 - Provide the deployment_type value to use for preview tests
@@ -92,7 +92,7 @@ If your project uses approval rules or protected branches, ensure the merge requ
     Confirm that your merge request triggers a pipeline that deploys a preview environment.
   </Step>
   <Step title="Confirm the preview environment is created.">
-    In GitLab, check the merge request’s environment or the Review App link, and confirm that the preview URL is reachable.
+    In GitLab, check the merge request's environment or the Review App link, and confirm that the preview URL is reachable.
   </Step>
   <Step title="Confirm QA Wolf starts a test run.">
     In the QA Wolf app, go to the Runs tab and verify that a new run starts for the preview environment associated with the merge request.
