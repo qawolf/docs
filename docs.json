@@ -180,13 +180,6 @@
               "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
               "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
             ]
-          },
-          {
-            "group": "Messaging",
-            "icon": "messages-square",
-            "pages": [
-              "qawolf/Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae"
-            ]
           }
         ]
       },
@@ -197,6 +190,7 @@
           "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
           "qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47",
           "qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa",
+          "qawolf/Integrate-with-Microsoft-Teams-2b25b2a994fb8051bd2ee9d018a93aae",
           "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5"
         ]
       }
