@@ -134,15 +134,10 @@
             ]
           },
           {
-            "group": "iPhone & iPad",
-            "pages": [
-              "i-os-sdk-reference"
-            ]
-          },
-          {
             "group": "iOS",
             "icon": "tablet-smartphone",
             "pages": [
+              "i-os-sdk-reference",
               "qawolf/network-connectivity"
             ]
           }
