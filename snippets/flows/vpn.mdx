@@ -1,0 +1,31 @@
+import { flow } from "@qawolf/flows/ios";
+export default flow(
+  "iOS - Residential Proxy With Safari",
+  "iOS - iPhone 15 (iOS 26)",
+  async ({ test, ...testContext }) => {
+    const { ios, wdio } = testContext;
+
+    await test("open google", async () => {
+      const safari = await wdio.startIos({ browserName: "safari" });
+
+      await safari.url("https://ip.me"); // 
+
+      await safari.pause(5000)
+
+      const cleanupProxy = await ios.routeTraffic({
+        apps: [],
+        domains: ["ip.me", "qawolf.com"],
+        tunnel: {
+          type: "http-proxy",
+          username: "proxy-user",
+          password: process.env.PROXY_PASSWORD,
+          host: "isp.oxylabs.io",
+          port: 8006, 
+       }});
+
+      await safari.activateApp('com.apple.mobilesafari');
+      await safari.url("https://qawolf.com");
+      await safari.url("https://ip.me"); // 
+    });
+  },
+);
