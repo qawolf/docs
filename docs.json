@@ -137,7 +137,7 @@
             "group": "iOS",
             "icon": "tablet-smartphone",
             "pages": [
-              "i-os-sdk-reference",
+              "qawolf/i-os-sdk-reference",
               "qawolf/network-connectivity"
             ]
           }
