@@ -1,37 +1,42 @@
 ```js
 import { flow } from "@qawolf/flows/ios";
 export default flow(
-  "iOS - Residential Proxy With Safari",
+  "Ios Network Simulation with fast.com",
   "iOS - iPhone 15 (iOS 26)",
   async ({ test, ...testContext }) => {
-    const { ios, wdio } = testContext;
+    const { ios, runCommand, wdio } = testContext;
+    await test("Install app", async () => {
 
-    await test("open google", async () => {
-      const safari = await wdio.startIos({ browserName: "safari" });
-
-	//Discover your IP address
-      await safari.url("https://ip.me"); 
-
-      await safari.pause(5000)
-
-	//Configure and start QA Wolf's tunnel client
-      const cleanup = await ios.routeTraffic({
+      // Start VPN
+      const cleanupProxy = await ios.routeTraffic({
         apps: [],
-        domains: ["ip.me", "qawolf.com"],
         tunnel: {
-          type: "http-proxy",
-          username: "process.env.PROXY_USER",
-          password: process.env.PROXY_PASSWORD,
-          host: "process.env.PROXY_HOST",
-          port: 8006, 
+          type: "direct", 
        }});
 
-	//Start the iOS Safari app
-      await safari.activateApp('com.apple.mobilesafari');
-      await safari.url("https://qawolf.com");
+      let cleanUpNetworkCondition = await ios.simulateNetworkCondition(ios.NETWORK_5G)
+      console.log(await ios.getNetworkCondition())
+      
+      const safari = await wdio.startIos({ browserName: "safari" });
+      await safari.url("https://fast.com");
 
-	//Check your IP address again.  It should have changed
-      await safari.url("https://ip.me"); 
+      // switch to webview
+      const contexts = await safari.getContexts();
+      const webViewContext = contexts.reverse().find(context => context.toLowerCase().startsWith("webview_"));
+      await safari.switchContext(webViewContext);
+
+      // wait for the test result for 5G
+      await safari.$(`//*[@id='your-speed-message']`).waitForDisplayed({timeout: 30_000});
+
+      // clean-up and set 2G
+      await cleanUpNetworkCondition();
+      cleanUpNetworkCondition = await ios.simulateNetworkCondition(ios.NETWORK_2G_EDGE)
+      console.log(await ios.getNetworkCondition())
+    
+      await safari.url("https://fast.com");
+
+      // wait for the test result for 2G
+      await safari.$(`//*[@id='your-speed-message']`).waitForDisplayed({timeout: 30_000});
     });
   },
 );
