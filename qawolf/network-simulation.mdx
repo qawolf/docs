@@ -54,7 +54,7 @@ const cleanup = await ios.simulateNetworkCondition(ios.NETWORK_OFFLINE);
 await cleanup();
 ```
 
-### When to use
+## When to use
 
 - Testing how your app behaves when loading is slow — spinners, timeouts, retry logic
 - Verifying your app shows the right error messages when connectivity is poor or lost
@@ -62,7 +62,7 @@ await cleanup();
 - Reproducing issues customers have reported on slow or unreliable connections
 - Making sure your app degrades gracefully for users on 2G or 3G networks
 
-### Notes
+## Notes
 
 - Beforecallin `ios.simulateNetworkCondition(),`you must call `ios.routeTraffic()` otherwise you will get an error.
 - Always call cleanup functions in reverse order: restore network conditions first, then stop routing.
@@ -70,7 +70,7 @@ await cleanup();
 - Latency, jitter, and packet loss apply to all traffic (TCP and UDP).
 - `NETWORK_OFFLINE` simulates no connectivity by dropping all packets. Requests will time out rather than fail immediately — this may behave differently from a true offline state on some devices.
 
-Full sample test
+## Full sample test
 
 import Sample from '/snippets/flows/simulation.mdx';
 
