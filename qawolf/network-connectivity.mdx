@@ -1,0 +1,153 @@
+---
+title: "Network connectivity"
+icon: "network"
+---
+
+By default, QAWolf tests run on our cloud infrastructure, which means your app's network requests originate from our servers — not your corporate network. If your app needs to reach internal services (staging environments, internal APIs, services behind a firewall), you'll need to route your test device's traffic through a tunnel.
+
+`ios.routeTraffic()` sets up a per-app VPN on the test device that intercepts and redirects network traffic before your test runs. You can target specific apps by bundle ID, or limit routing to specific domains when testing with Safari.
+
+<Info>
+  Call `ios.routeTraffic()` before starting your WebDriver session so the tunnel is active from the first network request.
+</Info>
+
+## Examples
+
+**Route a native app's traffic** (all traffic from the app is intercepted):
+
+```js
+// the app property makes sure all traffic 
+// from app with bundle id `com.example.myapp` will be rerouted
+
+const cleanup = await ios.routeTraffic({
+  apps: ["com.example.myapp"],
+  tunnel: ...,
+});
+
+// ... run tests ...
+
+await cleanup();
+```
+
+**Route Safari traffic for specific domains only:**
+
+```js
+// Only traffic to *.example.com and api.staging.io
+// goes through the tunnel. All other Safari traffic goes direct.
+
+const cleanup = await ios.routeTraffic({
+  apps: [],
+  domains: ["*.example.com", "api.staging.io"],
+  tunnel: ...,
+});
+
+await cleanup();
+```
+
+**Route multiple apps simultaneously:**
+
+```js
+const cleanup = await ios.routeTraffic({
+  apps: ["com.example.myapp", "com.example.companion"],
+  tunnel: ...,
+});
+
+// Both apps' traffic is routed through the VPN
+
+await cleanup();
+```
+
+## When to use
+
+- Your app connects to internal or staging services that aren't publicly accessible
+- You need to test geo-restricted content by routing through a VPN endpoint in a specific region
+- You want to verify how your app behaves when traffic passes through a proxy (authentication, filtering, latency)
+- You need to test Safari against specific internal domains without affecting other browsing
+
+## Tunnel types
+
+Choose a tunnel type based on how your network is set up.
+
+### WireGuard
+
+Use if your team already has a WireGuard VPN or you need to simulate traffic from a specific geographic region.
+
+```js
+const cleanup = await ios.routeTraffic({
+  apps: ["com.apple.mobilesafari"],
+  tunnel: { 
+	type: "wireguard", 
+	configPath: "/configs/us-west.conf" 
+	},
+});
+
+// ... test geo-restricted content ...
+
+await cleanup();
+```
+
+### OpenVPN
+
+Use  if your organization uses a standard VPN setup with `.ovpn` config files.
+
+```js
+const cleanup = await ios.routeTraffic({
+  apps: ["com.example.app"],
+  tunnel: { 
+	type: "openvpn", 
+	configPath: "/configs/client.ovpn" 
+	},
+});
+
+// ... test against staging servers behind VPN ...
+
+await cleanup();
+```
+
+### HTTP Proxy
+
+Use this if your organization provides an HTTP/HTTPS proxy endpoint for accessing internal services, or if you're using a third-party geolocation proxy service.
+
+```js
+const cleanup = await ios.routeTraffic({
+  apps: ["com.apple.mobilesafari"],
+  tunnel: {
+    type: "http-proxy",
+    host: "proxy.corp.example.com",
+    port: 8080,
+    username: "testuser",
+    password: "testpass",
+  },
+});
+
+// ... run tests behind corporate proxy ...
+
+await cleanup();
+```
+
+### GOST Relay (3rd-party VPN alternative)
+
+Use this if your organization uses a third-party VPN that can't be configured as WireGuard or OpenVPN on our side. A QAWolf team member will set up a relay VM that runs your VPN client and forwards traffic to your test device.
+
+```js
+const cleanup = await ios.routeTraffic({
+  apps: ["com.example.app"],
+  tunnel: {
+    type: "relay",
+    host: "relay.corp.example.com",
+    port: 443,
+    username: "user",
+    password: "pass",
+  },
+});
+
+// ... test with traffic routed through remote relay ...
+
+await cleanup();
+```
+
+## Full sample test (http-proxy)
+
+import VPN from '/snippets/flows/vpn.mdx';
+
+<VPN />

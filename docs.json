@@ -3,9 +3,14 @@
   "theme": "aspen",
   "name": "QA Wolf Docs",
   "redirects": [
-    { "source": "/", "destination": "qawolf/Welcome-to-QA-Wolf" }
+    {
+      "source": "/",
+      "destination": "qawolf/Welcome-to-QA-Wolf"
+    }
   ],
-  "icons": { "library": "lucide" },
+  "icons": {
+    "library": "lucide"
+  },
   "colors": {
     "primary": "#3b3cef",
     "light": "#08edcb",
@@ -126,6 +131,15 @@
             "icon": "arrow-right-left",
             "pages": [
               "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
+            ]
+          },
+          {
+            "group": "iOS",
+            "icon": "tablet-smartphone",
+            "pages": [
+              "qawolf/i-os-sdk-reference",
+              "qawolf/network-connectivity",
+              "qawolf/network-simulation"
             ]
           }
         ]
