@@ -45,6 +45,8 @@ const cleanupProxy = await ios.routeTraffic(config: RouteTrafficConfig): Promise
   If `true`, enables traffic inspection/logging.
 </ParamField>
 
+
+
 ### Returns
 
 A cleanup function `() => Promise<void>`. Call it at the end of your test to restore normal network routing.
@@ -140,9 +142,21 @@ const cleanup = await ios.simulateNetworkCondition(config: NetworkConditionConfi
   Percentage of packets to drop (0–100).
 </ParamField>
 
-<Note>
-  Built-in presets such as `ios.NETWORK_3G` and `ios.NETWORK_OFFLINE` are accepted wherever this config shape is expected.
-</Note>
+
+### Presets
+
+| Preset | Description |
+|--------|-------------|
+| `ios.NETWORK_2G_EDGE` | 2G/EDGE conditions |
+| `ios.NETWORK_3G` | 3G conditions |
+| `ios.NETWORK_4G_LTE` | 4G LTE conditions |
+| `ios.NETWORK_5G` | 5G conditions |
+| `ios.NETWORK_SATELLITE` | Satellite connection |
+| `ios.NETWORK_WIFI_CONGESTED` | Congested WiFi |
+| `ios.NETWORK_VERY_BAD` | Very poor conditions |
+| `ios.NETWORK_OFFLINE` | No network connectivity |
+
+
 
 ### Returns
 
