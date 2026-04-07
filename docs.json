@@ -138,7 +138,8 @@
             "icon": "tablet-smartphone",
             "pages": [
               "qawolf/i-os-sdk-reference",
-              "qawolf/network-connectivity"
+              "qawolf/network-connectivity",
+              "qawolf/network-simulation"
             ]
           }
         ]

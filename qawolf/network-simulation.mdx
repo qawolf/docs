@@ -1,0 +1,77 @@
+---
+title: "Network simulation"
+description: "Simulate degraded network conditions on iOS devices to test how your app handles slow connections, high latency, or no connectivity."
+icon: "signal-low"
+---
+
+## Examples
+
+**Using a preset:**
+
+```js
+// Traffic must be routed through the gateway before applying
+// network conditions — use direct mode if you don't need a VPN
+
+const routeCleanup = await ios.routeTraffic({
+    apps: ["com.example.app"],
+    tunnel: { type: "direct" },
+});
+
+const conditionCleanup = await ios.simulateNetworkCondition(ios.NETWORK_3G);
+
+// ... verify the app handles slow network gracefully ...
+
+await conditionCleanup();
+await routeCleanup();
+```
+
+**Custom conditions:**
+
+```js
+const cleanup = await ios.simulateNetworkCondition({
+  bandwidthKbps: 5000,
+  latencyMs: 600,
+  jitterMs: 50,
+  packetLossPercent: 1.0,
+});
+
+// ... verify timeouts, retries, offline banners ...
+
+await cleanup();
+```
+
+**Offline mode (no connectivity):**
+
+```js
+// Simulates offline mode by dropping all packets.
+// Note: this may not trigger every app's offline UI —
+// some apps only show offline states when the connection drops abruptly
+
+const cleanup = await ios.simulateNetworkCondition(ios.NETWORK_OFFLINE);
+
+// ... verify offline error handling, cached content ...
+
+await cleanup();
+```
+
+### When to use
+
+- Testing how your app behaves when loading is slow — spinners, timeouts, retry logic
+- Verifying your app shows the right error messages when connectivity is poor or lost
+- Testing video or audio streaming features that adapt quality based on available bandwidth (adaptive bitrate streaming)
+- Reproducing issues customers have reported on slow or unreliable connections
+- Making sure your app degrades gracefully for users on 2G or 3G networks
+
+### Notes
+
+- Beforecallin `ios.simulateNetworkCondition(),`you must call `ios.routeTraffic()` otherwise you will get an error.
+- Always call cleanup functions in reverse order: restore network conditions first, then stop routing.
+- Bandwidth limiting applies to TCP traffic only.
+- Latency, jitter, and packet loss apply to all traffic (TCP and UDP).
+- `NETWORK_OFFLINE` simulates no connectivity by dropping all packets. Requests will time out rather than fail immediately — this may behave differently from a true offline state on some devices.
+
+Full sample test
+
+import Sample from '/snippets/flows/simulation.mdx';
+
+<Sample />

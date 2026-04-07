@@ -1,0 +1,43 @@
+```js
+import { flow } from "@qawolf/flows/ios";
+export default flow(
+  "Ios Network Simulation with fast.com",
+  "iOS - iPhone 15 (iOS 26)",
+  async ({ test, ...testContext }) => {
+    const { ios, runCommand, wdio } = testContext;
+    await test("Install app", async () => {
+
+      // Start VPN
+      const cleanupProxy = await ios.routeTraffic({
+        apps: [],
+        tunnel: {
+          type: "direct", 
+       }});
+
+      let cleanUpNetworkCondition = await ios.simulateNetworkCondition(ios.NETWORK_5G)
+      console.log(await ios.getNetworkCondition())
+      
+      const safari = await wdio.startIos({ browserName: "safari" });
+      await safari.url("https://fast.com");
+
+      // switch to webview
+      const contexts = await safari.getContexts();
+      const webViewContext = contexts.reverse().find(context => context.toLowerCase().startsWith("webview_"));
+      await safari.switchContext(webViewContext);
+
+      // wait for the test result for 5G
+      await safari.$(`//*[@id='your-speed-message']`).waitForDisplayed({timeout: 30_000});
+
+      // clean-up and set 2G
+      await cleanUpNetworkCondition();
+      cleanUpNetworkCondition = await ios.simulateNetworkCondition(ios.NETWORK_2G_EDGE)
+      console.log(await ios.getNetworkCondition())
+    
+      await safari.url("https://fast.com");
+
+      // wait for the test result for 2G
+      await safari.$(`//*[@id='your-speed-message']`).waitForDisplayed({timeout: 30_000});
+    });
+  },
+);
+```
