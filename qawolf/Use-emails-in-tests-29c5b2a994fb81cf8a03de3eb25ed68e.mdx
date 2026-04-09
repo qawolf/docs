@@ -1,5 +1,5 @@
 ---
-title: "How to test a feature that sends or receives emails"
+title: "Test a feature that sends or receives emails"
 description: "Use the built-in getInbox function to send, receive, and verify emails during your QA Wolf test flows."
 sidebarTitle: "Use emails in tests"
 icon: "mail"
@@ -11,7 +11,6 @@ icon: "mail"
 
 You can access it in two ways:
 
-
 1. Spread `testContext` and destructure from it, which is useful when you need to pass context to helpers:
 
 ```text
@@ -19,6 +18,7 @@ await flow("My Flow", "Web - Chrome", async ({ test, ...testContext }) => {
   const { getInbox } = testContext;
 });
 ```
+
 2. Destructure it directly from the flow context:
 
 ```text
@@ -26,7 +26,6 @@ await flow("My Flow", "Web - Chrome", async ({ test, getInbox }) => {
   // getInbox is ready to use
 });
 ```
-
 
 ## Email addresses and inboxes
 
@@ -76,7 +75,7 @@ When you set a default email address, any test or helper that accepts an email c
   </Step>
 </Steps>
 
-## How to get the contents of an email inbox
+## Get the contents of an email inbox
 
 The simplest way to access your test inbox is to add this line to your flow:
 
@@ -123,7 +122,7 @@ QA Wolf automatically appends a random suffix after a \+ sign (i.e., plus addres
   The above generates new emails with random strings after the - symbol.
 </Tip>
 
-## How to wait for an email in a test
+## Wait for an email in a test
 
 Often, you want your test to wait for a specific email to arrive and then verify its content. This approach is ideal for verifying signup confirmations or password reset links.
 
@@ -143,7 +142,7 @@ const messages = await waitForMessages({ wait: 10000 });
 console.log(`Received ${messages.length} messages`);
 ```
 
-## How to send an email from a test
+## Send an email from a test
 
 Our platform includes the `sendMessage` helper for the less common case where your application **receives** or **reacts to incoming emails**. You can use it to simulate an external sender and verify how your app processes inbound messages (like replies, support emails, or automated triggers).
 
