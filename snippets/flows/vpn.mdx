@@ -20,9 +20,9 @@ export default flow(
         domains: ["ip.me", "qawolf.com"],
         tunnel: {
           type: "http-proxy",
-          username: "process.env.PROXY_USER",
+          username: process.env.PROXY_USER,
           password: process.env.PROXY_PASSWORD,
-          host: "process.env.PROXY_HOST",
+          host: process.env.PROXY_HOST,
           port: 8006, 
        }});
 
