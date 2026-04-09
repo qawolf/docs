@@ -5,6 +5,29 @@ sidebarTitle: "Use emails in tests"
 icon: "mail"
 ---
 
+## Accessing `getInbox` in your flow
+
+`getInbox` is available through `testContext` in your `flow()` callback — it does not need to be imported from a separate package.
+
+You can access it in two ways:
+
+
+1. Spread `testContext` and destructure from it, which is useful when you need to pass context to helpers:
+
+```text
+await flow("My Flow", "Web - Chrome", async ({ test, ...testContext }) => {
+  const { getInbox } = testContext;
+});
+```
+2. Destructure it directly from the flow context:
+
+```text
+await flow("My Flow", "Web - Chrome", async ({ test, getInbox }) => {
+  // getInbox is ready to use
+});
+```
+
+
 ## Email addresses and inboxes
 
 When your app sends confirmation links, password resets, or invitation emails, you can test those flows directly inside QA Wolf using the built-in getInbox function.
