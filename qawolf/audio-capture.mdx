@@ -1,0 +1,97 @@
+---
+title: "Audio capture"
+icon: "audio-waveform"
+description: "QAWolf can record audio playing through the device speaker during a test. Use this to verify that your app played the correct audio — a sound effect, a voice prompt, a music clip."
+---
+## Examples
+
+**Record and download speaker output:**
+
+```js
+const fsPromises = await import("node:fs/promises");
+
+// Start recording
+const startResult = await ios.startSpeakerRecording(driver);
+const audioSessionId = startResult.id;
+
+// Run your test steps that trigger audio playback
+
+// Stop recording
+const stopResult = await ios.stopSpeakerRecording(driver, audioSessionId);
+
+// Download the recording
+const result = await ios.downloadSpeakerRecording(driver, stopResult.filename);
+const wavData = Buffer.from(result, "base64");
+await fsPromises.writeFile("/tmp/output.wav", wavData);
+```
+
+**Compare recorded audio against a reference file:**
+
+```js
+const fsPromises = await import("node:fs/promises");
+
+// Generate fingerprint for reference file
+const referenceBuffer = (await fsPromises.readFile(REFERENCE_AUDIO_PATH)).toString("base64");
+const referenceResult = await ios.calculateAudioFingerprint(driver, referenceBuffer);
+
+// Compare against recorded output
+const bestMatch = findBestMatch(stopResult.fingerprint, referenceResult.fingerprint);
+expect(bestMatch.similarity).toBeGreaterThan(0.85);
+```
+
+Audio fingerprinting uses the Chromaprint algorithm, which supports fuzzy matching — small differences in volume or encoding do not affect the result.
+
+Here is a comparison algorithm you can use in your tests:
+
+```js
+function findBestMatch(shortFp, longFp) {
+  if (shortFp.length === 0 || longFp.length === 0) {
+    return { similarity: 0, hammingDistance: 0, offset: 0, windowSize: 0 };
+  }
+
+  if (shortFp.length > longFp.length) {
+    [shortFp, longFp] = [longFp, shortFp];
+  }
+
+  const windowSize = shortFp.length;
+  const maxOffset = longFp.length - windowSize;
+  let bestSimilarity = 0;
+  let bestDistance = Infinity;
+  let bestOffset = 0;
+
+  for (let offset = 0; offset <= maxOffset; offset++) {
+    let totalDistance = 0;
+    for (let i = 0; i < windowSize; i++) {
+      totalDistance += hammingDistance(shortFp[i], longFp[offset + i]);
+    }
+    const maxBits = windowSize * 32;
+    const similarity = 1 - totalDistance / maxBits;
+    if (similarity > bestSimilarity) {
+      bestSimilarity = similarity;
+      bestDistance = totalDistance;
+      bestOffset = offset;
+    }
+  }
+
+  return { similarity: bestSimilarity, hammingDistance: bestDistance, offset: bestOffset, windowSize };
+}
+
+function hammingDistance(a, b) {
+  let distance = 0;
+  let xor = (a ^ b) >>> 0;
+  while (xor !== 0) {
+    distance++;
+    xor &= xor - 1;
+  }
+  return distance;
+}
+```
+
+## When to use
+
+- Your app plays audio and you need to verify the correct sound played
+- Your app uses text-to-speech and you need to validate the output
+- Your app plays music or audio prompts and you need to confirm playback
+
+## Full sample test
+

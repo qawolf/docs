@@ -139,7 +139,11 @@
             "pages": [
               "qawolf/i-os-sdk-reference",
               "qawolf/network-connectivity",
-              "qawolf/network-simulation"
+              "qawolf/network-simulation",
+              "qawolf/camera-and-audio-injection",
+              "qawolf/barcode-qrcode-scanning",
+              "qawolf/audio-capture",
+              "qawolf/untitled-page"
             ]
           }
         ]

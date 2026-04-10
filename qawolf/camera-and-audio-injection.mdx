@@ -1,0 +1,143 @@
+---
+title: "Camera and audio injection"
+icon: "camera"
+description: "QAWolf can inject images, video, and audio directly into your app's camera and microphone inputs. The app receives the injected media through the same APIs it uses to access real hardware — it cannot tell the difference between injected and real input."
+---
+
+<Info>
+  Camera and audio injection is only available for apps that QAWolf resigns during installation. It is not available for system apps or Safari.
+</Info>
+
+## Examples
+
+**Inject an image into the camera feed:**
+
+```js
+const fsPromises = await import("node:fs/promises");
+const bundleId = "com.example.myapp";
+const imageName = "large.jpg";
+const imagePath = `/home/wolf/files/${imageName}`;
+const imageBuffer = await fsPromises.readFile(imagePath);
+const imagePayload = imageBuffer.toString("base64");
+
+// Push image file to app
+await driver.executeScript("mobile: pushFile", [
+  {
+    remotePath: `@${bundleId}/Documents/.qawolf/${imageName}`,
+    payload: imagePayload.toString("base64"),
+  },
+]);
+
+// Set camera config
+const cameraConfig = JSON.stringify({
+  data: `${imageName}`,
+  type: "image",
+});
+
+await driver.execute("mobile: pushFile", {
+  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
+  payload: Buffer.from(cameraConfig, "utf8").toString("base64"),
+});
+```
+
+Once the config is pushed, the camera preview updates to the injected image and loops continuously.
+
+**Inject a video into the camera feed:**
+
+```js
+const fsPromises = await import("node:fs/promises");
+const bundleId = "com.example.myapp";
+const videoName = "wolf.mp4";
+const videoPath = `/home/wolf/files/${videoName}`;
+const videoBuffer = await fsPromises.readFile(videoPath);
+const videoPayload = videoBuffer.toString("base64");
+
+// Push video file to app
+await driver.executeScript("mobile: pushFile", [
+  {
+    remotePath: `@${bundleId}/Documents/.qawolf/${videoName}`,
+    payload: videoPayload.toString("base64"),
+  },
+]);
+
+// Set camera config
+const cameraConfig = JSON.stringify({
+  data: `${videoName}`,
+  type: "video",
+});
+
+await driver.execute("mobile: pushFile", {
+  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
+  payload: Buffer.from(cameraConfig, "utf8").toString("base64"),
+});
+```
+
+**Inject audio into the microphone:**
+
+```js
+const fsPromises = await import("node:fs/promises");
+const bundleId = "com.example.myapp";
+const audioFile = "sample_audio_input.wav";
+const audioPath = `/home/wolf/team-storage/ios-trot/${audioFile}`;
+const audioBuffer = await fsPromises.readFile(audioPath);
+const audioPayload = audioBuffer.toString("base64");
+
+// Push audio file to app
+await driver.executeScript("mobile: pushFile", [
+  {
+    remotePath: `@${bundleId}/Documents/.qawolf/${audioFile}`,
+    payload: audioPayload,
+  },
+]);
+
+// Set media config
+const mediaConfig = JSON.stringify({
+  data: `${audioFile}`,
+  type: "audio",
+});
+
+await driver.execute("mobile: pushFile", {
+  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
+  payload: Buffer.from(mediaConfig, "utf8").toString("base64"),
+});
+
+// Then trigger microphone input in your test
+```
+
+## When to use
+
+- Your app scans QR codes, documents, or other visual inputs and you want to test that flow without a physical camera setup
+- Your app records video and you need to verify the recording pipeline with deterministic content
+- Your app records audio or processes microphone input and you need to test that flow with known audio data
+- You need to run the same scenario repeatedly with consistent inputs
+
+## Supported file types
+
+**Images:** Any format supported by UIImage — JPG, PNG, HEIC, GIF, BMP, TIFF, WebP
+
+**Video:** Any format supported by AVAsset — MP4, MOV, M4V with H.264/HEVC codecs
+
+**Audio:** WAV
+
+## Source formats
+
+All three input types support the following sources:
+
+- **File path:** Relative to the `.qawolf` folder or absolute paths
+- **HTTP URLs:** Remote image, video, or audio resources
+- **Data URIs:** Base64-encoded media data
+
+## Clearing injected media
+
+To stop injection and restore the real camera or microphone input, either delete the media config file or push a new config with an empty data path:
+
+```js
+const emptyConfig = JSON.stringify({ data: "", type: "image" });
+
+await driver.execute("mobile: pushFile", {
+  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
+  payload: Buffer.from(emptyConfig, "utf8").toString("base64"),
+});
+```
+
+## Full sample test
