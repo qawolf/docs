@@ -1,0 +1,117 @@
+```js
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "iOS Media - Camera Photo Injection",
+  "iOS - iPhone 15 (iOS 26)",
+  async ({ wdio, test, ...testContext }) => {
+    await test("iOS Media - Camera Photo Injection", async () => {
+      // Declare Variables
+      const fsPromises = await import("node:fs/promises");
+      const bundleId = process.env.BUNDLE_ID;
+      const imageName = "large.jpg";
+      const imagePath = process.env.IMAGE_PATH;
+      const imageBuffer = await fsPromises.readFile(imagePath);
+      const imagePayload = imageBuffer.toString("base64");
+
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      // Install and Launch Trot app
+      const driver = await wdio.startIos({
+        "appium:app": process.env.IOS_APP_STAGING,
+        "appium:settings[respectSystemAlerts]": true,
+        "appium:autoAcceptAlerts": true,
+        "appium:iosInstallPause": "5000",
+      });
+
+      // Tap "Media"
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
+
+      // Tap Video Recording
+      await driver
+        .$(
+          `-ios predicate string:name == 'Video Recording' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'Video Recording' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
+
+      // Tap AVCaptureMovieFileOutput
+      await driver
+        .$(
+          `-ios predicate string:name == 'AVCaptureMovieFileOutput' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'AVCaptureMovieFileOutput' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
+
+      // Observe "Start Recording" button
+      await driver
+        .$(
+          `-ios predicate string:name == 'Start Recording' AND type == 'XCUIElementTypeStaticText'`,
+        )
+        .waitForDisplayed({ timeout: 10000 });
+
+      //--------------------------------
+      // Act:
+      //--------------------------------
+      // Push Image File to App
+      await driver.executeScript("mobile: pushFile", [
+        {
+          remotePath: `@${bundleId}/Documents/.qawolf/${imageName}`,
+          payload: imagePayload.toString("base64"),
+        },
+      ]);
+
+      // Set Media Config File
+      const mediaConfig = JSON.stringify({
+        data: `${imageName}`,
+        type: "image",
+      });
+
+      const mediaConfigBase64 = Buffer.from(mediaConfig, "utf8").toString(
+        "base64",
+      );
+
+      // Push Camera Config File to App
+      await driver.execute("mobile: pushFile", {
+        remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
+        payload: mediaConfigBase64,
+      });
+      await driver.pause(3000);
+
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      // Assert Screenshot of Image File Displaying in Live Preview
+      const previewElement = driver.$(
+        `-ios predicate string:name == 'livePreview' AND type == 'XCUIElementTypeOther'`,
+      );
+      await previewElement.waitForDisplayed({ timeout: 5000 });
+      await wdio
+        .expect(driver)
+        .toHaveScreenshot(
+          previewElement,
+          "trot_video_recording_image_preview",
+          { maxMisMatchPercentage: 5 },
+        );
+    });
+  },
+);
+```
