@@ -74,7 +74,7 @@ export default flow(
       // Push Image File to App
       await driver.executeScript("mobile: pushFile", [
         {
-          remotePath: `@${bundleId}/Documents/.qawolf/${imageName}`,
+          remotePath: process.env.REMOTE_IMAGE_PATH,
           payload: imagePayload.toString("base64"),
         },
       ]);
@@ -91,7 +91,7 @@ export default flow(
 
       // Push Camera Config File to App
       await driver.execute("mobile: pushFile", {
-        remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
+        remotePath: process.env.REMOTE_IMAGE_PATH,
         payload: mediaConfigBase64,
       });
       await driver.pause(3000);
@@ -108,7 +108,7 @@ export default flow(
         .expect(driver)
         .toHaveScreenshot(
           previewElement,
-          "trot_video_recording_image_preview",
+          "video_recording_image_preview",
           { maxMisMatchPercentage: 5 },
         );
     });
