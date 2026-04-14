@@ -111,7 +111,7 @@
       {
         "tab": "Solutions",
         "icon": "book",
-        "groups": [
+        "pages": [
           {
             "group": "Email & SMS",
             "icon": "voicemail",
@@ -123,6 +123,8 @@
             "group": "Device hardware & compatibility",
             "icon": "monitor-smartphone",
             "pages": [
+              "qawolf/network-connectivity",
+              "qawolf/network-simulation",
               "qawolf/using-an-android-tablet"
             ]
           },
@@ -134,16 +136,18 @@
             ]
           },
           {
-            "group": "iOS",
+            "group": "Mobile-native media",
             "icon": "tablet-smartphone",
             "pages": [
-              "qawolf/i-os-sdk-reference",
-              "qawolf/network-connectivity",
-              "qawolf/network-simulation",
-              "qawolf/camera-and-audio-injection",
-              "qawolf/barcode-qrcode-scanning",
-              "qawolf/audio-capture",
-              "qawolf/photo-library-management"
+              {
+                "group": "iOS",
+                "pages": [
+                  "qawolf/photo-library-management",
+                  "qawolf/audio-capture",
+                  "qawolf/camera-and-audio-injection",
+                  "qawolf/barcode-qrcode-scanning"
+                ]
+              }
             ]
           }
         ]
