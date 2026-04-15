@@ -12,42 +12,35 @@ description: "QA Wolf can inject barcode and QR code detections directly into an
 
 **Inject a QR code:**
 
-```js
-const appInfo = await driver.execute("mobile: activeAppInfo");
-const bundleId = appInfo.bundleId;
-//you must set this environment variable correctly
-const basePath = process.env.QAWOLF_BASE_PATH;
-const remotePath = `@${bundleId}/${basePath}/metadataobject.json`;
-const qrCodeLinkToInject = "https://qawolf.com/qr-code";
-const qrCode = `{"metadataObjects": [{"type": "org.iso.QRCode", "value": "${qrCodeLinkToInject}"}]}`;
+```javascript
+  // Inject QR Code
+  const ios = await import("@qawolf/run-globals-ios");
+  const { bundleId } = await driver.execute("mobile: activeAppInfo");
+  const cleanup = await ios.injectBarcode(driver, bundleId, {
+    value: "https://qawolf.com/qr-code",
+  });
 
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath:${remotePath},
-    remotePath:`${remotePath}`,
-    payload: Buffer.from(qrCode).toString("base64"),
-  },
-]);
+  // ... assert that the app handled the scanned QR code ...
+
+  await cleanup();
 ```
 
 **Inject a barcode:**
 
 ```js
-const appInfo = await driver.execute("mobile: activeAppInfo");
-const bundleId = appInfo.bundleId;
-//you must set this environment variable correctly
-const basePath = process.env.QAWOLF_BASE_PATH;
-const remotePath = `@${bundleId}/${basePath}/metadataobject.json`;
+  // Inject EAN-13 Barcode
+  const ios = await import("@qawolf/run-globals-ios");
 
-const barcodeToInject = "1234567890123";
-const barcode = `{"metadataObjects": [{"type": "org.gs1.EAN-13", "value": "${barcodeToInject}"}]}`;
+  const { bundleId } = await driver.execute("mobile: activeAppInfo");
 
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath: `${remotePath}`,
-    payload: Buffer.from(barcode).toString("base64"),
-  },
-]);
+  const cleanup = await ios.injectBarcode(driver, bundleId, {
+    type: "org.gs1.EAN-13",
+    value: "1234567890123",
+  });
+
+  // ... assert that the app handled the scanned barcode ...
+
+  await cleanup();
 ```
 
 ## When to use
@@ -83,18 +76,18 @@ await driver.executeScript("mobile: pushFile", [
 Some apps expect the camera to detect multiple codes simultaneously. To inject multiple detections in a single call:
 
 ```js
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath: `${remotePath}`,
-    payload: Buffer.from(JSON.stringify({
-      metadataObjects: [
-        { type: "org.iso.QRCode", value: "https://example.com/qr-deep-link" },
-        { type: "org.gs1.EAN", value: "1234567890123" },
-        { type: "org.gs1.Code128", value: "PRODUCT-SKU-12345" },
-      ],
-    })).toString("base64"),
-  },
-]);
+  // Inject Multiple Barcodes (delivered to the delegate in one batch)
+  const ios = await import("@qawolf/run-globals-ios");
+
+  const cleanup = await ios.injectBarcode(driver, bundleId, [
+    { type: "org.iso.QRCode",  value: "https://example.com/qr-deep-link" },
+    { type: "org.gs1.EAN",     value: "1234567890123" },
+    { type: "org.gs1.Code128", value: "PRODUCT-SKU-12345" },
+  ]);
+
+  // ... assert that the app handled all scanned codes ...
+
+  await cleanup();
 ```
 
 ## Advanced: Custom bounds and corners
@@ -102,31 +95,29 @@ await driver.executeScript("mobile: pushFile", [
 Some apps use the position of the detected code in the view. To include position data:
 
 ```js
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath: `${remotePath}`,
-    payload: Buffer.from(JSON.stringify({
-      metadataObjects: [
-        {
-          type: "org.iso.QRCode",
-          value: "https://example.com",
-          bounds: {
-            x: 0.3,
-            y: 0.2,
-            width: 0.4,
-            height: 0.6,
-          },
-          corners: [
-            { x: 0.3, y: 0.2 },
-            { x: 0.7, y: 0.2 },
-            { x: 0.7, y: 0.8 },
-            { x: 0.3, y: 0.8 },
-          ],
-        },
-      ],
-    })).toString("base64"),
-  },
-]);
+  // Inject QR Code with Custom Bounds and Corners
+  const ios = await import("@qawolf/run-globals-ios");
+
+  const cleanup = await ios.injectBarcode(driver, bundleId, {
+    type: "org.iso.QRCode",
+    value: "https://example.com",
+    bounds: {
+      x: 0.3, // normalized coordinates (0.0 - 1.0)
+      y: 0.2,
+      width: 0.4,
+      height: 0.6,
+    },
+    corners: [
+      { x: 0.3, y: 0.2 }, // top-left
+      { x: 0.7, y: 0.2 }, // top-right
+      { x: 0.7, y: 0.8 }, // bottom-right
+      { x: 0.3, y: 0.8 }, // bottom-left
+    ],
+  });
+
+  // ... assert that the app handled the scanned QR code at the expected position ...
+
+  await cleanup();
 ```
 
 ## Advanced: Raw binary data
@@ -134,22 +125,18 @@ await driver.executeScript("mobile: pushFile", [
 To include raw binary data alongside the decoded value:
 
 ```js
-const rawData = Buffer.from("custom binary data").toString("base64");
+  // Inject QR Code with Raw Binary Data (iOS 13+)
+  const ios = await import("@qawolf/run-globals-ios");
 
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath: `${remotePath}`,
-    payload: Buffer.from(JSON.stringify({
-      metadataObjects: [
-        {
-          type: "org.iso.QRCode",
-          value: "https://example.com",
-          rawValue: rawData,
-        },
-      ],
-    })).toString("base64"),
-  },
-]);
+  const cleanup = await ios.injectBarcode(driver, bundleId, {
+    type: "org.iso.QRCode",
+    value: "https://example.com",
+    rawValue: Buffer.from("custom binary data"), // also accepts a base64-encoded string
+  });
+
+  // ... assert the app received the raw payload ...
+
+  await cleanup();
 ```
 
 ## Default values

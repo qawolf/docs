@@ -13,33 +13,23 @@ description: "QA Wolf can inject images, video, and audio directly into your app
 **Inject an image into the camera feed:**
 
 ```js
-const fsPromises = await import("node:fs/promises");
-const bundleId = procees.env.BUNDLE_ID;
-const imageName = "large.jpg";
-const baseDir = process.env.BASE_IMAGE_DIR
-const bundlePath = `@${bundleId}/${baseDir}`
-${imageName}`;
-const imageBuffer = await fsPromises.readFile(imagePath);
-const imagePayload = imageBuffer.toString("base64");
+  // Inject Camera Image
+  const ios = await import("@qawolf/run-globals-ios");
 
-// Push image file to app
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath: `${bundlePath}/${imageName}`,
-    payload: imagePayload.toString("base64"),
-  },
-]);
+  const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
 
-// Set camera config
-const cameraConfig = JSON.stringify({
-  data: `${imageName}`,
-  type: "image",
-});
+  //path to QA Wolf remote storage	
+  const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+  const imagePath = `${storagePath}/large.jpg";
 
-await driver.execute("mobile: pushFile", {
-  remotePath: `${bundlePath}/media.json`,
-  payload: Buffer.from(cameraConfig, "utf8").toString("base64"),
-});
+  const cleanup = await ios.injectCamera(driver, bundleId, {
+    data: imagePath,
+    type: "image", // optional — inferred from .jpg/.png/.mp4/etc.
+  });
+
+  // ... run your assertions while the camera feed is mocked ...
+
+  await cleanup();
 ```
 
 Once the config is pushed, the camera preview updates to the injected image and loops continuously.
@@ -47,62 +37,40 @@ Once the config is pushed, the camera preview updates to the injected image and 
 **Inject a video into the camera feed:**
 
 ```js
-const fsPromises = await import("node:fs/promises");
-const bundleId = "com.example.myapp";
-const videoName = "wolf.mp4";
-const baseDir = process.env.BASE_IMAGE_DIR
-const imagePath = `${baseDir}/${videoName}`;
-const videoBuffer = await fsPromises.readFile(videoPath);
-const videoPayload = videoBuffer.toString("base64");
+  // Inject Camera Video
+  const ios = await import("@qawolf/run-globals-ios");
 
-// Push video file to app
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath: `${imagePath}`,
-    payload: videoPayload.toString("base64"),
-  },
-]);
+  const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+  const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+  const videoPath = `${storagePath}/wolf.mp4";
 
-// Set camera config
-const cameraConfig = JSON.stringify({
-  data: `${videoName}`,
-  type: "video",
-});
+  const cleanup = await ios.injectCamera(driver, bundleId, {
+    data: videoPath,
+    type: "video", // optional — inferred from .mp4/.mov/.m4v/.avi
+  });
 
-await driver.execute("mobile: pushFile", {
-  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
-  payload: Buffer.from(cameraConfig, "utf8").toString("base64"),
-});
+  // ... run your assertions while the camera feed plays the video ...
+
+  await cleanup();
 ```
 
 **Inject audio into the microphone:**
 
 ```js
-const fsPromises = await import("node:fs/promises");
-const bundleId = "com.example.myapp";
-const audioFile = "sample_audio_input.wav";
-const audioPath = `/home/wolf/team-storage/ios-trot/${audioFile}`;
-const audioBuffer = await fsPromises.readFile(audioPath);
-const audioPayload = audioBuffer.toString("base64");
+  // Inject Audio
+  const ios = await import("@qawolf/run-globals-ios");
 
-// Push audio file to app
-await driver.executeScript("mobile: pushFile", [
-  {
-    remotePath: `@${bundleId}/Documents/.qawolf/${audioFile}`,
-    payload: audioPayload,
-  },
-]);
+  const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+  const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+  const audioPath = `${storagePath}/sample_audio_input.wav";
 
-// Set media config
-const mediaConfig = JSON.stringify({
-  data: `${audioFile}`,
-  type: "audio",
-});
+  const cleanup = await ios.injectAudio(driver, bundleId, {
+    data: audioPath,
+  });
 
-await driver.execute("mobile: pushFile", {
-  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
-  payload: Buffer.from(mediaConfig, "utf8").toString("base64"),
-});
+  // ... run your assertions while audio is being injected ...
+
+  await cleanup();
 
 // Then trigger microphone input in your test
 ```
@@ -121,27 +89,6 @@ await driver.execute("mobile: pushFile", {
 **Video:** Any format supported by AVAsset — MP4, MOV, M4V with H.264/HEVC codecs
 
 **Audio:** WAV
-
-## Source formats
-
-All three input types support the following sources:
-
-- **File path:** Relative to the `.qawolf` folder or absolute paths
-- **HTTP URLs:** Remote image, video, or audio resources
-- **Data URIs:** Base64-encoded media data
-
-## Clearing injected media
-
-To stop injection and restore the real camera or microphone input, either delete the media config file or push a new config with an empty data path:
-
-```js
-const emptyConfig = JSON.stringify({ data: "", type: "image" });
-
-await driver.execute("mobile: pushFile", {
-  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
-  payload: Buffer.from(emptyConfig, "utf8").toString("base64"),
-});
-```
 
 ## Full sample test
 
