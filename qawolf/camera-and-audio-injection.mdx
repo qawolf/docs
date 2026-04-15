@@ -12,65 +12,72 @@ description: "QA Wolf can inject images, video, and audio directly into your app
 
 **Inject an image into the camera feed:**
 
-```js
-  // Inject Camera Image
-  const ios = await import("@qawolf/run-globals-ios");
 
-  const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+```javascript
+//Inject Camera Image
+const ios = await import("@qawolf/run-globals-ios");
 
-  //path to QA Wolf remote storage	
-  const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
-  const imagePath = `${storagePath}/large.jpg";
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
 
-  const cleanup = await ios.injectCamera(driver, bundleId, {
-    data: imagePath,
-    type: "image", // optional — inferred from .jpg/.png/.mp4/etc.
-  });
+//path to QA Wolf remote storage	
+const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+const imagePath = `${storagePath}/large.jpg`;
 
-  // ... run your assertions while the camera feed is mocked ...
+const cleanup = await ios.injectCamera(driver, bundleId, {
+  data: imagePath,
+  type: "image", // optional — inferred from .jpg/.png/.mp4/etc.
+});
 
-  await cleanup();
+// ... run your assertions while the camera feed is mocked ...
+
+await cleanup();
 ```
 
 Once the config is pushed, the camera preview updates to the injected image and loops continuously.
 
 **Inject a video into the camera feed:**
 
-```js
-  // Inject Camera Video
-  const ios = await import("@qawolf/run-globals-ios");
 
-  const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
-  const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
-  const videoPath = `${storagePath}/wolf.mp4";
+```javascript
 
-  const cleanup = await ios.injectCamera(driver, bundleId, {
-    data: videoPath,
-    type: "video", // optional — inferred from .mp4/.mov/.m4v/.avi
-  });
+// Inject Camera Video
+const ios = await import("@qawolf/run-globals-ios");
 
-  // ... run your assertions while the camera feed plays the video ...
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+const videoPath = `${storagePath}/wolf.mp4`;
 
-  await cleanup();
+
+const cleanup = await ios.injectCamera(driver, bundleId, {
+  data: videoPath,
+  type: "video", // optional — inferred from .mp4/.mov/.m4v/.avi
+});
+
+// ... run your assertions while the camera feed plays the video ...
+
+await cleanup();
+  
 ```
+
 
 **Inject audio into the microphone:**
 
-```js
-  // Inject Audio
-  const ios = await import("@qawolf/run-globals-ios");
 
-  const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
-  const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
-  const audioPath = `${storagePath}/sample_audio_input.wav";
+```javascript
+// Inject Audio
+const ios = await import("@qawolf/run-globals-ios");
 
-  const cleanup = await ios.injectAudio(driver, bundleId, {
-    data: audioPath,
-  });
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+const audioPath = `${storagePath}/sample_audio_input.wav`;
 
-  // ... run your assertions while audio is being injected ...
+const cleanup = await ios.injectAudio(driver, bundleId, {
+  data: audioPath,
+});
 
-  await cleanup();
+// ... run your assertions while audio is being injected ...
+
+await cleanup();
 
 // Then trigger microphone input in your test
 ```
