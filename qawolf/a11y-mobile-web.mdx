@@ -1,0 +1,112 @@
+---
+title: "Accessibility Testing for Mobile Web"
+description: "How to run accessibility audits against mobile web pages in QA Wolf using axe-core and Lighthouse."
+icon: "browser"
+---
+
+## Overview
+
+For mobile web (and any web page), QA Wolf supports two complementary accessibility testing approaches:
+
+- **Axe-core** — injects a rules engine into the page and returns a list of WCAG violations grouped by severity. Best for catching specific violations and gating releases.
+- **Lighthouse** — generates a full accessibility score and report artifact. Best when you need a shareable audit report or want to track scores over time.
+
+Both run via **Playwright** and can be added to any existing QA Wolf test.
+
+<Note>
+  This page covers mobile web and web pages. For native iOS and Android apps, see [Accessibility Testing for Native Mobile](#) instead, where axe-core scanning is not available.
+</Note>
+
+---
+
+## Axe-Core Scan
+
+Axe-core is injected directly into the page and run in the browser context. It returns violations grouped by impact level: `critical`, `serious`, `moderate`, and `minor`.
+
+```ts
+// Playwright page is already on the URL you want to audit
+await page.waitForLoadState("networkidle").catch(() => {});
+
+// Inject axe-core into the page
+await page.addScriptTag({
+  url: "https://unpkg.com/axe-core@4.8.2/axe.min.js",
+});
+
+// Run the audit in the browser context
+const violations = await page.evaluate(async () => {
+  // @ts-ignore
+  const { violations } = await window.axe.run();
+  return violations;
+});
+
+// Summarize by severity
+const byImpact = {
+  critical: violations.filter(v => v.impact === "critical"),
+  serious:  violations.filter(v => v.impact === "serious"),
+  moderate: violations.filter(v => v.impact === "moderate"),
+  minor:    violations.filter(v => v.impact === "minor"),
+};
+
+console.log("A11y violations:", {
+  critical: byImpact.critical.length,
+  serious:  byImpact.serious.length,
+  moderate: byImpact.moderate.length,
+  minor:    byImpact.minor.length,
+});
+
+// Gate on critical and serious violations
+if (byImpact.critical.length > 0 || byImpact.serious.length > 0) {
+  throw new Error(
+    `Accessibility gate failed: ${byImpact.critical.length} critical, ${byImpact.serious.length} serious`
+  );
+}
+```
+
+<Tip>
+  The severity gate above (`critical` and `serious`) is an example policy. Adjust the threshold to match your team's requirements — some teams gate on `moderate` too, especially for regulated industries.
+</Tip>
+
+---
+
+## Lighthouse Accessibility Report
+
+Lighthouse generates an accessibility score and a full report artifact (HTML or JSON). Use this when you need something shareable with stakeholders or want to track scores across releases.
+
+QA Wolf uses `playwright-lighthouse` to run Lighthouse within a Playwright test. See the [Lighthouse Accessibility reference page](#) for:
+
+- Required dependencies and imports (`lighthouse`, `playwright-lighthouse`)
+- Generating HTML and JSON report artifacts
+- Converting reports to PDF for sharing
+- Known limitations to set expectations with customers
+
+<Warning>
+  Lighthouse measures accessibility against its own scoring model, which does not map 1:1 to WCAG conformance levels. It's best used as a directional score and audit artifact, not as a pass/fail compliance gate.
+</Warning>
+
+---
+
+## Choosing the Right Approach
+
+| | Axe-core | Lighthouse |
+|---|---|---|
+| **Best for** | Catching specific violations, release gating | Scores, reports, stakeholder sharing |
+| **Output** | Violation list grouped by severity | Accessibility score + full report |
+| **Use as a gate** | Yes — throw on critical/serious | Not recommended as a hard gate |
+| **Report artifact** | No (console/logs) | Yes — HTML, JSON, PDF |
+| **Tracks trends** | With a sheet integration | Via score history |
+
+<Note>
+  These two approaches complement each other. Axe-core is precise and gateable; Lighthouse is broad and reportable. For the most complete coverage, use both.
+</Note>
+
+---
+
+## Quick Reference
+
+| Goal | How to do it |
+|------|-------------|
+| Catch specific WCAG violations | Axe-core scan — filter by `impact` |
+| Gate a release on a11y quality | Throw on `critical` / `serious` axe violations |
+| Generate a shareable audit report | Lighthouse — HTML or PDF output |
+| Track accessibility score over time | Lighthouse score history or axe violation counts to a sheet |
+

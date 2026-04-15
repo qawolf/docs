@@ -111,7 +111,7 @@
       {
         "tab": "Solutions",
         "icon": "book",
-        "groups": [
+        "pages": [
           {
             "group": "Email & SMS",
             "icon": "voicemail",
@@ -140,6 +140,14 @@
               "qawolf/i-os-sdk-reference",
               "qawolf/network-connectivity",
               "qawolf/network-simulation"
+            ]
+          },
+          {
+            "group": "Accessibility",
+            "pages": [
+              "qawolf/a11y-native",
+              "qawolf/a11y-mobile-web",
+              "qawolf/a11y-web"
             ]
           }
         ]
