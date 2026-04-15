@@ -14,16 +14,18 @@ description: "QA Wolf can inject images, video, and audio directly into your app
 
 ```js
 const fsPromises = await import("node:fs/promises");
-const bundleId = "com.example.myapp";
+const bundleId = procees.env.BUNDLE_ID;
 const imageName = "large.jpg";
-const imagePath = `/home/wolf/files/${imageName}`;
+const baseDir = process.env.BASE_IMAGE_DIR
+const bundlePath = `@${bundleId}/${baseDir}`
+${imageName}`;
 const imageBuffer = await fsPromises.readFile(imagePath);
 const imagePayload = imageBuffer.toString("base64");
 
 // Push image file to app
 await driver.executeScript("mobile: pushFile", [
   {
-    remotePath: `@${bundleId}/Documents/.qawolf/${imageName}`,
+    remotePath: `${bundlePath}/${imageName}`,
     payload: imagePayload.toString("base64"),
   },
 ]);
@@ -35,7 +37,7 @@ const cameraConfig = JSON.stringify({
 });
 
 await driver.execute("mobile: pushFile", {
-  remotePath: `@${bundleId}/Documents/.qawolf/media.json`,
+  remotePath: `${bundlePath}/media.json`,
   payload: Buffer.from(cameraConfig, "utf8").toString("base64"),
 });
 ```
@@ -48,14 +50,15 @@ Once the config is pushed, the camera preview updates to the injected image and 
 const fsPromises = await import("node:fs/promises");
 const bundleId = "com.example.myapp";
 const videoName = "wolf.mp4";
-const videoPath = `/home/wolf/files/${videoName}`;
+const baseDir = process.env.BASE_IMAGE_DIR
+const imagePath = `${baseDir}/${videoName}`;
 const videoBuffer = await fsPromises.readFile(videoPath);
 const videoPayload = videoBuffer.toString("base64");
 
 // Push video file to app
 await driver.executeScript("mobile: pushFile", [
   {
-    remotePath: `@${bundleId}/Documents/.qawolf/${videoName}`,
+    remotePath: `${imagePath}`,
     payload: videoPayload.toString("base64"),
   },
 ]);
