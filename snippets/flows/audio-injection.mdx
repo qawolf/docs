@@ -128,7 +128,7 @@ export default flow(
       });
 
       const referenceBuffer = (
-        await fsPromises.readFile(REFERENCE_AUDIO_PATH)
+        await fsPromises.readFile(process.env.REFERENCE_AUDIO_PATH)
       ).toString("base64");
       const referenceResult = await ios.calculateAudioFingerprint(
         driver,
@@ -168,4 +168,3 @@ export default flow(
   },
 );
 ```
-

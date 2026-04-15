@@ -1,6 +1,7 @@
 ```js
 import { flow } from "@qawolf/flows/ios";
 import { expect } from "@qawolf/flows/web";
+import * as ios from "@qawolf/run-globals-ios";
 
 export default flow(
   "iOS Media - AVMetadata Injection",
@@ -41,14 +42,10 @@ export default flow(
     });
     await test("QR Code Test", async () => {
       const qrCodeLinkToInject = "https://qawolf.com/qr-code";
-      const qrCode = `{"metadataObjects": [{"type": "org.iso.QRCode", "value": "${qrCodeLinkToInject}"}]}`;
 
-      await driver.executeScript("mobile: pushFile", [
-        {
-          remotePath: process.env.REMOTE_PATH,
-          payload: Buffer.from(qrCode).toString("base64"),
-        },
-      ]);
+      await ios.injectBarcode(driver, process.env.APP_ID, {
+        value: qrCodeLinkToInject,
+      });
 
       await driver.pause(3000);
 
@@ -65,14 +62,11 @@ export default flow(
     });
     await test("Barcode Scanning Test", async () => {
       const barcodeToInject = "1234567890123";
-      const barcode = `{"metadataObjects": [ {"type": "org.gs1.EAN-13", "value": "${barcodeToInject}"}]}`;
 
-      await driver.executeScript("mobile: pushFile", [
-        {
-          remotePath: process.env.REMOTE_PATH,
-          payload: Buffer.from(barcode).toString("base64"),
-        },
-      ]);
+      await ios.injectBarcode(driver, process.env.APP_ID, {
+        type: "org.gs1.EAN-13",
+        value: barcodeToInject,
+      });
 
       await driver.pause(3000);
 
@@ -90,4 +84,3 @@ export default flow(
   },
 );
 ```
-

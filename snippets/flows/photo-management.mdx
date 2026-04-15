@@ -11,7 +11,9 @@ export default flow(
         "appium:bundleId": "com.apple.mobileslideshow",
       });
 
-      const imagePath = "/home/wolf/files/large.jpg";
+	  const baseDir = process.env.IMAGE_BASE_DIR;
+	  const fileName = "large.jpg";
+	  const imagePath = `${baseDir}/${fileName}`;
 
       await ios.savePhoto(driver, imagePath);
 

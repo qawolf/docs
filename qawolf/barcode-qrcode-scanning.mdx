@@ -15,13 +15,15 @@ description: "QA Wolf can inject barcode and QR code detections directly into an
 ```js
 const appInfo = await driver.execute("mobile: activeAppInfo");
 const bundleId = appInfo.bundleId;
-
+//you must set this environment variable correctly
+const basePath = process.env.QAWOLF_BASE_PATH;
+const remotePath = `@${bundleId}/${basePath}/metadataobject.json`;
 const qrCodeLinkToInject = "https://qawolf.com/qr-code";
 const qrCode = `{"metadataObjects": [{"type": "org.iso.QRCode", "value": "${qrCodeLinkToInject}"}]}`;
 
 await driver.executeScript("mobile: pushFile", [
   {
-    remotePath: `@${bundleId}/Documents/.qawolf/metadataobject.json`,
+    remotePath:`${remotePath}`,
     payload: Buffer.from(qrCode).toString("base64"),
   },
 ]);
@@ -32,13 +34,16 @@ await driver.executeScript("mobile: pushFile", [
 ```js
 const appInfo = await driver.execute("mobile: activeAppInfo");
 const bundleId = appInfo.bundleId;
+//you must set this environment variable correctly
+const basePath = process.env.QAWOLF_BASE_PATH;
+const remotePath = `@${bundleId}/${basePath}/metadataobject.json`;
 
 const barcodeToInject = "1234567890123";
 const barcode = `{"metadataObjects": [{"type": "org.gs1.EAN-13", "value": "${barcodeToInject}"}]}`;
 
 await driver.executeScript("mobile: pushFile", [
   {
-    remotePath: `@${bundleId}/Documents/.qawolf/metadataobject.json`,
+    remotePath: `${remotePath}`,
     payload: Buffer.from(barcode).toString("base64"),
   },
 ]);
@@ -79,7 +84,7 @@ Some apps expect the camera to detect multiple codes simultaneously. To inject m
 ```js
 await driver.executeScript("mobile: pushFile", [
   {
-    remotePath: `@${bundleId}/Documents/.qawolf/metadataobject.json`,
+    remotePath: `${remotePath}`,
     payload: Buffer.from(JSON.stringify({
       metadataObjects: [
         { type: "org.iso.QRCode", value: "https://example.com/qr-deep-link" },
@@ -98,7 +103,7 @@ Some apps use the position of the detected code in the view. To include position
 ```js
 await driver.executeScript("mobile: pushFile", [
   {
-    remotePath: `@${bundleId}/Documents/.qawolf/metadataobject.json`,
+    remotePath: `${remotePath}`,
     payload: Buffer.from(JSON.stringify({
       metadataObjects: [
         {
@@ -132,7 +137,7 @@ const rawData = Buffer.from("custom binary data").toString("base64");
 
 await driver.executeScript("mobile: pushFile", [
   {
-    remotePath: `@${bundleId}/Documents/.qawolf/metadataobject.json`,
+    remotePath: `${remotePath}`,
     payload: Buffer.from(JSON.stringify({
       metadataObjects: [
         {

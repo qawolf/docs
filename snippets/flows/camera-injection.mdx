@@ -1,19 +1,12 @@
 ```js
 import { flow } from "@qawolf/flows/ios";
+import * as ios from "@qawolf/run-globals-ios";
 
 export default flow(
   "iOS Media - Camera Photo Injection",
   "iOS - iPhone 15 (iOS 26)",
   async ({ wdio, test, ...testContext }) => {
     await test("iOS Media - Camera Photo Injection", async () => {
-      // Declare Variables
-      const fsPromises = await import("node:fs/promises");
-      const bundleId = process.env.BUNDLE_ID;
-      const imageName = "large.jpg";
-      const imagePath = process.env.IMAGE_PATH;
-      const imageBuffer = await fsPromises.readFile(imagePath);
-      const imagePayload = imageBuffer.toString("base64");
-
       //--------------------------------
       // Arrange:
       //--------------------------------
@@ -25,6 +18,9 @@ export default flow(
         "appium:iosInstallPause": "5000",
       });
 
+      const imageName = "large.jpg";
+      const baseDir = process.env.BASE_IMAGE_DIR
+      const imagePath = `${baseDir}/${imageName}`;
       // Tap "Media"
       await driver
         .$(
@@ -71,28 +67,10 @@ export default flow(
       //--------------------------------
       // Act:
       //--------------------------------
-      // Push Image File to App
-      await driver.executeScript("mobile: pushFile", [
-        {
-          remotePath: process.env.REMOTE_IMAGE_PATH,
-          payload: imagePayload.toString("base64"),
-        },
-      ]);
-
-      // Set Media Config File
-      const mediaConfig = JSON.stringify({
-        data: `${imageName}`,
+      // Inject image as the camera feed
+      await ios.injectCamera(driver, process.env.APP_ID, {
+        data: `${imagePath}`,
         type: "image",
-      });
-
-      const mediaConfigBase64 = Buffer.from(mediaConfig, "utf8").toString(
-        "base64",
-      );
-
-      // Push Camera Config File to App
-      await driver.execute("mobile: pushFile", {
-        remotePath: process.env.REMOTE_IMAGE_PATH,
-        payload: mediaConfigBase64,
       });
       await driver.pause(3000);
 
