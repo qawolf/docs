@@ -23,6 +23,7 @@ const qrCode = `{"metadataObjects": [{"type": "org.iso.QRCode", "value": "${qrCo
 
 await driver.executeScript("mobile: pushFile", [
   {
+    remotePath:${remotePath},
     remotePath:`${remotePath}`,
     payload: Buffer.from(qrCode).toString("base64"),
   },
