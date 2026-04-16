@@ -141,6 +141,13 @@
               "qawolf/network-connectivity",
               "qawolf/network-simulation"
             ]
+          },
+          {
+            "group": "Performance",
+            "icon": "gauge",
+            "pages": [
+              "web-performance"
+            ]
           }
         ]
       },
