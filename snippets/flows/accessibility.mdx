@@ -1,0 +1,55 @@
+```js
+import { flow, expect } from "@qawolf/flows/web";
+
+export default flow(
+  "Accessibility",
+  "Web - Chrome",
+   async ({ test, ...testContext }) => {
+    const { launch } = testContext;
+// Sample Test - Accessibility
+//--------------------------------
+// Arrange:
+//--------------------------------
+// Create user and log in
+const { context } = await launch();
+      context.setDefaultTimeout(8000);
+      const page = await context.newPage();
+      await page.goto("https://www.qawolf.com/");
+
+// Navigate to Home page
+
+//--------------------------------
+// Act:
+//--------------------------------
+// Add Axe package
+await page.addScriptTag({
+url: "https://unpkg.com/axe-core@4.8.2/axe.min.js",
+});
+await page.getByRole(`button`, { name: `Accept` }).click();
+
+
+// Run Axe
+const violationsPage1 = await page.evaluate(async () => {
+const { violations } = await window.axe.run();
+return violations;
+});
+// grab data points
+let critical = violationsPage1.filter((x) => x.impact === "critical");
+let serious = violationsPage1.filter((x) => x.impact === "serious");
+let moderate = violationsPage1.filter((x) => x.impact === "moderate");
+let minor = violationsPage1.filter((x) => x.impact === "minor");
+//--------------------------------
+// Assert:
+//--------------------------------
+// Critical
+expect(critical.length).toBe(0);
+// Serious
+ expect(serious.length).toBe(0);
+// Moderate
+expect(moderate.length).toBe(0);
+
+// Minor
+expect(minor.length).toBe(0);
+  }
+);
+```

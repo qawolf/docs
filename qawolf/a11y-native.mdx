@@ -1,45 +1,21 @@
 ---
-title: "Accessibility Testing for Native Mobile"
-description: "How to write accessibility-focused tests for iOS and Android native apps in QA Wolf using WebdriverIO and Appium."
+title: "Measure accessibility for native mobile"
+description: "Use accessibility IDs to verify that key screens are reachable and usable by screen readers on iOS and Android."
 icon: "tablet-smartphone"
 ---
 
-## Overview
+<Info>
+  This recipe covers accessibility spot-checking for native mobile. For operationalized a11y monitoring — scheduled runs, trend tracking, aggregated reports, and stakeholder dashboards — talk to your QA Wolf team about full-service accessibility testing.
+</Info>
 
-QA Wolf supports accessibility (a11y) testing for native iOS and Android apps via **WebdriverIO** with the **Appium plugin**. This is different from web-based a11y testing, where a rules engine like axe-core scans the DOM. Native apps don't have a DOM, so instead tests verify that key screens are **automatable via accessibility semantics**: labels and IDs that the OS exposes to VoiceOver (iOS) and TalkBack (Android).
+## Examples
 
-If your test can locate and interact with an element via its accessibility label, a screen reader can too. This makes accessibility-ID-based testing a strong proxy for accessibility hygiene on native screens.
+**Verify a screen's key elements are reachable via accessibility semantics:**
 
-<Note>
-  This page covers native iOS and Android apps only. For mobile web or any web page, see [Axe-core Scanning](#) and [Lighthouse Accessibility Reports](#) instead.
-</Note>
-
----
-
-## How It Works
-
-Tests locate elements using **accessibility identifiers** — attributes set by your developers that expose UI components to the OS accessibility layer.
-
-| Platform | Attribute | WebdriverIO Selector |
-| --- | --- | --- |
-| Android | `content-desc` | `driver.$('~your-label')` |
-| iOS | `accessibilityIdentifier` / accessible `name` | `driver.$('~your-id')` |
-
-The `~` prefix is the WebdriverIO shorthand for locating an element by its accessibility ID. This is a "double win": it proves the element is correctly exposed to the accessibility layer, and it keeps your tests stable across visual refactors.
-
----
-
-## Patterns
-
-### Pattern 1: Locate by Accessibility ID and Assert Usability
-
-The most fundamental a11y check: prove that a screen's key elements are reachable and usable through accessibility semantics alone.
-
-```ts
-// Example: login screen a11y readiness
-const email = await driver.$("~Email");       // accessibility id
-const password = await driver.$("~Password"); // accessibility id
-const loginBtn = await driver.$("~Log in");   // accessibility id
+```typescript
+const email     = await driver.$("~Email");
+const password  = await driver.$("~Password");
+const loginBtn  = await driver.$("~Log in");
 
 await expect(email).toBeDisplayed();
 await expect(password).toBeDisplayed();
@@ -49,7 +25,6 @@ await email.setValue(process.env.USER_EMAIL);
 await password.setValue(process.env.USER_PASSWORD);
 await loginBtn.click();
 
-// Assert the next screen is also reachable via accessibility labels
 const homeHeader = await driver.$("~Home");
 await expect(homeHeader).toBeDisplayed();
 ```
@@ -58,40 +33,37 @@ await expect(homeHeader).toBeDisplayed();
   If you can't locate an element using `~`, that element is likely missing an accessibility label entirely — an accessibility bug worth raising with your dev team before writing the test.
 </Tip>
 
----
+**Assert that icon buttons have meaningful accessible names:**
 
-### Pattern 2: Assert Icon Buttons Have Meaningful Accessible Names
-
-Icon-only buttons — hamburger menus, close buttons, search icons — must have a meaningful accessible name, or screen reader users won't know what they do. Use `content-desc` on Android to assert the label exists and is non-trivial.
-
-```ts
-const menuIcon = await driver.$("~Main menu"); // content-desc / accessibility id
+```typescript
+const menuIcon = await driver.$("~Main menu");
 await expect(menuIcon).toBeDisplayed();
 
-// Verify the label isn't blank or too short to be meaningful
 const label = await menuIcon.getAttribute("content-desc");
 if (!label || label.trim().length < 3) {
   throw new Error("A11y: menu icon accessible label is missing or too short");
 }
 ```
 
----
+## When to use
 
-## What's Not Included
+- You want to verify that a screen's key interactive elements are exposed to VoiceOver (iOS) or TalkBack (Android)
+- You need to catch regressions where a developer removed or renamed an accessibility label
+- Your team wants a lightweight proxy for accessibility hygiene without a full WCAG audit
+- You want to confirm that icon-only buttons have meaningful accessible names, not blank or placeholder labels
 
-<Warning>
-  QA Wolf does not run a WCAG rules engine against native app views. Native apps don't have a DOM, so axe-core style scanning isn't available for native iOS or Android.
-</Warning>
+## How it works
 
-For deeper audits — color contrast, touch target size, reading order — supplement these tests with manual testing:
+Tests locate elements using accessibility identifiers — attributes set by your developers that expose UI components to the OS accessibility layer.
 
-- **VoiceOver** on iOS
-- **TalkBack** on Android
-- **Xcode Accessibility Inspector** or **Android Studio Layout Inspector**
+| Platform | Attribute | WebdriverIO selector |
+| --- | --- | --- |
+| Android | `content-desc` | `driver.$('~your-label')` |
+| iOS | `accessibilityIdentifier` / accessible name | `driver.$('~your-id')` |
 
----
+The `~` prefix is the WebdriverIO shorthand for locating an element by its accessibility ID. This is a double win: it proves the element is correctly exposed to the accessibility layer, and it keeps your tests stable across visual refactors.
 
-## Quick Reference
+## Quick reference
 
 | Goal | How to do it |
 | --- | --- |
@@ -99,4 +71,12 @@ For deeper audits — color contrast, touch target size, reading order — suppl
 | Assert a screen is navigable via accessibility semantics | Use `~` selectors throughout the full flow |
 | Assert an icon button has a meaningful label | `getAttribute('content-desc')` and check length |
 | Assert an error or toast is readable | `await expect($('~error-id')).toHaveText('...')` |
-| Full WCAG audit | Pair these tests with manual VoiceOver / TalkBack sessions |
+
+
+## Notes
+
+<Warning>
+  QA Wolf does not run a WCAG rules engine against native app views. Native apps don't have a DOM, so axe-core style scanning isn't available for native iOS or Android.
+</Warning>
+
+For deeper audits — color contrast, touch target size, reading order — supplement these tests with manual testing using VoiceOver on iOS, TalkBack on Android, or the Xcode Accessibility Inspector and Android Studio Layout Inspector.

@@ -1,83 +1,48 @@
 ---
-title: "Accessibility Testing for Web"
-description: "How to run accessibility audits against web pages in QA Wolf using axe-core and Lighthouse."
+title: "Measure web accessibility with axe-core"
+description: "Inject axe-core into a Playwright page to catch WCAG violations and gate releases on accessibility quality."
 icon: "monitor"
 ---
 
-## Overview
+<Info>
+  This recipe covers accessibility spot-checking using axe-core and Lighthouse. For operationalized a11y monitoring — scheduled runs, trend tracking, aggregated reports, and stakeholder dashboards — talk to your QA Wolf team about full-service accessibility testing.
+</Info>
 
-For web accessibility testing, QA Wolf supports two practical approaches:
+## Examples
 
-- **Axe-core** — injects a rules engine into the page and returns WCAG violations grouped by severity. Best for CI-style checks and release gating.
-- **Lighthouse** — generates an accessibility score and shareable report artifact. Best when you need a formal audit report for stakeholders.
+**Generate a Lighthouse accessibility report:**
 
-Both run via **Playwright** and can be added to any existing QA Wolf test.
-
----
-
-## Axe-Core Scan
-
-The most common approach. Axe-core is injected into the page and run in the browser context, returning violations at four severity levels: `critical`, `serious`, `moderate`, and `minor`.
-
-```ts
-// 1) Navigate
-await page.goto(process.env.TARGET_URL!);
-
-// 2) Let the page settle
-await page.waitForLoadState("networkidle").catch(() => {});
-
-// 3) Inject axe-core
-await page.addScriptTag({
-  url: "https://unpkg.com/axe-core@4.8.2/axe.min.js",
+```typescript
+const { lhr } = await playAudit({
+  page,
+  thresholds: { accessibility: 90 },
+  reports: {
+    formats: { html: true, json: true },
+    directory: `${process.env.TEAM_STORAGE_DIR}/lighthouse`,
+    name: `a11y-${Date.now()}`,
+  },
+  config: {
+    extends: "lighthouse:default",
+    settings: { onlyCategories: ["accessibility"] },
+  },
 });
 
-// 4) Run the audit in the browser context
-const violations = await page.evaluate(async () => {
-  // @ts-ignore
-  const { violations } = await window.axe.run();
-  return violations;
-});
-
-// 5) Summarize results by severity
-const critical = violations.filter(v => v.impact === "critical");
-const serious  = violations.filter(v => v.impact === "serious");
-const moderate = violations.filter(v => v.impact === "moderate");
-const minor    = violations.filter(v => v.impact === "minor");
-
-console.log("A11y results:", {
-  critical: critical.length,
-  serious:  serious.length,
-  moderate: moderate.length,
-  minor:    minor.length,
-});
-
-// 6) Optional: gate the test on severity thresholds
-if (critical.length > 0 || serious.length > 0) {
-  throw new Error(
-    `Accessibility gate failed: ${critical.length} critical, ${serious.length} serious`
-  );
-}
+const a11yScore = Math.round(lhr.categories.accessibility.score * 100);
+console.log(`Accessibility score: ${a11yScore}`);
 ```
-
-<Tip>
-  The gate above fails on `critical` and `serious` violations. Adjust the threshold to match your policy — some teams also gate on `moderate`, particularly in regulated industries.
-</Tip>
-
----
-
-## Lighthouse Accessibility Report
-
-If the goal is a formal, shareable artifact with an accessibility score, Lighthouse is the better fit. QA Wolf uses `playwright-lighthouse` to run Lighthouse within a Playwright test and can generate HTML, JSON, or PDF reports.
-
-See the [Lighthouse Accessibility reference page](#) for required dependencies and imports, setup instructions, report generation, and known limitations.
 
 <Warning>
   Lighthouse scores accessibility against its own model, which does not map 1:1 to WCAG conformance levels. Use it as a directional score and audit artifact — not as a hard compliance gate.
 </Warning>
 
----
+## When to use
 
-## Choosing the Right Approach
+- Your team wants to catch accessibility regressions introduced by new code before they reach production
+- You need a release gate that fails on critical or serious WCAG violations
+- You need a shareable accessibility report for stakeholders or compliance purposes
+- You want to establish a baseline score for a page and track it over time
+
+## Choosing the right approach
 
 |  | Axe-core | Lighthouse |
 | --- | --- | --- |
@@ -89,3 +54,13 @@ See the [Lighthouse Accessibility reference page](#) for required dependencies a
 <Note>
   These two approaches complement each other. Axe-core is precise and gateable; Lighthouse is broad and reportable. For the most complete picture, use both.
 </Note>
+
+## Notes
+
+- The gate in the full sample fails on all violations. Adjust the threshold to match your policy — some teams also gate on `moderate`, particularly in regulated industries.
+
+## Full sample test
+
+import Sample from '/snippets/flows/accessibility.mdx';
+
+<Sample />
