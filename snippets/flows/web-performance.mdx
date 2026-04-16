@@ -28,13 +28,6 @@ export default flow(
 
       await page.goto(process.env.BASE_URL);
 
-      // Dismiss cookie consent banner if present
-      try {
-        await page.getByRole("button", { name: "Accept" }).click({ timeout: 8000 });
-      } catch {
-        console.log("No cookie banner found");
-      }
-
       //--------------------------------
       // Act: Run Lighthouse performance audit
       //--------------------------------

@@ -146,7 +146,7 @@
             "group": "Performance",
             "icon": "gauge",
             "pages": [
-              "web-performance"
+              "qawolf/web-performance"
             ]
           }
         ]
