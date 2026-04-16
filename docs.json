@@ -141,6 +141,7 @@
             "pages": [
               {
                 "group": "iOS",
+                "icon": "smartphone",
                 "pages": [
                   "qawolf/photo-library-management",
                   "qawolf/audio-capture",
