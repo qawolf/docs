@@ -1,0 +1,66 @@
+---
+title: "Measure web accessibility with axe-core"
+description: "Inject axe-core into a Playwright page to catch WCAG violations and gate releases on accessibility quality."
+icon: "monitor"
+---
+
+<Info>
+  This recipe covers accessibility spot-checking using axe-core and Lighthouse. For operationalized a11y monitoring — scheduled runs, trend tracking, aggregated reports, and stakeholder dashboards — talk to your QA Wolf team about full-service accessibility testing.
+</Info>
+
+## Examples
+
+**Generate a Lighthouse accessibility report:**
+
+```typescript
+const { lhr } = await playAudit({
+  page,
+  thresholds: { accessibility: 90 },
+  reports: {
+    formats: { html: true, json: true },
+    directory: `${process.env.TEAM_STORAGE_DIR}/lighthouse`,
+    name: `a11y-${Date.now()}`,
+  },
+  config: {
+    extends: "lighthouse:default",
+    settings: { onlyCategories: ["accessibility"] },
+  },
+});
+
+const a11yScore = Math.round(lhr.categories.accessibility.score * 100);
+console.log(`Accessibility score: ${a11yScore}`);
+```
+
+<Warning>
+  Lighthouse scores accessibility against its own model, which does not map 1:1 to WCAG conformance levels. Use it as a directional score and audit artifact — not as a hard compliance gate.
+</Warning>
+
+## When to use
+
+- Your team wants to catch accessibility regressions introduced by new code before they reach production
+- You need a release gate that fails on critical or serious WCAG violations
+- You need a shareable accessibility report for stakeholders or compliance purposes
+- You want to establish a baseline score for a page and track it over time
+
+## Choosing the right approach
+
+|  | Axe-core | Lighthouse |
+| --- | --- | --- |
+| **Best for** | CI checks, violation counts, release gating | Scores, formal reports, stakeholder sharing |
+| **Output** | Violation list by severity | Accessibility score \+ full report |
+| **Use as a gate** | Yes — throw on critical / serious | Not recommended |
+| **Report artifact** | No (console / logs) | Yes — HTML, JSON, PDF |
+
+<Note>
+  These two approaches complement each other. Axe-core is precise and gateable; Lighthouse is broad and reportable. For the most complete picture, use both.
+</Note>
+
+## Notes
+
+- The gate in the full sample fails on all violations. Adjust the threshold to match your policy — some teams also gate on `moderate`, particularly in regulated industries.
+
+## Full sample test
+
+import Sample from '/snippets/flows/accessibility.mdx';
+
+<Sample />

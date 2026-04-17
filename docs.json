@@ -150,6 +150,14 @@
                 ]
               }
             ]
+          },
+          {
+            "group": "Accessibility",
+            "icon": "eye",
+            "pages": [
+              "qawolf/a11y-native",
+              "qawolf/a11y-web"
+            ]
           }
         ]
       },
