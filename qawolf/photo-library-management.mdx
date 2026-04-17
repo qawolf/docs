@@ -1,0 +1,48 @@
+---
+title: "Photo library management"
+icon: "image"
+description: "QA Wolf can add, list, and delete photos in the device photo library. Use this to set up known state before a test or verify that your app saved photos correctly."
+---
+
+## Examples
+
+**Save, list, and delete photos:**
+
+
+```javascript
+const driver = await wdio.startIos({
+  "appium:bundleId": "com.apple.mobileslideshow",
+});
+
+// Save a photo to the library
+const imagePath = "/home/wolf/files/large.jpg";
+await ios.savePhoto(driver, imagePath);
+
+// Verify the photo was saved
+const photosAfterSave = await ios.listPhotos(driver);
+expect(photosAfterSave.success).toBe(true);
+expect(photosAfterSave.totalCount).toBe(1);
+
+// Clean up
+await ios.deleteAllPhotos(driver);
+
+const photosAfterDelete = await ios.listPhotos(driver);
+expect(photosAfterDelete.success).toBe(true);
+expect(photosAfterDelete.totalCount).toBe(0);
+```
+
+## When to use
+
+- Your app saves photos and you need to verify they appear in the library
+- Your app reads from the photo library and you need to set up known state before the test runs
+- You need to clean up photos between test runs to avoid state carrying over
+
+<Warning>
+  `deleteAllPhotos` permanently removes all photos from the device library. Use it only on test devices.
+</Warning>
+
+## Full sample test
+
+import Sample from '/snippets/flows/photo-management.mdx';
+
+<Sample />

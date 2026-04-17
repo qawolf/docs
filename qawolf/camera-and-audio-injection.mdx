@@ -1,0 +1,104 @@
+---
+title: "Camera and audio injection"
+icon: "camera"
+description: "QA Wolf can inject images, video, and audio directly into your app's camera and microphone inputs. The app receives the injected media through the same APIs it uses to access real hardware — it cannot tell the difference between injected and real input."
+---
+
+<Info>
+  Camera and audio injection is only available for apps that QAWolf resigns during installation. It is not available for system apps or Safari.
+</Info>
+
+## Examples
+
+**Inject an image into the camera feed:**
+
+
+```javascript
+//Inject Camera Image
+const ios = await import("@qawolf/run-globals-ios");
+
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+
+//path to QA Wolf remote storage	
+const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+const imagePath = `${storagePath}/large.jpg`;
+
+const cleanup = await ios.injectCamera(driver, bundleId, {
+  data: imagePath,
+  type: "image", // optional — inferred from .jpg/.png/.mp4/etc.
+});
+
+// ... run your assertions while the camera feed is mocked ...
+
+await cleanup();
+```
+
+Once the config is pushed, the camera preview updates to the injected image and loops continuously.
+
+**Inject a video into the camera feed:**
+
+
+```javascript
+
+// Inject Camera Video
+const ios = await import("@qawolf/run-globals-ios");
+
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+const videoPath = `${storagePath}/wolf.mp4`;
+
+
+const cleanup = await ios.injectCamera(driver, bundleId, {
+  data: videoPath,
+  type: "video", // optional — inferred from .mp4/.mov/.m4v/.avi
+});
+
+// ... run your assertions while the camera feed plays the video ...
+
+await cleanup();
+  
+```
+
+
+**Inject audio into the microphone:**
+
+
+```javascript
+// Inject Audio
+const ios = await import("@qawolf/run-globals-ios");
+
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+const audioPath = `${storagePath}/sample_audio_input.wav`;
+
+const cleanup = await ios.injectAudio(driver, bundleId, {
+  data: audioPath,
+});
+
+// ... run your assertions while audio is being injected ...
+
+await cleanup();
+
+// Then trigger microphone input in your test
+```
+
+## When to use
+
+- Your app scans QR codes, documents, or other visual inputs and you want to test that flow without a physical camera setup
+- Your app records video and you need to verify the recording pipeline with deterministic content
+- Your app records audio or processes microphone input and you need to test that flow with known audio data
+- You need to run the same scenario repeatedly with consistent inputs
+
+## Supported file types
+
+**Images:** Any format supported by UIImage — JPG, PNG, HEIC, GIF, BMP, TIFF, WebP
+
+**Video:** Any format supported by AVAsset — MP4, MOV, M4V with H.264/HEVC codecs
+
+**Audio:** WAV
+
+## Full sample test
+
+import Sample from '/snippets/flows/camera-injection.mdx';
+
+<Sample />

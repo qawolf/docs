@@ -1,0 +1,86 @@
+```js
+import { flow } from "@qawolf/flows/ios";
+import { expect } from "@qawolf/flows/web";
+import * as ios from "@qawolf/run-globals-ios";
+
+export default flow(
+  "iOS Media - AVMetadata Injection",
+  "iOS - iPhone 15 (iOS 26)",
+  async ({ wdio, test, ...testContext }) => {
+    let driver;
+    await test("App install and open AVMetadata", async () => {
+      driver = await wdio.startIos({
+        "appium:app": process.env.IOS_APP_STAGING,
+        "appium:settings[respectSystemAlerts]": true,
+        "appium:autoAcceptAlerts": true,
+        "appium:iosInstallPause": "5000",
+      });
+
+      // Tap "Media"
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
+
+      // Click media dropdown
+      await driver
+        .$(
+          `-ios predicate string:name == 'AVMetadata (Barcode/QRCode)' AND type == 'XCUIElementTypeStaticText'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'AVMetadata (Barcode/QRCode)' AND type == 'XCUIElementTypeStaticText'`,
+        )
+        .click();
+    });
+    await test("QR Code Test", async () => {
+      const qrCodeLinkToInject = "https://qawolf.com/qr-code";
+
+      await ios.injectBarcode(driver, process.env.APP_ID, {
+        value: qrCodeLinkToInject,
+      });
+
+      await driver.pause(3000);
+
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      expect(
+        await driver
+          .$(
+            `-ios predicate string:name == 'qrLastCodeLabel' AND type == 'XCUIElementTypeStaticText'`,
+          )
+          .getText(),
+      ).toBe(`QR Code: ${qrCodeLinkToInject}`);
+    });
+    await test("Barcode Scanning Test", async () => {
+      const barcodeToInject = "1234567890123";
+
+      await ios.injectBarcode(driver, process.env.APP_ID, {
+        type: "org.gs1.EAN-13",
+        value: barcodeToInject,
+      });
+
+      await driver.pause(3000);
+
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      expect(
+        await driver
+          .$(
+            `-ios predicate string:name == 'qrLastCodeLabel' AND type == 'XCUIElementTypeStaticText'`,
+          )
+          .getText(),
+      ).toBe(`EAN-13: ${barcodeToInject}`);
+    });
+  },
+);
+```

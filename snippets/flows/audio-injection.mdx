@@ -1,0 +1,170 @@
+```js
+import { flow } from "@qawolf/flows/ios";
+import { expect } from "@qawolf/flows/web";
+
+export default flow(
+  "iOS Media - Audio Recording/Matching",
+  "iOS - iPhone 15 (iOS 26)",
+  async ({ wdio, ios, test, ...testContext }) => {
+    let findBestMatch;
+    let resetVideoToBeginning;
+    let similarity;
+    let waitForVideoPlaying;
+    await test("helpers", async () => {
+      resetVideoToBeginning = async function resetVideoToBeginning(driver) {
+        console.log("Resetting video to beginning...");
+        await driver.execute(`
+    const video = document.querySelector('video');
+    if (video) {
+      video.currentTime = 0;
+      video.play();
+    }
+  `);
+      };
+
+      /**
+       * Wait for video to be ready and playing
+       */
+      waitForVideoPlaying =
+        /**
+         * Wait for video to be ready and playing
+         */
+        async function /**
+         * Wait for video to be ready and playing
+         */ waitForVideoPlaying(driver) {
+          console.log("Waiting for video to start playing...");
+          await driver.waitUntil(
+            async () => {
+              const result = await driver.execute(`
+        const video = document.querySelector('video');
+        if (!video) return { ready: false, paused: true, currentTime: 0, state: 'no video element' };
+        return {
+          ready: video.readyState >= 3,
+          paused: video.paused,
+          currentTime: video.currentTime,
+          duration: video.duration,
+          state: video.readyState
+        };
+      `);
+              console.log(`Video state: ${JSON.stringify(result)}`);
+              return result.ready && !result.paused && result.currentTime > 0;
+            },
+            {
+              timeout: 15000,
+              timeoutMsg: "Video did not start playing within 15 seconds",
+              interval: 500,
+            },
+          );
+          console.log("Video is playing");
+        };
+
+      findBestMatch = function findBestMatch(shortFp, longFp) {
+        if (shortFp.length === 0 || longFp.length === 0) {
+          return {
+            similarity: 0,
+            hammingDistance: 0,
+            offset: 0,
+            windowSize: 0,
+          };
+        }
+        // Ensure shortFp is actually shorter
+        if (shortFp.length > longFp.length) {
+          [shortFp, longFp] = [longFp, shortFp];
+        }
+        const windowSize = shortFp.length;
+        const maxOffset = longFp.length - windowSize;
+        let bestSimilarity = 0;
+        let bestDistance = Infinity;
+        let bestOffset = 0;
+        // Slide the short fingerprint across the long one
+        for (let offset = 0; offset <= maxOffset; offset++) {
+          let totalDistance = 0;
+          for (let i = 0; i < windowSize; i++) {
+            totalDistance += hammingDistance(shortFp[i], longFp[offset + i]);
+          }
+          const maxBits = windowSize * 32;
+          const similarity = 1 - totalDistance / maxBits;
+          if (similarity > bestSimilarity) {
+            bestSimilarity = similarity;
+            bestDistance = totalDistance;
+            bestOffset = offset;
+          }
+        }
+        return {
+          similarity: bestSimilarity,
+          hammingDistance: bestDistance,
+          offset: bestOffset,
+          windowSize,
+        };
+      };
+
+      function hammingDistance(a, b) {
+        let distance = 0;
+        let xor = (a ^ b) >>> 0; // Convert to unsigned
+
+        // Brian Kernighan's algorithm to count set bits
+        while (xor !== 0) {
+          distance++;
+          xor &= xor - 1; // Remove rightmost set bit
+        }
+        return distance;
+      }
+    });
+    await test("iOS Media - Start App and Inject Audio to microphone", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      const REFERENCE_AUDIO_PATH = process.env.AUDIO_PATH
+      const VIDEO_URL =
+        "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v";
+
+      const fsPromises = await import("node:fs/promises");
+
+      const driver = await wdio.startIos({
+        browserName: "Safari",
+        "appium:safariInitialUrl": VIDEO_URL,
+        "appium:settings[respectSystemAlerts]": true,
+        "appium:autoAcceptAlerts": true,
+      });
+
+      const referenceBuffer = (
+        await fsPromises.readFile(process.env.REFERENCE_AUDIO_PATH)
+      ).toString("base64");
+      const referenceResult = await ios.calculateAudioFingerprint(
+        driver,
+        referenceBuffer,
+      );
+      console.log("ReferenceFingerprint", referenceResult);
+
+      await resetVideoToBeginning(driver);
+      await waitForVideoPlaying(driver);
+
+      // start recording from phone speaker
+      const startResult = await ios.startSpeakerRecording(driver);
+      const audioSessionId = startResult.id;
+      console.log(`Recording started: ${audioSessionId}`);
+
+      await driver.pause(5000);
+
+      // stop recording from phone speaker
+      const stopResult = await ios.stopSpeakerRecording(driver, audioSessionId);
+      console.log(`Recording stopped: ${JSON.stringify(stopResult)}`);
+
+      const { fingerprint, filename } = stopResult;
+
+      // Compare ChromaSwift fingerprint with reference using sliding window
+      const bestMatch = findBestMatch(fingerprint, referenceResult.fingerprint);
+      console.log("bestMatch", bestMatch);
+      expect(bestMatch.similarity).toBeGreaterThan(0.85);
+      console.log("Done");
+
+      // Download speaker recording
+      const result = await ios.downloadSpeakerRecording(driver, filename);
+      const wavData = Buffer.from(result, "base64");
+      const recordingSavingPath = "/tmp/output.wav";
+      await fsPromises.writeFile(recordingSavingPath, wavData);
+      console.log("Successfully saved output.wav");
+    });
+  },
+);
+```

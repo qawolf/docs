@@ -4,7 +4,7 @@ description: "Route iOS test device traffic through VPN tunnels to reach interna
 icon: "network"
 ---
 
-By default, QAWolf tests run on our cloud infrastructure, which means your app's network requests originate from our servers — not your corporate network. If your app needs to reach internal services (staging environments, internal APIs, services behind a firewall), you'll need to route your test device's traffic through a tunnel.
+By default, QA Wolf tests run on our cloud infrastructure, which means your app's network requests originate from our servers — not your corporate network. If your app needs to reach internal services (staging environments, internal APIs, services behind a firewall), you'll need to route your test device's traffic through a tunnel.
 
 `ios.routeTraffic()` sets up a per-app VPN on the test device that intercepts and redirects network traffic before your test runs. You can target specific apps by bundle ID, or limit routing to specific domains when testing with Safari.
 

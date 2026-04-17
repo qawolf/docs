@@ -1,0 +1,157 @@
+---
+title: "Barcode and QR code scanning"
+icon: "scan-qr-code"
+description: "QA Wolf can inject barcode and QR code detections directly into any app that uses iOS's built-in barcode scanning. The app receives the injected data exactly as if the camera had seen and decoded a real code — including the barcode type, decoded value, and position coordinates."
+---
+
+<Info>
+  This feature works with any app, regardless of whether it uses Apple's built-in scanning or a third-party library like ZXing or Google ML Kit.
+</Info>
+
+## Examples
+
+**Inject a QR code:**
+
+```js
+// Inject QR Code
+const ios = await import("@qawolf/run-globals-ios");
+
+const { bundleId } = await driver.execute("mobile: activeAppInfo");
+
+const cleanup = await ios.injectBarcode(driver, bundleId, {
+  value: "https://qawolf.com/qr-code",
+});
+
+// ... assert that the app handled the scanned QR code ...
+
+await cleanup();
+```
+
+**Inject a barcode:**
+
+```js
+// Inject EAN-13 Barcode
+const ios = await import("@qawolf/run-globals-ios");
+
+const { bundleId } = await driver.execute("mobile: activeAppInfo");
+
+const cleanup = await ios.injectBarcode(driver, bundleId, {
+  type: "org.gs1.EAN-13",
+  value: "1234567890123",
+});
+
+// ... assert that the app handled the scanned barcode ...
+
+await cleanup();
+```
+
+## When to use
+
+- Your app scans QR codes to trigger navigation, deep links, or actions
+- Your app scans barcodes for product lookups, ticketing, or payments
+- You need to test scanning flows without a physical code or camera setup
+- You need to run the same scanning scenario repeatedly with consistent results
+
+## Supported formats
+
+**2D Codes:**
+
+- QR Code (`org.iso.QRCode`)
+- Aztec Code (`org.iso.Aztec`)
+- PDF417 (`org.iso.PDF417`)
+- Data Matrix (`org.iso.DataMatrix`)
+- Micro QR Code (`org.iso.MicroQRCode`)
+
+**1D Barcodes:**
+
+- EAN-13/EAN-8 (`org.gs1.EAN`)
+- UPC-A/UPC-E (`org.gs1.UPC`)
+- Code 128 (`org.gs1.Code128`)
+- Code 39 (`org.gs1.Code39`)
+- Code 93 (`org.gs1.Code93`)
+- ITF-14 (`org.gs1.ITF14`)
+- Interleaved 2 of 5 (`org.gs1.Interleaved2of5`)
+- Codabar (`org.gs1.Codabar`)
+
+## Advanced: Multiple objects
+
+Some apps expect the camera to detect multiple codes simultaneously. To inject multiple detections in a single call:
+
+```js
+// Inject Multiple Barcodes (delivered to the delegate in one batch)
+const ios = await import("@qawolf/run-globals-ios");
+
+const cleanup = await ios.injectBarcode(driver, bundleId, [
+  { type: "org.iso.QRCode",  value: "https://example.com/qr-deep-link" },
+  { type: "org.gs1.EAN",     value: "1234567890123" },
+  { type: "org.gs1.Code128", value: "PRODUCT-SKU-12345" },
+ ]);
+
+// ... assert that the app handled all scanned codes ...
+
+await cleanup();
+```
+
+## Advanced: Custom bounds and corners
+
+Some apps use the position of the detected code in the view. To include position data:
+
+```js
+// Inject QR Code with Custom Bounds and Corners
+const ios = await import("@qawolf/run-globals-ios");
+
+const cleanup = await ios.injectBarcode(driver, bundleId, {
+  type: "org.iso.QRCode",
+  value: "https://example.com",
+  bounds: {
+    x: 0.3, // normalized coordinates (0.0 - 1.0)
+    y: 0.2,
+    width: 0.4,
+    height: 0.6,
+  },
+  corners: [
+    { x: 0.3, y: 0.2 }, // top-left
+    { x: 0.7, y: 0.2 }, // top-right
+    { x: 0.7, y: 0.8 }, // bottom-right
+    { x: 0.3, y: 0.8 }, // bottom-left
+  ],
+});
+
+// ... assert that the app handled the scanned QR code at the expected position ...
+
+await cleanup();
+```
+
+## Advanced: Raw binary data
+
+To include raw binary data alongside the decoded value:
+
+```js
+// Inject QR Code with Raw Binary Data (iOS 13+)
+const ios = await import("@qawolf/run-globals-ios");
+
+const cleanup = await ios.injectBarcode(driver, bundleId, {
+  type: "org.iso.QRCode",
+  value: "https://example.com",
+  rawValue: Buffer.from("custom binary data"), // also accepts a base64-encoded string
+});
+
+// ... assert the app received the raw payload ...
+
+await cleanup();
+```
+
+## Default values
+
+If not specified, the following defaults apply:
+
+- **type:** `org.iso.QRCode`
+- **bounds:** `{ x: 0.38, y: 0.27, width: 0.32, height: 0.57 }`
+- **corners:** Calculated automatically from bounds
+- **rawValue:** UTF-8 encoding of the value string
+
+## Full sample test
+
+import Sample from '/snippets/flows/qr-code-injection.mdx';
+
+<Sample />
