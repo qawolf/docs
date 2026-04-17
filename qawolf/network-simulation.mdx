@@ -64,7 +64,7 @@ await cleanup();
 
 ## Notes
 
-- Before calling `ios.simulateNetworkCondition()`, you must call `ios.routeTraffic()`, otherwise you will get an error.
+- Before calling `ios.simulateNetworkCondition()`, you must call `ios.routeTraffic()`; otherwise, you will get an error.
 - Always call cleanup functions in reverse order: restore network conditions first, then stop routing.
 - Bandwidth limiting applies to TCP traffic only.
 - Latency, jitter, and packet loss apply to all traffic (TCP and UDP).

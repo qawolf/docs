@@ -9,12 +9,12 @@ export default flow(
     await test("open google", async () => {
       const safari = await wdio.startIos({ browserName: "safari" });
 
-	//Discover your IP address
+      // Discover your IP address
       await safari.url("https://ip.me"); 
 
-      await safari.pause(5000)
+      await safari.pause(5000);
 
-	//Configure and start QA Wolf's tunnel client
+      // Configure and start QA Wolf's tunnel client
       const cleanup = await ios.routeTraffic({
         apps: [],
         domains: ["ip.me", "qawolf.com"],
@@ -24,13 +24,14 @@ export default flow(
           password: process.env.PROXY_PASSWORD,
           host: process.env.PROXY_HOST,
           port: 8006, 
-       }});
+        },
+      });
 
-	//Start the iOS Safari app
+      // Start the iOS Safari app
       await safari.activateApp('com.apple.mobilesafari');
       await safari.url("https://qawolf.com");
 
-	//Check your IP address again. It should have changed
+      // Check your IP address again. It should have changed
       await safari.url("https://ip.me"); 
     });
   },
