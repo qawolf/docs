@@ -1,0 +1,88 @@
+```js
+import { expect, flow } from "@qawolf/flows/web";
+import { playAudit } from "playwright-lighthouse";
+
+// Thresholds based on qawolf.com/blog/web-performance-metrics-explained
+const PERF_SCORE_MIN = 80;
+const LCP_MAX_MS = 2500;
+const FCP_MAX_MS = 1800;
+const TBT_MAX_MS = 200;
+const CLS_MAX = 0.1;
+const TTI_MAX_MS = 3000;
+const TTFB_MAX_MS = 150;
+const PAGE_LOAD_MAX_MS = 2000;
+
+export default flow(
+  "Homepage",
+  "Web - Chrome",
+  async ({ test, ...testContext }) => {
+    await test("Performance test for homepage", async () => {
+      const { launch } = testContext;
+
+      //--------------------------------
+      // Arrange: Launch browser and navigate to homepage
+      //--------------------------------
+      const { context } = await launch({ args: ["--remote-debugging-port=9222"] });
+      context.setDefaultTimeout(8000);
+      const page = await context.newPage();
+
+      await page.goto(process.env.BASE_URL);
+
+      //--------------------------------
+      // Act: Run Lighthouse performance audit
+      //--------------------------------
+      await page.goto(process.env.BASE_URL);
+      await page.waitForLoadState("networkidle").catch(() => {});
+
+      const { lhr } = await playAudit({
+        page,
+        port: 9222,
+        thresholds: {
+          performance: PERF_SCORE_MIN,
+        },
+        reports: {
+          formats: { json: true },
+          directory: `${process.env.TEAM_STORAGE_DIR}/lighthouse`,
+          name: `homepage-${Date.now()}`,
+        },
+        config: {
+          extends: "lighthouse:default",
+          settings: {
+            onlyCategories: ["performance"],
+          },
+        },
+      });
+
+      //--------------------------------
+      // Assert: Verify all performance metrics are within budget
+      //--------------------------------
+      const perfScore = Math.round(lhr.categories.performance.score * 100);
+      const lcp = lhr.audits["largest-contentful-paint"].numericValue;
+      const fcp = lhr.audits["first-contentful-paint"].numericValue;
+      const tbt = lhr.audits["total-blocking-time"].numericValue;
+      const cls = lhr.audits["cumulative-layout-shift"].numericValue;
+      const tti = lhr.audits["interactive"].numericValue;
+      const ttfb = lhr.audits["server-response-time"].numericValue;
+      const pageLoadTime = lhr.audits["metrics"].details.items[0].observedLoad;
+
+      console.log(`Performance score: ${perfScore} (min ${PERF_SCORE_MIN})`);
+      console.log(`LCP:  ${Math.round(lcp)}ms (max ${LCP_MAX_MS}ms)`);
+      console.log(`FCP:  ${Math.round(fcp)}ms (max ${FCP_MAX_MS}ms)`);
+      console.log(`TBT:  ${Math.round(tbt)}ms (max ${TBT_MAX_MS}ms)`);
+      console.log(`CLS:  ${cls.toFixed(3)} (max ${CLS_MAX})`);
+      console.log(`TTI:  ${Math.round(tti)}ms (max ${TTI_MAX_MS}ms)`);
+      console.log(`TTFB: ${Math.round(ttfb)}ms (max ${TTFB_MAX_MS}ms)`);
+      console.log(`Page load: ${Math.round(pageLoadTime)}ms (max ${PAGE_LOAD_MAX_MS}ms)`);
+
+      expect(perfScore).toBeGreaterThanOrEqual(PERF_SCORE_MIN);
+      expect(lcp).toBeLessThanOrEqual(LCP_MAX_MS);
+      expect(fcp).toBeLessThanOrEqual(FCP_MAX_MS);
+      expect(tbt).toBeLessThanOrEqual(TBT_MAX_MS);
+      expect(cls).toBeLessThanOrEqual(CLS_MAX);
+      expect(tti).toBeLessThanOrEqual(TTI_MAX_MS);
+      expect(ttfb).toBeLessThanOrEqual(TTFB_MAX_MS);
+      expect(pageLoadTime).toBeLessThanOrEqual(PAGE_LOAD_MAX_MS);
+    });
+  },
+);
+```

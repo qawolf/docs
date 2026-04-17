@@ -1,0 +1,107 @@
+---
+title: "Measure web performance with Lighthouse"
+description: "Run a Lighthouse audit in a QA Wolf flow to spot-check Core Web Vitals and key performance metrics."
+icon: "globe"
+---
+
+<Info>
+  This recipe covers spot-checking web performance with Lighthouse. For operationalized performance monitoring — scheduled runs, trend tracking, aggregated reports, and alerting — talk to your QA Wolf team about full-service performance testing.
+</Info>
+
+## Examples
+
+**Run a Lighthouse audit and assert on the performance score:**
+
+```javascript
+import { expect, flow } from "@qawolf/flows/web";
+import { playAudit } from "playwright-lighthouse";
+
+const PERF_SCORE_MIN = 80;
+
+export default flow(
+  "Homepage performance",
+  "Web - Chrome",
+  async ({ test, ...testContext }) => {
+    await test("Lighthouse audit", async () => {
+      const { launch } = testContext;
+
+      const { context } = await launch();
+      context.setDefaultTimeout(8000);
+      const page = await context.newPage();
+
+      await page.goto(process.env.BASE_URL);
+      await page.waitForLoadState("networkidle").catch(() => {});
+
+      const { lhr } = await playAudit({
+        page,
+        thresholds: { performance: PERF_SCORE_MIN },
+        config: {
+          extends: "lighthouse:default",
+          settings: { onlyCategories: ["performance"] },
+        },
+      });
+
+      const perfScore = Math.round(lhr.categories.performance.score * 100);
+      expect(perfScore).toBeGreaterThanOrEqual(PERF_SCORE_MIN);
+    });
+  },
+);
+```
+
+**Assert on individual Core Web Vitals:**
+
+```javascript
+const lcp  = lhr.audits["largest-contentful-paint"].numericValue;
+const fcp  = lhr.audits["first-contentful-paint"].numericValue;
+const tbt  = lhr.audits["total-blocking-time"].numericValue;
+const cls  = lhr.audits["cumulative-layout-shift"].numericValue;
+const tti  = lhr.audits["interactive"].numericValue;
+const ttfb = lhr.audits["server-response-time"].numericValue;
+```
+
+**Save the audit report to team storage:**
+
+```javascript
+const { lhr } = await playAudit({
+  page,
+  thresholds: { performance: PERF_SCORE_MIN },
+  reports: {
+    formats: { json: true },
+    directory: `${process.env.TEAM_STORAGE_DIR}/lighthouse`,
+    name: `homepage-${Date.now()}`,
+  },
+  config: {
+    extends: "lighthouse:default",
+    settings: { onlyCategories: ["performance"] },
+  },
+});
+```
+
+<Note>
+  The double navigation is intentional. Lighthouse measures the second load so that cookie banner dismissal steps don't skew the metrics.
+</Note>
+
+## When to use
+
+- Your team wants a quick sanity check that a page meets minimum performance thresholds before or after a deploy
+- You want to catch regressions in Core Web Vitals — LCP, CLS, or FCP — introduced by new code
+- You need a lightweight performance gate in CI without a full monitoring setup
+- You want to verify that a specific page (checkout, landing page, dashboard) hasn't degraded after a significant change
+
+## Performance thresholds
+
+For more on what each metric means and why it matters, see [Web performance metrics, explained](https://www.qawolf.com/blog/web-performance-metrics-explained).
+
+## Notes
+
+- The sample test below runs in Google Chrome only, using port`9222,`which is the Chrome DevTools Protocol port. Lighthouse connects to an already-running Chrome instance via CDP rather than launching its own.
+- `playAudit` requires a Playwright `page` object with an active navigation. Call it after `waitForLoadState` to ensure the page has settled.
+- Lighthouse runs in a simulated environment — results will vary slightly between runs. Avoid very tight thresholds (e.g. `≤ 100ms` for TBT) that will produce flaky results.
+- Thresholds are declared as named constants at the top of the file so they are easy to find and adjust per environment.
+- `onlyCategories: ["performance"]` scopes the audit to performance only. Lighthouse can also score accessibility and SEO.
+
+## Full sample test
+
+import Sample from '/snippets/flows/web-performance.mdx';
+
+<Sample />

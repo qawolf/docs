@@ -158,6 +158,13 @@
               "qawolf/a11y-native",
               "qawolf/a11y-web"
             ]
+          },
+          {
+            "group": "Performance",
+            "icon": "gauge",
+            "pages": [
+              "qawolf/web-performance"
+            ]
           }
         ]
       },
