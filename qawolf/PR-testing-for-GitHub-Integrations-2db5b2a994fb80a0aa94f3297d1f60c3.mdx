@@ -19,7 +19,7 @@ PR testing won't work until QA Wolf configures your workspace to support it. QA 
 - Provide the deployment-type value to use for preview tests
 - Confirm the preview URL variable and the status check name (for example, **QA Wolf Test Results**)
 
-## How to add a default passing PR check
+## Add a default passing PR check
 
 <Check>
   Each pull request must deploy a preview environment that QA Wolf can reach. Your CI should provide a stable preview URL per PR and a step that waits until the preview is live before tests start.
@@ -59,7 +59,7 @@ jobs:
             });
 ```
 
-## How to trigger QA Wolf tests in the merge queue
+## Trigger QA Wolf tests in the merge queue
 
 Add a GitHub Actions workflow that notifies QA Wolf only during merge queue execution.
 
@@ -93,7 +93,7 @@ jobs:
 
 When the pull request enters the merge queue, this workflow sends the preview URL to QA Wolf, which starts a test run against that environment.
 
-## How to require QA Wolf tests before merge
+## Require QA Wolf tests before merge
 
 <Steps>
   <Step>
@@ -122,7 +122,7 @@ When the pull request enters the merge queue, this workflow sends the preview UR
   </Step>
 </Steps>
 
-## How to verify your PR testing setup
+## Verify your PR testing setup
 
 <Steps>
   <Step title="Open a pull request in GitHub.">

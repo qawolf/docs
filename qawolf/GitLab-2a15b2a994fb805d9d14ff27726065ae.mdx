@@ -8,80 +8,87 @@ icon: "git-merge"
 If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. The integration connects directly to your QA Wolf environments.
 
 <Tip>
-If your GitLab instance does not allow outbound HTTPS connections (for example, an air-gapped GitLab Enterprise installation), use the QA Wolf CI SDK instead.
+  If your GitLab instance does not allow outbound HTTPS connections (for example, an air-gapped GitLab Enterprise installation), use the QA Wolf CI SDK instead.
 </Tip>
 
 <Check>
-Make sure you have:
+  Make sure you have:
 
-- Admin or Maintainer access to the GitLab project
-- Access to your QA Wolf workspace
-- At least one QA Wolf environment already configured
-- A QA Wolf API key
+  - Admin or Maintainer access to the GitLab project
+  - Access to your QA Wolf workspace
+  - At least one QA Wolf environment already configured
+  - A QA Wolf API key
 </Check>
 
-## How to enable the GitLab integration in QA Wolf
+## Enable the GitLab integration in QA Wolf
+
 <Steps>
-<Step>
-Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
-<Frame>
-![](/images/integrating-with-CI-CD/image-9.png)
-</Frame>
-</Step>
-<Step>
-Click **Integrations**, then click **Enable** next to **GitLab**. This opens GitLab, where you'll be prompted to sign in if you have not already done so. Follow the prompts to connect your GitLab account or group.
+  <Step>
+    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
 
-<Frame>
-![](/images/integrating-with-CI-CD/image-10.png)
-</Frame>
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-9.png)
+    </Frame>
+  </Step>
+  <Step>
+    Click **Integrations**, then click **Enable** next to **GitLab**. This opens GitLab, where you'll be prompted to sign in if you have not already done so. Follow the prompts to connect your GitLab account or group.
 
-You'll be asked to provide a **Group Access Token** with the **Maintainer** role and **API** scope.
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-10.png)
+    </Frame>
 
-<Danger>
-The Maintainer role is required because Developer tokens cannot create pipeline checks on protected branches.
-</Danger>
+    You'll be asked to provide a **Group Access Token** with the **Maintainer** role and **API** scope.
 
-Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
-</Step>
+    <Danger>
+      The Maintainer role is required because Developer tokens cannot create pipeline checks on protected branches.
+    </Danger>
+
+    Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
+  </Step>
 </Steps>
-## How to add your QA Wolf API key to GitLab
+
+## Add your QA Wolf API key to GitLab
+
 <Steps>
-<Step>
-Open your GitLab project.
-</Step>
-<Step>
-Go to **Settings → CI/CD → Variables**.
-</Step>
-<Step>
-Click **Add variable**.
-</Step>
-<Step>
-Name the variable `QAWOLF_API_KEY`.
-</Step>
-<Step>
-Paste your QA Wolf API key and save.
-</Step>
+  <Step>
+    Open your GitLab project.
+  </Step>
+  <Step>
+    Go to **Settings → CI/CD → Variables**.
+  </Step>
+  <Step>
+    Click **Add variable**.
+  </Step>
+  <Step>
+    Name the variable `QAWOLF_API_KEY`.
+  </Step>
+  <Step>
+    Paste your QA Wolf API key and save.
+  </Step>
 </Steps>
+
 You can also define additional variables, such as a deployment URL, if your pipeline uses them.
 
-### To find your QA Wolf API key:
+### Find your QA Wolf API key
+
 <Steps>
-<Step>
-Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+  <Step>
+    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
 
-<Frame>
-![](/images/integrating-with-CI-CD/image-11.png)
-</Frame>
-</Step>
-<Step>
-Choose **Integrations** and then click the <Icon icon="clipboard"/> to copy the API Key to your clipboard.
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-11.png)
+    </Frame>
+  </Step>
+  <Step>
+    Choose **Integrations** and then click the <Icon icon="clipboard" /> to copy the API Key to your clipboard.
 
-<Frame>
-![](/images/integrating-with-CI-CD/image-12.png)
-</Frame>
-</Step>
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-12.png)
+    </Frame>
+  </Step>
 </Steps>
-## How to add the deploy success notification to GitLab CI/CD
+
+## Add the deploy success notification to GitLab CI/CD
 
 QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment.
 
@@ -119,15 +126,17 @@ notify_qawolf:
 ```
 
 This job tells QA Wolf that a new deployment is ready for testing.
-## How to verify the integration
+
+## Verify the integration
+
 <Steps>
-<Step>
-Run your GitLab CI/CD pipeline to trigger a deployment.
-</Step>
-<Step>
-Wait for the pipeline to complete successfully.
-</Step>
-<Step>
-Open QA Wolf and confirm a new run appears under the expected environment.
-</Step>
+  <Step>
+    Run your GitLab CI/CD pipeline to trigger a deployment.
+  </Step>
+  <Step>
+    Wait for the pipeline to complete successfully.
+  </Step>
+  <Step>
+    Open QA Wolf and confirm a new run appears under the expected environment.
+  </Step>
 </Steps>

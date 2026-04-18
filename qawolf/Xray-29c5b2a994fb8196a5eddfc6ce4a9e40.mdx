@@ -5,7 +5,7 @@ icon: "square-check-big"
 sidebarTitle: "Xray"
 ---
 
-## Features, constraints, and limitations
+## Features
 
 Integrate QA Wolf with [Xray Test Management for Jira](https://marketplace.atlassian.com/apps/1211769/xray-test-management-for-jira) to sync automated test results directly to Jira.
 
@@ -19,9 +19,9 @@ For each QA Wolf run, the integration can:
 
 Results are synced after runs reach Completed status in QA Wolf.
 
-### Limitations:
+## Limitations
 
-- Cloud-hosted only (Jira Cloud + Xray Cloud).
+- Cloud-hosted only (Jira Cloud \+ Xray Cloud).
 - Only one Jira/Xray project can be configured per QA Wolf workspace.
 - Xray test cases must already exist.
 - Test executions are created at the execution level (no test plan management).
@@ -35,14 +35,14 @@ Customers configure Xray and Jira. QA Wolf uses the provided credentials to sync
   Generating Xray API credentials requires administrator access in Jira/Xray. If you're not a Jira/Xray admin, ask one to create the credentials.
 </Tip>
 
-### Set up in Xray:
+### Set up in Xray
 
 - Jira Cloud instance with Xray installed.
 - Xray-enabled Jira project to receive test executions.
 - Xray Cloud API access enabled.
 - Xray test cases already created (tests are not created automatically).
 
-### Credentials to share with QA Wolf:
+### Credentials to share with QA Wolf
 
 Once Xray is configured, provide QA Wolf with:
 
@@ -51,7 +51,7 @@ Once Xray is configured, provide QA Wolf with:
 - Jira project key (for example, QA or MOBILE).
 - _(Optional)_ Default test plan to link executions.
 
-## How to verify the integration
+## Verify the integration
 
 After QA Wolf enables the integration:
 

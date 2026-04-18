@@ -23,7 +23,7 @@ sidebarTitle: "Integrate MS Teams"
   <Icon icon="square" /> Share your Microsoft Entra tenant ID with QA Wolf
 </Card>
 
-### How to enable shared channels in Teams
+### Enable shared channels in Teams
 
 <Note>
   Shared channels are **enabled by default** in Teams.
@@ -50,7 +50,7 @@ QA Wolf provides a shared channel for your Teams integration. To use it, your or
   </Step>
 </Steps>
 
-### How to enable external access
+### Enable external access
 
 You must enable external access so QA Wolf team members can join your **Teams meetings** and your team can see QA Wolf's presence status (online/offline/away) in shared channels.
 
@@ -70,7 +70,7 @@ You must enable external access so QA Wolf team members can join your **Teams me
   </Step>
 </Steps>
 
-### How to enable cross-tenant access in Microsoft Entra
+### Enable cross-tenant access in Microsoft Entra
 
 To use a shared channel with QA Wolf, you must allow our Microsoft Entra tenant by adding QA Wolf as an allowed organization using our Microsoft Entra tenant ID.
 
@@ -101,7 +101,7 @@ Still under Organizational Settings, you should see QA Wolf listed under **organ
   ![](/images/coverage-as-a-service/image-7.png)
 </Frame>
 
-#### To check access:
+#### Check access
 
 <Steps>
   <Step>
@@ -133,14 +133,14 @@ After updating these settings, verify that your default access configuration no 
 <Tip>
   We use shared channels so customers can access them without switching tenants, and B2B Direct Connect must be used to invite or join them. **B2B Collaboration** will not work (see [_MS doc_](https://learn.microsoft.com/en-us/microsoft-365/solutions/collaborate-teams-direct-connect?view=o365-worldwide) for details).
 
-  | B2B Collaboration               | B2B Direct Connect                        |
-  | ------------------------------- | ----------------------------------------- |
-  | Applies to guest accounts       | Enables direct shared channel invitations |
-  | Requires tenant switching       | Seamless access from own tenant           |
-  | Only supports standard channels | Fully supports shared channels            |
+  | B2B Collaboration | B2B Direct Connect |
+  | --- | --- |
+  | Applies to guest accounts | Enables direct shared channel invitations |
+  | Requires tenant switching | Seamless access from own tenant |
+  | Only supports standard channels | Fully supports shared channels |
 </Tip>
 
-#### Completing setup
+#### Complete setup
 
 We need your **Microsoft Entra tenant ID** and **domain name** so we can configure cross-tenant access on our side. Customers can locate their Tenant ID and domain on the [Microsoft Entra dashboard](https://entra.microsoft.com/#home).
 

@@ -12,11 +12,11 @@ icon: "git-merge"
 PR testing won't work until QA Wolf configures your workspace to support it. QA Wolf will:
 
 - Set up a trigger that matches your preview deployments
-- Provide the deployment_type value to use for preview tests
+- Provide the deployment\_type value to use for preview tests
 - Confirm how QA Wolf should identify the merge request (for example, by branch name or merge request ID)
 - Confirm the preview URL variable name used in your pipeline
 
-## How to ensure merge requests deploy preview environments
+## Ensure merge requests deploy preview environments
 
 <Check>
   Each merge request must deploy a preview environment that QA Wolf can reach. Your pipeline should provide a stable preview URL for each merge request and include a step that waits until the preview is live before tests start.
@@ -24,7 +24,7 @@ PR testing won't work until QA Wolf configures your workspace to support it. QA 
 
 Your GitLab pipeline must deploy a preview environment during merge request pipelines (often using Review Apps). The preview URL must be available in the job that triggers the QA Wolf notification.
 
-## How to trigger QA Wolf tests from merge request pipelines
+## Trigger QA Wolf tests from merge request pipelines
 
 Add a job that notifies QA Wolf after the preview environment is deployed and reachable.
 
@@ -60,11 +60,11 @@ notify_qawolf:
 
 - Your pipeline already creates a preview environment for each merge request.
 - The preview environment URL is available as `PREVIEW_URL` when this job runs.
-- A prior job (such as deploy_preview) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
+- A prior job (such as deploy\_preview) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
 
 When the merge request pipeline runs, this job sends the preview URL to QA Wolf, which starts a test run against that environment.
 
-## How to require QA Wolf tests before merge
+## Require QA Wolf tests before merge
 
 In GitLab, merge requests are typically blocked unless pipelines pass.
 
@@ -85,7 +85,7 @@ In GitLab, merge requests are typically blocked unless pipelines pass.
 
 If your project uses approval rules or protected branches, ensure the merge request pipeline is the one required to pass.
 
-## How to verify your PR testing setup
+## Verify your PR testing setup
 
 <Steps>
   <Step title="Open a merge request in GitLab.">

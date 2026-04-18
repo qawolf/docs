@@ -5,7 +5,7 @@ sidebarTitle: "Mobile: QA Wolf SDK"
 icon: "smartphone"
 ---
 
-## Overview: When to use the CI SDK
+## When to use the CI SDK
 
 This guide is for teams that do not use Fastlane or want a single, flexible way to upload mobile builds and trigger test runs from any CI system.
 
@@ -18,7 +18,7 @@ This guide assumes only that your CI system can run Node.js.
 
   1. Make sure you have a CI pipeline that produces a mobile build artifact (APK, AAB, or IPA).
   2. Node.js 18 or later is available in your CI environment.
-  3. A QA Wolf API key is stored as a CI secret (**QAWOLF_API_KEY**).
+  3. A QA Wolf API key is stored as a CI secret (**QAWOLF\_API\_KEY**).
   4. [Artifact naming conventions](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments.
 
   Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
@@ -43,7 +43,7 @@ The CI SDK performs two main tasks:
 
 You provide the [artifact basename](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
 
-## How to install the CI SDK
+## Install the CI SDK
 
 Install the SDK in your CI job:
 
@@ -51,9 +51,9 @@ Install the SDK in your CI job:
 npm install @qawolf/ci-sdk
 ```
 
-Make sure the job has access to the QAWOLF_API_KEY environment variable.
+Make sure the job has access to the QAWOLF\_API\_KEY environment variable.
 
-### To find the QAWOLF_API_KEY:
+### Find the QAWOLF\_API\_KEY
 
 <Steps>
   <Step>
@@ -67,7 +67,7 @@ Make sure the job has access to the QAWOLF_API_KEY environment variable.
     Choose **Integrations**.
   </Step>
   <Step>
-    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
 
     <Frame>
       ![](/images/integrating-with-CI-CD/image-16.png)
@@ -75,7 +75,7 @@ Make sure the job has access to the QAWOLF_API_KEY environment variable.
   </Step>
 </Steps>
 
-## How to upload a mobile build artifact
+## Upload a mobile build artifact
 
 After your CI pipeline produces a mobile build artifact, upload it to QA Wolf using the SDK.
 
@@ -192,7 +192,7 @@ async function uploadRunArtifact(filePath: string): Promise<string> {
 }
 ```
 
-## How to trigger a test run
+## Trigger a test run
 
 After uploading the artifact, notify QA Wolf that a new deployment is ready for testing.
 
@@ -211,7 +211,7 @@ await sdk.attemptNotifyDeploy({
 
 If mobile triggers have not yet been enabled, this step will complete without starting a test run.
 
-## How to verify the integration
+## Verify the integration
 
 <Steps>
   <Step>
@@ -232,5 +232,5 @@ If mobile triggers have not yet been enabled, this step will complete without st
 
 - **If uploads succeed but no runs start:** Mobile triggers may not yet be enabled. Contact QA Wolf to complete platform configuration.
 - **If the artifact is not found during execution:** Verify that the artifact basename matches your naming conventions, and the returned path is used when triggering the run.
-- **If you see authentication errors:** Verify that **QAWOLF_API_KEY** is configured correctly in your CI environment.
+- **If you see authentication errors:** Verify that **QAWOLF\_API\_KEY** is configured correctly in your CI environment.
 - **If you encounter Node.js errors:** Ensure Node.js 18 or later is available in the CI job.

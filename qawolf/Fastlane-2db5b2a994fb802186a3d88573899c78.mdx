@@ -41,18 +41,18 @@ You can upload builds without triggering runs, which is useful during initial se
 
 The artifact name you provide is used to associate the build with the correct environment. QA Wolf automatically applies the file extension.
 
-## How to install & configure Fastlane for QA Wolf
+## Install & configure Fastlane for QA Wolf
 
 <Steps>
   <Step>
     Add the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) to your project if it is not already installed. This is typically done in your **Fastfile** or plugin configuration, depending on how your project manages Fastlane plugins. Follow the instructions on the `README` to install.
   </Step>
   <Step>
-    Make sure your CI environment exports the **QAWOLF_API_KEY** environment variable so Fastlane can authenticate with QA Wolf.
+    Make sure your CI environment exports the **QAWOLF\_API\_KEY** environment variable so Fastlane can authenticate with QA Wolf.
   </Step>
 </Steps>
 
-### To find the QAWOLF_API_KEY:
+### Find the QAWOLF\_API\_KEY
 
 <Steps>
   <Step>
@@ -66,7 +66,7 @@ The artifact name you provide is used to associate the build with the correct en
     Choose **Integrations**.
   </Step>
   <Step>
-    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of API Key under **API Access**.
+    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of API Key under **API Access**.
 
     <Frame>
       ![](/images/integrating-with-CI-CD/image-14.png)
@@ -74,7 +74,7 @@ The artifact name you provide is used to associate the build with the correct en
   </Step>
 </Steps>
 
-## How to upload a mobile build artifact
+## Upload a mobile build artifact
 
 Once your Fastlane lane produces a build artifact, you can upload it to QA Wolf.
 
@@ -83,8 +83,6 @@ Once your Fastlane lane produces a build artifact, you can upload it to QA Wolf.
     Add the `upload_to_qawolf` action to your lane and provide the artifact basename that matches your naming conventions. If this step completes successfully, the artifact has been uploaded and is available for use in test runs.
   </Step>
 </Steps>
-
-### Example:
 
 ```ruby
 lane :qawolf do
@@ -101,7 +99,7 @@ lane :qawolf do
 end
 ```
 
-## How to trigger a test run
+## Trigger a test run
 
 After uploading a build artifact, you can notify QA Wolf that a new deployment is ready for testing.
 
@@ -117,15 +115,13 @@ After uploading a build artifact, you can notify QA Wolf that a new deployment i
 
 If mobile triggers have not yet been enabled, this step will complete without starting a test run.
 
-### Example:
-
 ```ruby
 notify_deploy_qawolf(
   executable_environment_key: "ANDROID_APP"
 )
 ```
 
-## How to verify the integration
+## Verify the integration
 
 To verify the integration:
 
@@ -148,15 +144,7 @@ If no run appears, the most common cause is a missing or incomplete QA Wolf plat
 
 ## Troubleshooting and common issues
 
-- **Artifact uploads succeed, but no runs start**
-
-  Mobile triggers may not be enabled yet. Contact QA Wolf to complete platform configuration.
-- **Artifact not found during test execution**
-
-  Verify the artifact basename matches the expected naming conventions.
-- **Authentication errors**
-
-  Confirm QAWOLF_API_KEY is set correctly in your CI environment.
-- **Incorrect environment used**
-
-  Verify the environment key passed to notify_deploy_qawolf matches the configured value.
+- **Artifact uploads succeed, but no runs start** Mobile triggers may not be enabled yet. Contact QA Wolf to complete platform configuration.
+- **Artifact not found during test execution** Verify the artifact basename matches the expected naming conventions.
+- **Authentication errors** Confirm QAWOLF\_API\_KEY is set correctly in your CI environment.
+- **Incorrect environment used** Verify the environment key passed to notify\_deploy\_qawolf matches the configured value.
