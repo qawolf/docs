@@ -42,13 +42,25 @@ Depending on your identity provider, you may need:
 
 ---
 
+### Verify your email domain
+
+You can only set up SSO for verified email domains. In other words, you need to prove you own the domain name.
+
+After QA Wolf enables SSO configuration access:
+
+1. Sign in to QA Wolf.
+2. Navigate to **Workspace Settings → Organization**.
+3. In the Domain Verification section, click **Add domain**.
+
+Follow the instructions to add and verify as many domains as needed for your organization.
+
 ### Open the SSO settings page
 
 After QA Wolf enables SSO configuration access:
 
 1. Sign in to QA Wolf.
 2. Navigate to **Workspace Settings → Organization**.
-3. Open the **Single Sign-On (SSO)** section.
+3. Click **Set up SSO**.
 
 This page contains the configuration values required for your identity provider.
 
@@ -115,8 +127,8 @@ If the email addresses do not match, the user may not be able to access the work
   <Step title="Open the QA Wolf login page">
     Users open the QA Wolf login page.
   </Step>
-  <Step title="Select Sign in with SSO">
-    Users select **Sign in with SSO**.
+  <Step title="Enter your email address and click Continue">
+    Based on the domain name of the email they enter, users automatically begin the SSO flow for their identity provider.
   </Step>
   <Step title="Authenticate with the identity provider">
     Users authenticate using their organization's identity provider.
