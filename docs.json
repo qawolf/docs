@@ -173,17 +173,6 @@
         "icon": "plug",
         "pages": [
           {
-            "group": "VPN",
-            "icon": "lock",
-            "pages": [
-              "qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
-              "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
-              "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
-              "qawolf/Twingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1",
-              "qawolf/Tailscale-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-2"
-            ]
-          },
-          {
             "group": "CI/CD",
             "icon": "git-compare",
             "pages": [
@@ -195,6 +184,17 @@
               "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
               "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
               "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f"
+            ]
+          },
+          {
+            "group": "VPN",
+            "icon": "lock",
+            "pages": [
+              "qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
+              "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
+              "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
+              "qawolf/Twingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1",
+              "qawolf/Tailscale-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-2"
             ]
           },
           {
