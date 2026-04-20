@@ -112,10 +112,10 @@ const { emailAddress } = await getInbox({ new: true });
 // Example: my-team+a25sa5q@qawolf.email
 ```
 
-QA Wolf automatically appends a random suffix after a \+ sign (i.e., plus addressing).
+QA Wolf automatically appends a random suffix after a + sign (i.e., plus addressing).
 
 <Tip>
-  Your application may not allow \+ symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
+  Your application may not allow + symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
 
   `const { emailAddress } = await getInbox({ new: true, delimiter: "-" });`
 

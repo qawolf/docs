@@ -48,11 +48,11 @@ The artifact name you provide is used to associate the build with the correct en
     Add the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) to your project if it is not already installed. This is typically done in your **Fastfile** or plugin configuration, depending on how your project manages Fastlane plugins. Follow the instructions on the `README` to install.
   </Step>
   <Step>
-    Make sure your CI environment exports the **QAWOLF\_API\_KEY** environment variable so Fastlane can authenticate with QA Wolf.
+    Make sure your CI environment exports the **QAWOLF_API_KEY** environment variable so Fastlane can authenticate with QA Wolf.
   </Step>
 </Steps>
 
-### Find the QAWOLF\_API\_KEY
+### Find the QAWOLF_API_KEY
 
 <Steps>
   <Step>
@@ -66,7 +66,7 @@ The artifact name you provide is used to associate the build with the correct en
     Choose **Integrations**.
   </Step>
   <Step>
-    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of API Key under **API Access**.
+    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of API Key under **API Access**.
 
     <Frame>
       ![](/images/integrating-with-CI-CD/image-14.png)
@@ -146,5 +146,5 @@ If no run appears, the most common cause is a missing or incomplete QA Wolf plat
 
 - **Artifact uploads succeed, but no runs start:** Mobile triggers may not be enabled yet. Contact QA Wolf to complete platform configuration.
 - **Artifact not found during test execution:** Verify the artifact basename matches the expected naming conventions.
-- **Authentication errors:** Confirm QAWOLF\_API\_KEY is set correctly in your CI environment.
-- **Incorrect environment used:** Verify the environment key passed to notify\_deploy\_qawolf matches the configured value.
+- **Authentication errors:** Confirm QAWOLF_API_KEY is set correctly in your CI environment.
+- **Incorrect environment used:** Verify the environment key passed to notify_deploy_qawolf matches the configured value.
