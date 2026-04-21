@@ -1,104 +1,139 @@
 ---
-title: "Assert visual appearance"
-description: "Use toHaveScreenshot to catch layout regressions and verify UI elements that can't be targeted with selectors."
-icon: "image"
+title: "Welcome to QA Wolf"
+icon: "rocket"
+sidebarTitle: "Welcome"
+description: "Create, run, and maintain end-to-end tests automatically with QA Wolf."
 ---
 
-<Info>
-  This page covers web only. For native iOS and Android apps, see [Assert visual appearance on native mobile](#).
-</Info>
+QA Wolf helps teams plan, create, run, and maintain end-to-end tests automatically as part of the AI-driven software development lifecycle.
 
-To perform a visual comparison, use `toHaveScreenshot`.
+Using AI, QA Wolf maps your application, generates tests from natural-language prompts, and runs them in parallel on managed infrastructure. The tests are written as standard Playwright and Appium code and live in your GitHub repository, so your team keeps full ownership and can review, modify, and version them like any other code.
 
-```js
-toHaveScreenshot(name, options)
-```
+QA Wolf supports the full lifecycle of end-to-end testing—from identifying the user journeys that matter, to generating automation, to continuously validating releases as your product evolves.
 
-- `name` — string used to identify and store the baseline image
-- `options` — optional object controlling comparison behavior, see Key options below
+---
 
-## Examples
+## How QA Wolf works
 
-**Assert a canvas element:**
+Testing with QA Wolf happens in three steps.
 
-```js
-await expect(
-  page.locator(`[class*="chart-canvas"]`)
-).toHaveScreenshot(
-  `revenue-chart`,
-  {
-    maxDiffPixelRatio: 0.01,
-    timeout: 60 * 1000,
-  }
-);
-```
+### Map
 
-**Assert a specific UI component:**
+AI explores your application and identifies the user paths that can be tested. This creates a structured view of your product so teams can understand what to cover first, and where new features create gaps in coverage.
 
-```js
-await expect(
-  page.locator(`[class*="nav-header"]`)
-).toHaveScreenshot(
-  `nav-header`,
-  {
-    maxDiffPixelRatio: 0.01,
-    timeout: 60 * 1000,
-  }
-);
-```
+### Automate
 
-**Assert a full page:**
+Describe a flow in plain language, and QA Wolf generates Playwright and Appium tests to validate the behavior of your application. The resulting tests are standard code that your team owns and can modify.
 
-```js
-await expect(page).toHaveScreenshot(
-  `checkout-page`,
-  {
-    fullPage: true,
-    maxDiffPixelRatio: 0.01,
-    timeout: 60 * 1000,
-  }
-);
-```
+### Run
 
-<Warning>
-  Omitting a name and `maxDiffPixelRatio` makes the baseline hard to identify and causes minor rendering differences to fail the test.
+Tests run in parallel across QA Wolf infrastructure. Runs can be triggered on demand, scheduled, or executed automatically from CI pipelines.
 
-  ```js
-  // Avoid
-  await expect(page.locator(`[class*="chart-canvas"]`)).toHaveScreenshot();
-  ```
-</Warning>
+---
 
-## When to use
+## Why use QA Wolf
 
-- Your test needs to assert the content or appearance of a `canvas` element — canvas is not part of the DOM and cannot be targeted with locators
-- You want to catch layout or style regressions after a redesign or component change
-- No selector or functional assertion can verify the visual state you need
-- Your app has pixel-perfect design requirements and you want automated enforcement
+QA Wolf helps teams build reliable end-to-end coverage without managing testing infrastructure or maintaining fragile automation. Our deterministic tests make results trustworthy, so teams can move faster without second-guessing failures. And because we can handle the most complex test cases, teams can cover critical user journeys that other tools can't cover.
 
-Avoid `toHaveScreenshot` when the area contains timestamps, live data, animations, or other frequently-changing content — these cause false failures. Use a functional assertion instead.
+### AI-generated automation
 
-## Key options
+Describe user journeys in natural language, and QA Wolf generates tests in Playwright and Appium.
 
-| Option | Description | Recommended |
-| --- | --- | --- |
-| `maxDiffPixelRatio` | Fraction of pixels allowed to differ (0–1) | `0.01` |
-| `maxDiffPixels` | Absolute pixel count allowed to differ | Situational |
-| `fullPage` | Capture the full scrollable page | `false` |
-| `timeout` | Max milliseconds to wait for a match | `60000` |
+### Customer-owned test code
 
-## Notes
+Tests live in your GitHub repository and remain fully accessible to your team.
 
-- On the first run, no baseline exists yet — the screenshot is saved automatically as the expected image. Review it before relying on the test.
-- On subsequent runs, a new screenshot is compared pixel-by-pixel to the baseline. If the difference exceeds the threshold, the test fails and a diff image is saved showing exactly which pixels changed.
-- If a UI change is intentional, promote the new screenshot as the updated baseline in the QA Wolf editor. Future runs will compare against the new image.
-- To inspect a visual diff result in the editor, collapse the test block — an <Icon icon="images" /> icon will appear in the right gutter of that line. Click it to open the Image Diff panel, where you can view the **Diff**, **Expected**, **Actual**, and **Compare** tabs for each named snapshot.
-  <Frame>
-    ![Visual Diffing](/images/visual-diffing.png)
-  </Frame>
+### Parallel execution by default
 
-## Full sample test
+Run large suites quickly without managing browsers, devices, or test runners.
 
-import Sample from '/snippets/flows/visual-diffing-web.mdx';
+### Continuous validation
 
-<Sample />
+Tests run automatically across environments, so teams know when changes break critical user journeys.
+
+### Clear coverage of critical paths
+
+AI mapping helps teams understand what parts of the product are tested and where additional coverage may be needed.
+
+---
+
+## What you can test with QA Wolf
+
+QA Wolf is designed to validate the workflows that matter most in modern applications—from simple journeys to complex multi-system interactions.
+
+### Web applications
+
+QA Wolf supports complex browser-based interactions and modern web application architectures.
+
+- Canvas and WebGL interfaces.
+- Drag-and-drop interactions.
+- File uploads and downloads.
+- PDF generation and validation.
+- Visual regression and UI diffing.
+- Multi-user workflows across multiple sessions.
+- Multi-site flows that move across domains.
+- Browser extensions and plugins.
+- Electron and hybrid desktop applications.
+
+### iOS applications
+
+Test native iOS apps on **real iPhones and iPads**.
+
+- Gestures, layouts, and device orientation.
+- Push notifications and deep links.
+- Apple Pay transactions.
+- Apple ID authentication.
+- Camera, photos, and video interactions.
+- System permissions and OS dialogs.
+- Sensors such as GPS, Bluetooth, and Wi-Fi.
+- Cross-device journeys between web and mobile.
+
+### Android applications
+
+Test native Android apps in **isolated device environments designed for automation scale**.
+
+- Google Pay transactions.
+- Push notifications and deep links.
+- Android permission prompts.
+- Camera and sensor interactions.
+- Device orientation and layout changes.
+- Native authentication flows.
+- Companion app workflows for connected systems.
+
+---
+
+## Who QA Wolf is for
+
+- **Manual QA.** Map user journeys, generate end-to-end tests with AI, and validate behavior across releases without needing to write code.
+- **Test Automators / SDET.** Build, extend, and maintain Playwright and Appium test suites with full access to the underlying code and infrastructure.
+- **Developers.** Generate tests from prompts, modify the underlying code when needed, and run tests in CI to validate application behavior on every change.
+- **Product and Design teams.** Map critical user flows and validate the experience before releases to ensure key journeys work as expected.
+
+---
+
+## Security and data protection
+
+QA Wolf is designed to support teams building secure applications.
+
+- **SOC 2 Type II compliant.** QA Wolf meets rigorous security and operational standards verified through independent audits.
+- **HIPAA-ready infrastructure.** QA Wolf supports teams building and testing applications that must meet HIPAA requirements.
+- **Secure infrastructure.** Tests run in isolated environments managed by QA Wolf.
+- **Secure credential storage.** Sensitive credentials are stored securely and can be safely used in automated tests.
+
+Learn more in the [Security](https://trust.qawolf.com) documentation.
+
+---
+
+## Explore QA Wolf
+
+<CardGroup cols={3}>
+  <Card href="/qawolf/quick-start" title="Quickstart">
+    Connect your application and create your first tests.
+  </Card>
+  <Card href="/qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc" title="Key concepts">
+    Learn how workspaces, environments, flows, and runs are organized.
+  </Card>
+  <Card href="/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5" title="Full Service">
+    Let QA Wolf build and maintain your test suite for you.
+  </Card>
+</CardGroup>
