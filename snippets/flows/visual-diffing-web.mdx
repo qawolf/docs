@@ -33,9 +33,9 @@ export default flow(
 
       //! Check that certain elements on the home page match the expected screenshots
 
-      //!! expect the 
+      //!! expect the screen to match homepage-web"
       await expect(page).toHaveScreenshot(
-        `checkout-page`,
+        `homepage-web`,
         {
           fullPage: true,
           maxDiffPixelRatio: 0.01,

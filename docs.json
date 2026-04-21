@@ -40,7 +40,6 @@
         "tab": "Introduction",
         "icon": "house",
         "pages": [
-          "qawolf/Welcome-to-QA-Wolf",
           "qawolf/quick-start",
           {
             "group": "Reference",
@@ -170,7 +169,7 @@
             "group": "Visual diffing",
             "icon": "scan",
             "pages": [
-              "qawolf/visual-diffing"
+              "qawolf/Welcome-to-QA-Wolf"
             ]
           }
         ]
