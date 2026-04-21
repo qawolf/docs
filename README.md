@@ -1,6 +1,6 @@
-# QA Wolf Public Documentation / Help Center
+# QA Wolf Documentation
 
-This is a [Mintlify](https://www.mintlify.com/) repository that houses our public documentation.
+This is a [Mintlify](https://www.mintlify.com/) repository that houses our documentation.
 
 ## Development
 
