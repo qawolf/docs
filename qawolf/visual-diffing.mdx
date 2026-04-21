@@ -1,0 +1,100 @@
+---
+title: "Assert visual appearance"
+description: "To automate visual comparisons, use toHaveScreenshot.
+"
+icon: "scan"
+---
+
+<Info>
+  This page covers web and mobile web. For native iOS and Android apps, see [Assert visual appearance on native mobile](#).
+</Info>
+
+```js
+toHaveScreenshot(name, options)
+```
+
+- `name` — string used to identify and store the baseline image
+- `options` — optional object controlling comparison behavior, see Key options below
+
+## Examples
+
+**Assert a canvas element:**
+
+```js
+await expect(
+  page.locator(`[class*="chart-canvas"]`)
+).toHaveScreenshot(
+  `revenue-chart`,
+  {
+    maxDiffPixelRatio: 0.01,
+    timeout: 60 * 1000,
+  }
+);
+```
+
+**Assert a specific UI component:**
+
+```js
+await expect(
+  page.locator(`[class*="nav-header"]`)
+).toHaveScreenshot(
+  `nav-header`,
+  {
+    maxDiffPixelRatio: 0.01,
+    timeout: 60 * 1000,
+  }
+);
+```
+
+**Assert a full page:**
+
+```js
+await expect(page).toHaveScreenshot(
+  `checkout-page`,
+  {
+    fullPage: true,
+    maxDiffPixelRatio: 0.01,
+    timeout: 60 * 1000,
+  }
+);
+```
+
+<Warning>
+  Omitting a name and `maxDiffPixelRatio` makes the baseline hard to identify and causes minor rendering differences to fail the test.
+
+  ```js
+  // Avoid
+  await expect(page.locator(`[class*="chart-canvas"]`)).toHaveScreenshot();
+  ```
+</Warning>
+
+## When to use
+
+- Your test needs to assert the content or appearance of a `canvas` element — canvas is not part of the DOM and cannot be targeted with locators
+- You want to catch layout or style regressions after a redesign or component change
+- No selector or functional assertion can verify the visual state you need
+- Your app has pixel-perfect design requirements and you want automated enforcement
+
+Avoid `toHaveScreenshot` when the area contains timestamps, live data, animations, or other frequently-changing content — these cause false failures. Use a functional assertion instead.
+
+## Key options
+
+| Option | Description | Recommended |
+| --- | --- | --- |
+| `maxDiffPixelRatio` | Fraction of pixels allowed to differ (0–1) | `0.01` |
+| `maxDiffPixels` | Absolute pixel count allowed to differ | Situational |
+| `fullPage` | Capture the full scrollable page | `false` |
+| `timeout` | Max milliseconds to wait for a match | `60000` |
+
+## Notes
+
+- On the first run, no baseline exists yet — the screenshot is saved automatically as the expected image. Review it before relying on the test.
+- On subsequent runs, a new screenshot is compared pixel-by-pixel to the baseline. If the difference exceeds the threshold, the test fails and a diff image is saved showing exactly which pixels changed.
+- If a UI change is intentional, promote the new screenshot as the updated baseline in the QA Wolf editor. Future runs will compare against the new image.
+- Mobile web uses the same Playwright API as desktop web. Use a distinct name for the first argument of `toHaveScreenshot` (e.g. `nav-header-web`,`nav-header-mobile-web`) so all baselines are stored separately.
+
+## Full sample test
+
+import Sample from '/snippets/flows/visual-diffing-web.mdx';
+
+<Sample />

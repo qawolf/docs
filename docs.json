@@ -165,6 +165,13 @@
             "pages": [
               "qawolf/web-performance"
             ]
+          },
+          {
+            "group": "Visual diffing",
+            "icon": "scan",
+            "pages": [
+              "qawolf/visual-diffing"
+            ]
           }
         ]
       },

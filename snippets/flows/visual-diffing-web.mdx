@@ -1,0 +1,48 @@
+```js
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Landing Page Visual Tests - Desktop",
+  "Web - Chrome",
+  async ({ test, ...testContext }) => {
+    const { launch } = testContext;
+    let page;
+
+    await test("Schedule Demo Visual Test", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+
+      //! Opening the home page of QA Wolf
+
+      //!! launch the context and browser
+      const { context, browser } = await launch();
+
+      //!! create a new page in the browser
+      page = await context.newPage();
+
+      //!! navigate to the "https://www.qawolf.com/"
+      await page.goto("https://www.qawolf.com/");
+
+      //!! wait for loadstate to be "domcontentloaded"
+      await page.waitForLoadState("domcontentloaded");
+  
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+
+      //! Check that certain elements on the home page match the expected screenshots
+
+      //!! expect the 
+      await expect(page).toHaveScreenshot(
+        `checkout-page`,
+        {
+          fullPage: true,
+          maxDiffPixelRatio: 0.01,
+          timeout: 60 * 1000,   
+        }
+      );
+    });
+  },
+);
+```
