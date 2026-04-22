@@ -2,6 +2,7 @@
 title: "Camera and audio injection"
 icon: "camera"
 description: "Inject images, video, and audio into your app's camera and microphone inputs to test media features without real hardware."
+sidebarTitle: "iOS"
 ---
 
 <Info>
@@ -60,27 +61,7 @@ await cleanup();
 ```
 
 
-**Inject audio into the microphone:**
 
-
-```javascript
-// Inject Audio
-const ios = await import("@qawolf/run-globals-ios");
-
-const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
-const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
-const audioPath = `${storagePath}/sample_audio_input.wav`;
-
-const cleanup = await ios.injectAudio(driver, bundleId, {
-  data: audioPath,
-});
-
-// ... run your assertions while audio is being injected ...
-
-await cleanup();
-
-// Then trigger microphone input in your test
-```
 
 ## When to use
 
@@ -95,7 +76,6 @@ await cleanup();
 
 **Video:** Any format supported by AVAsset — MP4, MOV, M4V with H.264/HEVC codecs
 
-**Audio:** WAV
 
 ## Full sample test
 
