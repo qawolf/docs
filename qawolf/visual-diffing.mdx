@@ -1,13 +1,14 @@
 ---
 title: "Assert visual appearance"
-description: "To automate visual comparisons, use toHaveScreenshot.
-"
+description: "Use toHaveScreenshot to catch layout regressions and verify UI elements that can't be targeted with selectors."
 icon: "image"
 ---
 
 <Info>
-  This page covers web and mobile web. For native iOS and Android apps, see [Assert visual appearance on native mobile](#).
+  This page covers web only, including mobile web using Playwright emulators.
 </Info>
+
+To perform a visual comparison, use `toHaveScreenshot`.
 
 ```js
 toHaveScreenshot(name, options)
@@ -73,7 +74,7 @@ await expect(page).toHaveScreenshot(
 - Your test needs to assert the content or appearance of a `canvas` element — canvas is not part of the DOM and cannot be targeted with locators
 - You want to catch layout or style regressions after a redesign or component change
 - No selector or functional assertion can verify the visual state you need
-- Your app has pixel-perfect design requirements and you want automated enforcement
+- Your app has pixel-perfect design requirements, and you want automated enforcement
 
 Avoid `toHaveScreenshot` when the area contains timestamps, live data, animations, or other frequently-changing content — these cause false failures. Use a functional assertion instead.
 
@@ -88,10 +89,13 @@ Avoid `toHaveScreenshot` when the area contains timestamps, live data, animation
 
 ## Notes
 
-- On the first run, no baseline exists yet — the screenshot is saved automatically as the expected image. Review it before relying on the test.
-- On subsequent runs, a new screenshot is compared pixel-by-pixel to the baseline. If the difference exceeds the threshold, the test fails and a diff image is saved showing exactly which pixels changed.
+- On the first run, no baseline exists yet — the screenshot is saved automatically as the expected image. See the instructions below to review it before relying on the test.
+- To inspect a visual diff result in the editor, collapse the test block — an icon will appear in the right gutter of that line. Click it to open the Image Diff panel, where you can view the **Diff**, **Expected**, **Actual**, and **Compare** tabs for each named snapshot.
+- On subsequent runs, a new screenshot is compared pixel-by-pixel to the baseline. If the difference exceeds the threshold, the test fails, and a diff image is saved showing exactly which pixels changed.
 - If a UI change is intentional, promote the new screenshot as the updated baseline in the QA Wolf editor. Future runs will compare against the new image.
-- Mobile web uses the same Playwright API as desktop web. Use a distinct name for the first argument of `toHaveScreenshot` (e.g. `nav-header-web`,`nav-header-mobile-web`) so all baselines are stored separately.
+  <Frame>
+    ![Visual Diffing 1](/images/visual-diffing-1.png)
+  </Frame>
 
 ## Full sample test
 
