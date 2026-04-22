@@ -10,7 +10,7 @@ export default flow(
     let driver;
     await test("App install and open AVMetadata", async () => {
       driver = await wdio.startIos({
-        "appium:app": process.env.IOS_APP_STAGING,
+        "appium:app": process.env.IPA_BUILD_LOCATION,
         "appium:settings[respectSystemAlerts]": true,
         "appium:autoAcceptAlerts": true,
         "appium:iosInstallPause": "5000",
@@ -43,7 +43,7 @@ export default flow(
     await test("QR Code Test", async () => {
       const qrCodeLinkToInject = "https://qawolf.com/qr-code";
 
-      await ios.injectBarcode(driver, process.env.APP_ID, {
+      await ios.injectBarcode(driver, process.env.BUNDLE_ID, {
         value: qrCodeLinkToInject,
       });
 
@@ -63,7 +63,7 @@ export default flow(
     await test("Barcode Scanning Test", async () => {
       const barcodeToInject = "1234567890123";
 
-      await ios.injectBarcode(driver, process.env.APP_ID, {
+      await ios.injectBarcode(driver, process.env.BUNDLE_ID, {
         type: "org.gs1.EAN-13",
         value: barcodeToInject,
       });

@@ -1,4 +1,111 @@
----
-title: 'Audio Injection'
----
+```js
+import { flow } from "@qawolf/flows/ios";
+import * as ios from "@qawolf/run-globals-ios";
+
+export default flow(
+  "iOS Media - Audio Injection",
+  "iOS - iPhone 15 (iOS 26)",
+  async ({ wdio, test, ...testContext }) => {
+    await test("iOS Media - Start App and Inject Audio to microphone", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      // Install and Launch Trot app
+      const driver = await wdio.startIos({
+        "appium:app": process.env.IPA_BUILD_LOCATION,
+        "appium:settings[respectSystemAlerts]": true,
+        "appium:autoAcceptAlerts": true,
+        "appium:iosInstallPause": "5000",
+      });
+
+
+      // Inject Audio
+      const fsPromises = await import("node:fs/promises");
+      const bundleId = process.env.BUNDLE_ID;
+
+      await ios.injectAudio(driver, bundleId, {
+        data: "/home/wolf/team-storage/ios-trot/sample_audio_input.wav",
+      });
+
+      // Tap "Media"
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
+
+      // Tap Audio Recording
+      await driver
+        .$(
+          `-ios predicate string:name == 'Audio Recording' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'Audio Recording' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
+
+      // Tap to start recording
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .click();
+
+      await driver.pause(15000);
+
+      // Tap to stop recording
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .click();
+
+      // Get the file name
+      await driver
+        .$(
+          `-ios predicate string:name BEGINSWITH 'AudioRecording_' AND type == 'XCUIElementTypeStaticText'`,
+        )
+        .waitForDisplayed();
+      const fileName = await driver
+        .$(
+          `-ios predicate string:name BEGINSWITH 'AudioRecording_' AND type == 'XCUIElementTypeStaticText'`,
+        )
+        .getValue();
+
+      // Pull file from the phone
+      targetBaseDir = process.env.TARGET_STORAGE_BASE_DIR
+      storageDir = process.env.STORAGE_DIR
+
+      const recordingAsBase64 = await driver.execute("mobile: pullFile", {
+        remotePath: `@${bundleId}:${targetBaseDir}/${fileName}`,
+      });
+
+      // write into a file
+      const m4aRecording = Buffer.from(recordingAsBase64, "base64");
+      const recordingSavingPath = `${storageDir}/${fileName}`;
+      await fsPromises.writeFile(recordingSavingPath, m4aRecording);
+
+      // TO-DO
+      // Implement audio matching with fingerprints
+    });
+  },
+);
+```
 
