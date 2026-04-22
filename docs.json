@@ -139,16 +139,10 @@
             "group": "Mobile-native media",
             "icon": "tablet-smartphone",
             "pages": [
-              {
-                "group": "iOS",
-                "icon": "smartphone",
-                "pages": [
-                  "qawolf/photo-library-management",
-                  "qawolf/audio-capture",
-                  "qawolf/camera-and-audio-injection",
-                  "qawolf/barcode-qrcode-scanning"
-                ]
-              }
+              "qawolf/photo-library-management",
+              "qawolf/camera-and-audio-injection",
+              "qawolf/barcode-qrcode-scanning",
+              "qawolf/audio-capture"
             ]
           },
           {
@@ -170,7 +164,7 @@
             "group": "Visual diffing",
             "icon": "scan",
             "pages": [
-             "qawolf/visual-diffing"
+              "qawolf/visual-diffing"
             ]
           }
         ]
