@@ -157,7 +157,7 @@
                 "group": "Audio injection",
                 "icon": "mic",
                 "pages": [
-                  "i-os"
+                  "qawolf/audio-injection"
                 ]
               },
               {
@@ -178,7 +178,7 @@
                 "group": "Video Injection",
                 "icon": "video",
                 "pages": [
-                  "video-injection"
+                  "qawolf/video-injection"
                 ]
               }
             ]
