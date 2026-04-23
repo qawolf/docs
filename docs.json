@@ -178,7 +178,6 @@
                 "group": "Video Injection",
                 "icon": "video",
                 "pages": [
-                  "video-injection",
                   "qawolf/video-injection"
                 ]
               }
@@ -203,7 +202,7 @@
             "group": "Visual diffing",
             "icon": "scan",
             "pages": [
-             "qawolf/visual-diffing"
+              "qawolf/visual-diffing"
             ]
           }
         ]
