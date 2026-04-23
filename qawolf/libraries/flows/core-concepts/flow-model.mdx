@@ -74,12 +74,12 @@ CLI flows do not launch a browser or mobile app.
 
 ```ts
 import { flow } from "@qawolf/flows/cli";
+import { readFile } from "node:fs/promises";
 
-export default flow("Smoke check", "Basic", async ({ runCommand }) => {
-  await runCommand({
-    binary: "node",
-    args: ["--version"],
-  });
+export default flow("Read build metadata", "Basic", async () => {
+  const metadata = await readFile("build-metadata.json", "utf8");
+
+  console.log(JSON.parse(metadata));
 });
 ```
 

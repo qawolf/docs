@@ -6,19 +6,17 @@ sidebarTitle: "Write A CLI Flow"
 
 # Write A CLI Flow
 
-Use `@qawolf/flows/cli` when the flow needs runner utilities but does not need a
-browser, Android device, or iOS device.
+Use `@qawolf/flows/cli` when the flow does not need a browser, Android device,
+or iOS device.
 
 ```ts
 import { flow } from "@qawolf/flows/cli";
+import { readFile } from "node:fs/promises";
 
-export default flow("Check Node", "Basic", async ({ runCommand }) => {
-  const result = await runCommand({
-    binary: "node",
-    args: ["--version"],
-  });
+export default flow("Read build metadata", "Basic", async () => {
+  const metadata = await readFile("build-metadata.json", "utf8");
 
-  console.log(result);
+  console.log(JSON.parse(metadata));
 });
 ```
 
@@ -46,17 +44,19 @@ export default flow(
 
 </CodeGroup>
 
-## Common Dependencies
+## Use Node APIs Directly
 
-The callback receives base runner dependencies such as:
+CLI flows run in Node, so prefer the Node standard library for ordinary file,
+process, and network work.
 
-- `runCommand`
-- `getInbox`
-- `getOTP`
-- `mountCifsShare`
-- `startOpenVpn`
-- `startWireGuard`
-- `workflowInputs`
-- `setOutput`
+```ts
+import { writeFile } from "node:fs/promises";
 
-Use CLI flows for setup, teardown, notifications, and other non-UI work.
+export default flow("Write report", "Basic", async () => {
+  await writeFile("report.json", JSON.stringify({ status: "ok" }));
+});
+```
+
+Use CLI flows for setup, teardown, notifications, and other non-UI work. Reach
+for runner-provided dependencies only when you specifically need QA Wolf runtime
+services such as workflow inputs or outputs.
