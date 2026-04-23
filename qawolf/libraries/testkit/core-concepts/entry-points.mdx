@@ -36,8 +36,6 @@ The top-level package currently exposes:
 - `getCurrentTestkitClient()`
 - `resetTestkitClient()`
 
-`startWireGuard` exists on the client ports, but not as a top-level helper.
-
 ## Web Helpers
 
 Use `@qawolf/testkit/web` when the helper needs a Playwright page.
@@ -66,3 +64,6 @@ configureTestkitClient(
 ```
 
 Most flow authors do not need to create the client. The runner usually does it.
+
+For exact exports and option shapes, see the
+[Testkit API Reference](/qawolf/libraries/testkit/api-reference/index).

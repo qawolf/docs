@@ -23,17 +23,6 @@ console.log(`OpenVPN started as ${pid}`);
 `startOpenVpn(...)` is a top-level flow helper. It requires the runner to
 configure the testkit client first.
 
-## WireGuard Boundary
-
-WireGuard exists on the runner-facing client ports today. It is not exported as
-a top-level `startWireGuard(...)` helper.
-
-```ts
-import { createTestkitClient } from "@qawolf/testkit/client";
-
-const client = createTestkitClient({
-  startWireGuard: async ({ configPath }) => configPath,
-});
-```
-
-Use this in runner or harness setup, not ordinary flow code.
+For runner-facing network ports and exact option shapes, see the
+[Client Reference](/qawolf/libraries/testkit/api-reference/client) and
+[Types Reference](/qawolf/libraries/testkit/api-reference/types).

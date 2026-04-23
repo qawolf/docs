@@ -27,6 +27,9 @@ export default flow(
 );
 ```
 
+For the exact Electron launch shape, see the
+[Web Reference](/qawolf/libraries/flows/api-reference/web).
+
 ## Use The First Window
 
 The Electron flow callback receives the first window as `page`.
@@ -36,23 +39,23 @@ await page.getByLabel("Email").fill("qa@example.com");
 await page.getByRole("button", { name: "Continue" }).click();
 ```
 
-## Pass Launch Arguments
+## Choose The Executable At Runtime
 
-Use `args` when the app needs flags at startup.
+Call `launch(...)` manually when the app path depends on callback logic.
 
 ```ts
-export default flow(
-  "Open test-mode desktop app",
-  {
-    target: "Web - Chrome",
-    launch: {
-      kind: "electron",
-      executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
-      args: ["--test-mode"],
-    },
-  },
-  async ({ page }) => {
-    await page.getByRole("button", { name: "Sign in" }).click();
-  },
-);
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow("Open desktop app", "Web - Chrome", async () => {
+  const useCanary = process.env["USE_CANARY_APP"] === "true";
+
+  const { firstWindowPage } = await launch({
+    kind: "electron",
+    executablePath: useCanary
+      ? "/Applications/MyApp Canary.app/Contents/MacOS/MyApp"
+      : "/Applications/MyApp.app/Contents/MacOS/MyApp",
+  });
+
+  await firstWindowPage.getByRole("button", { name: "Sign in" }).click();
+});
 ```

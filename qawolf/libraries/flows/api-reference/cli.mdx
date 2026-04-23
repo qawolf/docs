@@ -13,7 +13,8 @@ sidebarTitle: "CLI Reference"
 - `flow(...)`
 - `expect`
 
-It also exports CLI-specific target and flow definition types.
+It also exports CLI-specific target, callback context, and flow definition
+types.
 
 Example:
 
@@ -108,28 +109,4 @@ import { expect, flow } from "@qawolf/flows/cli";
 export default flow("Use runner expect", "Basic", async () => {
   await expect("ready").toBeDefined();
 });
-```
-
-## Notes
-
-Use the CLI entry point when the flow should use `input`, `setOutput(...)`, or
-`test(...)` without launching a browser or mobile app.
-
-Example:
-
-```ts
-import { flow } from "@qawolf/flows/cli";
-
-export default flow(
-  "Prepare downstream input",
-  "Basic",
-  async ({ input, setOutput, test }) => {
-    await test("publish account fixture", async () => {
-      setOutput("account", {
-        input,
-        role: "admin",
-      });
-    });
-  },
-);
 ```

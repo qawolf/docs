@@ -26,6 +26,9 @@ export default flow(
 
 `driver` is the Appium/WebdriverIO session for the Android device.
 
+For exact target strings, see
+[Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals).
+
 ## Launch With An Uploaded APK
 
 When the runner provides `RUN_INPUT_PATH`, omit `app` and pass normal app
@@ -53,6 +56,9 @@ await launch({
 });
 ```
 
+For the full Android launch shape and app resolution rules, see the
+[Android Reference](/qawolf/libraries/flows/api-reference/android).
+
 ## Control The Device
 
 Use `device` for emulator-level behavior, not ordinary app startup.
@@ -69,3 +75,6 @@ export default flow(
   },
 );
 ```
+
+For device API details, see the
+[Android Reference](/qawolf/libraries/flows/api-reference/android).

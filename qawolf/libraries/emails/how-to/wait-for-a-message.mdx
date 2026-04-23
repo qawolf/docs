@@ -45,3 +45,6 @@ const message = await inbox.waitForMessage();
 expect(message.subject).toContain("Welcome");
 expect(message.urls[0]).toContain("/activate");
 ```
+
+For the exact `waitForMessage(...)` options and parsed email shape, see the
+[Mail Reference](/qawolf/libraries/emails/api-reference/mail).

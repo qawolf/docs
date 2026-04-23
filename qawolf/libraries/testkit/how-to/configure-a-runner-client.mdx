@@ -14,18 +14,10 @@ import { configureTestkitClient } from "@qawolf/testkit";
 import { createTestkitClient } from "@qawolf/testkit/client";
 
 const testkit = createTestkitClient({
-  mountCifsShare(options) {
-    return executor.request("runCommand", { binary: "mount", opts: options });
-  },
-  saveSnapshot(name, bytes) {
-    return snapshotManager.saveSnapshot(name, bytes);
-  },
-  startOpenVpn(options) {
-    return executor.request("runCommand", { binary: "openvpn", opts: options });
-  },
-  startWireGuard(options) {
-    return executor.request("runCommand", { binary: "wg", opts: options });
-  },
+  mountCifsShare: runner.mountCifsShare,
+  saveSnapshot: runner.saveSnapshot,
+  startOpenVpn: runner.startOpenVpn,
+  startWireGuard: runner.startWireGuard,
 });
 
 configureTestkitClient(testkit);
@@ -35,3 +27,6 @@ configureTestkitClient(testkit);
 
 Use `resetTestkitClient()` between tests so client wiring does not leak across
 cases.
+
+For the exact client port shape, see the
+[Client Reference](/qawolf/libraries/testkit/api-reference/client).

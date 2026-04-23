@@ -24,6 +24,9 @@ export default flow(
 
 `driver` is the Appium/WebdriverIO session for the iOS device.
 
+For exact target strings, see
+[Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals).
+
 ## Launch With An Uploaded App
 
 When the runner provides `RUN_INPUT_PATH`, omit `app` and pass normal app
@@ -55,6 +58,9 @@ await launch({
 });
 ```
 
+For the full iOS launch shape and app resolution rules, see the
+[iOS Reference](/qawolf/libraries/flows/api-reference/ios).
+
 ## Install A Configuration Profile
 
 `device` proxies the iOS device API. `installConfigurationProfile` needs both
@@ -74,3 +80,6 @@ export default flow(
   },
 );
 ```
+
+For other simulator or device helpers, use the
+[iOS Reference](/qawolf/libraries/flows/api-reference/ios).

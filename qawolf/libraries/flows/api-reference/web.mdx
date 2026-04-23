@@ -14,6 +14,9 @@ sidebarTitle: "Web Reference"
 - `launch(...)`
 - `expect`
 
+It also exports web-specific target, launch, callback context, and flow
+definition types.
+
 Example:
 
 ```ts
@@ -25,6 +28,42 @@ export default flow(
   async ({ page }) => {
     await page.goto("https://example.com");
     await expect(page).toBeDefined();
+  },
+);
+```
+
+## Target Model
+
+Web flows accept web targets only. Use the CLI entry point for `Basic`.
+
+```ts
+type WebFlowTargetInput =
+  | WebFlowTarget
+  | {
+      target: WebFlowTarget;
+      launch?: false | undefined;
+    }
+  | {
+      target: WebFlowTarget;
+      launch: true | LaunchOptions;
+    };
+```
+
+Examples:
+
+```ts
+import { flow, launch } from "@qawolf/flows/web";
+
+export const manualLaunchFlow = flow("Open later", "Web - Chrome", async () => {
+  const { page } = await launch();
+  await page.goto("https://example.com");
+});
+
+export const launchedFlow = flow(
+  "Open immediately",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com");
   },
 );
 ```
