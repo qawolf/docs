@@ -13,7 +13,6 @@ sidebarTitle: "Web Reference"
 - `flow(...)`
 - `launch(...)`
 - `expect`
-- `testContextDependencies`
 
 Example:
 
@@ -94,9 +93,11 @@ export default flow("Open Electron app", "Web - Chrome", async () => {
 
 ## Flow Callback Context
 
-All web flow callbacks receive the runner-provided dependency context and
-`test(...)`. The exported `testContextDependencies` array lists the dependency
-keys expected by the current implementation.
+All web flow callbacks receive:
+
+- `input`
+- `setOutput(...)`
+- `test(...)`
 
 Launch-enabled browser flows also receive:
 

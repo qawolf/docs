@@ -12,18 +12,27 @@ sidebarTitle: "CLI Reference"
 
 - `flow(...)`
 - `expect`
-- `testContextDependencies`
 
-It also exports the CLI-specific dependency and flow definition types.
+It also exports CLI-specific target and flow definition types.
 
 Example:
 
 ```ts
 import { flow } from "@qawolf/flows/cli";
 
-export default flow("Run a command", "Basic", async ({ runCommand }) => {
-  await runCommand("pwd");
-});
+export default flow(
+  "Prepare release metadata",
+  "Basic",
+  async ({ input, setOutput, test }) => {
+    await test("create release payload", async () => {
+      setOutput("release", {
+        generatedAt: new Date().toISOString(),
+        input,
+        status: "ready",
+      });
+    });
+  },
+);
 ```
 
 ## Target Model
@@ -56,13 +65,15 @@ export const objectTargetFlow = flow(
 
 ## Flow Callback Context
 
-The callback receives the CLI flow context, which is:
+The callback receives the CLI flow context.
 
-- the base dependency set
-- plus `test(...)`
+Public callback parameters:
 
-The current implementation does not add launch helpers or platform-specific
-runtime objects.
+- `input`
+- `setOutput(...)`
+- `test(...)`
+
+CLI flows do not add launch helpers or platform-specific runtime objects.
 
 Example:
 
@@ -70,13 +81,15 @@ Example:
 import { flow } from "@qawolf/flows/cli";
 
 export default flow(
-  "Use CLI dependencies",
+  "Prepare release metadata",
   "Basic",
-  async ({ getOTP, runCommand, test, workflowInputs }) => {
-    await test("read workflow input", async () => {
-      await runCommand("echo running");
-      console.log(workflowInputs);
-      console.log(getOTP);
+  async ({ input, setOutput, test }) => {
+    await test("create release payload", async () => {
+      setOutput("release", {
+        generatedAt: new Date().toISOString(),
+        input,
+        status: "ready",
+      });
     });
   },
 );
@@ -92,16 +105,15 @@ Example:
 ```ts
 import { expect, flow } from "@qawolf/flows/cli";
 
-export default flow("Use runner expect", "Basic", async ({ runCommand }) => {
-  const result = await runCommand("echo ready");
-  await expect(result).toBeDefined();
+export default flow("Use runner expect", "Basic", async () => {
+  await expect("ready").toBeDefined();
 });
 ```
 
 ## Notes
 
-Use the CLI entry point when the flow should work directly with the injected
-runtime helpers and the `"Basic"` target is sufficient.
+Use the CLI entry point when the flow should use `input`, `setOutput(...)`, or
+`test(...)` without launching a browser or mobile app.
 
 Example:
 
@@ -109,11 +121,15 @@ Example:
 import { flow } from "@qawolf/flows/cli";
 
 export default flow(
-  "Fetch inbox and run a command",
+  "Prepare downstream input",
   "Basic",
-  async ({ getInbox, runCommand }) => {
-    const inbox = await getInbox({ new: true });
-    await runCommand(`echo ${inbox.emailAddress}`);
+  async ({ input, setOutput, test }) => {
+    await test("publish account fixture", async () => {
+      setOutput("account", {
+        input,
+        role: "admin",
+      });
+    });
   },
 );
 ```

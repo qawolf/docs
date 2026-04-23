@@ -107,7 +107,9 @@ Use this shape when the callback should receive launched runtime objects:
 | Web      | `page`, `context`, and sometimes `browser` |
 | Android  | `driver`                                   |
 | iOS      | `driver`                                   |
-| CLI      | base runtime dependencies only             |
+| CLI      | `input`, `setOutput(...)`, and `test(...)` |
+
+All flow callbacks can receive `input`, `setOutput(...)`, and `test(...)`.
 
 ## Pass Launch Options In The Definition
 

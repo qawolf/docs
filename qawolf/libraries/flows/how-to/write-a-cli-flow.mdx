@@ -27,19 +27,15 @@ CLI flows currently support one target.
 <CodeGroup>
 
 ```ts String target
-export default flow("CLI task", "Basic", async ({ workflowInputs }) => {
-  console.log(workflowInputs);
+export default flow("CLI task", "Basic", async ({ input }) => {
+  console.log(input);
 });
 ```
 
 ```ts Object target
-export default flow(
-  "CLI task",
-  { target: "Basic" },
-  async ({ workflowInputs }) => {
-    console.log(workflowInputs);
-  },
-);
+export default flow("CLI task", { target: "Basic" }, async ({ input }) => {
+  console.log(input);
+});
 ```
 
 </CodeGroup>
@@ -57,6 +53,26 @@ export default flow("Write report", "Basic", async () => {
 });
 ```
 
+## Pass Data To Later Flows
+
+Use `input` for values passed into the flow and `setOutput(...)` for values a
+later flow can read.
+
+```ts
+export default flow(
+  "Prepare account fixture",
+  "Basic",
+  async ({ input, setOutput, test }) => {
+    await test("publish account fixture", async () => {
+      setOutput("account", {
+        input,
+        role: "admin",
+      });
+    });
+  },
+);
+```
+
 Use CLI flows for setup, teardown, notifications, and other non-UI work. Reach
-for runner-provided dependencies only when you specifically need QA Wolf runtime
-services such as workflow inputs or outputs.
+for `input`, `setOutput(...)`, and `test(...)` when you need QA Wolf runtime
+state.

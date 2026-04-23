@@ -18,6 +18,33 @@ flow("Name shown in QA Wolf", target, async (runtime) => {
 - **Target** selects the browser, device, or CLI environment.
 - **Callback** contains the workflow steps.
 
+## Callback Parameters
+
+Every flow callback can receive:
+
+- `input` for values passed into the flow
+- `setOutput(...)` for values a later flow can read
+- `test(...)` for named sub-steps
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow(
+  "Prepare account fixture",
+  "Basic",
+  async ({ input, setOutput, test }) => {
+    await test("publish account fixture", async () => {
+      setOutput("account", {
+        input,
+        role: "admin",
+      });
+    });
+  },
+);
+```
+
+Launch-enabled flows receive platform objects in addition to these parameters.
+
 ## Launch In The Flow Definition
 
 Use `{ target, launch: true }` when the flow should start the session before the
