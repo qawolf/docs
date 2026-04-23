@@ -13,6 +13,7 @@ sidebarTitle: "Web Reference"
 - `flow(...)`
 - `launch(...)`
 - `expect`
+- `testContextDependencies`
 
 It also exports web-specific target, launch, callback context, and flow
 definition types.
@@ -55,7 +56,14 @@ Examples:
 import { flow, launch } from "@qawolf/flows/web";
 
 export const manualLaunchFlow = flow("Open later", "Web - Chrome", async () => {
-  const { page } = await launch();
+  const launchResult = await launch();
+  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    "page" in launchResult
+      ? launchResult.page
+      : await launchResult.context.newPage();
+
   await page.goto("https://example.com");
 });
 
@@ -70,22 +78,36 @@ export const launchedFlow = flow(
 
 ## Launch Shapes
 
-The browser launch shape includes the generated Playwright browser and context
-options, plus QA Wolf's `browserContext` wrapper:
+Browser launch accepts the generated Playwright browser and context launch
+options, excluding Playwright's raw `persistentContext` and `userDataDir`
+fields. QA Wolf adds `browserContext`, reintroduces `userDataDir` for
+persistent launches, and maps those options back to the underlying Playwright
+shape.
 
 ```ts
-type WebLaunch =
-  | {
-      kind?: "browser";
-      browser?: "chrome" | "chromium" | "firefox" | "msedge" | "webkit";
-      browserContext?: "incognito" | "persistent";
-      headless?: boolean;
-      polyfills?: {
-        intlListFormat?: boolean;
-      };
-      userDataDir?: string;
-      // Other generated Playwright browser and context options are also accepted.
-    }
+type BrowserLaunchOptions = {
+  kind?: "browser";
+  browser?: "chrome" | "chromium" | "firefox" | "msedge" | "webkit";
+  browserContext?: "incognito" | "persistent";
+  userDataDir?: string;
+
+  // Generated Playwright browser and context options are also accepted,
+  // except for Playwright's raw persistentContext and userDataDir fields.
+  headless?: boolean;
+  permissions?: string[];
+  geolocation?: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+  };
+  polyfills?: {
+    intlListFormat?: boolean;
+  };
+  // ...plus other generated browser/context options.
+};
+
+type LaunchOptions =
+  | BrowserLaunchOptions
   | {
       kind: "electron";
       executablePath: string;
@@ -105,10 +127,17 @@ export default flow(
   "Open with persistent profile",
   "Web - Chrome",
   async () => {
-    const { page } = await launch({
+    const launchResult = await launch({
       browserContext: "persistent",
       userDataDir: "/tmp/qawolf-profile",
     });
+    if (!("context" in launchResult))
+      throw new Error("Expected browser launch");
+
+    const page =
+      "page" in launchResult
+        ? launchResult.page
+        : await launchResult.context.newPage();
 
     await page.goto("https://example.com");
   },
@@ -146,6 +175,12 @@ Launch-enabled browser flows also receive:
 
 Electron launch-enabled flows receive the first Electron window as `page`.
 
+## `testContextDependencies`
+
+`testContextDependencies` is exported for runner and tooling integration. Flow
+authors should usually use the public callback parameters above instead of
+depending on the raw runner dependency list.
+
 ## Defaults
 
 - default `kind` is browser launch
@@ -162,7 +197,15 @@ export default flow(
   "Use target browser defaults",
   "Web - Firefox",
   async () => {
-    const { page } = await launch();
+    const launchResult = await launch();
+    if (!("context" in launchResult))
+      throw new Error("Expected browser launch");
+
+    const page =
+      "page" in launchResult
+        ? launchResult.page
+        : await launchResult.context.newPage();
+
     await page.goto("https://example.com");
   },
 );

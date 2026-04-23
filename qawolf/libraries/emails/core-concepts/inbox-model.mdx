@@ -12,8 +12,8 @@ An inbox handle is a small object bound to one email address.
 const inbox = await mail.inbox({ new: true });
 
 inbox.emailAddress;
-await inbox.waitForMessage();
-await inbox.waitForMessages();
+await inbox.waitForMessage({});
+await inbox.waitForMessages({});
 await inbox.sendMessage({ to, subject, text });
 ```
 

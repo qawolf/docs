@@ -19,7 +19,7 @@ const { emailAddress, waitForMessage } = await mail.inbox({ new: true });
 await page.getByLabel("Email").fill(emailAddress);
 await page.getByRole("button", { name: "Send magic link" }).click();
 
-const message = await waitForMessage();
+const message = await waitForMessage({});
 ```
 
 ## What You Get Back
@@ -30,7 +30,7 @@ const message = await waitForMessage();
 const inbox = await mail.inbox({ new: true });
 
 inbox.emailAddress;
-await inbox.waitForMessage();
+await inbox.waitForMessage({});
 await inbox.waitForMessages({ minCount: 2 });
 await inbox.sendMessage({
   to: ["support@example.com"],

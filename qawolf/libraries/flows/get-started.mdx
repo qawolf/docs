@@ -104,11 +104,11 @@ Every flow callback can receive `input`, `setOutput(...)`, and `test(...)`.
 
 When `launch` is enabled, the callback also receives platform runtime objects:
 
-| Platform | Additional callback parameters             |
-| -------- | ------------------------------------------ |
-| Web      | `page`, `context`, and sometimes `browser` |
-| Android  | `driver`                                   |
-| iOS      | `driver`                                   |
+| Platform | Additional callback parameters        |
+| -------- | ------------------------------------- |
+| Web      | `page`, `context`, optional `browser` |
+| Android  | `driver`                              |
+| iOS      | `driver`                              |
 
 ## Pass Launch Options In The Definition
 
@@ -147,7 +147,7 @@ import { flow, launch } from "@qawolf/flows/web";
 export default flow("Open account", "Web - Chrome", async () => {
   const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
 
-  const { page } = await launch(
+  const launchResult = await launch(
     useSavedProfile
       ? {
           browserContext: "persistent",
@@ -155,6 +155,12 @@ export default flow("Open account", "Web - Chrome", async () => {
         }
       : undefined,
   );
+  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    "page" in launchResult
+      ? launchResult.page
+      : await launchResult.context.newPage();
 
   await page.goto("https://example.com/dashboard");
 });

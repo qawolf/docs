@@ -31,7 +31,7 @@ await inbox.sendMessage({
 ## Reply To An App Email
 
 ```ts
-const original = await inbox.waitForMessage();
+const original = await inbox.waitForMessage({});
 
 await inbox.sendMessage({
   to: [original.from],

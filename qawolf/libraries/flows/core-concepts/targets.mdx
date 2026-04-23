@@ -51,7 +51,14 @@ does not have a launch model.
 import { flow, launch } from "@qawolf/flows/web";
 
 export default flow("Manual launch", "Web - Chrome", async () => {
-  const { page } = await launch();
+  const launchResult = await launch();
+  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    "page" in launchResult
+      ? launchResult.page
+      : await launchResult.context.newPage();
+
   await page.goto("https://example.com");
 });
 ```

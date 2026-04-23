@@ -14,7 +14,7 @@ const inbox = await mail.inbox({ new: true });
 await page.getByLabel("Email").fill(inbox.emailAddress);
 await page.getByRole("button", { name: "Send invite" }).click();
 
-const message = await inbox.waitForMessage();
+const message = await inbox.waitForMessage({});
 ```
 
 ## Avoid Old Messages
@@ -40,7 +40,7 @@ const message = await inbox.waitForMessage({
 ## Use The Parsed Email
 
 ```ts
-const message = await inbox.waitForMessage();
+const message = await inbox.waitForMessage({});
 
 expect(message.subject).toContain("Welcome");
 expect(message.urls[0]).toContain("/activate");

@@ -32,6 +32,10 @@ The returned inbox handle exposes:
 - `waitForMessage(...)`
 - `waitForMessages(...)`
 
+The current exported wait type is shared by both wait methods. The sections
+below describe which fields each method actually uses. Pass `{}` when you want
+default wait behavior.
+
 Example:
 
 ```ts
@@ -43,7 +47,7 @@ await inbox.sendMessage({
   to: [inbox.emailAddress],
 });
 
-const latestMessage = await inbox.waitForMessage();
+const latestMessage = await inbox.waitForMessage({});
 ```
 
 ## Current `GetInboxOptions`
@@ -224,7 +228,7 @@ type ParsedEmail = {
 Example:
 
 ```ts
-const message = await inbox.waitForMessage();
+const message = await inbox.waitForMessage({});
 
 console.log(message.from);
 console.log(message.subject);

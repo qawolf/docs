@@ -14,6 +14,7 @@ sidebarTitle: "Android Reference"
 - `launch(...)`
 - `device`
 - `expect`
+- `testContextDependencies`
 
 It also exports Android-specific target, launch, device, callback context, and
 flow definition types.
@@ -45,6 +46,12 @@ All Android flow callbacks receive:
 - `test(...)`
 
 Launch-enabled Android flows also receive `driver`.
+
+## `testContextDependencies`
+
+`testContextDependencies` is exported for runner and tooling integration. Flow
+authors should usually use the public callback parameters above instead of
+depending on the raw runner dependency list.
 
 ## Target Model
 

@@ -12,6 +12,7 @@ sidebarTitle: "CLI Reference"
 
 - `flow(...)`
 - `expect`
+- `testContextDependencies`
 
 It also exports CLI-specific target, callback context, and flow definition
 types.
@@ -95,6 +96,12 @@ export default flow(
   },
 );
 ```
+
+## `testContextDependencies`
+
+`testContextDependencies` is exported for runner and tooling integration. Flow
+authors should usually use the public callback parameters above instead of
+depending on the raw runner dependency list.
 
 ## `expect`
 
