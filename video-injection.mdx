@@ -1,0 +1,56 @@
+---
+title: "Video Injection"
+icon: "video"
+description: "Inject video to automate media features without using the camera stream."
+sidebarTitle: "iOS"
+---
+
+<Info>
+  Camera and audio injection is only available for apps that QA Wolf resigns during installation. It is not available for system apps or Safari.
+</Info>
+
+## Example
+
+```javascript
+
+// Inject Camera Video
+const ios = await import("@qawolf/run-globals-ios");
+
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+const storagePath = process.env.STORAGE_PATH // QA Wolf remote storage
+const videoPath = `${storagePath}/wolf.mp4`;
+
+
+const cleanup = await ios.injectCamera(driver, bundleId, {
+  data: videoPath,
+  type: "video", // optional — inferred from .mp4/.mov/.m4v/.avi
+});
+
+// ... run your assertions while the camera feed plays the video ...
+
+await cleanup();
+  
+```
+
+
+
+
+## When to use
+
+- Your app scans QR codes, documents, or other visual inputs and you want to test that flow without a physical camera setup
+- Your app records video and you need to verify the recording pipeline with deterministic content
+- Your app records audio or processes microphone input and you need to test that flow with known audio data
+- You need to run the same scenario repeatedly with consistent inputs
+
+## Supported file types
+
+**Images:** Any format supported by UIImage — JPG, PNG, HEIC, GIF, BMP, TIFF, WebP
+
+**Video:** Any format supported by AVAsset — MP4, MOV, M4V with H.264/HEVC codecs
+
+
+## Full sample test
+
+import Sample from '/snippets/flows/camera-injection.mdx';
+
+<Sample />
