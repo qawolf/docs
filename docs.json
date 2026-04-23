@@ -74,7 +74,8 @@
               "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
               "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
-              "qawolf/Uploading-manually"
+              "qawolf/Uploading-manually",
+              "qawolf/select-a-target-device-and-os"
             ]
           },
           {
@@ -124,8 +125,7 @@
             "icon": "monitor-smartphone",
             "pages": [
               "qawolf/network-connectivity",
-              "qawolf/network-simulation",
-              "qawolf/using-an-android-tablet"
+              "qawolf/network-simulation"
             ]
           },
           {
