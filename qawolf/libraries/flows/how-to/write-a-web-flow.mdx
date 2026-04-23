@@ -45,18 +45,46 @@ Change the target to run in another browser.
 
 </CodeGroup>
 
-## Launch Manually
+## Pass Launch Options
 
-Call `launch()` yourself when startup needs options.
+When startup options are known up front, put them in the flow definition.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Use saved session",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com/account");
+  },
+);
+```
+
+## Launch Manually For Advanced Control
+
+Call `launch()` yourself only when startup depends on callback logic.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
 
-export default flow("Use saved session", "Web - Chrome", async () => {
-  const { page } = await launch({
-    browserContext: "persistent",
-    userDataDir: "/tmp/qawolf-profile",
-  });
+export default flow("Open account", "Web - Chrome", async () => {
+  const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
+
+  const { page } = await launch(
+    useSavedProfile
+      ? {
+          browserContext: "persistent",
+          userDataDir: "/tmp/qawolf-profile",
+        }
+      : undefined,
+  );
 
   await page.goto("https://example.com/account");
 });
@@ -67,17 +95,24 @@ export default flow("Use saved session", "Web - Chrome", async () => {
 Use the Electron launch kind when the target is an app instead of a website.
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow } from "@qawolf/flows/web";
 
-export default flow("Open desktop app", "Web - Chrome", async () => {
-  const { firstWindowPage } = await launch({
-    kind: "electron",
-    executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
-  });
-
-  await firstWindowPage.getByRole("button", { name: "Sign in" }).click();
-});
+export default flow(
+  "Open desktop app",
+  {
+    target: "Web - Chrome",
+    launch: {
+      kind: "electron",
+      executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+    },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Sign in" }).click();
+  },
+);
 ```
+
+The Electron callback receives the first window as `page`.
 
 ## Assertions
 

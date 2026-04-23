@@ -109,24 +109,58 @@ Use this shape when the callback should receive launched runtime objects:
 | iOS      | `driver`                                   |
 | CLI      | base runtime dependencies only             |
 
-## Launch Manually When Startup Is Conditional
+## Pass Launch Options In The Definition
 
-Pass the target directly when the flow should decide how to launch inside the
-callback.
+If startup needs options and those options are known up front, pass an object to
+`launch`.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Open account with profile",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com/account");
+  },
+);
+```
+
+This keeps startup declarative while still giving the callback a ready-to-use
+`page` or `driver`.
+
+## Launch Manually For Advanced Flow Control
+
+Pass the target directly and call `launch(...)` in the callback only when the
+flow must decide startup at runtime.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
 
-export default flow("Open tenant", "Web - Chrome", async () => {
-  const host = process.env["TENANT_HOST"] ?? "example.com";
-  const { page } = await launch();
+export default flow("Open account", "Web - Chrome", async () => {
+  const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
 
-  await page.goto(`https://${host}/dashboard`);
+  const { page } = await launch(
+    useSavedProfile
+      ? {
+          browserContext: "persistent",
+          userDataDir: "/tmp/qawolf-profile",
+        }
+      : undefined,
+  );
+
+  await page.goto("https://example.com/dashboard");
 });
 ```
 
-This is useful for persistent browser profiles, Electron, app paths from
-environment variables, and other startup choices that belong in the test logic.
+This is the advanced path for startup branches, delayed startup, or startup
+that depends on callback-only data.
 
 ## Next Steps
 

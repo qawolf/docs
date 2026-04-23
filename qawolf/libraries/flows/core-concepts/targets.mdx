@@ -44,8 +44,9 @@ export default flow("Manual launch", "Web - Chrome", async () => {
 
 ## Wrap The Target To Launch First
 
-Use `{ target, launch: true }` when the callback should receive launched runtime
-objects.
+Use `{ target, launch }` when the callback should receive launched runtime
+objects. Pass `true` for default startup, or pass launch options when they are
+known before the callback runs.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -53,6 +54,22 @@ import { flow } from "@qawolf/flows/web";
 export default flow(
   "Launch first",
   { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+  },
+);
+```
+
+```ts
+export default flow(
+  "Launch with options",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
   async ({ page }) => {
     await page.goto("https://example.com");
   },

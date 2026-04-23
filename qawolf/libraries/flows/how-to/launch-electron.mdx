@@ -10,27 +10,30 @@ Use Electron launch mode when the target is a desktop app instead of a browser
 page.
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow } from "@qawolf/flows/web";
 
-export default flow("Open desktop app", "Web - Chrome", async () => {
-  const { electronApplication, firstWindowPage } = await launch({
-    kind: "electron",
-    executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
-  });
-
-  await firstWindowPage.getByRole("button", { name: "Sign in" }).click();
-
-  await electronApplication.close();
-});
+export default flow(
+  "Open desktop app",
+  {
+    target: "Web - Chrome",
+    launch: {
+      kind: "electron",
+      executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+    },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Sign in" }).click();
+  },
+);
 ```
 
-## Use The First Window Page
+## Use The First Window
 
-Most Electron tests start with `firstWindowPage`.
+The Electron flow callback receives the first window as `page`.
 
 ```ts
-await firstWindowPage.getByLabel("Email").fill("qa@example.com");
-await firstWindowPage.getByRole("button", { name: "Continue" }).click();
+await page.getByLabel("Email").fill("qa@example.com");
+await page.getByRole("button", { name: "Continue" }).click();
 ```
 
 ## Pass Launch Arguments
@@ -38,9 +41,18 @@ await firstWindowPage.getByRole("button", { name: "Continue" }).click();
 Use `args` when the app needs flags at startup.
 
 ```ts
-const { firstWindowPage } = await launch({
-  kind: "electron",
-  executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
-  args: ["--test-mode"],
-});
+export default flow(
+  "Open test-mode desktop app",
+  {
+    target: "Web - Chrome",
+    launch: {
+      kind: "electron",
+      executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+      args: ["--test-mode"],
+    },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Sign in" }).click();
+  },
+);
 ```

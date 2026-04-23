@@ -66,14 +66,38 @@ export default flow(
 );
 ```
 
-Use `launch(...)` manually when startup needs options or branching:
+Pass an options object to `launch` when startup options are known up front:
+
+```ts
+export default flow(
+  "Persistent profile",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+  },
+);
+```
+
+Use `launch(...)` manually only when startup depends on callback logic:
 
 ```ts
 export default flow("Manual startup", "Web - Chrome", async () => {
-  const { page } = await launch({
-    browserContext: "persistent",
-    userDataDir: "/tmp/profile",
-  });
+  const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
+
+  const { page } = await launch(
+    useSavedProfile
+      ? {
+          browserContext: "persistent",
+          userDataDir: "/tmp/profile",
+        }
+      : undefined,
+  );
 
   await page.goto("https://example.com");
 });

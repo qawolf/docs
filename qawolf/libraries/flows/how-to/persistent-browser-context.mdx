@@ -10,16 +10,21 @@ Use a persistent browser context when browser state should live in a real user
 data directory.
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow } from "@qawolf/flows/web";
 
-export default flow("Use saved profile", "Web - Chrome", async () => {
-  const { page } = await launch({
-    browserContext: "persistent",
-    userDataDir: "/tmp/qawolf-profile",
-  });
-
-  await page.goto("https://example.com/account");
-});
+export default flow(
+  "Use saved profile",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com/account");
+  },
+);
 ```
 
 ## When To Use It
@@ -35,8 +40,17 @@ Use a path unique to the run when flows may execute in parallel.
 ```ts
 const userDataDir = `/tmp/qawolf-profile-${Date.now()}`;
 
-const { page } = await launch({
-  browserContext: "persistent",
-  userDataDir,
-});
+export default flow(
+  "Use isolated profile",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir,
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com/account");
+  },
+);
 ```
