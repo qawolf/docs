@@ -127,13 +127,6 @@ export default flow("Manual startup", "Web - Chrome", async () => {
 });
 ```
 
-## Preference Order
-
-1. `{ target, launch: true }` for ordinary browser and mobile flows.
-2. `{ target, launch: options }` when startup options are known up front.
-3. `launch(options)` inside the callback when startup is conditional.
-4. `device` only for broader mobile device operations.
-
 For exact option shapes and defaults, use the platform reference pages:
 [Web](/qawolf/libraries/flows/api-reference/web),
 [Android](/qawolf/libraries/flows/api-reference/android), and
