@@ -37,11 +37,11 @@ export default flow(
 
 The callback receives the launched object for that platform:
 
-| Entry point             | Launch object                |
-| ----------------------- | ---------------------------- |
-| `@qawolf/flows/web`     | `page`, `context`, `browser` |
-| `@qawolf/flows/android` | `driver`                     |
-| `@qawolf/flows/ios`     | `driver`                     |
+| Entry point             | Launch object                         |
+| ----------------------- | ------------------------------------- |
+| `@qawolf/flows/web`     | `page`, `context`, optional `browser` |
+| `@qawolf/flows/android` | `driver`                              |
+| `@qawolf/flows/ios`     | `driver`                              |
 
 When startup needs options, pass an options object to `launch` instead of
 calling `launch(...)` manually.

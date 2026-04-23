@@ -13,6 +13,7 @@ sidebarTitle: "Web Reference"
 - `flow(...)`
 - `launch(...)`
 - `expect`
+- `testContextDependencies`
 
 Example:
 
@@ -31,7 +32,8 @@ export default flow(
 
 ## Launch Shapes
 
-The intended browser launch shape is:
+The browser launch shape includes the generated Playwright browser and context
+options, plus QA Wolf's `browserContext` wrapper:
 
 ```ts
 type WebLaunch =
@@ -39,13 +41,22 @@ type WebLaunch =
       kind?: "browser";
       browser?: "chrome" | "chromium" | "firefox" | "msedge" | "webkit";
       browserContext?: "incognito" | "persistent";
+      headless?: boolean;
+      polyfills?: {
+        intlListFormat?: boolean;
+      };
       userDataDir?: string;
+      // Other generated Playwright browser and context options are also accepted.
     }
   | {
       kind: "electron";
       executablePath: string;
     };
 ```
+
+QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context
+mode. Pass `userDataDir` with `browserContext: "persistent"` when a profile
+directory should be reused.
 
 Browser example:
 
@@ -80,6 +91,20 @@ export default flow("Open Electron app", "Web - Chrome", async () => {
   await firstWindowPage.goto("about:blank");
 });
 ```
+
+## Flow Callback Context
+
+All web flow callbacks receive the runner-provided dependency context and
+`test(...)`. The exported `testContextDependencies` array lists the dependency
+keys expected by the current implementation.
+
+Launch-enabled browser flows also receive:
+
+- `page`
+- `context`
+- optional `browser`
+
+Electron launch-enabled flows receive the first Electron window as `page`.
 
 ## Defaults
 

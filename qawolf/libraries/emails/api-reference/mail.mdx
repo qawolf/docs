@@ -133,13 +133,11 @@ console.log(result.id);
 
 ## `waitForMessage(...)`
 
-Current input shape:
+Current method options:
 
 ```ts
-type WaitForMessage = {
+type WaitForMessageOptions = {
   after?: Date;
-  delay?: number;
-  minCount?: number;
   timeout?: number;
 };
 ```
@@ -165,15 +163,21 @@ console.log(message.subject);
 
 ## `waitForMessages(...)`
 
-`waitForMessages(...)` uses the same base option type, but its implementation
-also makes use of:
+Current method options:
 
-- `delay`
-- `minCount`
-- `timeout`
+```ts
+type WaitForMessagesOptions = {
+  after?: Date;
+  delay?: number;
+  minCount?: number;
+  timeout?: number;
+};
+```
 
 Behavior:
 
+- it uses `after` when provided, otherwise the time when `mail.inbox(...)` was
+  called
 - it waits for `delay` first
 - it polls until at least `minCount` messages are found, or until timeout
 - it returns the matching parsed emails
