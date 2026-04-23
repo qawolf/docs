@@ -1,0 +1,38 @@
+---
+title: "Get An Inbox"
+description: "Request an inbox handle for the default or a unique QA Wolf address."
+sidebarTitle: "Get An Inbox"
+---
+
+# Get An Inbox
+
+Use `mail.inbox(...)` when a flow needs a QA Wolf inbox to receive or send
+messages.
+
+## Default Address
+
+```ts
+import { mail } from "@qawolf/emails";
+
+const inbox = await mail.inbox();
+```
+
+## Unique Derived Address
+
+```ts
+const inbox = await mail.inbox({ new: true });
+```
+
+## Custom Delimiter
+
+```ts
+const inbox = await mail.inbox({ new: true, delimiter: "-" });
+```
+
+## Explicit Allowed Address
+
+```ts
+const inbox = await mail.inbox({
+  address: "my-workspace+admin@qawolf.email",
+});
+```

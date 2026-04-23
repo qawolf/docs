@@ -1,0 +1,92 @@
+---
+title: "Core Reference"
+description: "Reference notes for the top-level @qawolf/testkit entry point."
+sidebarTitle: "Core Reference"
+---
+
+# Core Reference
+
+The top-level package currently exposes:
+
+- `otp.fromUri(...)`
+- `configureTestkitClient(...)`
+- `getCurrentTestkitClient(...)`
+- `resetTestkitClient(...)`
+- client-dependent helpers such as `mountCifsShare(...)`
+
+Example:
+
+```ts
+import {
+  configureTestkitClient,
+  mountCifsShare,
+  otp,
+  startOpenVpn,
+} from "@qawolf/testkit";
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+configureTestkitClient(
+  createTestkitClient({
+    mountCifsShare: async () => "/Volumes/shared",
+    startOpenVpn: async () => "vpn-started",
+    startWireGuard: async () => "wireguard-started",
+  }),
+);
+
+const code = otp.fromUri("otpauth://totp/QA%20Wolf?secret=JBSWY3DPEHPK3PXP");
+
+await mountCifsShare({
+  mountPoint: "/Volumes/shared",
+  password: "secret",
+  share: "//server/share",
+  username: "wolf",
+});
+
+await startOpenVpn({ configPath: "/tmp/test.ovpn" });
+console.log(code);
+```
+
+## Error Behavior
+
+Client-dependent helpers throw when no client has been configured.
+
+`saveBaselineScreenshot(...)` also throws when the configured client does not
+provide screenshot support.
+
+Examples:
+
+```ts
+import { mountCifsShare, resetTestkitClient } from "@qawolf/testkit";
+
+resetTestkitClient();
+
+await mountCifsShare({
+  mountPoint: "/Volumes/shared",
+  password: "secret",
+  share: "//server/share",
+  username: "wolf",
+});
+```
+
+```ts
+import {
+  configureTestkitClient,
+  saveBaselineScreenshot,
+} from "@qawolf/testkit";
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+configureTestkitClient(
+  createTestkitClient({
+    mountCifsShare: async () => "/Volumes/shared",
+    startOpenVpn: async () => "vpn-started",
+    startWireGuard: async () => "wireguard-started",
+  }),
+);
+
+await saveBaselineScreenshot(
+  {
+    screenshot: async () => Buffer.from("image"),
+  },
+  "login-page",
+);
+```

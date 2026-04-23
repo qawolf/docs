@@ -1,0 +1,228 @@
+---
+title: "Mail Reference"
+description: "Reference notes for the flow-facing mail API."
+sidebarTitle: "Mail Reference"
+---
+
+# Mail Reference
+
+The top-level `mail` facade exposes:
+
+- `mail.inbox(options?)`
+
+`mail.inbox(...)` is a thin facade over the currently configured emails client.
+If no client has been configured, it throws a setup error that points callers to
+`configureEmailsClient(...)`.
+
+Example:
+
+```ts
+import { mail } from "@qawolf/emails";
+
+const inbox = await mail.inbox({ new: true });
+console.log(inbox.emailAddress);
+```
+
+## Inbox Handle
+
+The returned inbox handle exposes:
+
+- `emailAddress`
+- `sendMessage(...)`
+- `waitForMessage(...)`
+- `waitForMessages(...)`
+
+Example:
+
+```ts
+const inbox = await mail.inbox({ new: true });
+
+await inbox.sendMessage({
+  subject: "Sign in link",
+  text: "Use the link in this email",
+  to: [inbox.emailAddress],
+});
+
+const latestMessage = await inbox.waitForMessage();
+```
+
+## Current `GetInboxOptions`
+
+```ts
+type GetInboxOptions = {
+  address?: string | undefined;
+  delimiter?: string | undefined;
+  new?: boolean | undefined;
+};
+```
+
+Current validation and behavior:
+
+- `new: true` derives a unique address
+- `delimiter` customizes the separator used for derived addresses
+- `address` must come from the allowed workspace address set
+- omitting `address` triggers a lookup of the workspace default address
+
+If `teamId` is missing from the runtime client configuration, inbox creation
+fails.
+
+Examples:
+
+```ts
+const defaultInbox = await mail.inbox();
+const namedInbox = await mail.inbox({ address: "flows@example.com" });
+const derivedInbox = await mail.inbox({ new: true, delimiter: "-" });
+```
+
+## `sendMessage(...)`
+
+Current input shape:
+
+```ts
+type SendMessage = {
+  attachments?: {
+    content: Buffer;
+    contentId?: string;
+    disposition?: "attachment" | "inline";
+    fileName: string;
+    type?: string;
+  }[];
+  bcc?: string[];
+  cc?: string[];
+  html?: string;
+  replyTo?: string[];
+  replyToMessageId?: string;
+  subject: string;
+  text?: string;
+  to: string[];
+};
+```
+
+Behavior:
+
+- `to` is always an array of strings
+- at least one of `html` or `text` is required
+- attachments are base64-encoded before the request is sent to the emailer
+
+Return shape:
+
+```ts
+type SendMessageResult = {
+  id: string;
+};
+```
+
+Example:
+
+```ts
+const result = await inbox.sendMessage({
+  attachments: [
+    {
+      content: Buffer.from("hello"),
+      fileName: "note.txt",
+      type: "text/plain",
+    },
+  ],
+  html: "<p>Hello from QA Wolf</p>",
+  subject: "Welcome",
+  to: [inbox.emailAddress],
+});
+
+console.log(result.id);
+```
+
+## `waitForMessage(...)`
+
+Current input shape:
+
+```ts
+type WaitForMessage = {
+  after?: Date;
+  delay?: number;
+  minCount?: number;
+  timeout?: number;
+};
+```
+
+For `waitForMessage(...)`, the implementation uses:
+
+- `after` when it is provided
+- otherwise the time when `mail.inbox(...)` was called
+- `timeout` when it is provided
+
+It returns one `ParsedEmail` and throws if no message arrives in time.
+
+Example:
+
+```ts
+const message = await inbox.waitForMessage({
+  after: new Date(Date.now() - 60_000),
+  timeout: 15_000,
+});
+
+console.log(message.subject);
+```
+
+## `waitForMessages(...)`
+
+`waitForMessages(...)` uses the same base option type, but its implementation
+also makes use of:
+
+- `delay`
+- `minCount`
+- `timeout`
+
+Behavior:
+
+- it waits for `delay` first
+- it polls until at least `minCount` messages are found, or until timeout
+- it returns the matching parsed emails
+
+Example:
+
+```ts
+const messages = await inbox.waitForMessages({
+  delay: 2_000,
+  minCount: 2,
+  timeout: 30_000,
+});
+
+console.log(messages.map((message) => message.subject));
+```
+
+## Parsed Email Shape
+
+The parsed email shape is:
+
+```ts
+type ParsedEmail = {
+  attachments?: {
+    content: Buffer;
+    fileName: string;
+    type?: string;
+  }[];
+  bcc?: string[];
+  cc?: string[];
+  from: string;
+  html: string;
+  id: string;
+  replyTo?: string[];
+  subject: string;
+  teamId: string;
+  text: string;
+  to: string[];
+  urls: string[];
+};
+```
+
+`urls` is derived by parsing links from the HTML body.
+
+Example:
+
+```ts
+const message = await inbox.waitForMessage();
+
+console.log(message.from);
+console.log(message.subject);
+console.log(message.urls);
+```

@@ -1,0 +1,56 @@
+---
+title: "Wait For Many Messages"
+description: "Wait for multiple messages delivered to a QA Wolf inbox."
+sidebarTitle: "Wait For Many Messages"
+---
+
+# Wait For Many Messages
+
+Use the inbox handle returned by `mail.inbox(...)`:
+
+```ts
+const { waitForMessages } = await mail.inbox({ new: true });
+
+const messages = await waitForMessages();
+```
+
+## What `waitForMessages(...)` Does
+
+The implementation:
+
+- waits for a delay first
+- polls for inbound emails after the inbox handle's creation time, or `after`
+  if you provide it
+- returns the matching parsed emails
+
+## Custom Delay
+
+```ts
+const messages = await waitForMessages({ delay: 5_000 });
+```
+
+The default delay comes from the runtime's
+`waitForMessagesDefaultDelayMs` configuration.
+
+## Require A Minimum Number Of Messages
+
+```ts
+const messages = await waitForMessages({
+  minCount: 2,
+  timeout: 120_000,
+});
+```
+
+This is useful when one workflow step should produce several emails before the
+flow continues.
+
+## Limit Messages To A Known Point In Time
+
+```ts
+const after = new Date();
+
+const messages = await waitForMessages({ after, delay: 10_000 });
+```
+
+Use `after` when the same inbox may already contain older messages that should
+not be considered part of the current flow step.

@@ -1,0 +1,42 @@
+---
+title: "Client Model"
+description: "Understand which testkit APIs are pure and which need a configured client."
+sidebarTitle: "Client Model"
+---
+
+# Client Model
+
+Some testkit APIs are pure. Others are facades over ports supplied by the
+runner.
+
+## Pure Helpers
+
+These do not need runtime configuration:
+
+- `otp.fromUri(...)`
+
+## Client-Dependent Helpers
+
+These top-level helpers require a configured client:
+
+- `mountCifsShare(...)`
+- `startOpenVpn(...)`
+- `saveBaselineScreenshot(...)`
+
+If no client has been configured, these helpers throw a clear setup error.
+
+`startWireGuard` exists on the runner-facing client ports, but there is no
+top-level `startWireGuard(...)` helper export today.
+
+## Who Configures The Client
+
+Usually the runner configures the client before the flow runs.
+
+Tests and local execution can also configure it explicitly:
+
+```ts
+import { configureTestkitClient } from "@qawolf/testkit";
+import { createTestkitClient } from "@qawolf/testkit/client";
+```
+
+Use `resetTestkitClient()` in tests to clear the current wiring.

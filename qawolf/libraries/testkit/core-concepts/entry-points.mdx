@@ -1,0 +1,87 @@
+---
+title: "Entry Points"
+description: "Understand which testkit entry point to use for each kind of helper."
+sidebarTitle: "Entry Points"
+---
+
+# Entry Points
+
+`@qawolf/testkit` mixes pure helpers with runner-wired helpers, so the entry
+point matters.
+
+The current package exports only three public entry points:
+
+- `@qawolf/testkit`
+- `@qawolf/testkit/web`
+- `@qawolf/testkit/client`
+
+That list comes from the package `exports` map and is the source of truth for
+what should be documented as public today.
+
+## `@qawolf/testkit`
+
+Use the top-level package for:
+
+- pure helpers like `otp.fromUri(...)`
+- flow-facing helpers that delegate to a configured client
+- client scope helpers used by runtimes and tests
+
+Today the top-level package exports:
+
+- `otp.fromUri(...)`
+- `mountCifsShare(...)`
+- `startOpenVpn(...)`
+- `saveBaselineScreenshot(...)`
+- `configureTestkitClient(...)`
+- `getCurrentTestkitClient()`
+- `resetTestkitClient()`
+
+One important boundary from the code:
+
+- `startWireGuard` exists on the client ports
+- there is currently no top-level `startWireGuard(...)` helper export
+
+So WireGuard is part of the runner-facing client surface today, not the
+flow-facing helper surface.
+
+## `@qawolf/testkit/web`
+
+Use this entry point for helpers that are shaped for web-side execution support.
+
+At the moment, the public API is:
+
+- `readQRCode(page, selector)`
+
+The current implementation takes a Playwright `Page` and a selector, screenshots
+the matching locator, parses the PNG bytes, and returns the decoded QR value or
+`undefined`.
+
+## `@qawolf/testkit/client`
+
+Use this entry point in runners and local execution environments to create the
+client that powers the flow-facing helpers.
+
+Today that means `createTestkitClient(...)`, which is built from environment
+ports such as:
+
+- `mountCifsShare`
+- `saveSnapshot`
+- `startOpenVpn`
+- `startWireGuard`
+
+If `saveSnapshot` is present, the client exposes `saveBaselineScreenshot(...)`.
+If it is absent, the flow-facing `saveBaselineScreenshot(...)` helper throws a
+clear screenshot-support error.
+
+## How To Choose
+
+- If the helper is pure and flow-facing, start with `@qawolf/testkit`.
+- If the helper currently works against a Playwright page, use
+  `@qawolf/testkit/web`.
+- If you are wiring runtime behavior, use `@qawolf/testkit/client`.
+
+## Documentation Note
+
+Earlier internal notes talked about a separate Playwright-specific entry point.
+The package does not export that path today, so treat the three entry points
+above as canonical until the exports change.

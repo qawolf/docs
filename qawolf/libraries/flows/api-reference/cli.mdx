@@ -1,0 +1,119 @@
+---
+title: "CLI Reference"
+description: "Reference notes for @qawolf/flows/cli."
+sidebarTitle: "CLI Reference"
+---
+
+# CLI Reference
+
+`@qawolf/flows/cli` is the smallest platform entry point in `@qawolf/flows`.
+
+## Primary Exports
+
+- `flow(...)`
+- `expect`
+- `testContextDependencies`
+
+It also exports the CLI-specific dependency and flow definition types.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow("Run a command", "Basic", async ({ runCommand }) => {
+  await runCommand("pwd");
+});
+```
+
+## Target Model
+
+The current target type is:
+
+```ts
+type CliFlowTarget = "Basic";
+```
+
+Accepted flow target input:
+
+```ts
+type CliFlowTargetInput = CliFlowTarget | { target: CliFlowTarget };
+```
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export const stringTargetFlow = flow("String target", "Basic", async () => {});
+
+export const objectTargetFlow = flow(
+  "Object target",
+  { target: "Basic" },
+  async () => {},
+);
+```
+
+## Flow Callback Context
+
+The callback receives the CLI flow context, which is:
+
+- the base dependency set
+- plus `test(...)`
+
+The current implementation does not add launch helpers or platform-specific
+runtime objects.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow(
+  "Use CLI dependencies",
+  "Basic",
+  async ({ getOTP, runCommand, test, workflowInputs }) => {
+    await test("read workflow input", async () => {
+      await runCommand("echo running");
+      console.log(workflowInputs);
+      console.log(getOTP);
+    });
+  },
+);
+```
+
+## `expect`
+
+Like the other platform entry points, the exported `expect` value is a type-safe
+stub in package code and is replaced by the runner when the flow executes.
+
+Example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/cli";
+
+export default flow("Use runner expect", "Basic", async ({ runCommand }) => {
+  const result = await runCommand("echo ready");
+  await expect(result).toBeDefined();
+});
+```
+
+## Notes
+
+Use the CLI entry point when the flow should work directly with the injected
+runtime helpers and the `"Basic"` target is sufficient.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow(
+  "Fetch inbox and run a command",
+  "Basic",
+  async ({ getInbox, runCommand }) => {
+    const inbox = await getInbox({ new: true });
+    await runCommand(`echo ${inbox.emailAddress}`);
+  },
+);
+```

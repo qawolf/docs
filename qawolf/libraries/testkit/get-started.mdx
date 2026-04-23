@@ -1,0 +1,55 @@
+---
+title: "Get Started"
+description: "Start here for the @qawolf/testkit docs and first working examples."
+sidebarTitle: "Get Started"
+---
+
+# Get Started
+
+`@qawolf/testkit` provides helpers that QA Wolf flows use to interact with their
+execution environment.
+
+Current package responsibilities include:
+
+- one-time password generation
+- QR code reading
+- runner-wired helpers for CIFS shares, VPN setup, and baseline screenshots
+
+## Current Entry Points
+
+This docs tree is intentionally aligned to the package surface that currently
+exists in code:
+
+- `@qawolf/testkit`
+- `@qawolf/testkit/web`
+- `@qawolf/testkit/client`
+
+If a separate Playwright entry point is added later, the content model can stay
+the same and only the reference split needs to change.
+
+## Smallest Working Examples
+
+Pure helper:
+
+```ts
+import { otp } from "@qawolf/testkit";
+
+const code = otp.fromUri(
+  "otpauth://totp/QA%20Wolf:qa%40example.com?secret=JBSWY3DPEHPK3PXP&issuer=QA%20Wolf",
+);
+```
+
+QR code helper:
+
+```ts
+import { readQRCode } from "@qawolf/testkit/web";
+
+const value = await readQRCode(page, ".qr-code");
+```
+
+## Documentation Layout
+
+- `core-concepts/` for entry-point and client wiring mental models
+- `how-to/` for common tasks and practical usage patterns
+- `api-reference/` for exact APIs
+- `troubleshooting.md` for setup and runtime issues

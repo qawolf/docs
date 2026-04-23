@@ -1,0 +1,29 @@
+---
+title: "Read QR Code"
+description: "Read a QR code value from a page element screenshot."
+sidebarTitle: "Read QR Code"
+---
+
+# Read QR Code
+
+Use the current web entry point to decode a QR code from a page element:
+
+```ts
+import { readQRCode } from "@qawolf/testkit/web";
+
+const value = await readQRCode(page, ".qr-code");
+```
+
+## Current Behavior
+
+The helper:
+
+- screenshots the matching locator
+- parses the PNG bytes
+- returns the decoded QR code string if one is present
+
+## Documentation Note
+
+If the package later splits a pure byte-oriented helper from a Playwright-aware
+helper, keep this guide focused on the task and move the exact import path to
+the reference pages.

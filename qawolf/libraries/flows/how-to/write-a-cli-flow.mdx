@@ -1,0 +1,68 @@
+---
+title: "Write A CLI Flow"
+description: "Create a flow with @qawolf/flows/cli and the Basic target."
+sidebarTitle: "Write A CLI Flow"
+---
+
+# Write A CLI Flow
+
+Use `@qawolf/flows/cli` when the flow does not need a browser or mobile driver
+context and can work directly with the base runtime dependencies.
+
+## Current Target Model
+
+The CLI entry point currently supports one target:
+
+- `"Basic"`
+
+You can pass it directly or wrap it in an object:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow("Basic flow", "Basic", async ({ runCommand }) => {
+  await runCommand({
+    binary: "echo",
+    args: ["hello"],
+  });
+});
+```
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow(
+  "Basic flow",
+  { target: "Basic" },
+  async ({ workflowInputs }) => {
+    console.log(workflowInputs);
+  },
+);
+```
+
+## What The Context Looks Like
+
+The CLI flow context is the base dependency set plus `test(...)`.
+
+Unlike the other platform entry points:
+
+- there is no `launch(...)`
+- there is no `device`
+- there is no injected `page`, `browser`, `context`, or `driver`
+
+The context is built directly from the injected dependencies.
+
+## Common CLI Dependencies
+
+The current CLI test context dependency list includes helpers such as:
+
+- `runCommand`
+- `getInbox`
+- `getOTP`
+- `mountCifsShare`
+- `startOpenVpn`
+- `startWireGuard`
+- `workflowInputs`
+- `setOutput`
+
+See [CLI Reference](/qawolf/libraries/flows/api-reference/cli) for the current API surface.

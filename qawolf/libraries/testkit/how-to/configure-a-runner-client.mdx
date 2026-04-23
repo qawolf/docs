@@ -1,0 +1,37 @@
+---
+title: "Configure A Runner Client"
+description: "Configure a testkit client in runners and local execution environments."
+sidebarTitle: "Configure A Runner Client"
+---
+
+# Configure A Runner Client
+
+Runners and local tooling create the testkit client once and then configure it
+before the flow runs.
+
+```ts
+import { configureTestkitClient } from "@qawolf/testkit";
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+const testkit = createTestkitClient({
+  mountCifsShare(options) {
+    return executor.request("runCommand", { binary: "mount", opts: options });
+  },
+  saveSnapshot(name, bytes) {
+    return snapshotManager.saveSnapshot(name, bytes);
+  },
+  startOpenVpn(options) {
+    return executor.request("runCommand", { binary: "openvpn", opts: options });
+  },
+  startWireGuard(options) {
+    return executor.request("runCommand", { binary: "wg", opts: options });
+  },
+});
+
+configureTestkitClient(testkit);
+```
+
+## Test Cleanup
+
+Use `resetTestkitClient()` between tests so client wiring does not leak across
+cases.

@@ -1,0 +1,71 @@
+---
+title: "Inbox Model"
+description: "Understand how a QA Wolf inbox handle is created and used inside a flow."
+sidebarTitle: "Inbox Model"
+---
+
+# Inbox Model
+
+The central concept in `@qawolf/emails` is the inbox handle returned by
+`mail.inbox(...)`.
+
+## What The Inbox Handle Represents
+
+The handle is bound to one email address and exposes operations scoped to that
+address.
+
+Common operations:
+
+- send from the address
+- wait for the next message
+- collect messages received during a time window
+
+The implementation type is `GetInboxResult`, and the handle is created once per
+`mail.inbox(...)` call.
+
+## Address Selection
+
+An inbox can be created by:
+
+- using the workspace default address
+- choosing an allowed address explicitly
+- requesting a unique derived address with `new: true`
+
+In the implementation:
+
+- omitting `address` triggers a lookup of the workspace default address
+- `new: true` appends a generated suffix
+- `delimiter` changes the separator used for that generated suffix
+- when the delimiter is not `"+"`, the client temporarily registers the derived
+  address with the emailer service
+
+## The Handle Is Scoped To A Point In Time
+
+When `mail.inbox(...)` is called, the implementation captures `calledAt`.
+
+That timestamp matters because:
+
+- `waitForMessage(...)` defaults to messages received after `calledAt`
+- `waitForMessages(...)` also defaults to `calledAt` unless `after` is provided
+
+This design keeps the common case safe for tests: the inbox handle naturally
+describes "messages for this address after this point in the flow."
+
+## Waiting For Messages
+
+The handle exposes two waiting styles:
+
+- `waitForMessage(...)` returns one parsed email
+- `waitForMessages(...)` returns many parsed emails
+
+`waitForMessages(...)` has two extra ideas built into its implementation:
+
+- it waits for a default delay before checking
+- it can enforce `minCount`
+
+## Why This Model Works Well For Tests
+
+The flow does not need to manage a mailbox client directly. It requests an inbox
+and then works with a stable handle for the rest of the scenario.
+
+That keeps the test code focused on workflow steps instead of mailbox plumbing.

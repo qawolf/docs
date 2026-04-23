@@ -1,0 +1,33 @@
+---
+title: "Send A Message"
+description: "Send a message from the address bound to a QA Wolf inbox handle."
+sidebarTitle: "Send A Message"
+---
+
+# Send A Message
+
+The inbox handle includes `sendMessage(...)`:
+
+```ts
+const { sendMessage } = await mail.inbox({ new: true });
+
+await sendMessage({
+  subject: "Hello",
+  text: "It works",
+  to: "test@example.com",
+});
+```
+
+## HTML Example
+
+```ts
+await sendMessage({
+  subject: "Hello",
+  html: "<b>It works</b>",
+  to: "test@example.com",
+});
+```
+
+## Attachments
+
+See [Send Attachments](/qawolf/libraries/emails/how-to/send-attachments) for the common pattern.

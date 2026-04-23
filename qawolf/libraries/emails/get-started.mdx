@@ -1,0 +1,97 @@
+---
+title: "Get Started"
+description: "Start here for the @qawolf/emails docs and first working examples."
+sidebarTitle: "Get Started"
+---
+
+# Get Started
+
+`@qawolf/emails` gives QA Wolf flows access to inbox addresses, inbound
+messages, and outbound sending through the QA Wolf emailer service.
+
+## Main Roles
+
+The package serves two audiences:
+
+- flow authors, who call `mail.inbox(...)`
+- runners and local tooling, which configure the client before flow execution
+
+## Current Entry Points
+
+- `@qawolf/emails` for flow-facing APIs and runtime configuration helpers
+- `buildGetInboxFn()` for lower-level compatibility with older runtime wiring
+
+## Smallest Working Example
+
+Inside a flow, start with `mail.inbox(...)`:
+
+```ts
+import { mail } from "@qawolf/emails";
+
+const { emailAddress, waitForMessage } = await mail.inbox({ new: true });
+```
+
+`mail.inbox(...)` returns an inbox handle bound to one email address. The handle
+includes:
+
+- `emailAddress`
+- `sendMessage(...)`
+- `waitForMessage(...)`
+- `waitForMessages(...)`
+
+## What Happens When You Call `mail.inbox(...)`
+
+The code path in `packages/emails/src/index.ts` is deliberately thin:
+
+- it reads the currently configured emails client
+- it throws a helpful setup error if no client has been configured
+- it delegates the work to `client.getInbox(options)`
+
+That means `mail.inbox(...)` is the author-facing API, while runners and local
+tooling own client creation.
+
+## Runtime Setup
+
+Runners and local tooling create the client with `createEmailsClient(...)` and
+register it with `configureEmailsClient(...)`.
+
+```ts
+import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
+
+const emails = await createEmailsClient({
+  emailerUrl: process.env["EMAILER_URL"]!,
+  pollForEmailsDefaultTimeoutMs: 300_000,
+  teamId: process.env["QAWOLF_TEAM_ID"],
+  waitForMessagesDefaultDelayMs: 15_000,
+});
+
+configureEmailsClient(emails);
+```
+
+`buildGetInboxFn(...)` is still exported, but the source code marks it as the
+backward-compatibility path. New runtime code should prefer
+`createEmailsClient(...)`.
+
+## The First Three Things To Know
+
+1. If you omit `address`, the client looks up the workspace default address.
+2. If you pass `new: true`, the client derives a unique address from the chosen
+   inbox.
+3. If you call `mail.inbox(...)` before the runtime configures a client, the
+   package throws instead of guessing.
+
+## Documentation Layout
+
+- `core-concepts/` for the inbox and client lifecycle models
+- `how-to/` for task-based docs and common patterns
+- `api-reference/` for exact API behavior
+- `troubleshooting.md` for common issues
+
+## Next Steps
+
+- Read [Inbox Model](/qawolf/libraries/emails/core-concepts/inbox-model) to understand how the
+  handle is scoped.
+- Start with [Get an Inbox](/qawolf/libraries/emails/how-to/get-an-inbox) or
+  [Wait for a Message](/qawolf/libraries/emails/how-to/wait-for-a-message).
+- Use [API Reference](/qawolf/libraries/emails/api-reference/index) for exact option and type
+  details.

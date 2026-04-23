@@ -1,0 +1,32 @@
+---
+title: "Wait For A Message"
+description: "Wait for the next message delivered to a QA Wolf inbox."
+sidebarTitle: "Wait For A Message"
+---
+
+# Wait For A Message
+
+Use the inbox handle returned by `mail.inbox(...)`:
+
+```ts
+const { waitForMessage } = await mail.inbox({ new: true });
+
+const message = await waitForMessage();
+```
+
+## Custom Timeout
+
+```ts
+const message = await waitForMessage({ timeout: 120000 });
+```
+
+## Only Messages After A Specific Moment
+
+```ts
+const after = new Date();
+
+const message = await waitForMessage({ after });
+```
+
+Use the `after` option when the same inbox may already contain older matching
+messages.

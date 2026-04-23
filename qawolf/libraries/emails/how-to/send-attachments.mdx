@@ -1,0 +1,28 @@
+---
+title: "Attachments"
+description: "Send a message with attachments from a QA Wolf inbox handle."
+sidebarTitle: "Attachments"
+---
+
+# Attachments
+
+Use `sendMessage(...)` with an attachments array:
+
+```ts
+const { sendMessage } = await mail.inbox({ new: true });
+
+await sendMessage({
+  attachments: [
+    {
+      fileName: "file.txt",
+      content: Buffer.from("i am a txt file"),
+    },
+  ],
+  subject: "Email with Attachment",
+  text: "See attachments.",
+  to: "test@example.com",
+});
+```
+
+Keep MIME type details and attachment option tables in the reference page. Keep
+this page focused on the common pattern.

@@ -1,0 +1,53 @@
+---
+title: "Targets"
+description: "Understand how flow targets identify the execution environment."
+sidebarTitle: "Targets"
+---
+
+# Targets
+
+A flow target identifies the environment the flow runs against.
+
+Examples include:
+
+- web browser targets
+- Android device targets
+- iOS device targets
+
+## Why Targets Matter
+
+Targets influence:
+
+- which runtime objects are available
+- which default launch behavior applies
+- which platform-specific options are valid
+
+## Target Access During Execution
+
+Use the top-level package to inspect the active target at runtime:
+
+```ts
+import { platform } from "@qawolf/flows";
+
+const target = platform.target;
+```
+
+## Configuration
+
+In production execution, the runner configures the target for you.
+
+In tests or local execution, code can configure the target explicitly:
+
+```ts
+import { configureTarget, resetTarget } from "@qawolf/flows";
+
+configureTarget({ target });
+
+resetTarget();
+```
+
+## Documentation Note
+
+The target string or object shapes are expected to evolve with the package API.
+Keep examples here focused on the authoring mental model, and move exact shapes
+into the reference pages.

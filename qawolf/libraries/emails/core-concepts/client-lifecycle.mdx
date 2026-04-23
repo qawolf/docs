@@ -1,0 +1,28 @@
+---
+title: "Client Lifecycle"
+description: "Understand how runners configure the emails client before a flow runs."
+sidebarTitle: "Client Lifecycle"
+---
+
+# Client Lifecycle
+
+`mail.inbox(...)` is a facade over a configured emails client.
+
+## Who Creates The Client
+
+Runners and local execution environments create the client with
+`createEmailsClient(...)`.
+
+## Who Registers The Client
+
+The runtime registers it with `configureEmailsClient(...)` before the flow runs.
+
+## What Happens In Tests
+
+Tests can clear the configured client with `resetEmailsClient()` so state does
+not leak between cases.
+
+## Failure Mode
+
+If no client has been configured, `mail.inbox(...)` throws a setup error instead
+of silently failing.

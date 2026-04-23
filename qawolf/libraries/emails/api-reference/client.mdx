@@ -1,0 +1,74 @@
+---
+title: "Client Reference"
+description: "Reference notes for runtime-facing client creation and configuration."
+sidebarTitle: "Client Reference"
+---
+
+# Client Reference
+
+Runtime-facing APIs include:
+
+- `createEmailsClient(...)`
+- `configureEmailsClient(...)`
+- `getCurrentEmailsClient(...)`
+- `resetEmailsClient(...)`
+- `buildGetInboxFn(...)`
+
+Example:
+
+```ts
+import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
+
+const client = await createEmailsClient({
+  emailerUrl: "https://emailer.example.com",
+  pollForEmailsDefaultTimeoutMs: 30_000,
+  teamId: "team_123",
+  waitForMessagesDefaultDelayMs: 1_000,
+});
+
+configureEmailsClient(client);
+```
+
+## Role Of `createEmailsClient(...)`
+
+This creates a service-backed client that can be used directly by runners,
+tooling, or any environment that has access to the QA Wolf emailer service.
+
+Example:
+
+```ts
+import { createEmailsClient } from "@qawolf/emails";
+
+const client = await createEmailsClient({
+  emailerUrl: "https://emailer.example.com",
+  logger: (severity, message) => {
+    console.log(severity, message);
+  },
+  pollForEmailsDefaultTimeoutMs: 30_000,
+  teamId: "team_123",
+  waitForMessagesDefaultDelayMs: 1_000,
+});
+
+const inbox = await client.getInbox({ new: true });
+```
+
+## Compatibility Note
+
+`buildGetInboxFn(...)` remains useful for compatibility with runtimes that still
+inject `getInbox` directly, but new runtime code should prefer
+`createEmailsClient(...)`.
+
+Example:
+
+```ts
+import { buildGetInboxFn } from "@qawolf/emails";
+
+const getInbox = await buildGetInboxFn({
+  emailerUrl: "https://emailer.example.com",
+  pollForEmailsDefaultTimeoutMs: 30_000,
+  teamId: "team_123",
+  waitForMessagesDefaultDelayMs: 1_000,
+});
+
+const inbox = await getInbox({ new: true });
+```

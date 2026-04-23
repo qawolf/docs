@@ -1,0 +1,38 @@
+---
+title: "API Reference"
+description: "API landing page for @qawolf/emails."
+sidebarTitle: "API Reference"
+---
+
+# API Reference
+
+## Main Areas
+
+- [Mail](/qawolf/libraries/emails/api-reference/mail)
+- [Client](/qawolf/libraries/emails/api-reference/client)
+
+Example imports:
+
+```ts
+import { mail } from "@qawolf/emails";
+import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
+```
+
+The mail reference covers:
+
+- inbox creation options
+- inbox handle methods
+- send and wait option shapes
+- parsed email fields
+
+Example:
+
+```ts
+const inbox = await mail.inbox({ new: true });
+const message = await inbox.waitForMessage();
+```
+
+## Writing Rule
+
+Keep exact option shapes and return values here. Keep the testing workflow and
+scenario guidance in `how-to/`.

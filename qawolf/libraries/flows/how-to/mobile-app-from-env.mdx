@@ -1,0 +1,22 @@
+---
+title: "Mobile App From Env"
+description: "Resolve the mobile app path from an environment-backed input."
+sidebarTitle: "Mobile App From Env"
+---
+
+# Mobile App From Env
+
+Use environment-based app resolution when the runtime supplies the app path
+through a known input.
+
+```ts
+import { launch } from "@qawolf/flows/android";
+
+const { driver } = await launch({
+  app: { env: "RUN_INPUT_PATH" },
+  appPackage: "com.example.android",
+});
+```
+
+The same pattern can be documented for iOS once the stable launch inputs are
+captured in the reference pages.

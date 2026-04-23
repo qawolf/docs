@@ -1,0 +1,67 @@
+---
+title: "Write An Android Flow"
+description: "Create a simple Android flow and understand when to use launch explicitly."
+sidebarTitle: "Write An Android Flow"
+---
+
+# Write An Android Flow
+
+Use `@qawolf/flows/android` when the flow targets Android automation.
+
+## Minimal Example
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open app",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+Use this shape when the callback should receive `driver`.
+
+## No-`launch` Path
+
+If you pass the target directly, the callback does not receive `driver`
+automatically.
+
+Use that path when you want to launch imperatively inside the callback:
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Open app", "Android - Pixel", async () => {
+  const { driver } = await launch();
+  await driver.pause(1000);
+});
+```
+
+## When To Use `launch()`
+
+Use `launch()` when the flow needs explicit control over app startup:
+
+- custom app path
+- app lookup through environment input
+- capability overrides
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Launch app explicitly", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    app: { path: "app.apk" },
+    appPackage: "com.example.android",
+  });
+
+  await driver.pause(1000);
+});
+```
+
+## Device Operations
+
+Use `device` only when the flow needs broader emulator or device control beyond
+app startup.

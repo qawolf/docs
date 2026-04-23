@@ -1,0 +1,23 @@
+---
+title: "Login Code Flow"
+description: "Wait for the latest login email without accidentally reading an older one."
+sidebarTitle: "Login Code Flow"
+---
+
+# Login Code Flow
+
+Capture the time immediately before the app action that should trigger the
+message:
+
+```ts
+const { waitForMessage } = await mail.inbox({ new: true });
+
+const after = new Date();
+
+await page.click('[aria-label="Log in with email"]');
+
+const message = await waitForMessage({ after });
+```
+
+This keeps the flow from accidentally reading an older message in the same
+inbox.

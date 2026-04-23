@@ -1,0 +1,68 @@
+---
+title: "Runtime And Launch"
+description: "Understand runner-provided dependencies, runtime-only APIs, and when to launch explicitly."
+sidebarTitle: "Runtime And Launch"
+---
+
+# Runtime And Launch
+
+Some parts of `@qawolf/flows` only make sense while a flow is running inside the
+runner.
+
+## Runner-Provided Values
+
+The package exports type-safe runtime stubs that are replaced by the runner when
+the flow executes.
+
+Examples include:
+
+- `expect` for assertions
+- launch bindings that depend on active execution dependencies
+
+Platform runtime objects such as `page`, `browser`, `context`, and `driver` are
+not part of every callback shape. They are added when the flow uses a
+launch-enabled definition or when your code captures them from an imperative
+`launch()` call.
+
+## Local Execution And Tests
+
+Tests and local tooling may need to configure pieces of runtime state directly.
+
+Common examples:
+
+- configure the active target before reading `platform.target`
+- provide a fake or simplified environment around flow execution
+
+## When To Launch Explicitly
+
+First decide whether launch should happen declaratively or imperatively.
+
+Use declarative launch when:
+
+- the callback should receive `page`, `browser`, `context`, or `driver`
+- startup behavior is part of the flow definition
+
+Use imperative `launch(...)` when:
+
+- startup should happen under callback control
+- runtime branching decides how the session should start
+
+Use `launch(...)` when the flow needs startup control, such as:
+
+- choosing a persistent browser context
+- launching Electron instead of a browser
+- overriding mobile app startup inputs
+
+## Escape Hatches
+
+Runtime-only APIs are powerful, but they should stay secondary to the common
+authoring path.
+
+Prefer:
+
+1. `flow(...)` with target-only startup by default
+2. `{ target, launch: true | options }` when the callback should receive
+   launched runtime objects
+3. imperative `launch(...)` when startup control is required inside the
+   callback
+4. `device` only for broader mobile device operations

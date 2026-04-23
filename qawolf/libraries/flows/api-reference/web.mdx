@@ -1,0 +1,124 @@
+---
+title: "Web Reference"
+description: "Reference notes for @qawolf/flows/web."
+sidebarTitle: "Web Reference"
+---
+
+# Web Reference
+
+`@qawolf/flows/web` defines web flows and optional explicit launch behavior.
+
+## Primary Exports
+
+- `flow(...)`
+- `launch(...)`
+- `expect`
+
+Example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Open homepage",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+    await expect(page).toBeDefined();
+  },
+);
+```
+
+## Launch Shapes
+
+The intended browser launch shape is:
+
+```ts
+type WebLaunch =
+  | {
+      kind?: "browser";
+      browser?: "chrome" | "chromium" | "firefox" | "msedge" | "webkit";
+      browserContext?: "incognito" | "persistent";
+      userDataDir?: string;
+    }
+  | {
+      kind: "electron";
+      executablePath: string;
+    };
+```
+
+Browser example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow(
+  "Open with persistent profile",
+  "Web - Chrome",
+  async () => {
+    const { page } = await launch({
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    });
+
+    await page.goto("https://example.com");
+  },
+);
+```
+
+Electron example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow("Open Electron app", "Web - Chrome", async () => {
+  const { firstWindowPage } = await launch({
+    kind: "electron",
+    executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+  });
+
+  await firstWindowPage.goto("about:blank");
+});
+```
+
+## Defaults
+
+- default `kind` is browser launch
+- default `browserContext` is `"incognito"`
+- default `browser` comes from the flow target
+- GPU launch behavior is derived from the flow target
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow(
+  "Use target browser defaults",
+  "Web - Firefox",
+  async () => {
+    const { page } = await launch();
+    await page.goto("https://example.com");
+  },
+);
+```
+
+## Notes
+
+Use this page for the precise behavior of launch modes, return values, and
+runner-provided stubs.
+
+`expect` example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Assert title",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+    await expect(page).toHaveTitle(/Example/);
+  },
+);
+```

@@ -1,0 +1,258 @@
+---
+title: "Android Reference"
+description: "Reference notes for @qawolf/flows/android."
+sidebarTitle: "Android Reference"
+---
+
+# Android Reference
+
+`@qawolf/flows/android` defines Android flows and advanced device controls.
+
+## Primary Exports
+
+- `flow(...)`
+- `launch(...)`
+- `device`
+- `expect`
+
+It also exports Android-specific dependency, target, and flow definition types.
+
+Example:
+
+```ts
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open Android app",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+    await device.setGeoLocation({
+      latitude: 37.7749,
+      longitude: -122.4194,
+    });
+  },
+);
+```
+
+## Target Model
+
+The current target input model is:
+
+```ts
+type AndroidFlowTargetInput =
+  | AndroidFlowTarget
+  | {
+      target: AndroidFlowTarget;
+      launch?: false | undefined;
+    }
+  | {
+      target: AndroidFlowTarget;
+      launch: true | LaunchOptions;
+    };
+```
+
+The implementation accepts either:
+
+- a target directly for the common path
+- `{ target, launch }` when startup behavior should be part of the flow
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export const targetOnlyFlow = flow(
+  "Target-only path",
+  "Android - Pixel",
+  async () => {
+    // call launch() imperatively when startup should happen in the callback
+  },
+);
+
+export const launchedFlow = flow(
+  "Launch-enabled path",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+## `flow(...)`
+
+Use `flow(...)` for Android authoring.
+
+Behavior from the implementation:
+
+- without launch, the callback receives the runner-provided flow context
+- with `launch: true`, the flow calls `launch()` with default Android startup
+- with `launch: <options>`, the flow calls `launch(options)`
+- when launch is enabled, the callback also receives `driver`
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Launch in flow definition",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+## `launch(...)`
+
+`launch()` starts Android automation for the active flow and returns:
+
+```ts
+type LaunchResult = {
+  driver: Awaited<ReturnType<Dependencies["wdio"]["startAndroid"]>>;
+};
+```
+
+This API is only available while a flow is running.
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Launch explicitly", "Android - Pixel", async () => {
+  const { driver } = await launch();
+  await driver.pause(1000);
+});
+```
+
+### Launch Shape
+
+```ts
+type LaunchOptions = {
+  app?: {
+    path?: string;
+    env?: string;
+    url?: string;
+  };
+  appPackage?: string;
+  appActivity?: string;
+  appWaitActivity?: string;
+  autoGrantPermissions?: boolean;
+  noReset?: boolean;
+  waitForIdleTimeout?: number;
+  browserName?: string;
+  capabilities?: Record<string, unknown>;
+};
+```
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Launch apk", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    app: { path: "apps/mobile/android/app.apk" },
+    appPackage: "com.example.android",
+    autoGrantPermissions: true,
+  });
+
+  await driver.pause(1000);
+});
+```
+
+### Launch Defaults
+
+The current implementation applies these defaults:
+
+- when `app` is omitted, launch falls back to the runner-provided executable
+  input path and then to installed-app startup through `appPackage`
+- `autoGrantPermissions` defaults to `true`
+- `noReset` defaults to `false`
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Use Android defaults", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    appPackage: "com.example.android",
+  });
+
+  await driver.pause(1000);
+});
+```
+
+### App Resolution
+
+When `app` is provided, the current resolution order is:
+
+1. `app.path`
+2. `app.env`
+3. `app.url`
+
+When `app` is omitted, launch falls back to `RUN_INPUT_PATH`.
+
+Relative paths are resolved against `RUN_INPUTS_EXECUTABLES_DIR` when that
+environment variable is present.
+
+Explicit app source examples:
+
+```ts
+await launch({ app: { path: "apps/mobile/android/app.apk" } });
+await launch({ app: { env: "ANDROID_APP_PATH" } });
+await launch({ app: { url: "https://example.com/app.apk" } });
+```
+
+`RUN_INPUT_PATH` fallback example:
+
+```ts
+// The runner sets RUN_INPUT_PATH before the flow starts.
+await launch({
+  appPackage: "com.example.android",
+});
+```
+
+If `app` is present but does not resolve to a value, launch does not fall back to
+`RUN_INPUT_PATH`.
+
+## `device`
+
+`device` is a runtime proxy over the Android emulator API. Use it for
+device-level operations that sit outside the main `flow(...)` and `launch()`
+path.
+
+Example:
+
+```ts
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow("Set device location", "Android - Pixel", async () => {
+  await device.setGeoLocation({
+    latitude: 37.7749,
+    longitude: -122.4194,
+  });
+});
+```
+
+## `expect`
+
+The exported `expect` value is a type-safe stub in package code and is replaced
+by the runner during execution.
+
+Example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Use runner expect",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await expect(driver).toBeDefined();
+  },
+);
+```

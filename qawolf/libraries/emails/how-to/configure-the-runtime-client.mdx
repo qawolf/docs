@@ -1,0 +1,29 @@
+---
+title: "Runner Setup"
+description: "Configure the emails client in runners and local execution environments."
+sidebarTitle: "Runner Setup"
+---
+
+# Runner Setup
+
+Runners and local execution environments create the client first:
+
+```ts
+import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
+
+const emails = await createEmailsClient({
+  emailerUrl: process.env["EMAILER_URL"],
+  logger(severity, message) {
+    console.log(severity, message);
+  },
+  pollForEmailsDefaultTimeoutMs: 300_000,
+  teamId: process.env["QAWOLF_TEAM_ID"],
+  waitForMessagesDefaultDelayMs: 15_000,
+});
+
+configureEmailsClient(emails);
+```
+
+## Test Cleanup
+
+Use `resetEmailsClient()` between tests to clear configured state.

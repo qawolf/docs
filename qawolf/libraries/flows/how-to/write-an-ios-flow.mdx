@@ -1,0 +1,68 @@
+---
+title: "Write An iOS Flow"
+description: "Create a simple iOS flow and learn the common authoring path."
+sidebarTitle: "Write An iOS Flow"
+---
+
+# Write an iOS Flow
+
+Use `@qawolf/flows/ios` when the flow targets iOS automation.
+
+## Minimal Example
+
+```ts
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Open app",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+Use this shape when the callback should receive `driver`.
+
+## No-`launch` Path
+
+If you pass the target directly, the callback does not receive `driver`
+automatically.
+
+Use that path when you want to launch imperatively inside the callback:
+
+```ts
+import { flow, launch } from "@qawolf/flows/ios";
+
+export default flow("Open app", "iOS - iPhone 15 (iOS 26)", async () => {
+  const { driver } = await launch();
+  await driver.pause(1000);
+});
+```
+
+## When To Use `launch()`
+
+Use `launch()` when the flow needs explicit control over app startup inputs, for
+example when you need to override the app path or bundle configuration.
+
+```ts
+import { flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Launch app explicitly",
+  "iOS - iPhone 15 (iOS 26)",
+  async () => {
+    const { driver } = await launch({
+      app: { path: "ios/MyApp.app" },
+      bundleId: "com.example.app",
+    });
+
+    await driver.pause(1000);
+  },
+);
+```
+
+## Device Operations
+
+Use `device` only for simulator or device-level operations that are broader than
+starting the app.
