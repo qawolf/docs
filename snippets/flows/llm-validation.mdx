@@ -1,0 +1,113 @@
+```typescript
+import { flow, expect } from "@qawolf/flows/web";
+import { logIn } from "./helpers/myApp.js";
+
+export default flow(
+  "AI response is valid, scored, and within token budget",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+
+    //--------------------------------
+    // Arrange
+    //--------------------------------
+
+    // The prompt sent to the AI feature under test
+    const originalPrompt =
+      "Summarize the key action items from the meeting transcript below " +
+      "in a bulleted list. Be concise and accurate.\n\n" +
+      "Transcript:\n" +
+      "Alice: We need to ship the new onboarding flow by Friday.\n" +
+      "Bob: I'll own the front-end changes.\n" +
+      "Alice: Great. Carol, can you handle QA?\n" +
+      "Carol: Yes, I'll have test cases ready by Thursday.\n" +
+      "Alice: Perfect. Also, let's schedule a retro for next Monday at 10am.";
+
+    await logIn(page);
+
+    //--------------------------------
+    // Act
+    //--------------------------------
+
+    await page.getByRole("link", { name: "AI Assistant" }).click();
+
+    await page.getByRole("textbox", { name: "Ask anything" }).fill(originalPrompt);
+
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        (res) =>
+          res.url().includes("/api/chat") &&
+          res.request().method() === "POST",
+        { timeout: 60_000 },
+      ),
+      page.getByRole("button", { name: "Send" }).click(),
+    ]);
+
+    expect(response.status()).toBe(200);
+
+    const aiResponseContainer = page.locator("[data-testid='ai-response']:last-of-type");
+    await expect(aiResponseContainer).toBeVisible({ timeout: 15_000 });
+    const aiResponseText = await aiResponseContainer.innerText();
+
+    //--------------------------------
+    // Assert
+    //--------------------------------
+
+    const { validation, usage } = await askClaudeTextValidation(
+      "You are a strict but fair evaluator of AI-generated meeting summaries. " +
+      "Focus on whether the response captures the correct action items, owners, and deadlines.",
+      originalPrompt,
+      aiResponseText,
+    );
+
+    // Structure
+    expect(typeof validation.isValidForPrompt).toBe("boolean");
+    expect(typeof validation.score).toBe("number");
+    expect(Array.isArray(validation.issues.missingRequirements)).toBe(true);
+    expect(Array.isArray(validation.issues.incorrectInformation)).toBe(true);
+    expect(Array.isArray(validation.issues.offTopicContent)).toBe(true);
+    expect(Array.isArray(validation.issues.formattingProblems)).toBe(true);
+    expect(Array.isArray(validation.issues.safetyOrPolicyConcerns)).toBe(true);
+    expect(typeof validation.explanation).toBe("string");
+
+    // Hard gate
+    expect(
+      validation.isValidForPrompt,
+      `Response invalid.\n` +
+      `Missing: ${JSON.stringify(validation.issues.missingRequirements)}\n` +
+      `Incorrect: ${JSON.stringify(validation.issues.incorrectInformation)}\n` +
+      `Off-topic: ${JSON.stringify(validation.issues.offTopicContent)}\n` +
+      `Explanation: ${validation.explanation}`,
+    ).toBe(true);
+
+    // Soft gate
+    expect(
+      validation.score,
+      `Score ${validation.score} below threshold.\nExplanation: ${validation.explanation}`,
+    ).toBeGreaterThanOrEqual(0.8);
+
+    // No contradictions
+    expect(
+      validation.issues.incorrectInformation.length,
+      `Incorrect info: ${JSON.stringify(validation.issues.incorrectInformation)}`,
+    ).toBe(0);
+
+    expect(
+      validation.issues.offTopicContent.length,
+      `Off-topic content: ${JSON.stringify(validation.issues.offTopicContent)}`,
+    ).toBe(0);
+
+    // Token budget
+    expect(
+      usage.input_tokens,
+      `Input tokens ${usage.input_tokens} exceeded budget of 2000`,
+    ).toBeLessThanOrEqual(2000);
+
+    expect(
+      usage.output_tokens,
+      `Output tokens ${usage.output_tokens} exceeded budget of 500`,
+    ).toBeLessThanOrEqual(500);
+  },
+);
+```
+
+
