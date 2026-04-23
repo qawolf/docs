@@ -110,23 +110,3 @@ export default flow("Read build metadata", "Basic", async () => {
   console.log(JSON.parse(metadata));
 });
 ```
-
-## Use `device` For Mobile Control
-
-`device` is for emulator or simulator operations after the flow is running.
-
-```ts
-import { device, flow } from "@qawolf/flows/android";
-
-export default flow(
-  "Location-aware screen",
-  { target: "Android - Pixel", launch: true },
-  async ({ driver }) => {
-    await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });
-    await driver.pause(1000);
-  },
-);
-```
-
-Reach for `device` when the test needs emulator or simulator behavior, not just
-normal app startup.

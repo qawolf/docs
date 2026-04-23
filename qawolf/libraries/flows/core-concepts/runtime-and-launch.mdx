@@ -52,6 +52,24 @@ export default flow(
 );
 ```
 
+## Use `device` For Mobile Control
+
+Use `device` for emulator or simulator operations after the flow is running.
+Use `driver` for app UI automation, and use `launch` options for app startup.
+
+```ts
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Location-aware screen",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });
+    await driver.pause(1000);
+  },
+);
+```
+
 ## Choose The Startup Style
 
 Use launch-enabled flow definitions by default:
