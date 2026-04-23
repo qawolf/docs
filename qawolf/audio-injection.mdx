@@ -1,0 +1,32 @@
+---
+title: "Audio injection"
+description: "Inject audio into your app's microphone input to test audio features without real hardware."
+sidebarTitle: "iOS"
+---
+<Info>
+  Audio injection is only available for apps that QA Wolf resigns during installation. It is not available for system apps or Safari.
+</Info>
+## Example
+
+```javascript
+// Inject Audio
+const ios = await import("@qawolf/run-globals-ios");
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+const storagePath = process.env.STORAGE_PATH; // QA Wolf remote storage
+const audioPath = `${storagePath}/sample_audio_input.wav`;
+const cleanup = await ios.injectAudio(driver, bundleId, {
+  data: audioPath,
+});
+// ... run your assertions while audio is being injected ...
+await cleanup();
+// Then trigger microphone input in your test
+```
+## When to use
+- Your app records audio or processes microphone input and you need to test that flow with known audio data
+- You need to run the same scenario repeatedly with consistent inputs
+## Supported file types
+**Audio:** WAV
+## Full sample test
+import Sample from './snippets/flows/audio-injection.mdx';
+
+<Sample />

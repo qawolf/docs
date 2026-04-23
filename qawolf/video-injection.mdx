@@ -1,0 +1,43 @@
+---
+title: "Video injection"
+description: "Inject video into your app's camera input to test video features without real hardware."
+sidebarTitle: "iOS"
+---
+
+<Info>
+  Video injection is only available for apps that QA Wolf resigns during installation. It is not available for system apps or Safari.
+</Info>
+
+## Example
+
+**Inject a video into the camera feed:**
+
+```javascript
+const ios = await import("@qawolf/run-globals-ios");
+const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
+const storagePath = process.env.STORAGE_PATH; // QA Wolf remote storage
+const videoPath = `${storagePath}/wolf.mp4`;
+
+const cleanup = await ios.injectCamera(driver, bundleId, {
+  data: videoPath,
+  type: "video", // optional — inferred from .mp4/.mov/.m4v/.avi
+});
+
+// ... run your assertions while the camera feed plays the video ...
+await cleanup();
+```
+
+## When to use
+
+- Your app records video and you need to verify the recording pipeline with deterministic content
+- You need to run the same scenario repeatedly with consistent inputs
+
+## Supported file types
+
+**Video:** Any format supported by AVAsset — MP4, MOV, M4V with H.264/HEVC codecs
+
+## Full sample test
+
+import Sample from '/snippets/flows/video-injection.mdx';
+
+<Sample />

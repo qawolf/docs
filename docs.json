@@ -140,13 +140,46 @@
             "icon": "tablet-smartphone",
             "pages": [
               {
-                "group": "iOS",
-                "icon": "smartphone",
+                "group": "Photo library management",
+                "icon": "image",
                 "pages": [
-                  "qawolf/photo-library-management",
-                  "qawolf/audio-capture",
-                  "qawolf/camera-and-audio-injection",
+                  "qawolf/photo-library-management"
+                ]
+              },
+              {
+                "group": "Camera injection",
+                "icon": "camera",
+                "pages": [
+                  "qawolf/camera-and-audio-injection"
+                ]
+              },
+              {
+                "group": "Barcode injection",
+                "icon": "scan-qr-code",
+                "pages": [
                   "qawolf/barcode-qrcode-scanning"
+                ]
+              },
+              {
+                "group": "Audio injection",
+                "icon": "mic",
+                "pages": [
+                  "qawolf/audio-injection"
+                ]
+              },
+              {
+                "group": "Audio capture",
+                "icon": "audio-waveform",
+                "pages": [
+                  "qawolf/audio-capture"
+                ]
+              },
+              {
+                "group": "Video Injection",
+                "icon": "video",
+                "pages": [
+                  "video-injection",
+                  "qawolf/video-injection"
                 ]
               }
             ]

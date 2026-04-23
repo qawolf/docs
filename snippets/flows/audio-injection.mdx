@@ -1,170 +1,111 @@
 ```js
 import { flow } from "@qawolf/flows/ios";
-import { expect } from "@qawolf/flows/web";
+import * as ios from "@qawolf/run-globals-ios";
 
 export default flow(
-  "iOS Media - Audio Recording/Matching",
+  "iOS Media - Audio Injection",
   "iOS - iPhone 15 (iOS 26)",
-  async ({ wdio, ios, test, ...testContext }) => {
-    let findBestMatch;
-    let resetVideoToBeginning;
-    let similarity;
-    let waitForVideoPlaying;
-    await test("helpers", async () => {
-      resetVideoToBeginning = async function resetVideoToBeginning(driver) {
-        console.log("Resetting video to beginning...");
-        await driver.execute(`
-    const video = document.querySelector('video');
-    if (video) {
-      video.currentTime = 0;
-      video.play();
-    }
-  `);
-      };
-
-      /**
-       * Wait for video to be ready and playing
-       */
-      waitForVideoPlaying =
-        /**
-         * Wait for video to be ready and playing
-         */
-        async function /**
-         * Wait for video to be ready and playing
-         */ waitForVideoPlaying(driver) {
-          console.log("Waiting for video to start playing...");
-          await driver.waitUntil(
-            async () => {
-              const result = await driver.execute(`
-        const video = document.querySelector('video');
-        if (!video) return { ready: false, paused: true, currentTime: 0, state: 'no video element' };
-        return {
-          ready: video.readyState >= 3,
-          paused: video.paused,
-          currentTime: video.currentTime,
-          duration: video.duration,
-          state: video.readyState
-        };
-      `);
-              console.log(`Video state: ${JSON.stringify(result)}`);
-              return result.ready && !result.paused && result.currentTime > 0;
-            },
-            {
-              timeout: 15000,
-              timeoutMsg: "Video did not start playing within 15 seconds",
-              interval: 500,
-            },
-          );
-          console.log("Video is playing");
-        };
-
-      findBestMatch = function findBestMatch(shortFp, longFp) {
-        if (shortFp.length === 0 || longFp.length === 0) {
-          return {
-            similarity: 0,
-            hammingDistance: 0,
-            offset: 0,
-            windowSize: 0,
-          };
-        }
-        // Ensure shortFp is actually shorter
-        if (shortFp.length > longFp.length) {
-          [shortFp, longFp] = [longFp, shortFp];
-        }
-        const windowSize = shortFp.length;
-        const maxOffset = longFp.length - windowSize;
-        let bestSimilarity = 0;
-        let bestDistance = Infinity;
-        let bestOffset = 0;
-        // Slide the short fingerprint across the long one
-        for (let offset = 0; offset <= maxOffset; offset++) {
-          let totalDistance = 0;
-          for (let i = 0; i < windowSize; i++) {
-            totalDistance += hammingDistance(shortFp[i], longFp[offset + i]);
-          }
-          const maxBits = windowSize * 32;
-          const similarity = 1 - totalDistance / maxBits;
-          if (similarity > bestSimilarity) {
-            bestSimilarity = similarity;
-            bestDistance = totalDistance;
-            bestOffset = offset;
-          }
-        }
-        return {
-          similarity: bestSimilarity,
-          hammingDistance: bestDistance,
-          offset: bestOffset,
-          windowSize,
-        };
-      };
-
-      function hammingDistance(a, b) {
-        let distance = 0;
-        let xor = (a ^ b) >>> 0; // Convert to unsigned
-
-        // Brian Kernighan's algorithm to count set bits
-        while (xor !== 0) {
-          distance++;
-          xor &= xor - 1; // Remove rightmost set bit
-        }
-        return distance;
-      }
-    });
+  async ({ wdio, test, ...testContext }) => {
     await test("iOS Media - Start App and Inject Audio to microphone", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
-      const REFERENCE_AUDIO_PATH = process.env.AUDIO_PATH
-      const VIDEO_URL =
-        "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v";
-
-      const fsPromises = await import("node:fs/promises");
-
+      // Install and Launch Trot app
       const driver = await wdio.startIos({
-        browserName: "Safari",
-        "appium:safariInitialUrl": VIDEO_URL,
+        "appium:app": process.env.IPA_BUILD_LOCATION,
         "appium:settings[respectSystemAlerts]": true,
         "appium:autoAcceptAlerts": true,
+        "appium:iosInstallPause": "5000",
       });
 
-      const referenceBuffer = (
-        await fsPromises.readFile(process.env.REFERENCE_AUDIO_PATH)
-      ).toString("base64");
-      const referenceResult = await ios.calculateAudioFingerprint(
-        driver,
-        referenceBuffer,
-      );
-      console.log("ReferenceFingerprint", referenceResult);
 
-      await resetVideoToBeginning(driver);
-      await waitForVideoPlaying(driver);
+      // Inject Audio
+      const fsPromises = await import("node:fs/promises");
+      const bundleId = process.env.BUNDLE_ID;
 
-      // start recording from phone speaker
-      const startResult = await ios.startSpeakerRecording(driver);
-      const audioSessionId = startResult.id;
-      console.log(`Recording started: ${audioSessionId}`);
+      await ios.injectAudio(driver, bundleId, {
+        data: "/home/wolf/team-storage/ios-trot/sample_audio_input.wav",
+      });
 
-      await driver.pause(5000);
+      // Tap "Media"
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'Media' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
 
-      // stop recording from phone speaker
-      const stopResult = await ios.stopSpeakerRecording(driver, audioSessionId);
-      console.log(`Recording stopped: ${JSON.stringify(stopResult)}`);
+      // Tap Audio Recording
+      await driver
+        .$(
+          `-ios predicate string:name == 'Audio Recording' AND type == 'XCUIElementTypeButton'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'Audio Recording' AND type == 'XCUIElementTypeButton'`,
+        )
+        .click();
 
-      const { fingerprint, filename } = stopResult;
+      // Tap to start recording
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .click();
 
-      // Compare ChromaSwift fingerprint with reference using sliding window
-      const bestMatch = findBestMatch(fingerprint, referenceResult.fingerprint);
-      console.log("bestMatch", bestMatch);
-      expect(bestMatch.similarity).toBeGreaterThan(0.85);
-      console.log("Done");
+      await driver.pause(15000);
 
-      // Download speaker recording
-      const result = await ios.downloadSpeakerRecording(driver, filename);
-      const wavData = Buffer.from(result, "base64");
-      const recordingSavingPath = "/tmp/output.wav";
-      await fsPromises.writeFile(recordingSavingPath, wavData);
-      console.log("Successfully saved output.wav");
+      // Tap to stop recording
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .waitForDisplayed();
+      await driver
+        .$(
+          `-ios predicate string:name == 'recordingIcon' AND type == 'XCUIElementTypeImage'`,
+        )
+        .click();
+
+      // Get the file name
+      await driver
+        .$(
+          `-ios predicate string:name BEGINSWITH 'AudioRecording_' AND type == 'XCUIElementTypeStaticText'`,
+        )
+        .waitForDisplayed();
+      const fileName = await driver
+        .$(
+          `-ios predicate string:name BEGINSWITH 'AudioRecording_' AND type == 'XCUIElementTypeStaticText'`,
+        )
+        .getValue();
+
+      // Pull file from the phone
+      const targetBaseDir = process.env.TARGET_STORAGE_BASE_DIR
+      const storageDir = process.env.STORAGE_DIR
+
+      const recordingAsBase64 = await driver.execute("mobile: pullFile", {
+        remotePath: `@${bundleId}:${targetBaseDir}/${fileName}`,
+      });
+
+      // write into a file
+      const m4aRecording = Buffer.from(recordingAsBase64, "base64");
+      const recordingSavingPath = `${storageDir}/${fileName}`;
+      await fsPromises.writeFile(recordingSavingPath, m4aRecording);
+
+      // TO-DO
+      // Implement audio matching with fingerprints
     });
   },
 );
 ```
+
