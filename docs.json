@@ -203,7 +203,7 @@
             "group": "Visual diffing",
             "icon": "scan",
             "pages": [
-              "qawolf/visual-diffing"
+             "qawolf/visual-diffing"
             ]
           }
         ]
