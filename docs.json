@@ -147,7 +147,7 @@
                 ]
               },
               {
-                "group": "Video Injection",
+                "group": "Video injection",
                 "icon": "video",
                 "pages": [
                   "qawolf/video-injection"
