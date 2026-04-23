@@ -90,8 +90,8 @@ export default flow(
         .getValue();
 
       // Pull file from the phone
-      targetBaseDir = process.env.TARGET_STORAGE_BASE_DIR
-      storageDir = process.env.STORAGE_DIR
+      const targetBaseDir = process.env.TARGET_STORAGE_BASE_DIR
+      const storageDir = process.env.STORAGE_DIR
 
       const recordingAsBase64 = await driver.execute("mobile: pullFile", {
         remotePath: `@${bundleId}:${targetBaseDir}/${fileName}`,

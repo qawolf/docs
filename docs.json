@@ -140,13 +140,6 @@
             "icon": "tablet-smartphone",
             "pages": [
               {
-                "group": "Photo library management",
-                "icon": "image",
-                "pages": [
-                  "qawolf/photo-library-management"
-                ]
-              },
-              {
                 "group": "Camera injection",
                 "icon": "camera",
                 "pages": [
@@ -154,10 +147,10 @@
                 ]
               },
               {
-                "group": "Audio injection",
-                "icon": "mic",
+                "group": "Video Injection",
+                "icon": "video",
                 "pages": [
-                  "qawolf/audio-injection"
+                  "qawolf/video-injection"
                 ]
               },
               {
@@ -168,6 +161,13 @@
                 ]
               },
               {
+                "group": "Photo library management",
+                "icon": "image",
+                "pages": [
+                  "qawolf/photo-library-management"
+                ]
+              },
+              {
                 "group": "Audio capture",
                 "icon": "audio-waveform",
                 "pages": [
@@ -175,10 +175,10 @@
                 ]
               },
               {
-                "group": "Video Injection",
-                "icon": "video",
+                "group": "Audio injection",
+                "icon": "mic",
                 "pages": [
-                  "qawolf/video-injection"
+                  "qawolf/audio-injection"
                 ]
               }
             ]

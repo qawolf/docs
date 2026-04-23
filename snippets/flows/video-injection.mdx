@@ -66,7 +66,7 @@ export default flow(
       //--------------------------------
       // Inject video as the camera feed
 
-      storagePath = process.env.STORAGE_PATH
+      const storagePath = process.env.STORAGE_PATH
       await ios.injectCamera(driver, "com.qawolf.trot", {
         data: `${storagePath}/wolf.mp4`,
         type: "video",
