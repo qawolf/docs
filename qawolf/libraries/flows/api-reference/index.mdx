@@ -49,3 +49,39 @@ const activeTarget = platform.target;
 
 resetTarget();
 ```
+
+## Target Literals
+
+The current preset target literals are:
+
+```ts
+type Target =
+  | "Basic"
+  | "Web - Chrome"
+  | "Web - Chrome (GPU)"
+  | "Web - Firefox"
+  | "Web - Firefox (GPU)"
+  | "Web - Safari"
+  | "Web - Safari (GPU)"
+  | "Android - Pixel"
+  | "Android - Pixel 2 (Android 14)"
+  | "Android - Pixel 9"
+  | "Android - Pixel 9 (Android 14)"
+  | "Android - Pixel 9 (Android 15)"
+  | "Android - Pixel 9 (Android 16)"
+  | "Android - Pixel Tablet (Android 14)"
+  | "Android - Tablet"
+  | "iOS - Allowlisted iPhone"
+  | "iOS - Apple ID Enabled iPad"
+  | "iOS - Apple ID Enabled iPhone"
+  | "iOS - iPad"
+  | "iOS - iPad 11 (iOS 18)"
+  | "iOS - iPad 11 (iOS 18) (Apple ID)"
+  | "iOS - iPad 11 (iOS 26)"
+  | "iOS - iPhone 15 (iOS 17)"
+  | "iOS - iPhone 15 (iOS 18)"
+  | "iOS - iPhone 15 (iOS 26)"
+  | "iOS - iPhone 15 (iOS 26) (Apple ID)"
+  | "iOS - iPhone 15 (iOS 26) (allowlisted)"
+  | "iOS - iPhone 15 (iOS 26) (private)";
+```
