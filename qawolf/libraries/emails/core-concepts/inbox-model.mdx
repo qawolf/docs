@@ -1,71 +1,77 @@
 ---
 title: "Inbox Model"
-description: "Understand how a QA Wolf inbox handle is created and used inside a flow."
+description: "Understand address selection and message waiting."
 sidebarTitle: "Inbox Model"
 ---
 
 # Inbox Model
 
-The central concept in `@qawolf/emails` is the inbox handle returned by
-`mail.inbox(...)`.
+An inbox handle is a small object bound to one email address.
 
-## What The Inbox Handle Represents
+```ts
+const inbox = await mail.inbox({ new: true });
 
-The handle is bound to one email address and exposes operations scoped to that
-address.
-
-Common operations:
-
-- send from the address
-- wait for the next message
-- collect messages received during a time window
-
-The implementation type is `GetInboxResult`, and the handle is created once per
-`mail.inbox(...)` call.
+inbox.emailAddress;
+await inbox.waitForMessage();
+await inbox.waitForMessages();
+await inbox.sendMessage({ to, subject, text });
+```
 
 ## Address Selection
 
-An inbox can be created by:
+Use the workspace default address:
 
-- using the workspace default address
-- choosing an allowed address explicitly
-- requesting a unique derived address with `new: true`
+```ts
+const inbox = await mail.inbox();
+```
 
-In the implementation:
+Use a fresh derived address:
 
-- omitting `address` triggers a lookup of the workspace default address
-- `new: true` appends a generated suffix
-- `delimiter` changes the separator used for that generated suffix
-- when the delimiter is not `"+"`, the client temporarily registers the derived
-  address with the emailer service
+```ts
+const inbox = await mail.inbox({ new: true });
+```
 
-## The Handle Is Scoped To A Point In Time
+Use a specific allowed address:
 
-When `mail.inbox(...)` is called, the implementation captures `calledAt`.
+```ts
+const inbox = await mail.inbox({
+  address: "my-team+admin@qawolf.email",
+});
+```
 
-That timestamp matters because:
+`new: true` is the safest default for tests because it isolates each run.
 
-- `waitForMessage(...)` defaults to messages received after `calledAt`
-- `waitForMessages(...)` also defaults to `calledAt` unless `after` is provided
+## Time Windows
 
-This design keeps the common case safe for tests: the inbox handle naturally
-describes "messages for this address after this point in the flow."
+When you create an inbox handle, QA Wolf records that moment. Waiting methods
+look for messages after that time unless you pass `after`.
 
-## Waiting For Messages
+```ts
+const inbox = await mail.inbox({ new: true });
 
-The handle exposes two waiting styles:
+const after = new Date();
+await page.getByRole("button", { name: "Reset password" }).click();
 
-- `waitForMessage(...)` returns one parsed email
-- `waitForMessages(...)` returns many parsed emails
+const message = await inbox.waitForMessage({ after });
+```
 
-`waitForMessages(...)` has two extra ideas built into its implementation:
+Use `after` when an app action should trigger a specific email.
 
-- it waits for a default delay before checking
-- it can enforce `minCount`
+## One Message Or Many
 
-## Why This Model Works Well For Tests
+Use `waitForMessage(...)` when one email should arrive.
 
-The flow does not need to manage a mailbox client directly. It requests an inbox
-and then works with a stable handle for the rest of the scenario.
+```ts
+const invite = await inbox.waitForMessage({ timeout: 120_000 });
+```
 
-That keeps the test code focused on workflow steps instead of mailbox plumbing.
+Use `waitForMessages(...)` when the workflow sends a batch.
+
+```ts
+const messages = await inbox.waitForMessages({
+  minCount: 3,
+  timeout: 120_000,
+});
+```
+
+Both methods return parsed emails with normalized fields and extracted `urls`.

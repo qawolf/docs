@@ -1,38 +1,50 @@
 ---
 title: "Get An Inbox"
-description: "Request an inbox handle for the default or a unique QA Wolf address."
+description: "Create an inbox handle for receiving and sending test email."
 sidebarTitle: "Get An Inbox"
 ---
 
 # Get An Inbox
 
-Use `mail.inbox(...)` when a flow needs a QA Wolf inbox to receive or send
-messages.
+Use `mail.inbox(...)` at the point in the flow where email becomes relevant.
 
-## Default Address
+## Create A Fresh Address
 
 ```ts
 import { mail } from "@qawolf/emails";
 
+const inbox = await mail.inbox({ new: true });
+
+await page.getByLabel("Email").fill(inbox.emailAddress);
+```
+
+This is the usual choice for end-to-end tests.
+
+## Use The Workspace Default Address
+
+```ts
 const inbox = await mail.inbox();
 ```
 
-## Unique Derived Address
+Use this only when the test intentionally shares a stable inbox.
+
+## Use A Custom Delimiter
 
 ```ts
-const inbox = await mail.inbox({ new: true });
+const inbox = await mail.inbox({
+  new: true,
+  delimiter: "-",
+});
 ```
 
-## Custom Delimiter
+This creates a derived address with `-` instead of `+`.
 
-```ts
-const inbox = await mail.inbox({ new: true, delimiter: "-" });
-```
-
-## Explicit Allowed Address
+## Use An Explicit Address
 
 ```ts
 const inbox = await mail.inbox({
   address: "my-workspace+admin@qawolf.email",
 });
 ```
+
+The address must be allowed for your workspace.

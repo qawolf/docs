@@ -1,155 +1,140 @@
 ---
 title: "Get Started"
-description: "Start here for the @qawolf/flows docs and first working examples."
+description: "Write QA Wolf flows for web, mobile, and CLI targets."
 sidebarTitle: "Get Started"
 ---
 
 # Get Started
 
-`@qawolf/flows` is the authoring surface for QA Wolf flows.
+`@qawolf/flows` is the wrapper around QA Wolf test code. It tells the runner
+what to run, where to run it, and which runtime objects to inject.
 
-Use the platform-specific entry point for authoring:
-
-- `@qawolf/flows/web`
-- `@qawolf/flows/android`
-- `@qawolf/flows/ios`
-- `@qawolf/flows/cli`
-
-Use the top-level `@qawolf/flows` package for cross-platform helpers such as
-`platform.target`, `configureTarget(...)`, `getCurrentScope()`, and
-`resetTarget()`.
-
-## What This Package Covers
-
-Each platform package follows the same high-level model:
-
-- `flow(...)` for the common authoring path
-- `launch(...)` for more explicit runtime control inside a running flow
-- `device` for advanced mobile-only device operations
-
-`@qawolf/flows/cli` is the exception to the full platform model:
-
-- it exposes `flow(...)`
-- it uses the `"Basic"` target
-- it does not expose `launch(...)`
-- it does not expose `device`
-
-## Smallest Working Example
-
-The fastest way to start is a launch-enabled web flow:
+Most users should start with a launch-enabled flow.
 
 ```ts
-import { flow } from "@qawolf/flows/web";
+import { expect, flow } from "@qawolf/flows/web";
 
 export default flow(
   "Sign in",
   { target: "Web - Chrome", launch: true },
   async ({ page }) => {
-    await page.goto("https://example.com");
+    await page.goto("https://example.com/login");
+    await page.getByLabel("Email").fill("qa@example.com");
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    await expect(page.getByText("Check your email")).toBeVisible();
   },
 );
 ```
 
-Use this shape when you want the callback to receive launched browser session
-objects directly.
+## Pick The Entry Point
 
-## The Two Ways To Start A Flow Session
+Import from the package that matches the target you are authoring for.
 
-### 1. Let `flow(...)` drive startup with `launch`
+<CodeGroup>
 
-This is the recommendation when you want `page`, `browser`, `context`, or
-`driver` injected into the callback.
+```ts Web
+import { expect, flow } from "@qawolf/flows/web";
+```
 
-On web, you can also opt into declarative launch by passing a target object with
-`launch`:
+```ts Android
+import { expect, flow } from "@qawolf/flows/android";
+```
+
+```ts iOS
+import { flow } from "@qawolf/flows/ios";
+```
+
+```ts CLI
+import { flow } from "@qawolf/flows/cli";
+```
+
+</CodeGroup>
+
+Use the top-level package only for shared runtime helpers:
 
 ```ts
-import { flow } from "@qawolf/flows/web";
+import { platform } from "@qawolf/flows";
 
+if (platform.target === "Web - Chrome") {
+  // Target-specific branch.
+}
+```
+
+## Start With `launch: true`
+
+`launch: true` asks QA Wolf to start the browser or mobile app before your
+callback runs.
+
+<CodeGroup>
+
+```ts Web
 export default flow(
-  "Open homepage",
-  {
-    target: "Web - Firefox",
-    launch: true,
-  },
-  async ({ browser, context, page }) => {
-    await page.goto("https://example.com");
+  "Open dashboard",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com/dashboard");
   },
 );
 ```
 
-When `launch` is enabled on web, the callback receives launched browser session
-objects. In tests, `launch: true` maps to the default browser launch shorthand.
+```ts Android
+export default flow(
+  "Open Android app",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
 
-### 2. Call `launch()` inside the flow
+```ts iOS
+export default flow(
+  "Open iOS app",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
 
-Use `launch()` when you need more explicit startup control than the common
-runner-provided path.
+</CodeGroup>
+
+Use this shape when the callback should receive launched runtime objects:
+
+| Platform | Callback receives                          |
+| -------- | ------------------------------------------ |
+| Web      | `page`, `context`, and sometimes `browser` |
+| Android  | `driver`                                   |
+| iOS      | `driver`                                   |
+| CLI      | base runtime dependencies only             |
+
+## Launch Manually When Startup Is Conditional
+
+Pass the target directly when the flow should decide how to launch inside the
+callback.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
 
-export default flow("Persistent profile", "Web - Chrome", async () => {
-  const { page } = await launch({
-    browserContext: "persistent",
-    userDataDir: "/tmp/profile",
-  });
-  await page.goto("https://example.com");
+export default flow("Open tenant", "Web - Chrome", async () => {
+  const host = process.env["TENANT_HOST"] ?? "example.com";
+  const { page } = await launch();
+
+  await page.goto(`https://${host}/dashboard`);
 });
 ```
 
-On web, the source code documents these defaults when `options` are omitted:
-
-- the browser comes from the flow target
-- the session starts with an incognito-style context
-- GPU launch behavior comes from the flow target
-
-`launch()` is runtime-only. The web tests verify that it throws when it is
-called outside a running flow.
-
-This is recommended for more complex use-cases. For example, when opening
-multiple browser windows.
-
-## Documentation Layout
-
-The docs tree is organized into these sections:
-
-- `core-concepts/` for the smallest set of mental models that unlock usage
-- `how-to/` for task-based walkthroughs and copyable patterns
-- `api-reference/` for API and defaults
-- `troubleshooting.md` for common setup and runtime mistakes
-
-## Core Model
-
-Think about the package in three layers.
-
-Shared authoring model:
-
-- `flow(...)` defines the flow
-- `launch(...)` adds explicit startup control when the flow needs it
-
-Launch-enabled runtime objects:
-
-- web: `browser`, `context`, `page`
-- Android and iOS: `driver`
-
-Mobile-only capability:
-
-- `device` is available on Android and iOS only
-- use it for broader device or simulator control, not normal flow startup
-
-CLI differences:
-
-- `@qawolf/flows/cli` uses `flow(...)` only
-- it does not expose `launch(...)` or `device`
-- it does not inject platform runtime objects like `page` or `driver`
-- it works directly with the injected base dependencies
+This is useful for persistent browser profiles, Electron, app paths from
+environment variables, and other startup choices that belong in the test logic.
 
 ## Next Steps
 
-- Read [Flow Model](/qawolf/libraries/flows/core-concepts/flow-model) before writing detailed
-  flows or using `platform.target`.
-- Start with [Write a Web Flow](/qawolf/libraries/flows/how-to/write-a-web-flow) or the platform
-  how-to that matches your target.
-- Use [API Reference](/qawolf/libraries/flows/api-reference/index) as the precise behavior landing
-  page.
+- Read [Flow Model](/qawolf/libraries/flows/core-concepts/flow-model) for the
+  two startup styles.
+- Use [Write a Web Flow](/qawolf/libraries/flows/how-to/write-a-web-flow),
+  [Write an Android Flow](/qawolf/libraries/flows/how-to/write-an-android-flow),
+  or [Write an iOS Flow](/qawolf/libraries/flows/how-to/write-an-ios-flow) for
+  platform examples.
+- Keep [API Reference](/qawolf/libraries/flows/api-reference/index) nearby for
+  exact option shapes.

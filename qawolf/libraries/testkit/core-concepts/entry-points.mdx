@@ -1,32 +1,32 @@
 ---
 title: "Entry Points"
-description: "Understand which testkit entry point to use for each kind of helper."
+description: "Choose the right @qawolf/testkit import."
 sidebarTitle: "Entry Points"
 ---
 
 # Entry Points
 
-`@qawolf/testkit` mixes pure helpers with runner-wired helpers, so the entry
-point matters.
+`@qawolf/testkit` has three public entry points.
 
-The current package exports only three public entry points:
+| Import                   | Use it for                            |
+| ------------------------ | ------------------------------------- |
+| `@qawolf/testkit`        | OTPs and runner-backed flow helpers   |
+| `@qawolf/testkit/web`    | helpers that need a Playwright `page` |
+| `@qawolf/testkit/client` | runner or local harness setup         |
 
-- `@qawolf/testkit`
-- `@qawolf/testkit/web`
-- `@qawolf/testkit/client`
+## Top-Level Helpers
 
-That list comes from the package `exports` map and is the source of truth for
-what should be documented as public today.
+Use the top-level package in flow code.
 
-## `@qawolf/testkit`
+```ts
+import { otp, saveBaselineScreenshot, startOpenVpn } from "@qawolf/testkit";
 
-Use the top-level package for:
+const code = otp.fromUri(process.env["OTP_URI"]!);
+await startOpenVpn({ configPath: "/tmp/client.ovpn" });
+await saveBaselineScreenshot(page, "homepage");
+```
 
-- pure helpers like `otp.fromUri(...)`
-- flow-facing helpers that delegate to a configured client
-- client scope helpers used by runtimes and tests
-
-Today the top-level package exports:
+The top-level package currently exposes:
 
 - `otp.fromUri(...)`
 - `mountCifsShare(...)`
@@ -36,52 +36,33 @@ Today the top-level package exports:
 - `getCurrentTestkitClient()`
 - `resetTestkitClient()`
 
-One important boundary from the code:
+`startWireGuard` exists on the client ports, but not as a top-level helper.
 
-- `startWireGuard` exists on the client ports
-- there is currently no top-level `startWireGuard(...)` helper export
+## Web Helpers
 
-So WireGuard is part of the runner-facing client surface today, not the
-flow-facing helper surface.
+Use `@qawolf/testkit/web` when the helper needs a Playwright page.
 
-## `@qawolf/testkit/web`
+```ts
+import { readQRCode } from "@qawolf/testkit/web";
 
-Use this entry point for helpers that are shaped for web-side execution support.
+const value = await readQRCode(page, ".qr-code");
+```
 
-At the moment, the public API is:
+## Client Setup
 
-- `readQRCode(page, selector)`
+Use `@qawolf/testkit/client` when you are configuring the runtime layer.
 
-The current implementation takes a Playwright `Page` and a selector, screenshots
-the matching locator, parses the PNG bytes, and returns the decoded QR value or
-`undefined`.
+```ts
+import { configureTestkitClient } from "@qawolf/testkit";
+import { createTestkitClient } from "@qawolf/testkit/client";
 
-## `@qawolf/testkit/client`
+configureTestkitClient(
+  createTestkitClient({
+    mountCifsShare: async ({ remotePath }) => remotePath,
+    startOpenVpn: async ({ configPath }) => configPath,
+    startWireGuard: async ({ configPath }) => configPath,
+  }),
+);
+```
 
-Use this entry point in runners and local execution environments to create the
-client that powers the flow-facing helpers.
-
-Today that means `createTestkitClient(...)`, which is built from environment
-ports such as:
-
-- `mountCifsShare`
-- `saveSnapshot`
-- `startOpenVpn`
-- `startWireGuard`
-
-If `saveSnapshot` is present, the client exposes `saveBaselineScreenshot(...)`.
-If it is absent, the flow-facing `saveBaselineScreenshot(...)` helper throws a
-clear screenshot-support error.
-
-## How To Choose
-
-- If the helper is pure and flow-facing, start with `@qawolf/testkit`.
-- If the helper currently works against a Playwright page, use
-  `@qawolf/testkit/web`.
-- If you are wiring runtime behavior, use `@qawolf/testkit/client`.
-
-## Documentation Note
-
-Earlier internal notes talked about a separate Playwright-specific entry point.
-The package does not export that path today, so treat the three entry points
-above as canonical until the exports change.
+Most flow authors do not need to create the client. The runner usually does it.

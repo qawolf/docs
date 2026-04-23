@@ -1,12 +1,14 @@
 ---
 title: "VPN Setup"
-description: "Start VPN support through the configured testkit client."
+description: "Start VPN support from a flow through the configured testkit client."
 sidebarTitle: "VPN Setup"
 ---
 
 # VPN Setup
 
-Use the flow-facing VPN helper only after the runner has configured a client:
+Use network helpers when a flow must reach private infrastructure.
+
+## Start OpenVPN
 
 ```ts
 import { startOpenVpn } from "@qawolf/testkit";
@@ -14,7 +16,24 @@ import { startOpenVpn } from "@qawolf/testkit";
 const pid = await startOpenVpn({
   configPath: "/tmp/client.ovpn",
 });
+
+console.log(`OpenVPN started as ${pid}`);
 ```
 
-As the public option shapes settle, keep this page focused on practical usage
-patterns and put exact option tables in the reference pages.
+`startOpenVpn(...)` is a top-level flow helper. It requires the runner to
+configure the testkit client first.
+
+## WireGuard Boundary
+
+WireGuard exists on the runner-facing client ports today. It is not exported as
+a top-level `startWireGuard(...)` helper.
+
+```ts
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+const client = createTestkitClient({
+  startWireGuard: async ({ configPath }) => configPath,
+});
+```
+
+Use this in runner or harness setup, not ordinary flow code.

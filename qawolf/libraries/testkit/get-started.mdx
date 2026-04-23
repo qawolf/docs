@@ -1,55 +1,80 @@
 ---
 title: "Get Started"
-description: "Start here for the @qawolf/testkit docs and first working examples."
+description: "Use @qawolf/testkit helpers for OTPs, QR codes, screenshots, and network setup."
 sidebarTitle: "Get Started"
 ---
 
 # Get Started
 
-`@qawolf/testkit` provides helpers that QA Wolf flows use to interact with their
-execution environment.
+`@qawolf/testkit` is a small helper library for flow code and runner wiring.
 
-Current package responsibilities include:
+Use it when a test needs something outside normal browser or mobile automation:
 
-- one-time password generation
-- QR code reading
-- runner-wired helpers for CIFS shares, VPN setup, and baseline screenshots
+- generate an OTP code
+- decode a QR code from the page
+- mount a CIFS share
+- start OpenVPN
+- save a baseline screenshot
 
-## Current Entry Points
+## Pick The Import
 
-This docs tree is intentionally aligned to the package surface that currently
-exists in code:
+<CodeGroup>
 
-- `@qawolf/testkit`
-- `@qawolf/testkit/web`
-- `@qawolf/testkit/client`
+```ts OTP and runner-backed helpers
+import { otp, saveBaselineScreenshot, startOpenVpn } from "@qawolf/testkit";
+```
 
-If a separate Playwright entry point is added later, the content model can stay
-the same and only the reference split needs to change.
+```ts Web helpers
+import { readQRCode } from "@qawolf/testkit/web";
+```
 
-## Smallest Working Examples
+```ts Runner setup
+import { createTestkitClient } from "@qawolf/testkit/client";
+```
 
-Pure helper:
+</CodeGroup>
+
+## Generate An OTP
 
 ```ts
 import { otp } from "@qawolf/testkit";
 
-const code = otp.fromUri(
-  "otpauth://totp/QA%20Wolf:qa%40example.com?secret=JBSWY3DPEHPK3PXP&issuer=QA%20Wolf",
-);
+const code = otp.fromUri(process.env["OTP_URI"]!);
+
+await page.getByLabel("Verification code").fill(code);
 ```
 
-QR code helper:
+## Read A QR Code
 
 ```ts
 import { readQRCode } from "@qawolf/testkit/web";
 
-const value = await readQRCode(page, ".qr-code");
+const qrValue = await readQRCode(page, "[data-testid='qr-code']");
+
+if (!qrValue) throw new Error("QR code was not visible");
 ```
 
-## Documentation Layout
+## Use Runner-Backed Helpers
 
-- `core-concepts/` for entry-point and client wiring mental models
-- `how-to/` for common tasks and practical usage patterns
-- `api-reference/` for exact APIs
-- `troubleshooting.md` for setup and runtime issues
+Some helpers call a client configured by the runner.
+
+```ts
+import { startOpenVpn } from "@qawolf/testkit";
+
+const pid = await startOpenVpn({
+  configPath: "/tmp/client.ovpn",
+});
+```
+
+If the runner has not configured a client, these helpers fail fast with a setup
+error. That is intentional: flow code should not guess how to reach runner-only
+services.
+
+## Next Steps
+
+- Read [Entry Points](/qawolf/libraries/testkit/core-concepts/entry-points) to
+  choose the right import.
+- Read [Client Model](/qawolf/libraries/testkit/core-concepts/client-model) if
+  you are wiring a runner or local harness.
+- Use [API Reference](/qawolf/libraries/testkit/api-reference/index) for exact
+  option shapes.

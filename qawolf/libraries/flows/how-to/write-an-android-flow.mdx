@@ -1,59 +1,41 @@
 ---
 title: "Write An Android Flow"
-description: "Create a simple Android flow and understand when to use launch explicitly."
+description: "Create an Android flow with Appium's WebdriverIO driver."
 sidebarTitle: "Write An Android Flow"
 ---
 
 # Write An Android Flow
 
-Use `@qawolf/flows/android` when the flow targets Android automation.
+Use `@qawolf/flows/android` for Android app automation.
 
-## Minimal Example
+## Launch The App First
 
 ```ts
-import { flow } from "@qawolf/flows/android";
+import { expect, flow } from "@qawolf/flows/android";
 
 export default flow(
-  "Open app",
+  "Open settings",
   { target: "Android - Pixel", launch: true },
   async ({ driver }) => {
-    await driver.pause(1000);
+    const settings = await driver.$("~Settings");
+
+    await expect(settings).toBeDisplayed();
   },
 );
 ```
 
-Use this shape when the callback should receive `driver`.
+`driver` is the Appium/WebdriverIO session for the Android device.
 
-## No-`launch` Path
+## Launch With An Uploaded APK
 
-If you pass the target directly, the callback does not receive `driver`
-automatically.
-
-Use that path when you want to launch imperatively inside the callback:
+When the runner provides `RUN_INPUT_PATH`, omit `app` and pass normal app
+metadata.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/android";
 
-export default flow("Open app", "Android - Pixel", async () => {
-  const { driver } = await launch();
-  await driver.pause(1000);
-});
-```
-
-## When To Use `launch()`
-
-Use `launch()` when the flow needs explicit control over app startup:
-
-- custom app path
-- app lookup through environment input
-- capability overrides
-
-```ts
-import { flow, launch } from "@qawolf/flows/android";
-
-export default flow("Launch app explicitly", "Android - Pixel", async () => {
+export default flow("Open uploaded build", "Android - Pixel", async () => {
   const { driver } = await launch({
-    app: { path: "app.apk" },
     appPackage: "com.example.android",
   });
 
@@ -61,7 +43,29 @@ export default flow("Launch app explicitly", "Android - Pixel", async () => {
 });
 ```
 
-## Device Operations
+If you pass `app`, QA Wolf uses that explicit source instead of
+`RUN_INPUT_PATH`.
 
-Use `device` only when the flow needs broader emulator or device control beyond
-app startup.
+```ts
+await launch({
+  app: { path: "android/app.apk" },
+  appPackage: "com.example.android",
+});
+```
+
+## Control The Device
+
+Use `device` for emulator-level behavior, not ordinary app startup.
+
+```ts
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Location search",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await device.setGeoLocation({ latitude: 40.7128, longitude: -74.006 });
+    await driver.$("~Nearby").click();
+  },
+);
+```

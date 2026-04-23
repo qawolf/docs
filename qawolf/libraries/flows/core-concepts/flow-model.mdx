@@ -1,124 +1,104 @@
 ---
 title: "Flow Model"
-description: "Understand the shared authoring model across web and mobile flows."
+description: "Understand the two flow startup styles and when to use each one."
 sidebarTitle: "Flow Model"
 ---
 
 # Flow Model
 
-`@qawolf/flows` is built around one core idea: define a flow once, then let the
-runtime provide the platform-specific execution environment.
+A flow has three parts:
 
-At the code level, `flow(...)` returns an executable flow definition object with
-metadata such as `name`, `target`, `type`, `version`, and `run`.
+```ts
+flow("Name shown in QA Wolf", target, async (runtime) => {
+  // test steps
+});
+```
 
-The public authoring model is:
+- **Name** appears in runs, bug reports, and logs.
+- **Target** selects the browser, device, or CLI environment.
+- **Callback** contains the workflow steps.
 
-- `flow(...)` defines the flow
-- `launch(...)` opts into more explicit startup control
-- runtime dependencies are injected by platform
-- target metadata is available through `platform.target`
+## The Recommended Shape
 
-## `flow(...)`
+Use `{ target, launch: true }` when the flow should start the session before the
+callback runs.
 
-Use `flow(...)` for the common path. It lets the runner provide the runtime
-dependencies that most flows need.
+```ts
+import { flow } from "@qawolf/flows/web";
 
-The accepted target input shape varies a little by platform, but the same broad
-patterns apply:
+export default flow(
+  "Checkout",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com/cart");
+  },
+);
+```
 
-- pass a target directly when the common path is enough
-- pass an object with `{ target, launch }` when startup behavior matters
+The callback receives the launched object for that platform:
 
-The important distinction is:
+| Entry point             | Launch object                |
+| ----------------------- | ---------------------------- |
+| `@qawolf/flows/web`     | `page`, `context`, `browser` |
+| `@qawolf/flows/android` | `driver`                     |
+| `@qawolf/flows/ios`     | `driver`                     |
 
-- the no-`launch` path gives the callback the runner-provided flow context
-- the launch-enabled path adds platform runtime objects
+## The Manual Launch Shape
 
-Launch-enabled runtime objects differ:
-
-- launch-enabled web flows work with `browser`, `context`, and `page`
-- launch-enabled mobile flows work with `driver`
-- cli flows work with the base dependency set directly
-
-## Two Startup Styles
-
-### Target-only path
-
-Use the common path when the flow should work with whatever the runner provides
-for the selected target.
+Pass the target directly when the callback should decide when or how startup
+happens.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
 
-export default flow("Sign in", "Web - Chrome", async () => {
-  const { page } = await launch();
-  await page.goto("https://example.com");
+export default flow("Checkout", "Web - Chrome", async () => {
+  const { page } = await launch({
+    browserContext: "persistent",
+    userDataDir: "/tmp/qawolf-profile",
+  });
+
+  await page.goto("https://example.com/cart");
 });
 ```
 
-In this path, `page` or `driver` are not injected into the callback
-automatically.
+Use manual launch for:
 
-### Launch-enabled path
+- persistent browser profiles
+- Electron apps
+- mobile app paths chosen at runtime
+- conditional startup branches
 
-Use the launch-enabled path when startup behavior is part of the flow contract.
+## CLI Flows Are Simpler
 
-On web, Android, and iOS, the source supports both `launch: true` and
-`launch: <options>`.
+CLI flows do not launch a browser or mobile app.
 
-In this path, the callback receives the launched runtime objects for the
-platform.
+```ts
+import { flow } from "@qawolf/flows/cli";
 
-CLI flows do not have a launch model. The CLI implementation always creates the
-flow context directly from the injected dependencies and the `"Basic"` target.
+export default flow("Smoke check", "Basic", async ({ runCommand }) => {
+  await runCommand({
+    binary: "node",
+    args: ["--version"],
+  });
+});
+```
 
-## `launch(...)`
+## `device` Is Not Startup
 
-Use `launch(...)` when a flow needs startup control that is more explicit than
-the common injected path.
+`device` is for broader mobile control after the flow is running.
 
-Examples:
+```ts
+import { device, flow } from "@qawolf/flows/android";
 
-- choose a persistent browser context on web
-- launch Electron instead of a browser
-- override mobile app startup inputs
+export default flow(
+  "Location-aware screen",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });
+    await driver.pause(1000);
+  },
+);
+```
 
-This API is runtime-only. The package implementations and tests treat it as an
-operation that is only valid while a flow is running.
-
-## `device`
-
-`device` is the advanced mobile-only escape hatch.
-
-It is available from:
-
-- `@qawolf/flows/android`
-- `@qawolf/flows/ios`
-
-It is not part of `@qawolf/flows/web` or `@qawolf/flows/cli`.
-
-## `platform.target`
-
-The top-level package exposes the active target through `platform.target`. This
-is useful when flow behavior needs to branch on the runtime target while still
-staying within one authoring surface.
-
-The property is implemented as a getter over the current configured target, so
-it always reads the latest configured value.
-
-## Recommended Authoring Order
-
-1. Start with `flow(...)`.
-2. Decide whether the callback should receive launched runtime objects.
-3. Use `{ target, launch: true | options }` when startup should be part of the
-   flow definition itself.
-4. Use imperative `launch(...)` when startup should stay under callback control
-   instead.
-5. Reach for `device` only when platform-level control is required.
-
-For CLI flows, the authoring order is simpler:
-
-1. Use `flow(...)`.
-2. Pass `"Basic"` or `{ target: "Basic" }`.
-3. Work directly with the injected base dependencies.
+Reach for `device` when the test needs emulator or simulator behavior, not just
+normal app startup.

@@ -1,28 +1,46 @@
 ---
 title: "Attachments"
-description: "Send a message with attachments from a QA Wolf inbox handle."
+description: "Send email with file attachments."
 sidebarTitle: "Attachments"
 ---
 
 # Attachments
 
-Use `sendMessage(...)` with an attachments array:
+Pass an `attachments` array to `sendMessage(...)`.
 
 ```ts
-const { sendMessage } = await mail.inbox({ new: true });
+const inbox = await mail.inbox({ new: true });
 
-await sendMessage({
+await inbox.sendMessage({
+  to: ["invoices@example.com"],
+  subject: "Invoice",
+  text: "Attached.",
   attachments: [
     {
-      fileName: "file.txt",
-      content: Buffer.from("i am a txt file"),
+      fileName: "invoice.txt",
+      content: Buffer.from("invoice total: $10.00"),
+      type: "text/plain",
     },
   ],
-  subject: "Email with Attachment",
-  text: "See attachments.",
-  to: "test@example.com",
 });
 ```
 
-Keep MIME type details and attachment option tables in the reference page. Keep
-this page focused on the common pattern.
+## Inline Attachment
+
+Use `contentId` when the HTML body references an inline file.
+
+```ts
+await inbox.sendMessage({
+  to: ["preview@example.com"],
+  subject: "Inline image",
+  html: '<img src="cid:logo" alt="Logo" />',
+  attachments: [
+    {
+      fileName: "logo.png",
+      contentId: "logo",
+      content: logoBuffer,
+      type: "image/png",
+    },
+  ],
+});
+```

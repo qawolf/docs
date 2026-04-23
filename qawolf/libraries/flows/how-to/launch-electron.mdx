@@ -1,22 +1,46 @@
 ---
 title: "Launch Electron"
-description: "Launch an Electron app explicitly from a web flow."
+description: "Launch an Electron app from a web flow."
 sidebarTitle: "Launch Electron"
 ---
 
 # Launch Electron
 
-Use Electron launch mode when the flow targets a desktop app instead of a
-browser tab.
+Use Electron launch mode when the target is a desktop app instead of a browser
+page.
 
 ```ts
-import { launch } from "@qawolf/flows/web";
+import { flow, launch } from "@qawolf/flows/web";
 
-const { firstWindowPage } = await launch({
-  kind: "electron",
-  executablePath: "/Applications/My App.app",
+export default flow("Open desktop app", "Web - Chrome", async () => {
+  const { electronApplication, firstWindowPage } = await launch({
+    kind: "electron",
+    executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+  });
+
+  await firstWindowPage.getByRole("button", { name: "Sign in" }).click();
+
+  await electronApplication.close();
 });
 ```
 
-Keep this page focused on practical Electron patterns rather than on the full
-launch option reference.
+## Use The First Window Page
+
+Most Electron tests start with `firstWindowPage`.
+
+```ts
+await firstWindowPage.getByLabel("Email").fill("qa@example.com");
+await firstWindowPage.getByRole("button", { name: "Continue" }).click();
+```
+
+## Pass Launch Arguments
+
+Use `args` when the app needs flags at startup.
+
+```ts
+const { firstWindowPage } = await launch({
+  kind: "electron",
+  executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+  args: ["--test-mode"],
+});
+```

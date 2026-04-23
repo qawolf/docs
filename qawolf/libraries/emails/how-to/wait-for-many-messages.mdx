@@ -1,56 +1,49 @@
 ---
 title: "Wait For Many Messages"
-description: "Wait for multiple messages delivered to a QA Wolf inbox."
+description: "Wait for a batch of emails sent to one QA Wolf inbox."
 sidebarTitle: "Wait For Many Messages"
 ---
 
 # Wait For Many Messages
 
-Use the inbox handle returned by `mail.inbox(...)`:
+Use `waitForMessages(...)` when one action should send several emails.
 
 ```ts
-const { waitForMessages } = await mail.inbox({ new: true });
+const inbox = await mail.inbox({ new: true });
 
-const messages = await waitForMessages();
-```
+const after = new Date();
+await page.getByRole("button", { name: "Invite team" }).click();
 
-## What `waitForMessages(...)` Does
-
-The implementation:
-
-- waits for a delay first
-- polls for inbound emails after the inbox handle's creation time, or `after`
-  if you provide it
-- returns the matching parsed emails
-
-## Custom Delay
-
-```ts
-const messages = await waitForMessages({ delay: 5_000 });
-```
-
-The default delay comes from the runtime's
-`waitForMessagesDefaultDelayMs` configuration.
-
-## Require A Minimum Number Of Messages
-
-```ts
-const messages = await waitForMessages({
-  minCount: 2,
+const messages = await inbox.waitForMessages({
+  after,
+  minCount: 3,
   timeout: 120_000,
 });
 ```
 
-This is useful when one workflow step should produce several emails before the
-flow continues.
+## Add A Delay Before Polling
 
-## Limit Messages To A Known Point In Time
+Some systems enqueue email work in the background. Use `delay` to wait before
+the first poll.
 
 ```ts
-const after = new Date();
-
-const messages = await waitForMessages({ after, delay: 10_000 });
+const messages = await inbox.waitForMessages({
+  delay: 5_000,
+  minCount: 2,
+});
 ```
 
-Use `after` when the same inbox may already contain older messages that should
-not be considered part of the current flow step.
+The default delay comes from the runtime's `waitForMessagesDefaultDelayMs`
+configuration.
+
+## Work With The Results
+
+```ts
+const subjects = messages.map((message) => message.subject);
+
+expect(subjects).toContain("Welcome");
+expect(subjects).toContain("Your workspace is ready");
+```
+
+`waitForMessages(...)` returns matching parsed emails. Do not depend on sorting
+unless your runtime documents that ordering.

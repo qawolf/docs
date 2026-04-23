@@ -1,24 +1,28 @@
 ---
 title: "Generate An OTP"
-description: "Generate one-time passwords from an otpauth URI."
+description: "Generate a one-time password from an otpauth URI."
 sidebarTitle: "Generate An OTP"
 ---
 
 # Generate An OTP
 
-Use the top-level package when a flow needs to generate a one-time password from
-an `otpauth://` URI.
+Use `otp.fromUri(...)` when a flow needs a current MFA code.
 
 ```ts
 import { otp } from "@qawolf/testkit";
 
+const code = otp.fromUri(process.env["OTP_URI"]!);
+
+await page.getByLabel("Verification code").fill(code);
+await page.getByRole("button", { name: "Verify" }).click();
+```
+
+The input is the same `otpauth://` URI used by authenticator apps.
+
+```ts
 const code = otp.fromUri(
   "otpauth://totp/QA%20Wolf:qa%40example.com?secret=JBSWY3DPEHPK3PXP&issuer=QA%20Wolf",
 );
 ```
 
-## Why This Helper Is Nice
-
-- no runner wiring is required
-- the flow does not need to construct an OTP client
-- the output stays close to how OTP values are used in end-to-end flows
+This helper is pure. It does not require runner wiring.

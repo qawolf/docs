@@ -1,32 +1,47 @@
 ---
 title: "Wait For A Message"
-description: "Wait for the next message delivered to a QA Wolf inbox."
+description: "Wait for the next email sent to a QA Wolf inbox."
 sidebarTitle: "Wait For A Message"
 ---
 
 # Wait For A Message
 
-Use the inbox handle returned by `mail.inbox(...)`:
+Use `waitForMessage(...)` when one email should arrive.
 
 ```ts
-const { waitForMessage } = await mail.inbox({ new: true });
+const inbox = await mail.inbox({ new: true });
 
-const message = await waitForMessage();
+await page.getByLabel("Email").fill(inbox.emailAddress);
+await page.getByRole("button", { name: "Send invite" }).click();
+
+const message = await inbox.waitForMessage();
 ```
 
-## Custom Timeout
+## Avoid Old Messages
 
-```ts
-const message = await waitForMessage({ timeout: 120000 });
-```
-
-## Only Messages After A Specific Moment
+Capture `after` immediately before the triggering action.
 
 ```ts
 const after = new Date();
 
-const message = await waitForMessage({ after });
+await page.getByRole("button", { name: "Send invite" }).click();
+
+const message = await inbox.waitForMessage({ after });
 ```
 
-Use the `after` option when the same inbox may already contain older matching
-messages.
+## Increase The Timeout
+
+```ts
+const message = await inbox.waitForMessage({
+  timeout: 120_000,
+});
+```
+
+## Use The Parsed Email
+
+```ts
+const message = await inbox.waitForMessage();
+
+expect(message.subject).toContain("Welcome");
+expect(message.urls[0]).toContain("/activate");
+```

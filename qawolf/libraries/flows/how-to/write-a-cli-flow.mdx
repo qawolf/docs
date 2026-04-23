@@ -1,38 +1,42 @@
 ---
 title: "Write A CLI Flow"
-description: "Create a flow with @qawolf/flows/cli and the Basic target."
+description: "Create a flow that uses runner utilities without a browser or mobile driver."
 sidebarTitle: "Write A CLI Flow"
 ---
 
 # Write A CLI Flow
 
-Use `@qawolf/flows/cli` when the flow does not need a browser or mobile driver
-context and can work directly with the base runtime dependencies.
-
-## Current Target Model
-
-The CLI entry point currently supports one target:
-
-- `"Basic"`
-
-You can pass it directly or wrap it in an object:
+Use `@qawolf/flows/cli` when the flow needs runner utilities but does not need a
+browser, Android device, or iOS device.
 
 ```ts
 import { flow } from "@qawolf/flows/cli";
 
-export default flow("Basic flow", "Basic", async ({ runCommand }) => {
-  await runCommand({
-    binary: "echo",
-    args: ["hello"],
+export default flow("Check Node", "Basic", async ({ runCommand }) => {
+  const result = await runCommand({
+    binary: "node",
+    args: ["--version"],
   });
+
+  console.log(result);
 });
 ```
 
-```ts
-import { flow } from "@qawolf/flows/cli";
+## Use The `Basic` Target
 
+CLI flows currently support one target.
+
+<CodeGroup>
+
+```ts String target
+export default flow("CLI task", "Basic", async ({ workflowInputs }) => {
+  console.log(workflowInputs);
+});
+```
+
+```ts Object target
 export default flow(
-  "Basic flow",
+  "CLI task",
   { target: "Basic" },
   async ({ workflowInputs }) => {
     console.log(workflowInputs);
@@ -40,21 +44,11 @@ export default flow(
 );
 ```
 
-## What The Context Looks Like
+</CodeGroup>
 
-The CLI flow context is the base dependency set plus `test(...)`.
+## Common Dependencies
 
-Unlike the other platform entry points:
-
-- there is no `launch(...)`
-- there is no `device`
-- there is no injected `page`, `browser`, `context`, or `driver`
-
-The context is built directly from the injected dependencies.
-
-## Common CLI Dependencies
-
-The current CLI test context dependency list includes helpers such as:
+The callback receives base runner dependencies such as:
 
 - `runCommand`
 - `getInbox`
@@ -65,4 +59,4 @@ The current CLI test context dependency list includes helpers such as:
 - `workflowInputs`
 - `setOutput`
 
-See [CLI Reference](/qawolf/libraries/flows/api-reference/cli) for the current API surface.
+Use CLI flows for setup, teardown, notifications, and other non-UI work.

@@ -1,24 +1,42 @@
 ---
 title: "Persistent Browser Context"
-description: "Keep browser state between sessions in a web flow."
+description: "Launch a web flow with a reusable browser profile."
 sidebarTitle: "Persistent Browser Context"
 ---
 
 # Persistent Browser Context
 
-Use a persistent browser context when the flow needs a reusable profile:
+Use a persistent browser context when browser state should live in a real user
+data directory.
 
 ```ts
-import { launch } from "@qawolf/flows/web";
+import { flow, launch } from "@qawolf/flows/web";
 
-const { page } = await launch({
-  browserContext: "persistent",
-  userDataDir: "/tmp/profile",
+export default flow("Use saved profile", "Web - Chrome", async () => {
+  const { page } = await launch({
+    browserContext: "persistent",
+    userDataDir: "/tmp/qawolf-profile",
+  });
+
+  await page.goto("https://example.com/account");
 });
 ```
 
-Use this recipe for:
+## When To Use It
 
-- profile-backed login state
-- browser settings that must persist across launches
-- flows that need a real user data directory
+- the app stores login state in the browser profile
+- the test needs browser settings that persist after launch
+- the flow should reuse extension or profile data
+
+## Keep Profiles Isolated
+
+Use a path unique to the run when flows may execute in parallel.
+
+```ts
+const userDataDir = `/tmp/qawolf-profile-${Date.now()}`;
+
+const { page } = await launch({
+  browserContext: "persistent",
+  userDataDir,
+});
+```

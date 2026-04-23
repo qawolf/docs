@@ -1,120 +1,93 @@
 ---
 title: "Write A Web Flow"
-description: "Create a web flow and choose between launch-enabled and imperative startup."
+description: "Create a browser or Electron flow with @qawolf/flows/web."
 sidebarTitle: "Write A Web Flow"
 ---
 
 # Write A Web Flow
 
-Use `@qawolf/flows/web` when the flow runs in a web browser or Electron-style
-environment.
+Use `@qawolf/flows/web` for browser flows and Electron flows.
 
-The web package exposes:
+## Browser Flow
 
-- `flow(...)`
-- `launch(...)`
-- `expect`
-
-The source code also exports web-specific types and launch result types through
-the same entry point.
-
-## Start With A Launch-Enabled Flow
+Start here for ordinary web app tests.
 
 ```ts
-import { flow } from "@qawolf/flows/web";
+import { expect, flow } from "@qawolf/flows/web";
 
 export default flow(
-  "Open homepage",
-  {
-    target: "Web - Chrome",
-    launch: true,
-  },
+  "Search docs",
+  { target: "Web - Chrome", launch: true },
   async ({ page }) => {
-    await page.goto("https://example.com");
+    await page.goto("https://example.com/docs");
+    await page.getByRole("searchbox").fill("billing");
+
+    await expect(page.getByRole("link", { name: /billing/i })).toBeVisible();
   },
 );
 ```
 
-This is the right starting point when the callback should receive:
+`launch: true` gives the callback a ready-to-use `page`.
 
-- `page`
-- `context`
-- optionally `browser`
+## Pick A Browser
 
-## Use The No-`launch` Path For Imperative Startup
+Change the target to run in another browser.
 
-If you pass the target directly, the callback does not receive `page`
-automatically.
+<CodeGroup>
 
-Use that path when you want to control startup imperatively:
+```ts Chrome
+{ target: "Web - Chrome", launch: true }
+```
+
+```ts Firefox
+{ target: "Web - Firefox", launch: true }
+```
+
+</CodeGroup>
+
+## Launch Manually
+
+Call `launch()` yourself when startup needs options.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
 
-export default flow("Open homepage", "Web - Chrome", async () => {
-  const { page } = await launch();
-  await page.goto("https://example.com");
-});
-```
-
-## Use Declarative Launch When Startup Is Part Of The Flow
-
-If the flow definition itself should request a launched browser session, pass an
-object target with `launch`:
-
-```ts
-import { flow } from "@qawolf/flows/web";
-
-export default flow(
-  "Open homepage in Firefox",
-  {
-    target: "Web - Firefox",
-    launch: true,
-  },
-  async ({ browser, context, page }) => {
-    await page.goto("https://example.com");
-  },
-);
-```
-
-The web tests confirm that `launch: true` is supported as the default browser
-launch shorthand and that the callback receives launched browser session
-objects.
-
-## Use `launch()` For More Explicit Control
-
-Use `launch()` when the flow needs to decide launch behavior at runtime or when
-you need a mode such as persistent browser context or Electron.
-
-```ts
-import { flow, launch } from "@qawolf/flows/web";
-
-export default flow("Persistent profile", "Web - Chrome", async () => {
+export default flow("Use saved session", "Web - Chrome", async () => {
   const { page } = await launch({
     browserContext: "persistent",
-    userDataDir: "/tmp/profile",
+    userDataDir: "/tmp/qawolf-profile",
   });
 
-  await page.goto("https://example.com");
+  await page.goto("https://example.com/account");
 });
 ```
 
-On web:
+## Launch Electron
 
-- `launch({ browserContext: "persistent" })` maps to the underlying persistent
-  context behavior
-- GPU launch behavior is selected from the flow target
-- `launch({ kind: "electron", executablePath })` routes through Electron launch
-  support
+Use the Electron launch kind when the target is an app instead of a website.
 
-See [Web Reference](/qawolf/libraries/flows/api-reference/web) for the launch shapes.
+```ts
+import { flow, launch } from "@qawolf/flows/web";
 
-## Use `expect` Inside The Flow Runtime
+export default flow("Open desktop app", "Web - Chrome", async () => {
+  const { firstWindowPage } = await launch({
+    kind: "electron",
+    executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+  });
 
-`@qawolf/flows/web` exports `expect`, but the source marks it as a type-safe
-stub that is replaced by the runner while the flow executes.
+  await firstWindowPage.getByRole("button", { name: "Sign in" }).click();
+});
+```
 
-That means:
+## Assertions
 
-- use it inside flow execution
-- do not treat the package-level export as a standalone assertion library
+Import `expect` from `@qawolf/flows/web` so assertions are connected to the QA
+Wolf runtime.
+
+```ts
+import { expect } from "@qawolf/flows/web";
+
+await expect(page.getByText("Saved")).toBeVisible();
+```
+
+Avoid importing `expect` from `@playwright/test` inside QA Wolf flows.
