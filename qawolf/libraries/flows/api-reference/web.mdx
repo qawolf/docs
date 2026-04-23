@@ -102,23 +102,3 @@ export default flow(
   },
 );
 ```
-
-## Notes
-
-Use this page for the precise behavior of launch modes, return values, and
-runner-provided stubs.
-
-`expect` example:
-
-```ts
-import { expect, flow } from "@qawolf/flows/web";
-
-export default flow(
-  "Assert title",
-  { target: "Web - Chrome", launch: true },
-  async ({ page }) => {
-    await page.goto("https://example.com");
-    await expect(page).toHaveTitle(/Example/);
-  },
-);
-```
