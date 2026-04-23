@@ -31,7 +31,8 @@ export default flow(
 
 ## Pick A Browser
 
-Change the target to run in another browser.
+Change the target to run in another browser. Safari targets run with
+Playwright WebKit.
 
 <CodeGroup>
 
@@ -41,6 +42,22 @@ Change the target to run in another browser.
 
 ```ts Firefox
 { target: "Web - Firefox", launch: true }
+```
+
+```ts Safari
+{ target: "Web - Safari", launch: true }
+```
+
+```ts Chrome GPU
+{ target: "Web - Chrome (GPU)", launch: true }
+```
+
+```ts Firefox GPU
+{ target: "Web - Firefox (GPU)", launch: true }
+```
+
+```ts Safari GPU
+{ target: "Web - Safari (GPU)", launch: true }
 ```
 
 </CodeGroup>
