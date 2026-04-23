@@ -6,23 +6,24 @@ sidebarTitle: "Client Lifecycle"
 
 # Client Lifecycle
 
-`mail.inbox(...)` is a facade over a configured emails client.
+`mail.inbox(...)` uses the emails client configured for the current run.
 
-## Who Creates The Client
+In normal QA Wolf runs, the runner creates the client and registers it before
+your flow starts. Flow code can call `mail.inbox(...)` directly.
 
-Runners and local execution environments create the client with
-`createEmailsClient(...)`.
+```ts
+const inbox = await mail.inbox({ new: true });
+```
 
-## Who Registers The Client
+Local harnesses and runner code have to configure the client themselves:
 
-The runtime registers it with `configureEmailsClient(...)` before the flow runs.
+```ts
+const emails = await createEmailsClient(options);
 
-## What Happens In Tests
+configureEmailsClient(emails);
+```
 
-Tests can clear the configured client with `resetEmailsClient()` so state does
-not leak between cases.
+Use `resetEmailsClient()` between tests so one configured client does not leak
+into the next case.
 
-## Failure Mode
-
-If no client has been configured, `mail.inbox(...)` throws a setup error instead
-of silently failing.
+If no client is configured, `mail.inbox(...)` throws a setup error.
