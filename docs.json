@@ -109,6 +109,105 @@
         ]
       },
       {
+        "tab": "Solutions",
+        "icon": "book",
+        "pages": [
+          {
+            "group": "Email & SMS",
+            "icon": "voicemail",
+            "pages": [
+              "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
+            ]
+          },
+          {
+            "group": "Device hardware & compatibility",
+            "icon": "monitor-smartphone",
+            "pages": [
+              "qawolf/network-connectivity",
+              "qawolf/network-simulation",
+              "qawolf/using-an-android-tablet"
+            ]
+          },
+          {
+            "group": "Multi-user, multi-device",
+            "icon": "arrow-right-left",
+            "pages": [
+              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
+            ]
+          },
+          {
+            "group": "Mobile-native media",
+            "icon": "tablet-smartphone",
+            "pages": [
+              {
+                "group": "Photo library management",
+                "icon": "image",
+                "pages": [
+                  "qawolf/photo-library-management"
+                ]
+              },
+              {
+                "group": "Camera injection",
+                "icon": "camera",
+                "pages": [
+                  "qawolf/camera-and-audio-injection"
+                ]
+              },
+              {
+                "group": "Barcode injection",
+                "icon": "scan-qr-code",
+                "pages": [
+                  "qawolf/barcode-qrcode-scanning"
+                ]
+              },
+              {
+                "group": "Audio injection",
+                "icon": "mic",
+                "pages": [
+                  "qawolf/audio-injection"
+                ]
+              },
+              {
+                "group": "Audio capture",
+                "icon": "audio-waveform",
+                "pages": [
+                  "qawolf/audio-capture"
+                ]
+              },
+              {
+                "group": "Video Injection",
+                "icon": "video",
+                "pages": [
+                  "qawolf/video-injection"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Accessibility",
+            "icon": "eye",
+            "pages": [
+              "qawolf/a11y-native",
+              "qawolf/a11y-web"
+            ]
+          },
+          {
+            "group": "Performance",
+            "icon": "gauge",
+            "pages": [
+              "qawolf/web-performance"
+            ]
+          },
+          {
+            "group": "Visual diffing",
+            "icon": "scan",
+            "pages": [
+              "qawolf/visual-diffing"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Libraries",
         "icon": "braces",
         "pages": [
@@ -235,105 +334,6 @@
                   "qawolf/libraries/emails/troubleshooting"
                 ]
               }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Solutions",
-        "icon": "book",
-        "pages": [
-          {
-            "group": "Email & SMS",
-            "icon": "voicemail",
-            "pages": [
-              "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
-            ]
-          },
-          {
-            "group": "Device hardware & compatibility",
-            "icon": "monitor-smartphone",
-            "pages": [
-              "qawolf/network-connectivity",
-              "qawolf/network-simulation",
-              "qawolf/using-an-android-tablet"
-            ]
-          },
-          {
-            "group": "Multi-user, multi-device",
-            "icon": "arrow-right-left",
-            "pages": [
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
-            ]
-          },
-          {
-            "group": "Mobile-native media",
-            "icon": "tablet-smartphone",
-            "pages": [
-              {
-                "group": "Photo library management",
-                "icon": "image",
-                "pages": [
-                  "qawolf/photo-library-management"
-                ]
-              },
-              {
-                "group": "Camera injection",
-                "icon": "camera",
-                "pages": [
-                  "qawolf/camera-and-audio-injection"
-                ]
-              },
-              {
-                "group": "Barcode injection",
-                "icon": "scan-qr-code",
-                "pages": [
-                  "qawolf/barcode-qrcode-scanning"
-                ]
-              },
-              {
-                "group": "Audio injection",
-                "icon": "mic",
-                "pages": [
-                  "qawolf/audio-injection"
-                ]
-              },
-              {
-                "group": "Audio capture",
-                "icon": "audio-waveform",
-                "pages": [
-                  "qawolf/audio-capture"
-                ]
-              },
-              {
-                "group": "Video Injection",
-                "icon": "video",
-                "pages": [
-                  "qawolf/video-injection"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Accessibility",
-            "icon": "eye",
-            "pages": [
-              "qawolf/a11y-native",
-              "qawolf/a11y-web"
-            ]
-          },
-          {
-            "group": "Performance",
-            "icon": "gauge",
-            "pages": [
-              "qawolf/web-performance"
-            ]
-          },
-          {
-            "group": "Visual diffing",
-            "icon": "scan",
-            "pages": [
-              "qawolf/visual-diffing"
             ]
           }
         ]
