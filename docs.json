@@ -113,7 +113,7 @@
         "tab": "Solutions",
         "icon": "book",
         "pages": [
-          "overview",
+          "qawolf/solutions-overview",
           {
             "group": "Email & SMS",
             "icon": "voicemail",
