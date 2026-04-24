@@ -1,13 +1,12 @@
 ```js
-import { flow, device } from "@qawolf/flows/ios";
-import { expect } from "@qawolf/flows/web";
+import { flow, device, expect } from "@qawolf/flows/ios";
 
 export default flow(
   "iOS Media - AVMetadata Injection",
   {
     target: "iOS - iPhone 15 (iOS 26)",
     launch: {
-      app: process.env.IPA_BUILD_LOCATION,
+      app: { env: "IPA_BUILD_LOCATION" },
       respectSystemAlerts: true,
       autoAcceptAlerts: true,
     },

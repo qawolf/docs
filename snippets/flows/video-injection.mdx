@@ -6,7 +6,7 @@ export default flow(
   {
     target: "iOS - iPhone 15 (iOS 26)",
     launch: {
-      app: process.env.IPA_APP_BUILD,
+      app: { env: "IPA_APP_BUILD" },
       respectSystemAlerts: true,
       autoAcceptAlerts: true,
     },

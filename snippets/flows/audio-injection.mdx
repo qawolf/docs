@@ -6,7 +6,7 @@ export default flow(
   {
     target: "iOS - iPhone 15 (iOS 26)",
     launch: {
-      app: process.env.IPA_BUILD_LOCATION,
+      app: { env: "IPA_BUILD_LOCATION" },
       respectSystemAlerts: true,
       autoAcceptAlerts: true,
     },
@@ -107,4 +107,3 @@ export default flow(
   },
 );
 ```
-

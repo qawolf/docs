@@ -97,7 +97,7 @@ export default flow(
   {
     target: "iOS - iPhone 15 (iOS 18)",
     launch: {
-      app: process.env.APP_STAGING,
+      app: { env: "APP_STAGING" },
       autoAcceptAlerts: true,
     },
   },
@@ -112,7 +112,7 @@ export default flow(
   "Test Name",
   {
     target: "Android - Pixel 9 (Android 15)",
-    launch: { app: process.env.APP_STAGING },
+    launch: { app: { env: "APP_STAGING" } },
   },
   async ({ driver, test }) => {
     // driver is ready to use
@@ -239,7 +239,7 @@ export default flow(
   {
     target: "iOS - iPhone 15 (iOS 18)",
     launch: {
-      app: process.env.APP_STAGING,
+      app: { env: "APP_STAGING" },
       autoAcceptAlerts: true,
     },
   },

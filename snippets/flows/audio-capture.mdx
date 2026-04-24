@@ -1,6 +1,5 @@
 ```js
-import { flow, device } from "@qawolf/flows/ios";
-import { expect } from "@qawolf/flows/web";
+import { flow, device, expect } from "@qawolf/flows/ios";
 
 const VIDEO_URL =
   "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v";
@@ -11,7 +10,9 @@ export default flow(
     target: "iOS - iPhone 15 (iOS 26)",
     launch: {
       browserName: "Safari",
-      safariInitialUrl: VIDEO_URL,
+      capabilities: {
+        "appium:safariInitialUrl": VIDEO_URL,
+      },
       respectSystemAlerts: true,
       autoAcceptAlerts: true,
     },
