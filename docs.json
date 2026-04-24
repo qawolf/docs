@@ -113,6 +113,7 @@
         "tab": "Solutions",
         "icon": "book",
         "pages": [
+          "overview",
           {
             "group": "Email & SMS",
             "icon": "voicemail",
@@ -122,7 +123,7 @@
           },
           {
             "group": "Device hardware & compatibility",
-            "icon": "monitor-smartphone",
+            "icon": "microchip",
             "pages": [
               "qawolf/network-connectivity",
               "qawolf/network-simulation"
