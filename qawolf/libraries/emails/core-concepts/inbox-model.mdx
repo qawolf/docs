@@ -1,0 +1,76 @@
+---
+title: "Inbox Model"
+description: "Understand address selection and message waiting."
+sidebarTitle: "Inbox Model"
+---
+
+An inbox handle is a small object bound to one email address.
+
+```ts
+const inbox = await mail.inbox({ new: true });
+
+inbox.emailAddress;
+await inbox.waitForMessage({});
+await inbox.waitForMessages({});
+await inbox.sendMessage({ to, subject, text });
+```
+
+## Address Selection
+
+Use the workspace default address:
+
+```ts
+const inbox = await mail.inbox();
+```
+
+Use a fresh derived address:
+
+```ts
+const inbox = await mail.inbox({ new: true });
+```
+
+Use a specific allowed address:
+
+```ts
+const inbox = await mail.inbox({
+  address: "my-team+admin@qawolf.email",
+});
+```
+
+`new: true` is the safest default for tests because it isolates each run.
+
+## Time Windows
+
+When you create an inbox handle, QA Wolf records that moment. Waiting methods look for messages after that time unless you pass `after`.
+
+```ts
+const inbox = await mail.inbox({ new: true });
+
+const after = new Date();
+await page.getByRole("button", { name: "Reset password" }).click();
+
+const message = await inbox.waitForMessage({ after });
+```
+
+Use `after` when an app action should trigger a specific email.
+
+## One Message Or Many
+
+Use `waitForMessage(...)` when one email should arrive.
+
+```ts
+const invite = await inbox.waitForMessage({ timeout: 120_000 });
+```
+
+Use `waitForMessages(...)` when the workflow sends a batch.
+
+```ts
+const messages = await inbox.waitForMessages({
+  minCount: 3,
+  timeout: 120_000,
+});
+```
+
+Both methods return parsed emails with normalized fields and extracted `urls`.
+
+For exact option shapes and parsed email fields, see the [Mail Reference](/qawolf/libraries/emails/api-reference/mail).

@@ -1,0 +1,56 @@
+---
+title: "Client Reference"
+description: "Reference notes for @qawolf/testkit/client."
+sidebarTitle: "Client Reference"
+---
+
+`@qawolf/testkit/client` is the runner-facing entry point.
+
+## Primary Export
+
+- `createTestkitClient(...)`
+
+Example:
+
+```ts
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+const client = createTestkitClient({
+  mountCifsShare: async () => "/Volumes/shared",
+  startOpenVpn: async () => "vpn-started",
+  startWireGuard: async () => "wireguard-started",
+});
+```
+
+## Input Ports
+
+The client is built from environment-specific ports such as:
+
+- `mountCifsShare`
+- `saveSnapshot`
+- `startOpenVpn`
+- `startWireGuard`
+
+If `saveSnapshot` is present, the created client exposes `saveBaselineScreenshot(...)`. Otherwise, that helper remains unavailable.
+
+Example with screenshot support:
+
+```ts
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+const client = createTestkitClient({
+  mountCifsShare: async ({ mountPoint }) => mountPoint,
+  saveSnapshot: async (name, bytes) => {
+    console.log(name, bytes.length);
+  },
+  startOpenVpn: async ({ configPath }) => configPath,
+  startWireGuard: async ({ configPath }) => configPath,
+});
+
+await client.saveBaselineScreenshot?.(
+  {
+    screenshot: async () => Buffer.from("image"),
+  },
+  "login-page",
+);
+```

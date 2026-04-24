@@ -1,0 +1,29 @@
+---
+title: "Emails Troubleshooting"
+description: "Common issues when using @qawolf/emails."
+sidebarTitle: "Emails Troubleshooting"
+---
+
+## `mail.inbox()` Throws Because No Client Is Configured
+
+Cause: The runtime did not call `configureEmailsClient(...)` before the flow ran.
+
+Check:
+
+- the runner creates the client
+- the runner configures it before flow execution
+
+## `waitForMessage(...)` Returns An Older Message
+
+Check:
+
+- whether the flow should pass `after: new Date()`
+- whether the same inbox is being reused across multiple steps or retries
+
+## No Message Arrives Before Timeout
+
+Check:
+
+- the product under test actually sent the email
+- the address being used is allowed for the workspace
+- the timeout is long enough for the expected delivery path

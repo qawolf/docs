@@ -1,0 +1,85 @@
+---
+title: "API Reference"
+description: "API landing page for @qawolf/flows and its platform entry points."
+sidebarTitle: "API Reference"
+---
+
+Use this section for stable API descriptions, defaults, and runtime behaviors.
+
+## Entry Points
+
+- [Top-Level](/qawolf/libraries/flows/api-reference/top-level)
+- [Web](/qawolf/libraries/flows/api-reference/web)
+- [Android](/qawolf/libraries/flows/api-reference/android)
+- [iOS](/qawolf/libraries/flows/api-reference/ios)
+- [CLI](/qawolf/libraries/flows/api-reference/cli)
+
+Example imports:
+
+```ts
+import { platform } from "@qawolf/flows";
+import { flow as webFlow } from "@qawolf/flows/web";
+import { flow as androidFlow } from "@qawolf/flows/android";
+import { flow as iosFlow } from "@qawolf/flows/ios";
+import { flow as cliFlow } from "@qawolf/flows/cli";
+```
+
+## Cross-Platform Surface
+
+The top-level `@qawolf/flows` entry point exposes:
+
+- `platform.target`
+- target configuration helpers for tests and local execution
+- shared target types
+- shared error and scope types
+
+Example:
+
+```ts
+import { configureTarget, platform, resetTarget } from "@qawolf/flows";
+import type { Target } from "@qawolf/flows";
+
+declare const target: Target;
+
+configureTarget({ target });
+
+const activeTarget = platform.target;
+
+resetTarget();
+```
+
+## Target Literals
+
+The current preset target literals are:
+
+```ts
+type Target =
+  | "Basic"
+  | "Web - Chrome"
+  | "Web - Chrome (GPU)"
+  | "Web - Firefox"
+  | "Web - Firefox (GPU)"
+  | "Web - Safari"
+  | "Web - Safari (GPU)"
+  | "Android - Pixel"
+  | "Android - Pixel 2 (Android 14)"
+  | "Android - Pixel 9"
+  | "Android - Pixel 9 (Android 14)"
+  | "Android - Pixel 9 (Android 15)"
+  | "Android - Pixel 9 (Android 16)"
+  | "Android - Pixel Tablet (Android 14)"
+  | "Android - Tablet"
+  | "iOS - Allowlisted iPhone"
+  | "iOS - Apple ID Enabled iPad"
+  | "iOS - Apple ID Enabled iPhone"
+  | "iOS - iPad"
+  | "iOS - iPad 11 (iOS 18)"
+  | "iOS - iPad 11 (iOS 18) (Apple ID)"
+  | "iOS - iPad 11 (iOS 26)"
+  | "iOS - iPhone 15 (iOS 17)"
+  | "iOS - iPhone 15 (iOS 18)"
+  | "iOS - iPhone 15 (iOS 26)"
+  | "iOS - iPhone 15 (iOS 26) (Apple ID)"
+  | "iOS - iPhone 15 (iOS 26) (allowlisted)"
+  | "iOS - iPhone 15 (iOS 26) (private)";
+```

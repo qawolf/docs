@@ -1,0 +1,125 @@
+---
+title: "Runtime And Launch"
+description: "Know which APIs only work while a flow is running."
+sidebarTitle: "Runtime And Launch"
+---
+
+Some exports are placeholders until QA Wolf runs the flow. They are typed for authoring, then wired to real runner dependencies at execution time.
+
+Common runtime-only APIs:
+
+- `launch(...)`
+- `expect`
+- mobile `device`
+- `platform.target`
+
+## Inside A Flow
+
+Inside the callback, runtime APIs are available.
+
+```ts
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Runtime example",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+    await expect(page.getByRole("heading")).toBeVisible();
+  },
+);
+```
+
+## Outside A Flow
+
+Outside execution, runtime APIs either have no active dependency or no active target. Keep module-level code limited to imports, constants, and pure helpers.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+const baseUrl = "https://example.com";
+
+export default flow(
+  "Good module shape",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto(baseUrl);
+  },
+);
+```
+
+## Use `device` For Mobile Control
+
+Use `device` for emulator or simulator operations after the flow is running. Use `driver` for app UI automation, and use `launch` options for app startup.
+
+```ts
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Location-aware screen",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });
+    await driver.pause(1000);
+  },
+);
+```
+
+## Choose The Startup Style
+
+Use launch-enabled flow definitions by default:
+
+```ts
+export default flow(
+  "Default startup",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+  },
+);
+```
+
+Pass an options object to `launch` when startup options are known up front:
+
+```ts
+export default flow(
+  "Persistent profile",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+  },
+);
+```
+
+Use `launch(...)` manually only when startup depends on callback logic:
+
+```ts
+export default flow("Manual startup", "Web - Chrome", async () => {
+  const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
+
+  const launchResult = await launch(
+    useSavedProfile
+      ? {
+          browserContext: "persistent",
+          userDataDir: "/tmp/profile",
+        }
+      : undefined,
+  );
+  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    "page" in launchResult
+      ? launchResult.page
+      : await launchResult.context.newPage();
+
+  await page.goto("https://example.com");
+});
+```
+
+For exact option shapes and defaults, use the platform reference pages: [Web](/qawolf/libraries/flows/api-reference/web), [Android](/qawolf/libraries/flows/api-reference/android), and [iOS](/qawolf/libraries/flows/api-reference/ios).

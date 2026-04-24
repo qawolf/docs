@@ -1,0 +1,73 @@
+---
+title: "Write An Android Flow"
+description: "Create an Android flow with Appium's WebdriverIO driver."
+sidebarTitle: "Write An Android Flow"
+---
+
+Use `@qawolf/flows/android` for Android app automation.
+
+## Launch The App First
+
+```ts
+import { expect, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open settings",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    const settings = await driver.$("~Settings");
+
+    await expect(settings).toBeDisplayed();
+  },
+);
+```
+
+`driver` is the Appium/WebdriverIO session for the Android device.
+
+For exact target strings, see [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals).
+
+## Launch With An Uploaded APK
+
+When the runner provides `RUN_INPUT_PATH`, omit `app` and pass normal app metadata.
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Open uploaded build", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    appPackage: "com.example.android",
+  });
+
+  await driver.pause(1000);
+});
+```
+
+If you pass `app`, QA Wolf uses that explicit source instead of `RUN_INPUT_PATH`.
+
+```ts
+await launch({
+  app: { path: "android/app.apk" },
+  appPackage: "com.example.android",
+});
+```
+
+For the full Android launch shape and app resolution rules, see the [Android Reference](/qawolf/libraries/flows/api-reference/android).
+
+## Control The Device
+
+Use `device` for emulator-level behavior, not ordinary app startup.
+
+```ts
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Location search",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await device.setGeoLocation({ latitude: 40.7128, longitude: -74.006 });
+    await driver.$("~Nearby").click();
+  },
+);
+```
+
+For device API details, see the [Android Reference](/qawolf/libraries/flows/api-reference/android).

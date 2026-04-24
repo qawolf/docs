@@ -1,0 +1,27 @@
+---
+title: "Client Lifecycle"
+description: "Understand how runners configure the emails client before a flow runs."
+sidebarTitle: "Client Lifecycle"
+---
+
+`mail.inbox(...)` uses the emails client configured for the current run.
+
+In normal QA Wolf runs, the runner creates the client and registers it before your flow starts. Flow code can call `mail.inbox(...)` directly.
+
+```ts
+const inbox = await mail.inbox({ new: true });
+```
+
+Local harnesses and runner code have to configure the client themselves:
+
+```ts
+const emails = await createEmailsClient(options);
+
+configureEmailsClient(emails);
+```
+
+Use `resetEmailsClient()` between tests so one configured client does not leak into the next case.
+
+If no client is configured, `mail.inbox(...)` throws a setup error.
+
+For runner-facing client creation fields, see the [Client Reference](/qawolf/libraries/emails/api-reference/client).

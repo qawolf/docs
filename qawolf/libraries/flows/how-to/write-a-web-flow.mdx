@@ -1,0 +1,149 @@
+---
+title: "Write A Web Flow"
+description: "Create a browser or Electron flow with @qawolf/flows/web."
+sidebarTitle: "Write A Web Flow"
+---
+
+Use `@qawolf/flows/web` for browser flows and Electron flows.
+
+## Browser Flow
+
+Start here for ordinary web app tests.
+
+```ts
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Search docs",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com/docs");
+    await page.getByRole("searchbox").fill("billing");
+
+    await expect(page.getByRole("link", { name: /billing/i })).toBeVisible();
+  },
+);
+```
+
+`launch: true` gives the callback a ready-to-use `page`.
+
+## Pick A Browser
+
+Change the target to run in another browser. Safari targets run with Playwright WebKit.
+
+<CodeGroup>
+
+```ts Chrome
+{ target: "Web - Chrome", launch: true }
+```
+
+```ts Firefox
+{ target: "Web - Firefox", launch: true }
+```
+
+```ts Safari
+{ target: "Web - Safari", launch: true }
+```
+
+```ts Chrome GPU
+{ target: "Web - Chrome (GPU)", launch: true }
+```
+
+```ts Firefox GPU
+{ target: "Web - Firefox (GPU)", launch: true }
+```
+
+```ts Safari GPU
+{ target: "Web - Safari (GPU)", launch: true }
+```
+
+</CodeGroup>
+
+See the full current list in [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals).
+
+## Pass Launch Options
+
+When startup options are known up front, put them in the flow definition.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Use saved session",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com/account");
+  },
+);
+```
+
+For every browser and Electron launch field, see the [Web Reference](/qawolf/libraries/flows/api-reference/web).
+
+## Launch Manually For Advanced Control
+
+Call `launch()` yourself only when startup depends on callback logic.
+
+```ts
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow("Open account", "Web - Chrome", async () => {
+  const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
+
+  const launchResult = await launch(
+    useSavedProfile
+      ? {
+          browserContext: "persistent",
+          userDataDir: "/tmp/qawolf-profile",
+        }
+      : undefined,
+  );
+  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    "page" in launchResult
+      ? launchResult.page
+      : await launchResult.context.newPage();
+
+  await page.goto("https://example.com/account");
+});
+```
+
+## Launch Electron
+
+Use the Electron launch kind when the target is an app instead of a website.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Open desktop app",
+  {
+    target: "Web - Chrome",
+    launch: {
+      kind: "electron",
+      executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+    },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Sign in" }).click();
+  },
+);
+```
+
+The Electron callback receives the first window as `page`.
+
+## Assertions
+
+Import `expect` from `@qawolf/flows/web` so assertions are connected to the QA Wolf runtime.
+
+```ts
+import { expect } from "@qawolf/flows/web";
+
+await expect(page.getByText("Saved")).toBeVisible();
+```

@@ -1,0 +1,32 @@
+---
+title: "Flows Troubleshooting"
+description: "Common issues when authoring or running flows."
+sidebarTitle: "Flows Troubleshooting"
+---
+
+## `platform.target` Throws
+
+Cause: The active target was read before it was configured.
+
+Check:
+
+- the runner is setting the target before flow code executes
+- tests and local tooling call `configureTarget(...)` explicitly
+
+## `expect` Throws A Stub Error
+
+Cause: The package code is running outside the runner-provided execution environment.
+
+Check:
+
+- the flow is running through the expected runtime
+- local tooling is not calling the type-safe stub directly
+
+## Callback Is Missing `page` Or `driver`
+
+Cause: The flow uses the no-`launch` path, so launched runtime objects are not injected into the callback automatically.
+
+Check:
+
+- whether the flow should use `{ target, launch: true }`
+- whether the flow should call `launch()` imperatively inside the callback

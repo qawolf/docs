@@ -1,0 +1,116 @@
+---
+title: "Targets"
+description: "Use targets to choose the browser, device, or CLI environment."
+sidebarTitle: "Targets"
+---
+
+A target tells QA Wolf where a flow should run.
+
+<CodeGroup>
+
+```ts Web
+"Web - Chrome";
+```
+
+```ts Android
+"Android - Pixel";
+```
+
+```ts iOS
+"iOS - iPhone 15 (iOS 26)";
+```
+
+```ts CLI
+"Basic";
+```
+
+</CodeGroup>
+
+## Available Targets
+
+Targets are grouped by the platform entry point you import from.
+
+| Entry point | Target family | Common target example |
+| --- | --- | --- |
+| `@qawolf/flows/web` | `Web - ...` | `Web - Chrome` |
+| `@qawolf/flows/android` | `Android - ...` | `Android - Pixel` |
+| `@qawolf/flows/ios` | `iOS - ...` | `iOS - iPhone 15 (iOS 26)` |
+| `@qawolf/flows/cli` | `Basic` | `Basic` |
+
+Use the API reference when you need the full current literal list: [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals).
+
+## Pass A Target Directly
+
+Use a target string when the callback will launch manually or when the platform does not have a launch model.
+
+```ts
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow("Manual launch", "Web - Chrome", async () => {
+  const launchResult = await launch();
+  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    "page" in launchResult
+      ? launchResult.page
+      : await launchResult.context.newPage();
+
+  await page.goto("https://example.com");
+});
+```
+
+## Wrap The Target To Launch First
+
+Use `{ target, launch }` when the callback should receive launched runtime objects. Pass `true` for default startup, or pass launch options when they are known before the callback runs.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Launch first",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+  },
+);
+```
+
+```ts
+export default flow(
+  "Launch with options",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com");
+  },
+);
+```
+
+## Read The Active Target
+
+Use `platform.target` when one flow supports more than one target.
+
+```ts
+import { platform } from "@qawolf/flows";
+
+if (platform.target.startsWith("iOS - ")) {
+  // iOS-specific assertion or setup.
+}
+```
+
+The runner configures the active target during execution. Tests and local tools can configure it explicitly:
+
+```ts
+import { configureTarget, resetTarget } from "@qawolf/flows";
+
+configureTarget({ target: "Web - Chrome" });
+
+// run code that reads platform.target
+
+resetTarget();
+```

@@ -1,0 +1,113 @@
+---
+title: "CLI Reference"
+description: "Reference notes for @qawolf/flows/cli."
+sidebarTitle: "CLI Reference"
+---
+
+`@qawolf/flows/cli` is the smallest platform entry point in `@qawolf/flows`.
+
+## Primary Exports
+
+- `flow(...)`
+- `expect`
+- `testContextDependencies`
+
+It also exports CLI-specific target, callback context, and flow definition types.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow(
+  "Prepare release metadata",
+  "Basic",
+  async ({ input, setOutput, test }) => {
+    await test("create release payload", async () => {
+      setOutput("release", {
+        generatedAt: new Date().toISOString(),
+        input,
+        status: "ready",
+      });
+    });
+  },
+);
+```
+
+## Target Model
+
+The current target type is:
+
+```ts
+type CliFlowTarget = "Basic";
+```
+
+Accepted flow target input:
+
+```ts
+type CliFlowTargetInput = CliFlowTarget | { target: CliFlowTarget };
+```
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export const stringTargetFlow = flow("String target", "Basic", async () => {});
+
+export const objectTargetFlow = flow(
+  "Object target",
+  { target: "Basic" },
+  async () => {},
+);
+```
+
+## Flow Callback Context
+
+The callback receives the CLI flow context.
+
+Public callback parameters:
+
+- `input`
+- `setOutput(...)`
+- `test(...)`
+
+CLI flows do not add launch helpers or platform-specific runtime objects.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow(
+  "Prepare release metadata",
+  "Basic",
+  async ({ input, setOutput, test }) => {
+    await test("create release payload", async () => {
+      setOutput("release", {
+        generatedAt: new Date().toISOString(),
+        input,
+        status: "ready",
+      });
+    });
+  },
+);
+```
+
+## `testContextDependencies`
+
+`testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.
+
+## `expect`
+
+Like the other platform entry points, the exported `expect` value is a type-safe stub in package code and is replaced by the runner when the flow executes.
+
+Example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/cli";
+
+export default flow("Use runner expect", "Basic", async () => {
+  await expect("ready").toBeDefined();
+});
+```
