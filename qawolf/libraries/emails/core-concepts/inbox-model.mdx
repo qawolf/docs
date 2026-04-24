@@ -4,8 +4,6 @@ description: "Understand address selection and message waiting."
 sidebarTitle: "Inbox Model"
 ---
 
-# Inbox Model
-
 An inbox handle is a small object bound to one email address.
 
 ```ts
@@ -43,8 +41,7 @@ const inbox = await mail.inbox({
 
 ## Time Windows
 
-When you create an inbox handle, QA Wolf records that moment. Waiting methods
-look for messages after that time unless you pass `after`.
+When you create an inbox handle, QA Wolf records that moment. Waiting methods look for messages after that time unless you pass `after`.
 
 ```ts
 const inbox = await mail.inbox({ new: true });
@@ -76,5 +73,4 @@ const messages = await inbox.waitForMessages({
 
 Both methods return parsed emails with normalized fields and extracted `urls`.
 
-For exact option shapes and parsed email fields, see the
-[Mail Reference](/qawolf/libraries/emails/api-reference/mail).
+For exact option shapes and parsed email fields, see the [Mail Reference](/qawolf/libraries/emails/api-reference/mail).

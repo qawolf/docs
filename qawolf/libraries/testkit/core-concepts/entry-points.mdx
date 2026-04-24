@@ -4,15 +4,13 @@ description: "Choose the right @qawolf/testkit import."
 sidebarTitle: "Entry Points"
 ---
 
-# Entry Points
-
 `@qawolf/testkit` has three public entry points.
 
-| Import                   | Use it for                            |
-| ------------------------ | ------------------------------------- |
-| `@qawolf/testkit`        | OTPs and runner-backed flow helpers   |
-| `@qawolf/testkit/web`    | helpers that need a Playwright `page` |
-| `@qawolf/testkit/client` | runner or local harness setup         |
+| Import | Use it for |
+| --- | --- |
+| `@qawolf/testkit` | OTPs and runner-backed flow helpers |
+| `@qawolf/testkit/web` | helpers that need a Playwright `page` |
+| `@qawolf/testkit/client` | runner or local harness setup |
 
 ## Top-Level Helpers
 
@@ -65,5 +63,4 @@ configureTestkitClient(
 
 Most flow authors do not need to create the client. The runner usually does it.
 
-For exact exports and option shapes, see the
-[Testkit API Reference](/qawolf/libraries/testkit/api-reference/index).
+For exact exports and option shapes, see the [Testkit API Reference](/qawolf/libraries/testkit/api-reference/index).

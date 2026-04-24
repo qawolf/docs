@@ -4,15 +4,11 @@ description: "Reference notes for the flow-facing mail API."
 sidebarTitle: "Mail Reference"
 ---
 
-# Mail Reference
-
 The top-level `mail` facade exposes:
 
 - `mail.inbox(options?)`
 
-`mail.inbox(...)` is a thin facade over the currently configured emails client.
-If no client has been configured, it throws a setup error that points callers to
-`configureEmailsClient(...)`.
+`mail.inbox(...)` is a thin facade over the currently configured emails client. If no client has been configured, it throws a setup error that points callers to `configureEmailsClient(...)`.
 
 Example:
 
@@ -32,9 +28,7 @@ The returned inbox handle exposes:
 - `waitForMessage(...)`
 - `waitForMessages(...)`
 
-The current exported wait type is shared by both wait methods. The sections
-below describe which fields each method actually uses. Pass `{}` when you want
-default wait behavior.
+The current exported wait type is shared by both wait methods. The sections below describe which fields each method actually uses. Pass `{}` when you want default wait behavior.
 
 Example:
 
@@ -67,8 +61,7 @@ Current validation and behavior:
 - `address` must come from the allowed workspace address set
 - omitting `address` triggers a lookup of the workspace default address
 
-If `teamId` is missing from the runtime client configuration, inbox creation
-fails.
+If `teamId` is missing from the runtime client configuration, inbox creation fails.
 
 Examples:
 
@@ -180,8 +173,7 @@ type WaitForMessagesOptions = {
 
 Behavior:
 
-- it uses `after` when provided, otherwise the time when `mail.inbox(...)` was
-  called
+- it uses `after` when provided, otherwise the time when `mail.inbox(...)` was called
 - it waits for `delay` first
 - it polls until at least `minCount` messages are found, or until timeout
 - it returns the matching parsed emails

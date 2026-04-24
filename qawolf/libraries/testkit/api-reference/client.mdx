@@ -4,8 +4,6 @@ description: "Reference notes for @qawolf/testkit/client."
 sidebarTitle: "Client Reference"
 ---
 
-# Client Reference
-
 `@qawolf/testkit/client` is the runner-facing entry point.
 
 ## Primary Export
@@ -33,8 +31,7 @@ The client is built from environment-specific ports such as:
 - `startOpenVpn`
 - `startWireGuard`
 
-If `saveSnapshot` is present, the created client exposes
-`saveBaselineScreenshot(...)`. Otherwise, that helper remains unavailable.
+If `saveSnapshot` is present, the created client exposes `saveBaselineScreenshot(...)`. Otherwise, that helper remains unavailable.
 
 Example with screenshot support:
 

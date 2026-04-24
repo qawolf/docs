@@ -4,8 +4,6 @@ description: "Use targets to choose the browser, device, or CLI environment."
 sidebarTitle: "Targets"
 ---
 
-# Targets
-
 A target tells QA Wolf where a flow should run.
 
 <CodeGroup>
@@ -32,20 +30,18 @@ A target tells QA Wolf where a flow should run.
 
 Targets are grouped by the platform entry point you import from.
 
-| Entry point             | Target family   | Common target example      |
-| ----------------------- | --------------- | -------------------------- |
-| `@qawolf/flows/web`     | `Web - ...`     | `Web - Chrome`             |
-| `@qawolf/flows/android` | `Android - ...` | `Android - Pixel`          |
-| `@qawolf/flows/ios`     | `iOS - ...`     | `iOS - iPhone 15 (iOS 26)` |
-| `@qawolf/flows/cli`     | `Basic`         | `Basic`                    |
+| Entry point | Target family | Common target example |
+| --- | --- | --- |
+| `@qawolf/flows/web` | `Web - ...` | `Web - Chrome` |
+| `@qawolf/flows/android` | `Android - ...` | `Android - Pixel` |
+| `@qawolf/flows/ios` | `iOS - ...` | `iOS - iPhone 15 (iOS 26)` |
+| `@qawolf/flows/cli` | `Basic` | `Basic` |
 
-Use the API reference when you need the full current literal list:
-[Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals).
+Use the API reference when you need the full current literal list: [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals).
 
 ## Pass A Target Directly
 
-Use a target string when the callback will launch manually or when the platform
-does not have a launch model.
+Use a target string when the callback will launch manually or when the platform does not have a launch model.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
@@ -65,9 +61,7 @@ export default flow("Manual launch", "Web - Chrome", async () => {
 
 ## Wrap The Target To Launch First
 
-Use `{ target, launch }` when the callback should receive launched runtime
-objects. Pass `true` for default startup, or pass launch options when they are
-known before the callback runs.
+Use `{ target, launch }` when the callback should receive launched runtime objects. Pass `true` for default startup, or pass launch options when they are known before the callback runs.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -109,8 +103,7 @@ if (platform.target.startsWith("iOS - ")) {
 }
 ```
 
-The runner configures the active target during execution. Tests and local tools
-can configure it explicitly:
+The runner configures the active target during execution. Tests and local tools can configure it explicitly:
 
 ```ts
 import { configureTarget, resetTarget } from "@qawolf/flows";

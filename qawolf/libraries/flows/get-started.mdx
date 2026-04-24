@@ -4,10 +4,7 @@ description: "Write QA Wolf flows for web, mobile, and CLI targets."
 sidebarTitle: "Get Started"
 ---
 
-# Get Started
-
-`@qawolf/flows` is the wrapper around QA Wolf test code. It tells the runner
-what to run, where to run it, and which runtime objects to inject.
+`@qawolf/flows` is the wrapper around QA Wolf test code. It tells the runner what to run, where to run it, and which runtime objects to inject.
 
 Most users should start with a launch-enabled flow.
 
@@ -63,8 +60,7 @@ if (platform.target === "Web - Chrome") {
 
 ## Start With `launch: true`
 
-`launch: true` asks QA Wolf to start the browser or mobile app before your
-callback runs.
+`launch: true` asks QA Wolf to start the browser or mobile app before your callback runs.
 
 <CodeGroup>
 
@@ -104,16 +100,15 @@ Every flow callback can receive `input`, `setOutput(...)`, and `test(...)`.
 
 When `launch` is enabled, the callback also receives platform runtime objects:
 
-| Platform | Additional callback parameters        |
-| -------- | ------------------------------------- |
-| Web      | `page`, `context`, optional `browser` |
-| Android  | `driver`                              |
-| iOS      | `driver`                              |
+| Platform | Additional callback parameters |
+| --- | --- |
+| Web | `page`, `context`, optional `browser` |
+| Android | `driver` |
+| iOS | `driver` |
 
 ## Pass Launch Options In The Definition
 
-If startup needs options and those options are known up front, pass an object to
-`launch`.
+If startup needs options and those options are known up front, pass an object to `launch`.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -133,13 +128,11 @@ export default flow(
 );
 ```
 
-This keeps startup declarative while still giving the callback a ready-to-use
-`page` or `driver`.
+This keeps startup declarative while still giving the callback a ready-to-use `page` or `driver`.
 
 ## Launch Manually For Advanced Flow Control
 
-Pass the target directly and call `launch(...)` in the callback only when the
-flow must decide startup at runtime.
+Pass the target directly and call `launch(...)` in the callback only when the flow must decide startup at runtime.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
@@ -166,16 +159,10 @@ export default flow("Open account", "Web - Chrome", async () => {
 });
 ```
 
-This is the advanced path for startup branches, delayed startup, or startup
-that depends on callback-only data.
+This is the advanced path for startup branches, delayed startup, or startup that depends on callback-only data.
 
 ## Next Steps
 
-- Read [Flow Model](/qawolf/libraries/flows/core-concepts/flow-model) for the
-  two startup styles.
-- Use [Write a Web Flow](/qawolf/libraries/flows/how-to/write-a-web-flow),
-  [Write an Android Flow](/qawolf/libraries/flows/how-to/write-an-android-flow),
-  or [Write an iOS Flow](/qawolf/libraries/flows/how-to/write-an-ios-flow) for
-  platform examples.
-- Keep [API Reference](/qawolf/libraries/flows/api-reference/index) nearby for
-  exact option shapes.
+- Read [Flow Model](/qawolf/libraries/flows/core-concepts/flow-model) for the two startup styles.
+- Use [Write a Web Flow](/qawolf/libraries/flows/how-to/write-a-web-flow), [Write an Android Flow](/qawolf/libraries/flows/how-to/write-an-android-flow), or [Write an iOS Flow](/qawolf/libraries/flows/how-to/write-an-ios-flow) for platform examples.
+- Keep [API Reference](/qawolf/libraries/flows/api-reference/index) nearby for exact option shapes.

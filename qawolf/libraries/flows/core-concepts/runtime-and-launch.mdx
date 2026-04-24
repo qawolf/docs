@@ -4,10 +4,7 @@ description: "Know which APIs only work while a flow is running."
 sidebarTitle: "Runtime And Launch"
 ---
 
-# Runtime And Launch
-
-Some exports are placeholders until QA Wolf runs the flow. They are typed for
-authoring, then wired to real runner dependencies at execution time.
+Some exports are placeholders until QA Wolf runs the flow. They are typed for authoring, then wired to real runner dependencies at execution time.
 
 Common runtime-only APIs:
 
@@ -35,8 +32,7 @@ export default flow(
 
 ## Outside A Flow
 
-Outside execution, runtime APIs either have no active dependency or no active
-target. Keep module-level code limited to imports, constants, and pure helpers.
+Outside execution, runtime APIs either have no active dependency or no active target. Keep module-level code limited to imports, constants, and pure helpers.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -54,8 +50,7 @@ export default flow(
 
 ## Use `device` For Mobile Control
 
-Use `device` for emulator or simulator operations after the flow is running.
-Use `driver` for app UI automation, and use `launch` options for app startup.
+Use `device` for emulator or simulator operations after the flow is running. Use `driver` for app UI automation, and use `launch` options for app startup.
 
 ```ts
 import { device, flow } from "@qawolf/flows/android";
@@ -127,7 +122,4 @@ export default flow("Manual startup", "Web - Chrome", async () => {
 });
 ```
 
-For exact option shapes and defaults, use the platform reference pages:
-[Web](/qawolf/libraries/flows/api-reference/web),
-[Android](/qawolf/libraries/flows/api-reference/android), and
-[iOS](/qawolf/libraries/flows/api-reference/ios).
+For exact option shapes and defaults, use the platform reference pages: [Web](/qawolf/libraries/flows/api-reference/web), [Android](/qawolf/libraries/flows/api-reference/android), and [iOS](/qawolf/libraries/flows/api-reference/ios).

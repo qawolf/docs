@@ -4,10 +4,7 @@ description: "Create a flow that uses runner utilities without a browser or mobi
 sidebarTitle: "Write A CLI Flow"
 ---
 
-# Write A CLI Flow
-
-Use `@qawolf/flows/cli` when the flow does not need a browser, Android device,
-or iOS device.
+Use `@qawolf/flows/cli` when the flow does not need a browser, Android device, or iOS device.
 
 ```ts
 import { flow } from "@qawolf/flows/cli";
@@ -42,8 +39,7 @@ export default flow("CLI task", { target: "Basic" }, async ({ input }) => {
 
 ## Use Node APIs Directly
 
-CLI flows run in Node, so prefer the Node standard library for ordinary file,
-process, and network work.
+CLI flows run in Node, so prefer the Node standard library for ordinary file, process, and network work.
 
 ```ts
 import { writeFile } from "node:fs/promises";
@@ -55,8 +51,7 @@ export default flow("Write report", "Basic", async () => {
 
 ## Pass Data To Later Flows
 
-Use `input` for values passed into the flow and `setOutput(...)` for values a
-later flow can read.
+Use `input` for values passed into the flow and `setOutput(...)` for values a later flow can read.
 
 ```ts
 export default flow(
@@ -73,9 +68,6 @@ export default flow(
 );
 ```
 
-Use CLI flows for setup, teardown, notifications, and other non-UI work. Reach
-for `input`, `setOutput(...)`, and `test(...)` when you need QA Wolf runtime
-state.
+Use CLI flows for setup, teardown, notifications, and other non-UI work. Reach for `input`, `setOutput(...)`, and `test(...)` when you need QA Wolf runtime state.
 
-For the exact CLI target and callback context shape, see the
-[CLI Reference](/qawolf/libraries/flows/api-reference/cli).
+For the exact CLI target and callback context shape, see the [CLI Reference](/qawolf/libraries/flows/api-reference/cli).

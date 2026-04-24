@@ -4,8 +4,6 @@ description: "Wait for the next email sent to a QA Wolf inbox."
 sidebarTitle: "Wait For A Message"
 ---
 
-# Wait For A Message
-
 Use `waitForMessage(...)` when one email should arrive.
 
 ```ts
@@ -46,5 +44,4 @@ expect(message.subject).toContain("Welcome");
 expect(message.urls[0]).toContain("/activate");
 ```
 
-For the exact `waitForMessage(...)` options and parsed email shape, see the
-[Mail Reference](/qawolf/libraries/emails/api-reference/mail).
+For the exact `waitForMessage(...)` options and parsed email shape, see the [Mail Reference](/qawolf/libraries/emails/api-reference/mail).

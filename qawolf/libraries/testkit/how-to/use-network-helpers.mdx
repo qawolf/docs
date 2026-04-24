@@ -4,8 +4,6 @@ description: "Start VPN support from a flow through the configured testkit clien
 sidebarTitle: "VPN Setup"
 ---
 
-# VPN Setup
-
 Use network helpers when a flow must reach private infrastructure.
 
 ## Start OpenVPN
@@ -20,9 +18,6 @@ const pid = await startOpenVpn({
 console.log(`OpenVPN started as ${pid}`);
 ```
 
-`startOpenVpn(...)` is a top-level flow helper. It requires the runner to
-configure the testkit client first.
+`startOpenVpn(...)` is a top-level flow helper. It requires the runner to configure the testkit client first.
 
-For runner-facing network ports and exact option shapes, see the
-[Client Reference](/qawolf/libraries/testkit/api-reference/client) and
-[Types Reference](/qawolf/libraries/testkit/api-reference/types).
+For runner-facing network ports and exact option shapes, see the [Client Reference](/qawolf/libraries/testkit/api-reference/client) and [Types Reference](/qawolf/libraries/testkit/api-reference/types).

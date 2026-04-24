@@ -4,8 +4,6 @@ description: "Reference notes for @qawolf/flows/web."
 sidebarTitle: "Web Reference"
 ---
 
-# Web Reference
-
 `@qawolf/flows/web` defines web flows and optional explicit launch behavior.
 
 ## Primary Exports
@@ -15,8 +13,7 @@ sidebarTitle: "Web Reference"
 - `expect`
 - `testContextDependencies`
 
-It also exports web-specific target, launch, callback context, and flow
-definition types.
+It also exports web-specific target, launch, callback context, and flow definition types.
 
 Example:
 
@@ -78,11 +75,7 @@ export const launchedFlow = flow(
 
 ## Launch Shapes
 
-Browser launch accepts the generated Playwright browser and context launch
-options, excluding Playwright's raw `persistentContext` and `userDataDir`
-fields. QA Wolf adds `browserContext`, reintroduces `userDataDir` for
-persistent launches, and maps those options back to the underlying Playwright
-shape.
+Browser launch accepts the generated Playwright browser and context launch options, excluding Playwright's raw `persistentContext` and `userDataDir` fields. QA Wolf adds `browserContext`, reintroduces `userDataDir` for persistent launches, and maps those options back to the underlying Playwright shape.
 
 ```ts
 type BrowserLaunchOptions = {
@@ -114,9 +107,7 @@ type LaunchOptions =
     };
 ```
 
-QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context
-mode. Pass `userDataDir` with `browserContext: "persistent"` when a profile
-directory should be reused.
+QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context mode. Pass `userDataDir` with `browserContext: "persistent"` when a profile directory should be reused.
 
 Browser example:
 
@@ -177,9 +168,7 @@ Electron launch-enabled flows receive the first Electron window as `page`.
 
 ## `testContextDependencies`
 
-`testContextDependencies` is exported for runner and tooling integration. Flow
-authors should usually use the public callback parameters above instead of
-depending on the raw runner dependency list.
+`testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.
 
 ## Defaults
 

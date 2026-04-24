@@ -4,8 +4,6 @@ description: "Reference notes for @qawolf/flows/cli."
 sidebarTitle: "CLI Reference"
 ---
 
-# CLI Reference
-
 `@qawolf/flows/cli` is the smallest platform entry point in `@qawolf/flows`.
 
 ## Primary Exports
@@ -14,8 +12,7 @@ sidebarTitle: "CLI Reference"
 - `expect`
 - `testContextDependencies`
 
-It also exports CLI-specific target, callback context, and flow definition
-types.
+It also exports CLI-specific target, callback context, and flow definition types.
 
 Example:
 
@@ -99,14 +96,11 @@ export default flow(
 
 ## `testContextDependencies`
 
-`testContextDependencies` is exported for runner and tooling integration. Flow
-authors should usually use the public callback parameters above instead of
-depending on the raw runner dependency list.
+`testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.
 
 ## `expect`
 
-Like the other platform entry points, the exported `expect` value is a type-safe
-stub in package code and is replaced by the runner when the flow executes.
+Like the other platform entry points, the exported `expect` value is a type-safe stub in package code and is replaced by the runner when the flow executes.
 
 Example:
 

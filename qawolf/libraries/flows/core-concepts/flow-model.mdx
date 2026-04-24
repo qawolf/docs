@@ -4,8 +4,6 @@ description: "Understand the two flow startup styles and when to use each one."
 sidebarTitle: "Flow Model"
 ---
 
-# Flow Model
-
 A flow has three parts:
 
 ```ts
@@ -47,8 +45,7 @@ Launch-enabled flows receive platform objects in addition to these parameters.
 
 ## Launch In The Flow Definition
 
-Use `{ target, launch: true }` when the flow should start the session before the
-callback runs.
+Use `{ target, launch: true }` when the flow should start the session before the callback runs.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -64,14 +61,13 @@ export default flow(
 
 The callback receives the launched object for that platform:
 
-| Entry point             | Launch object                         |
-| ----------------------- | ------------------------------------- |
-| `@qawolf/flows/web`     | `page`, `context`, optional `browser` |
-| `@qawolf/flows/android` | `driver`                              |
-| `@qawolf/flows/ios`     | `driver`                              |
+| Entry point | Launch object |
+| --- | --- |
+| `@qawolf/flows/web` | `page`, `context`, optional `browser` |
+| `@qawolf/flows/android` | `driver` |
+| `@qawolf/flows/ios` | `driver` |
 
-When startup needs options, pass an options object to `launch` instead of
-calling `launch(...)` manually.
+When startup needs options, pass an options object to `launch` instead of calling `launch(...)` manually.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -95,8 +91,7 @@ Use this shape when the startup options are known before the callback runs.
 
 ## Manual Launch Is For Advanced Flows
 
-Pass the target directly and call `launch(...)` inside the callback only when
-startup depends on callback logic.
+Pass the target directly and call `launch(...)` inside the callback only when startup depends on callback logic.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";

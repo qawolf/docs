@@ -4,10 +4,7 @@ description: "Configure a testkit client in runners and local execution environm
 sidebarTitle: "Configure A Runner Client"
 ---
 
-# Configure A Runner Client
-
-Runners and local tooling create the testkit client once and then configure it
-before the flow runs.
+Runners and local tooling create the testkit client once and then configure it before the flow runs.
 
 ```ts
 import { configureTestkitClient } from "@qawolf/testkit";
@@ -25,8 +22,6 @@ configureTestkitClient(testkit);
 
 ## Test Cleanup
 
-Use `resetTestkitClient()` between tests so client wiring does not leak across
-cases.
+Use `resetTestkitClient()` between tests so client wiring does not leak across cases.
 
-For the exact client port shape, see the
-[Client Reference](/qawolf/libraries/testkit/api-reference/client).
+For the exact client port shape, see the [Client Reference](/qawolf/libraries/testkit/api-reference/client).

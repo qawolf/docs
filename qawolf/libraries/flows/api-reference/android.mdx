@@ -4,8 +4,6 @@ description: "Reference notes for @qawolf/flows/android."
 sidebarTitle: "Android Reference"
 ---
 
-# Android Reference
-
 `@qawolf/flows/android` defines Android flows and advanced device controls.
 
 ## Primary Exports
@@ -16,8 +14,7 @@ sidebarTitle: "Android Reference"
 - `expect`
 - `testContextDependencies`
 
-It also exports Android-specific target, launch, device, callback context, and
-flow definition types.
+It also exports Android-specific target, launch, device, callback context, and flow definition types.
 
 Example:
 
@@ -49,9 +46,7 @@ Launch-enabled Android flows also receive `driver`.
 
 ## `testContextDependencies`
 
-`testContextDependencies` is exported for runner and tooling integration. Flow
-authors should usually use the public callback parameters above instead of
-depending on the raw runner dependency list.
+`testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.
 
 ## Target Model
 
@@ -103,8 +98,7 @@ Use `flow(...)` for Android authoring.
 
 Behavior from the implementation:
 
-- without launch, the callback receives `input`, `setOutput(...)`, and
-  `test(...)`
+- without launch, the callback receives `input`, `setOutput(...)`, and `test(...)`
 - with `launch: true`, the flow calls `launch()` with default Android startup
 - with `launch: <options>`, the flow calls `launch(options)`
 - when launch is enabled, the callback also receives `driver`
@@ -186,8 +180,7 @@ export default flow("Launch apk", "Android - Pixel", async () => {
 
 The current implementation applies these defaults:
 
-- when `app` is omitted, launch falls back to the runner-provided executable
-  input path and then to installed-app startup through `appPackage`
+- when `app` is omitted, launch falls back to the runner-provided executable input path and then to installed-app startup through `appPackage`
 - `autoGrantPermissions` defaults to `true`
 - `noReset` defaults to `false`
 
@@ -215,8 +208,7 @@ When `app` is provided, the current resolution order is:
 
 When `app` is omitted, launch falls back to `RUN_INPUT_PATH`.
 
-Relative paths are resolved against `RUN_INPUTS_EXECUTABLES_DIR` when that
-environment variable is present.
+Relative paths are resolved against `RUN_INPUTS_EXECUTABLES_DIR` when that environment variable is present.
 
 Explicit app source examples:
 
@@ -235,14 +227,11 @@ await launch({
 });
 ```
 
-If `app` is present but does not resolve to a value, launch does not fall back to
-`RUN_INPUT_PATH`.
+If `app` is present but does not resolve to a value, launch does not fall back to `RUN_INPUT_PATH`.
 
 ## `device`
 
-`device` is a runtime proxy over the Android emulator API. Use it for
-device-level operations that sit outside the main `flow(...)` and `launch()`
-path.
+`device` is a runtime proxy over the Android emulator API. Use it for device-level operations that sit outside the main `flow(...)` and `launch()` path.
 
 Example:
 
@@ -259,8 +248,7 @@ export default flow("Set device location", "Android - Pixel", async () => {
 
 ## `expect`
 
-The exported `expect` value is a type-safe stub in package code and is replaced
-by the runner during execution.
+The exported `expect` value is a type-safe stub in package code and is replaced by the runner during execution.
 
 Example:
 

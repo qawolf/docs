@@ -4,13 +4,9 @@ description: "Common issues when using @qawolf/testkit."
 sidebarTitle: "Testkit Troubleshooting"
 ---
 
-# Testkit Troubleshooting
-
 ## Helper Throws Because No Client Is Configured
 
-Cause:
-The flow called a client-dependent helper before the runner configured the
-testkit client.
+Cause: The flow called a client-dependent helper before the runner configured the testkit client.
 
 Check:
 
@@ -19,8 +15,7 @@ Check:
 
 ## `saveBaselineScreenshot()` Throws
 
-Cause:
-The configured client was created without `saveSnapshot`.
+Cause: The configured client was created without `saveSnapshot`.
 
 Check:
 

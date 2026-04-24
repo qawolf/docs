@@ -4,10 +4,7 @@ description: "Reference notes for the top-level @qawolf/flows entry point."
 sidebarTitle: "Top-Level Reference"
 ---
 
-# Top-Level Reference
-
-The top-level `@qawolf/flows` entry point exposes cross-platform helpers and
-types.
+The top-level `@qawolf/flows` entry point exposes cross-platform helpers and types.
 
 ## Primary Exports
 
@@ -50,8 +47,7 @@ resetTarget();
 
 ## `platform.target`
 
-`platform.target` is a getter on a frozen object. Every access reads the
-currently configured target.
+`platform.target` is a getter on a frozen object. Every access reads the currently configured target.
 
 ```ts
 import { platform } from "@qawolf/flows";
@@ -100,8 +96,7 @@ type TargetScope = {
 
 ## `getCurrentScope()`
 
-Returns the current configured target scope, or `undefined` when no target has
-been configured yet.
+Returns the current configured target scope, or `undefined` when no target has been configured yet.
 
 Example:
 
@@ -139,8 +134,7 @@ console.log(getCurrentScope()); // undefined
 
 This is a dedicated error class whose message is `"failWithoutRetry"`.
 
-Use it when flow execution should fail immediately rather than being treated as
-retryable by the surrounding runtime.
+Use it when flow execution should fail immediately rather than being treated as retryable by the surrounding runtime.
 
 Example:
 

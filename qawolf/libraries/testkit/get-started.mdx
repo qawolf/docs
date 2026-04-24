@@ -4,8 +4,6 @@ description: "Use @qawolf/testkit helpers for OTPs, QR codes, screenshots, and n
 sidebarTitle: "Get Started"
 ---
 
-# Get Started
-
 `@qawolf/testkit` is a small helper library for flow code and runner wiring.
 
 Use it when a test needs something outside normal browser or mobile automation:
@@ -66,15 +64,10 @@ const pid = await startOpenVpn({
 });
 ```
 
-If the runner has not configured a client, these helpers fail fast with a setup
-error. That is intentional: flow code should not guess how to reach runner-only
-services.
+If the runner has not configured a client, these helpers fail fast with a setup error. That is intentional: flow code should not guess how to reach runner-only services.
 
 ## Next Steps
 
-- Read [Entry Points](/qawolf/libraries/testkit/core-concepts/entry-points) to
-  choose the right import.
-- Read [Client Model](/qawolf/libraries/testkit/core-concepts/client-model) if
-  you are wiring a runner or local harness.
-- Use [API Reference](/qawolf/libraries/testkit/api-reference/index) for exact
-  option shapes.
+- Read [Entry Points](/qawolf/libraries/testkit/core-concepts/entry-points) to choose the right import.
+- Read [Client Model](/qawolf/libraries/testkit/core-concepts/client-model) if you are wiring a runner or local harness.
+- Use [API Reference](/qawolf/libraries/testkit/api-reference/index) for exact option shapes.
