@@ -204,6 +204,13 @@
             "pages": [
               "qawolf/visual-diffing"
             ]
+          },
+          {
+            "group": "AI & LLMs",
+            "icon": "sparkles",
+            "pages": [
+              "qawolf/non-deterministic-ai-testing"
+            ]
           }
         ]
       },
