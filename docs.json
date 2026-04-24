@@ -206,7 +206,7 @@
             ]
           },
           {
-            "group": "AI & LLM",
+            "group": "AI & LLMs",
             "icon": "sparkles",
             "pages": [
               "qawolf/non-deterministic-ai-testing"
