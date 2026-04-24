@@ -140,6 +140,7 @@
             "group": "Mobile-native media",
             "icon": "tablet-smartphone",
             "pages": [
+              "qawolf/mobile-native-media",
               {
                 "group": "Photo library management",
                 "icon": "image",

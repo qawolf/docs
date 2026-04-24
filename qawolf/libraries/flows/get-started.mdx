@@ -102,7 +102,8 @@ When `launch` is enabled, the callback also receives platform runtime objects:
 
 | Platform | Additional callback parameters |
 | --- | --- |
-| Web | `page`, `context`, optional `browser` |
+| Web browser | `page`, `context`, optional `browser` |
+| Web Electron | `page` |
 | Android | `driver` |
 | iOS | `driver` |
 
@@ -135,23 +136,21 @@ This keeps startup declarative while still giving the callback a ready-to-use `p
 Pass the target directly and call `launch(...)` in the callback only when the flow must decide startup at runtime.
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
 
 export default flow("Open account", "Web - Chrome", async () => {
   const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
 
-  const launchResult = await launch(
-    useSavedProfile
-      ? {
-          browserContext: "persistent",
-          userDataDir: "/tmp/qawolf-profile",
-        }
-      : undefined,
-  );
-  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+  const launchResult = useSavedProfile
+    ? await launch({
+        browserContext: "persistent",
+        userDataDir: "/tmp/qawolf-profile",
+      })
+    : await launch();
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
 
   const page =
-    "page" in launchResult
+    isPersistent(launchResult)
       ? launchResult.page
       : await launchResult.context.newPage();
 

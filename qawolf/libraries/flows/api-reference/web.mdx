@@ -11,6 +11,9 @@ sidebarTitle: "Web Reference"
 - `flow(...)`
 - `launch(...)`
 - `expect`
+- `isAnonymous(...)`
+- `isPersistent(...)`
+- `isElectron(...)`
 - `testContextDependencies`
 
 It also exports web-specific target, launch, callback context, and flow definition types.
@@ -42,22 +45,26 @@ type WebFlowTargetInput =
       launch?: false | undefined;
     }
   | {
-      target: WebFlowTarget;
-      launch: true | LaunchOptions;
+      target: WebBrowserFlowTarget;
+      launch: true | BrowserLaunchOptions;
+    }
+  | {
+      target: WebElectronFlowTarget;
+      launch: ElectronFlowLaunchOptions;
     };
 ```
 
 Examples:
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
 
 export const manualLaunchFlow = flow("Open later", "Web - Chrome", async () => {
   const launchResult = await launch();
-  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
 
   const page =
-    "page" in launchResult
+    isPersistent(launchResult)
       ? launchResult.page
       : await launchResult.context.newPage();
 
@@ -105,6 +112,15 @@ type LaunchOptions =
       kind: "electron";
       executablePath: string;
     };
+
+type ElectronFlowLaunchOptions = {
+  executablePath: string;
+};
+
+type LaunchResult =
+  | AnonymousLaunchResult
+  | PersistentLaunchResult
+  | ElectronLaunchResult;
 ```
 
 QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context mode. Pass `userDataDir` with `browserContext: "persistent"` when a profile directory should be reused.
@@ -118,17 +134,10 @@ export default flow(
   "Open with persistent profile",
   "Web - Chrome",
   async () => {
-    const launchResult = await launch({
+    const { page } = await launch({
       browserContext: "persistent",
       userDataDir: "/tmp/qawolf-profile",
     });
-    if (!("context" in launchResult))
-      throw new Error("Expected browser launch");
-
-    const page =
-      "page" in launchResult
-        ? launchResult.page
-        : await launchResult.context.newPage();
 
     await page.goto("https://example.com");
   },
@@ -138,17 +147,32 @@ export default flow(
 Electron example:
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow } from "@qawolf/flows/web";
 
-export default flow("Open Electron app", "Web - Chrome", async () => {
-  const { firstWindowPage } = await launch({
-    kind: "electron",
-    executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
-  });
-
-  await firstWindowPage.goto("about:blank");
-});
+export default flow(
+  "Open Electron app",
+  {
+    target: "Electron",
+    launch: {
+      executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("about:blank");
+  },
+);
 ```
+
+Manual `launch(...)` calls are different because they are not target-typed. Include `kind: "electron"` there and use `firstWindowPage` from the result.
+
+Static launch options infer a narrow return type when they determine the result shape:
+
+- `launch({ browserContext: "persistent" })` returns `PersistentLaunchResult`
+- `launch({ browserContext: "incognito" })` returns `AnonymousLaunchResult`
+- `launch({ kind: "electron", executablePath })` returns `ElectronLaunchResult`
+- `launch()` returns the full `LaunchResult` union because startup depends on the active flow target
+
+Use `isAnonymous(...)`, `isPersistent(...)`, and `isElectron(...)` to narrow dynamic results before reading shape-specific fields.
 
 ## Flow Callback Context
 
@@ -176,22 +200,23 @@ Electron launch-enabled flows receive the first Electron window as `page`.
 - default `browserContext` is `"incognito"`
 - default `browser` comes from the flow target
 - GPU launch behavior is derived from the flow target
+- Electron declarative launch requires `target: "Electron"` and `executablePath`
 
 Example:
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
 
 export default flow(
   "Use target browser defaults",
   "Web - Firefox",
   async () => {
     const launchResult = await launch();
-    if (!("context" in launchResult))
+    if (isElectron(launchResult))
       throw new Error("Expected browser launch");
 
     const page =
-      "page" in launchResult
+      isPersistent(launchResult)
         ? launchResult.page
         : await launchResult.context.newPage();
 

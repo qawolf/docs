@@ -90,23 +90,21 @@ For every browser and Electron launch field, see the [Web Reference](/qawolf/lib
 Call `launch()` yourself only when startup depends on callback logic.
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
 
 export default flow("Open account", "Web - Chrome", async () => {
   const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
 
-  const launchResult = await launch(
-    useSavedProfile
-      ? {
-          browserContext: "persistent",
-          userDataDir: "/tmp/qawolf-profile",
-        }
-      : undefined,
-  );
-  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+  const launchResult = useSavedProfile
+    ? await launch({
+        browserContext: "persistent",
+        userDataDir: "/tmp/qawolf-profile",
+      })
+    : await launch();
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
 
   const page =
-    "page" in launchResult
+    isPersistent(launchResult)
       ? launchResult.page
       : await launchResult.context.newPage();
 
@@ -116,7 +114,7 @@ export default flow("Open account", "Web - Chrome", async () => {
 
 ## Launch Electron
 
-Use the Electron launch kind when the target is an app instead of a website.
+Use the `Electron` target when the target is an app instead of a website.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -124,9 +122,8 @@ import { flow } from "@qawolf/flows/web";
 export default flow(
   "Open desktop app",
   {
-    target: "Web - Chrome",
+    target: "Electron",
     launch: {
-      kind: "electron",
       executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
     },
   },
@@ -136,7 +133,7 @@ export default flow(
 );
 ```
 
-The Electron callback receives the first window as `page`.
+The Electron callback receives the first window as `page`. Declarative Electron launch options omit `kind` because the target already identifies Electron.
 
 ## Assertions
 

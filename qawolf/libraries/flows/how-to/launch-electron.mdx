@@ -4,7 +4,7 @@ description: "Launch an Electron app from a web flow."
 sidebarTitle: "Launch Electron"
 ---
 
-Use Electron launch mode when the target is a desktop app instead of a browser page.
+Use the `Electron` target when the flow starts a desktop app instead of a browser page.
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -12,9 +12,8 @@ import { flow } from "@qawolf/flows/web";
 export default flow(
   "Open desktop app",
   {
-    target: "Web - Chrome",
+    target: "Electron",
     launch: {
-      kind: "electron",
       executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
     },
   },
@@ -24,7 +23,7 @@ export default flow(
 );
 ```
 
-For the exact Electron launch shape, see the [Web Reference](/qawolf/libraries/flows/api-reference/web).
+Declarative Electron launch options omit `kind` because the target already identifies the flow as Electron. For the exact Electron launch shape, see the [Web Reference](/qawolf/libraries/flows/api-reference/web).
 
 ## Use The First Window
 
@@ -37,7 +36,7 @@ await page.getByRole("button", { name: "Continue" }).click();
 
 ## Choose The Executable At Runtime
 
-Call `launch(...)` manually when the app path depends on callback logic.
+Call `launch(...)` manually when the app path depends on callback logic. Manual launch calls must include `kind: "electron"` because they are not typed by the flow target.
 
 ```ts
 import { flow, launch } from "@qawolf/flows/web";
