@@ -9,23 +9,24 @@ sidebarTitle: "iOS"
 **Save, list, and delete photos:**
 
 ```javascript
-const driver = await wdio.startIos({
-  "appium:bundleId": "com.apple.mobileslideshow",
-});
+import { device } from "@qawolf/flows/ios";
+
+// driver is provided by the flow callback when using:
+// launch: { bundleId: "com.apple.mobileslideshow" }
 
 // Save a photo to the library
 const imagePath = "/home/wolf/files/large.jpg";
-await ios.savePhoto(driver, imagePath);
+await device.savePhoto(driver, imagePath);
 
 // Verify the photo was saved
-const photosAfterSave = await ios.listPhotos(driver);
+const photosAfterSave = await device.listPhotos(driver);
 expect(photosAfterSave.success).toBe(true);
 expect(photosAfterSave.totalCount).toBe(1);
 
 // Clean up
-await ios.deleteAllPhotos(driver);
+await device.deleteAllPhotos(driver);
 
-const photosAfterDelete = await ios.listPhotos(driver);
+const photosAfterDelete = await device.listPhotos(driver);
 expect(photosAfterDelete.success).toBe(true);
 expect(photosAfterDelete.totalCount).toBe(0);
 ```

@@ -1,21 +1,19 @@
 ```js
-import { flow } from "@qawolf/flows/ios";
+import { flow, device } from "@qawolf/flows/ios";
 import { expect } from "@qawolf/flows/web";
-import * as ios from "@qawolf/run-globals-ios";
 
 export default flow(
   "iOS Media - AVMetadata Injection",
-  "iOS - iPhone 15 (iOS 26)",
-  async ({ wdio, test, ...testContext }) => {
-    let driver;
+  {
+    target: "iOS - iPhone 15 (iOS 26)",
+    launch: {
+      app: process.env.IPA_BUILD_LOCATION,
+      respectSystemAlerts: true,
+      autoAcceptAlerts: true,
+    },
+  },
+  async ({ driver, test }) => {
     await test("App install and open AVMetadata", async () => {
-      driver = await wdio.startIos({
-        "appium:app": process.env.IPA_BUILD_LOCATION,
-        "appium:settings[respectSystemAlerts]": true,
-        "appium:autoAcceptAlerts": true,
-        "appium:iosInstallPause": "5000",
-      });
-
       // Tap "Media"
       await driver
         .$(
@@ -43,7 +41,7 @@ export default flow(
     await test("QR Code Test", async () => {
       const qrCodeLinkToInject = "https://qawolf.com/qr-code";
 
-      await ios.injectBarcode(driver, process.env.BUNDLE_ID, {
+      await device.injectBarcode(driver, process.env.BUNDLE_ID, {
         value: qrCodeLinkToInject,
       });
 
@@ -63,7 +61,7 @@ export default flow(
     await test("Barcode Scanning Test", async () => {
       const barcodeToInject = "1234567890123";
 
-      await ios.injectBarcode(driver, process.env.BUNDLE_ID, {
+      await device.injectBarcode(driver, process.env.BUNDLE_ID, {
         type: "org.gs1.EAN-13",
         value: barcodeToInject,
       });

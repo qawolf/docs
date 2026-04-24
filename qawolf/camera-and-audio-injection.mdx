@@ -13,12 +13,13 @@ sidebarTitle: "iOS"
 **Inject an image into the camera feed:**
 
 ```javascript
-const ios = await import("@qawolf/run-globals-ios");
+import { device } from "@qawolf/flows/ios";
+
 const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
 const storagePath = process.env.STORAGE_PATH; // QA Wolf remote storage
 const imagePath = `${storagePath}/large.jpg`;
 
-const cleanup = await ios.injectCamera(driver, bundleId, {
+const cleanup = await device.injectCamera(driver, bundleId, {
   data: imagePath,
   type: "image", // optional — inferred from .jpg/.png/etc.
 });

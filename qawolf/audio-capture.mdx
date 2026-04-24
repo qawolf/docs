@@ -9,19 +9,20 @@ sidebarTitle: "iOS"
 **Record and download speaker output:**
 
 ```js
+import { device } from "@qawolf/flows/ios";
 const fsPromises = await import("node:fs/promises");
 
 // Start recording
-const startResult = await ios.startSpeakerRecording(driver);
+const startResult = await device.startSpeakerRecording(driver);
 const audioSessionId = startResult.id;
 
 // Run your test steps that trigger audio playback
 
 // Stop recording
-const stopResult = await ios.stopSpeakerRecording(driver, audioSessionId);
+const stopResult = await device.stopSpeakerRecording(driver, audioSessionId);
 
 // Download the recording
-const result = await ios.downloadSpeakerRecording(driver, stopResult.filename);
+const result = await device.downloadSpeakerRecording(driver, stopResult.filename);
 const wavData = Buffer.from(result, "base64");
 await fsPromises.writeFile("/tmp/output.wav", wavData);
 ```
@@ -29,11 +30,12 @@ await fsPromises.writeFile("/tmp/output.wav", wavData);
 **Compare recorded audio against a reference file:**
 
 ```js
+import { device } from "@qawolf/flows/ios";
 const fsPromises = await import("node:fs/promises");
 
 // Generate fingerprint for reference file
 const referenceBuffer = (await fsPromises.readFile(REFERENCE_AUDIO_PATH)).toString("base64");
-const referenceResult = await ios.calculateAudioFingerprint(driver, referenceBuffer);
+const referenceResult = await device.calculateAudioFingerprint(driver, referenceBuffer);
 
 // Compare against recorded output
 const bestMatch = findBestMatch(stopResult.fingerprint, referenceResult.fingerprint);

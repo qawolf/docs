@@ -1,29 +1,28 @@
 ```js
-import { flow } from "@qawolf/flows/ios";
-import * as ios from "@qawolf/run-globals-ios";
+import { flow, device } from "@qawolf/flows/ios";
 
 export default flow(
   "iOS Media - Audio Injection",
-  "iOS - iPhone 15 (iOS 26)",
-  async ({ wdio, test, ...testContext }) => {
+  {
+    target: "iOS - iPhone 15 (iOS 26)",
+    launch: {
+      app: process.env.IPA_BUILD_LOCATION,
+      respectSystemAlerts: true,
+      autoAcceptAlerts: true,
+    },
+  },
+  async ({ driver, test }) => {
     await test("iOS Media - Start App and Inject Audio to microphone", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
       // Install and Launch Trot app
-      const driver = await wdio.startIos({
-        "appium:app": process.env.IPA_BUILD_LOCATION,
-        "appium:settings[respectSystemAlerts]": true,
-        "appium:autoAcceptAlerts": true,
-        "appium:iosInstallPause": "5000",
-      });
-
 
       // Inject Audio
       const fsPromises = await import("node:fs/promises");
       const bundleId = process.env.BUNDLE_ID;
 
-      await ios.injectAudio(driver, bundleId, {
+      await device.injectAudio(driver, bundleId, {
         data: "/home/wolf/team-storage/ios-trot/sample_audio_input.wav",
       });
 

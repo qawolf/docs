@@ -18,16 +18,16 @@ import { flow, expect } from "@qawolf/flows/web";
 ```
 
 ```javascript iOS
-import { flow } from "@qawolf/flows/ios";
+import { flow, device } from "@qawolf/flows/ios";
 ```
 
 ```javascript Android
-import { flow, expect } from "@qawolf/flows/android";
+import { flow, device, expect } from "@qawolf/flows/android";
 ```
 
 </CodeGroup>
 
-`flow` is the outer container for every QA Wolf test. Import it from the package that matches your target platform. On web and Android, also import `expect` from the same package — this ensures assertions are wired into QA Wolf's reporting.
+`flow` is the outer container for every QA Wolf test. Import it from the package that matches your target platform. On web and Android, also import `expect` from the same package — this ensures assertions are wired into QA Wolf's reporting. On iOS, import `device` to access platform utilities like network simulation, media injection, and more.
 
 <Warning>
   On web and Android, importing `expect` from `@playwright/test` instead of the flows package will cause assertions to bypass QA Wolf's reporting. Always import from the flows package.
@@ -35,16 +35,15 @@ import { flow, expect } from "@qawolf/flows/android";
 
 ## The flow wrapper
 
-`flow()` takes three arguments: a name, a platform string, and an asynchronous function containing the test logic.
+`flow()` takes three arguments: a name, an options object, and an asynchronous function containing the test logic.
 
 <CodeGroup>
 
 ```javascript Web
 export default flow(
   "Test Name",
-  "Web - Chrome",
-  async ({ test, ...testContext }) => {
-    const { launch } = testContext;
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
     // test steps go here
   },
 );
@@ -53,8 +52,8 @@ export default flow(
 ```javascript iOS
 export default flow(
   "Test Name",
-  "iOS - iPhone 15 (iOS 18)",
-  async ({ test, wdio, ...testContext }) => {
+  { target: "iOS - iPhone 15 (iOS 18)", launch: { bundleId: "com.example.app" } },
+  async ({ driver, test }) => {
     // test steps go here
   },
 );
@@ -63,8 +62,8 @@ export default flow(
 ```javascript Android
 export default flow(
   "Test Name",
-  "Android - Pixel 9 (Android 15)",
-  async ({ test, wdio, ...testContext }) => {
+  { target: "Android - Pixel 9 (Android 15)", launch: { appPackage: "com.example.android" } },
+  async ({ driver, test }) => {
     // test steps go here
   },
 );
@@ -74,37 +73,51 @@ export default flow(
 
 **Name** — what this test is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing test name tells you where to look.
 
-**Platform string** — the device and environment the test runs on. The format is `"Platform - Device (OS Version)"` for mobile and `"Web - Browser"` for web. The system resolves this at runtime into a running session. No additional configuration required.
+**Options object** — contains `target` (the device and environment the test runs on) and `launch` (how the session starts). Set `launch: true` to start with defaults, or pass a typed options object to configure the session. The system resolves the target at runtime into a running session. No additional configuration required.
 
-**Test function** — the `async` function containing your test logic. It receives `test` for defining named steps and `testContext` for utilities. Web tests destructure `launch` from `testContext` to start a browser session. Mobile tests receive `wdio` for driver sessions.
+**Test function** — the `async` function containing your test logic. It receives `test` for defining named steps, plus `page` (web) or `driver` (mobile) injected directly by the runtime.
 
 <Note>
-  In vanilla Playwright, you configure browsers in `playwright.config.js`. In vanilla Appium, you configure the target device through desired capabilities. In QA Wolf, the platform string handles both. The infrastructure resolves it at runtime.
+  In vanilla Playwright, you configure browsers in `playwright.config.js`. In vanilla Appium, you configure the target device through desired capabilities. In QA Wolf, the `target` string and `launch` options handle both. The infrastructure resolves it at runtime.
 </Note>
 
 ## Environment variables
 
-Use `process.env.VAR_NAME` to reference environment variables in your flow. They are typically used in the Arrange section before the session launches.
+Use `process.env.VAR_NAME` to reference environment variables in your flow. They are typically used in the Arrange section.
 
 <CodeGroup>
 
 ```javascript Web
-const { context } = await launch();
-const page = await context.newPage();
 await page.goto(process.env.BASE_URL);
 ```
 
 ```javascript iOS
-const driver = await wdio.startIos({
-  "appium:app": process.env.APP_STAGING,
-  "appium:autoAcceptAlerts": true,
-});
+export default flow(
+  "Test Name",
+  {
+    target: "iOS - iPhone 15 (iOS 18)",
+    launch: {
+      app: process.env.APP_STAGING,
+      autoAcceptAlerts: true,
+    },
+  },
+  async ({ driver, test }) => {
+    // driver is ready to use
+  },
+);
 ```
 
 ```javascript Android
-const driver = await wdio.startAndroid({
-  "appium:app": process.env.APP_STAGING,
-});
+export default flow(
+  "Test Name",
+  {
+    target: "Android - Pixel 9 (Android 15)",
+    launch: { app: process.env.APP_STAGING },
+  },
+  async ({ driver, test }) => {
+    // driver is ready to use
+  },
+);
 ```
 
 </CodeGroup>
@@ -128,9 +141,6 @@ await test("Complete checkout", async () => {
   //--------------------------------
   // Arrange:
   //--------------------------------
-  const { context } = await launch();
-  context.setDefaultTimeout(8000);
-  const page = await context.newPage();
   await page.goto("https://www.example.com/checkout");
 
   //--------------------------------
@@ -151,10 +161,6 @@ await test("Log in", async () => {
   //--------------------------------
   // Arrange:
   //--------------------------------
-  const driver = await wdio.startIos({
-    "appium:app": process.env.APP_STAGING,
-    "appium:autoAcceptAlerts": true,
-  });
   await driver.$("~username").waitForDisplayed();
 
   //--------------------------------
@@ -176,7 +182,6 @@ await test("Log in", async () => {
   //--------------------------------
   // Arrange:
   //--------------------------------
-  const driver = await wdio.startAndroid();
   await driver.$("~username").waitForDisplayed();
 
   //--------------------------------
@@ -206,17 +211,12 @@ import { flow, expect } from "@qawolf/flows/web";
 
 export default flow(
   "Happy Path",
-  "Web - Chrome",
-  async ({ test, ...testContext }) => {
-    const { launch } = testContext;
-
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
     await test("Load homepage", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
-      const { context } = await launch();
-      context.setDefaultTimeout(8000);
-      const page = await context.newPage();
       await page.goto("https://www.qawolf.com/");
 
       //--------------------------------
@@ -236,16 +236,18 @@ import { flow } from "@qawolf/flows/ios";
 
 export default flow(
   "iOS Test",
-  "iOS - iPhone 15 (iOS 18)",
-  async ({ wdio, test, ...testContext }) => {
+  {
+    target: "iOS - iPhone 15 (iOS 18)",
+    launch: {
+      app: process.env.APP_STAGING,
+      autoAcceptAlerts: true,
+    },
+  },
+  async ({ driver, test }) => {
     await test("Step Name", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
-      const driver = await wdio.startIos({
-        "appium:app": process.env.APP_STAGING,
-        "appium:autoAcceptAlerts": true,
-      });
 
       //--------------------------------
       // Act:
@@ -264,13 +266,12 @@ import { flow, expect } from "@qawolf/flows/android";
 
 export default flow(
   "Android Test",
-  "Android - Pixel 9 (Android 15)",
-  async ({ test, wdio, ...testContext }) => {
+  { target: "Android - Pixel 9 (Android 15)", launch: true },
+  async ({ driver, test }) => {
     await test("Step Name", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
-      await wdio.startAndroid();
 
       //--------------------------------
       // Act:

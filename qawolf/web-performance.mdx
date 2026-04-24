@@ -21,20 +21,15 @@ const PERF_SCORE_MIN = 80;
 
 export default flow(
   "Homepage performance",
-  "Web - Chrome",
-  async ({ test, ...testContext }) => {
+  { target: "Web - Chrome", launch: { args: ["--remote-debugging-port=9222"] } },
+  async ({ page, test }) => {
     await test("Lighthouse audit", async () => {
-      const { launch } = testContext;
-
-      const { context } = await launch();
-      context.setDefaultTimeout(8000);
-      const page = await context.newPage();
-
       await page.goto(process.env.BASE_URL);
       await page.waitForLoadState("networkidle").catch(() => {});
 
       const { lhr } = await playAudit({
         page,
+        port: 9222,
         thresholds: { performance: PERF_SCORE_MIN },
         config: {
           extends: "lighthouse:default",

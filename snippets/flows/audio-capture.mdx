@@ -1,11 +1,22 @@
 ```js
-import { flow } from "@qawolf/flows/ios";
+import { flow, device } from "@qawolf/flows/ios";
 import { expect } from "@qawolf/flows/web";
+
+const VIDEO_URL =
+  "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v";
 
 export default flow(
   "iOS Media - Audio Recording/Matching",
-  "iOS - iPhone 15 (iOS 26)",
-  async ({ wdio, ios, test, ...testContext }) => {
+  {
+    target: "iOS - iPhone 15 (iOS 26)",
+    launch: {
+      browserName: "Safari",
+      safariInitialUrl: VIDEO_URL,
+      respectSystemAlerts: true,
+      autoAcceptAlerts: true,
+    },
+  },
+  async ({ driver, test }) => {
     let findBestMatch;
     let resetVideoToBeginning;
     let similarity;
@@ -115,22 +126,13 @@ export default flow(
       // Arrange:
       //--------------------------------
       const REFERENCE_AUDIO_PATH = process.env.AUDIO_PATH
-      const VIDEO_URL =
-        "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v";
 
       const fsPromises = await import("node:fs/promises");
-
-      const driver = await wdio.startIos({
-        browserName: "Safari",
-        "appium:safariInitialUrl": VIDEO_URL,
-        "appium:settings[respectSystemAlerts]": true,
-        "appium:autoAcceptAlerts": true,
-      });
 
       const referenceBuffer = (
         await fsPromises.readFile(process.env.REFERENCE_AUDIO_PATH)
       ).toString("base64");
-      const referenceResult = await ios.calculateAudioFingerprint(
+      const referenceResult = await device.calculateAudioFingerprint(
         driver,
         referenceBuffer,
       );
@@ -140,14 +142,14 @@ export default flow(
       await waitForVideoPlaying(driver);
 
       // start recording from phone speaker
-      const startResult = await ios.startSpeakerRecording(driver);
+      const startResult = await device.startSpeakerRecording(driver);
       const audioSessionId = startResult.id;
       console.log(`Recording started: ${audioSessionId}`);
 
       await driver.pause(5000);
 
       // stop recording from phone speaker
-      const stopResult = await ios.stopSpeakerRecording(driver, audioSessionId);
+      const stopResult = await device.stopSpeakerRecording(driver, audioSessionId);
       console.log(`Recording stopped: ${JSON.stringify(stopResult)}`);
 
       const { fingerprint, filename } = stopResult;
@@ -159,7 +161,7 @@ export default flow(
       console.log("Done");
 
       // Download speaker recording
-      const result = await ios.downloadSpeakerRecording(driver, filename);
+      const result = await device.downloadSpeakerRecording(driver, filename);
       const wavData = Buffer.from(result, "base64");
       const recordingSavingPath = "/tmp/output.wav";
       await fsPromises.writeFile(recordingSavingPath, wavData);
