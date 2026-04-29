@@ -17,11 +17,17 @@ sidebarTitle: "Entry Points"
 Use the top-level package in flow code.
 
 ```ts
-import { otp, saveBaselineScreenshot, startOpenVpn } from "@qawolf/testkit";
+import {
+  otp,
+  saveBaselineScreenshot,
+  saveEnvironmentVariable,
+  startOpenVpn,
+} from "@qawolf/testkit";
 
 const code = otp.fromUri(process.env["OTP_URI"]!);
 await startOpenVpn({ configPath: "/tmp/client.ovpn" });
 await saveBaselineScreenshot(page, "homepage");
+await saveEnvironmentVariable("LAST_LOGIN_USER", "wolf@example.com");
 ```
 
 The top-level package currently exposes:
@@ -30,6 +36,8 @@ The top-level package currently exposes:
 - `mountCifsShare(...)`
 - `startOpenVpn(...)`
 - `saveBaselineScreenshot(...)`
+- `saveEnvironmentVariable(...)`
+- `reloadEnvironmentVariables(...)`
 - `configureTestkitClient(...)`
 - `getCurrentTestkitClient()`
 - `resetTestkitClient()`
