@@ -70,6 +70,8 @@ export default flow(
 Use launch-enabled flow definitions by default:
 
 ```ts
+import { flow } from "@qawolf/flows/web";
+
 export default flow(
   "Default startup",
   { target: "Web - Chrome", launch: true },
@@ -82,6 +84,8 @@ export default flow(
 Pass an options object to `launch` when startup options are known up front:
 
 ```ts
+import { flow } from "@qawolf/flows/web";
+
 export default flow(
   "Persistent profile",
   {
@@ -100,21 +104,21 @@ export default flow(
 Use `launch(...)` manually only when startup depends on callback logic:
 
 ```ts
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
+
 export default flow("Manual startup", "Web - Chrome", async () => {
   const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
 
-  const launchResult = await launch(
-    useSavedProfile
-      ? {
-          browserContext: "persistent",
-          userDataDir: "/tmp/profile",
-        }
-      : undefined,
-  );
-  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+  const launchResult = useSavedProfile
+    ? await launch({
+        browserContext: "persistent",
+        userDataDir: "/tmp/profile",
+      })
+    : await launch();
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
 
   const page =
-    "page" in launchResult
+    isPersistent(launchResult)
       ? launchResult.page
       : await launchResult.context.newPage();
 

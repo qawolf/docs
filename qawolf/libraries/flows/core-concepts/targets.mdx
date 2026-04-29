@@ -12,6 +12,10 @@ A target tells QA Wolf where a flow should run.
 "Web - Chrome";
 ```
 
+```ts Electron
+"Electron";
+```
+
 ```ts Android
 "Android - Pixel";
 ```
@@ -32,7 +36,7 @@ Targets are grouped by the platform entry point you import from.
 
 | Entry point | Target family | Common target example |
 | --- | --- | --- |
-| `@qawolf/flows/web` | `Web - ...` | `Web - Chrome` |
+| `@qawolf/flows/web` | `Web - ...`, `Electron` | `Web - Chrome` |
 | `@qawolf/flows/android` | `Android - ...` | `Android - Pixel` |
 | `@qawolf/flows/ios` | `iOS - ...` | `iOS - iPhone 15 (iOS 26)` |
 | `@qawolf/flows/cli` | `Basic` | `Basic` |
@@ -44,14 +48,14 @@ Use the API reference when you need the full current literal list: [Target Liter
 Use a target string when the callback will launch manually or when the platform does not have a launch model.
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
 
 export default flow("Manual launch", "Web - Chrome", async () => {
   const launchResult = await launch();
-  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
 
   const page =
-    "page" in launchResult
+    isPersistent(launchResult)
       ? launchResult.page
       : await launchResult.context.newPage();
 

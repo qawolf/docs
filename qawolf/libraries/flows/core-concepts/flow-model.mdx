@@ -63,7 +63,8 @@ The callback receives the launched object for that platform:
 
 | Entry point | Launch object |
 | --- | --- |
-| `@qawolf/flows/web` | `page`, `context`, optional `browser` |
+| `@qawolf/flows/web` browser target | `page`, `context`, optional `browser` |
+| `@qawolf/flows/web` Electron target | `page` |
 | `@qawolf/flows/android` | `driver` |
 | `@qawolf/flows/ios` | `driver` |
 
@@ -94,23 +95,21 @@ Use this shape when the startup options are known before the callback runs.
 Pass the target directly and call `launch(...)` inside the callback only when startup depends on callback logic.
 
 ```ts
-import { flow, launch } from "@qawolf/flows/web";
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
 
 export default flow("Checkout", "Web - Chrome", async () => {
   const usePersistentProfile = process.env["USE_PROFILE"] === "true";
 
-  const launchResult = await launch(
-    usePersistentProfile
-      ? {
-          browserContext: "persistent",
-          userDataDir: "/tmp/qawolf-profile",
-        }
-      : undefined,
-  );
-  if (!("context" in launchResult)) throw new Error("Expected browser launch");
+  const launchResult = usePersistentProfile
+    ? await launch({
+        browserContext: "persistent",
+        userDataDir: "/tmp/qawolf-profile",
+      })
+    : await launch();
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
 
   const page =
-    "page" in launchResult
+    isPersistent(launchResult)
       ? launchResult.page
       : await launchResult.context.newPage();
 
