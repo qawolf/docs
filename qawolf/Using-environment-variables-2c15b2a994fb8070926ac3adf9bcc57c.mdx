@@ -32,3 +32,23 @@ In this example, we use the standard Playwright `page.goto` function to open the
 <Frame>
   ![](/images/building-and-maintaining-flows/image-14.png)
 </Frame>
+
+## Update environment variables from code
+
+Use `saveEnvironmentVariable(name, value)` from `@qawolf/testkit` when a flow needs to persist a string value back to the current QA Wolf environment. The helper also updates `process.env[name]` for the current run.
+
+Use `reloadEnvironmentVariables()` to fetch the latest environment variables for the current environment and copy string values into `process.env`.
+
+```typescript
+import {
+  reloadEnvironmentVariables,
+  saveEnvironmentVariable,
+} from "@qawolf/testkit";
+
+await saveEnvironmentVariable("SESSION_TOKEN", token);
+await reloadEnvironmentVariables();
+
+await page.goto(process.env.BASE_URL);
+```
+
+These helpers are available in QA Wolf runner environments. For exact signatures and error behavior, see the [Testkit Core Reference](/qawolf/libraries/testkit/api-reference/core#environment-variables).

@@ -1,6 +1,6 @@
 ---
 title: "Get Started"
-description: "Use @qawolf/testkit helpers for OTPs, QR codes, screenshots, and network setup."
+description: "Use @qawolf/testkit helpers for OTPs, QR codes, screenshots, environment variables, and network setup."
 sidebarTitle: "Get Started"
 ---
 
@@ -13,13 +13,20 @@ Use it when a test needs something outside normal browser or mobile automation:
 - mount a CIFS share
 - start OpenVPN
 - save a baseline screenshot
+- save and reload QA Wolf environment variables
 
 ## Pick The Import
 
 <CodeGroup>
 
 ```ts OTP and runner-backed helpers
-import { otp, saveBaselineScreenshot, startOpenVpn } from "@qawolf/testkit";
+import {
+  otp,
+  reloadEnvironmentVariables,
+  saveBaselineScreenshot,
+  saveEnvironmentVariable,
+  startOpenVpn,
+} from "@qawolf/testkit";
 ```
 
 ```ts Web helpers
@@ -50,6 +57,20 @@ import { readQRCode } from "@qawolf/testkit/web";
 const qrValue = await readQRCode(page, "[data-testid='qr-code']");
 
 if (!qrValue) throw new Error("QR code was not visible");
+```
+
+## Save Environment Variables
+
+Use `saveEnvironmentVariable(...)` to persist a string value to the current QA Wolf environment and update `process.env` for the running flow. Use `reloadEnvironmentVariables()` when the flow needs to refresh `process.env` from the latest environment values.
+
+```ts
+import {
+  reloadEnvironmentVariables,
+  saveEnvironmentVariable,
+} from "@qawolf/testkit";
+
+await saveEnvironmentVariable("SESSION_TOKEN", token);
+await reloadEnvironmentVariables();
 ```
 
 ## Use Runner-Backed Helpers
