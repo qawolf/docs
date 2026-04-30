@@ -74,7 +74,8 @@
               "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
               "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
-              "qawolf/Uploading-manually"
+              "qawolf/Uploading-manually",
+              "qawolf/select-a-target-device-and-os"
             ]
           },
           {
@@ -112,6 +113,7 @@
         "tab": "Solutions",
         "icon": "book",
         "pages": [
+          "qawolf/solutions",
           {
             "group": "Email & SMS",
             "icon": "voicemail",
@@ -121,11 +123,10 @@
           },
           {
             "group": "Device hardware & compatibility",
-            "icon": "monitor-smartphone",
+            "icon": "microchip",
             "pages": [
               "qawolf/network-connectivity",
-              "qawolf/network-simulation",
-              "qawolf/using-an-android-tablet"
+              "qawolf/network-simulation"
             ]
           },
           {
@@ -139,6 +140,7 @@
             "group": "Mobile-native media",
             "icon": "tablet-smartphone",
             "pages": [
+              "qawolf/mobile-native-media",
               {
                 "group": "Photo library management",
                 "icon": "image",
@@ -203,6 +205,144 @@
             "icon": "scan",
             "pages": [
               "qawolf/visual-diffing"
+            ]
+          },
+          {
+            "group": "AI & LLMs",
+            "icon": "sparkles",
+            "pages": [
+              "qawolf/non-deterministic-ai-testing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Libraries",
+        "icon": "braces",
+        "pages": [
+          {
+            "group": "@qawolf/flows",
+            "icon": "route",
+            "pages": [
+              "qawolf/libraries/flows/get-started",
+              {
+                "group": "Core Concepts",
+                "pages": [
+                  "qawolf/libraries/flows/core-concepts/flow-model",
+                  "qawolf/libraries/flows/core-concepts/targets",
+                  "qawolf/libraries/flows/core-concepts/runtime-and-launch"
+                ]
+              },
+              {
+                "group": "How-To",
+                "pages": [
+                  "qawolf/libraries/flows/how-to/write-a-web-flow",
+                  "qawolf/libraries/flows/how-to/write-a-cli-flow",
+                  "qawolf/libraries/flows/how-to/write-an-android-flow",
+                  "qawolf/libraries/flows/how-to/write-an-ios-flow",
+                  "qawolf/libraries/flows/how-to/persistent-browser-context",
+                  "qawolf/libraries/flows/how-to/launch-electron",
+                  "qawolf/libraries/flows/how-to/mobile-app-from-env"
+                ]
+              },
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/flows/api-reference/index",
+                  "qawolf/libraries/flows/api-reference/top-level",
+                  "qawolf/libraries/flows/api-reference/web",
+                  "qawolf/libraries/flows/api-reference/cli",
+                  "qawolf/libraries/flows/api-reference/android",
+                  "qawolf/libraries/flows/api-reference/ios"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/flows/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "@qawolf/testkit",
+            "icon": "wrench",
+            "pages": [
+              "qawolf/libraries/testkit/get-started",
+              {
+                "group": "Core Concepts",
+                "pages": [
+                  "qawolf/libraries/testkit/core-concepts/entry-points",
+                  "qawolf/libraries/testkit/core-concepts/client-model"
+                ]
+              },
+              {
+                "group": "How-To",
+                "pages": [
+                  "qawolf/libraries/testkit/how-to/generate-an-otp",
+                  "qawolf/libraries/testkit/how-to/read-a-qr-code",
+                  "qawolf/libraries/testkit/how-to/configure-a-runner-client",
+                  "qawolf/libraries/testkit/how-to/save-a-baseline-screenshot",
+                  "qawolf/libraries/testkit/how-to/use-network-helpers"
+                ]
+              },
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/testkit/api-reference/index",
+                  "qawolf/libraries/testkit/api-reference/core",
+                  "qawolf/libraries/testkit/api-reference/types",
+                  "qawolf/libraries/testkit/api-reference/web",
+                  "qawolf/libraries/testkit/api-reference/client"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/testkit/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "@qawolf/emails",
+            "icon": "mail",
+            "pages": [
+              "qawolf/libraries/emails/get-started",
+              {
+                "group": "Core Concepts",
+                "pages": [
+                  "qawolf/libraries/emails/core-concepts/inbox-model",
+                  "qawolf/libraries/emails/core-concepts/client-lifecycle"
+                ]
+              },
+              {
+                "group": "How-To",
+                "pages": [
+                  "qawolf/libraries/emails/how-to/get-an-inbox",
+                  "qawolf/libraries/emails/how-to/create-a-unique-address",
+                  "qawolf/libraries/emails/how-to/wait-for-a-message",
+                  "qawolf/libraries/emails/how-to/wait-for-many-messages",
+                  "qawolf/libraries/emails/how-to/send-a-message",
+                  "qawolf/libraries/emails/how-to/send-attachments",
+                  "qawolf/libraries/emails/how-to/configure-the-runtime-client",
+                  "qawolf/libraries/emails/how-to/login-code-flow"
+                ]
+              },
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/emails/api-reference/index",
+                  "qawolf/libraries/emails/api-reference/mail",
+                  "qawolf/libraries/emails/api-reference/client"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/emails/troubleshooting"
+                ]
+              }
             ]
           }
         ]

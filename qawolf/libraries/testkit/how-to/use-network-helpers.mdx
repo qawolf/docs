@@ -1,0 +1,23 @@
+---
+title: "VPN Setup"
+description: "Start VPN support from a flow through the configured testkit client."
+sidebarTitle: "VPN Setup"
+---
+
+Use network helpers when a flow must reach private infrastructure.
+
+## Start OpenVPN
+
+```ts
+import { startOpenVpn } from "@qawolf/testkit";
+
+const pid = await startOpenVpn({
+  configPath: "/tmp/client.ovpn",
+});
+
+console.log(`OpenVPN started as ${pid}`);
+```
+
+`startOpenVpn(...)` is a top-level flow helper. It requires the runner to configure the testkit client first.
+
+For runner-facing network ports and exact option shapes, see the [Client Reference](/qawolf/libraries/testkit/api-reference/client) and [Types Reference](/qawolf/libraries/testkit/api-reference/types).

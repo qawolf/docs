@@ -1,0 +1,46 @@
+---
+title: "Wait For Many Messages"
+description: "Wait for a batch of emails sent to one QA Wolf inbox."
+sidebarTitle: "Wait For Many Messages"
+---
+
+Use `waitForMessages(...)` when one action should send several emails.
+
+```ts
+const inbox = await mail.inbox({ new: true });
+
+const after = new Date();
+await page.getByRole("button", { name: "Invite team" }).click();
+
+const messages = await inbox.waitForMessages({
+  after,
+  minCount: 3,
+  timeout: 120_000,
+});
+```
+
+## Add A Delay Before Polling
+
+Some systems enqueue email work in the background. Use `delay` to wait before the first poll.
+
+```ts
+const messages = await inbox.waitForMessages({
+  delay: 5_000,
+  minCount: 2,
+});
+```
+
+The default delay comes from the runtime's `waitForMessagesDefaultDelayMs` configuration.
+
+## Work With The Results
+
+```ts
+const subjects = messages.map((message) => message.subject);
+
+expect(subjects).toContain("Welcome");
+expect(subjects).toContain("Your workspace is ready");
+```
+
+`waitForMessages(...)` returns matching parsed emails. Do not depend on sorting unless your runtime documents that ordering.
+
+For the exact `waitForMessages(...)` options, see the [Mail Reference](/qawolf/libraries/emails/api-reference/mail).

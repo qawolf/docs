@@ -1,0 +1,44 @@
+---
+title: "Web Reference"
+description: "Reference notes for @qawolf/testkit/web."
+sidebarTitle: "Web Reference"
+---
+
+`@qawolf/testkit/web` currently exposes `readQRCode(page, selector)`.
+
+## Current Signature
+
+```ts
+readQRCode(page: Page, selector: string): Promise<string | undefined>
+```
+
+Example:
+
+```ts
+import { readQRCode } from "@qawolf/testkit/web";
+
+const code = await readQRCode(page, '[data-testid="login-qr"]');
+```
+
+## Behavior
+
+The helper:
+
+- screenshots the locator matched by `selector`
+- parses the result as PNG
+- decodes the QR code if one is present
+- returns `undefined` when no QR code is found
+
+Example:
+
+```ts
+import { readQRCode } from "@qawolf/testkit/web";
+
+await page.goto("https://example.com");
+
+const qrValue = await readQRCode(page, '[data-testid="qr-code"]');
+
+if (qrValue) {
+  console.log(qrValue);
+}
+```

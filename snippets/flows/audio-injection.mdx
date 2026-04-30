@@ -101,8 +101,6 @@ export default flow(
       const recordingSavingPath = `${storageDir}/${fileName}`;
       await fsPromises.writeFile(recordingSavingPath, m4aRecording);
 
-      // TO-DO
-      // Implement audio matching with fingerprints
     });
   },
 );

@@ -1,0 +1,217 @@
+---
+title: "Non-Deterministic AI Testing"
+description: "Validate AI-generated responses using a judge model and assert on a structured JSON verdict."
+icon: "brain-circuit"
+---
+
+<Info>
+  Add `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` to your environment variables before using these helpers. `askClaudeTextValidation` and `askChatGPTTextValidation` share the same signature and return shape, and can be swapped with no other changes to your test.
+</Info>
+
+## Examples
+
+**Assert that an AI response is valid and within the token budget**
+
+```typescript
+const { validation, usage } = await askClaudeTextValidation(
+  "You are a strict but fair evaluator. Focus on accuracy and completeness.",
+  originalPrompt,
+  aiResponseText,
+);
+
+// Hard gate — judge model must deem the response valid
+expect(
+  validation.isValidForPrompt,
+  `Response invalid.\nMissing: ${JSON.stringify(validation.issues.missingRequirements)}\n` +
+  `Incorrect: ${JSON.stringify(validation.issues.incorrectInformation)}\n` +
+  `Explanation: ${validation.explanation}`,
+).toBe(true);
+
+// Soft gate — tune threshold per client
+expect(
+  validation.score,
+  `Score ${validation.score} below threshold.\nExplanation: ${validation.explanation}`,
+).toBeGreaterThanOrEqual(0.8);
+
+// No contradictions
+expect(
+  validation.issues.incorrectInformation.length,
+  `Incorrect info flagged: ${JSON.stringify(validation.issues.incorrectInformation)}`,
+).toBe(0);
+
+// Token budget — tune per client and model
+expect(usage.input_tokens).toBeLessThanOrEqual(2000);
+expect(usage.output_tokens).toBeLessThanOrEqual(500);
+```
+
+**Use ChatGPT as the judge model instead**
+
+```typescript
+// Drop-in replacement — identical signature and return shape
+const { validation, usage } = await askChatGPTTextValidation(
+  "You are a strict but fair evaluator. Focus on accuracy and completeness.",
+  originalPrompt,
+  aiResponseText,
+);
+```
+
+## When to use
+
+- Your app surfaces AI-generated content (summaries, prep notes, chat responses) that must be checked for accuracy.
+- Your app's AI feature must not introduce contradictions or hallucinations relative to source material.
+- Your app has a quality bar for AI output that a simple string match cannot enforce.
+- Your app sends AI prompts that could drift in cost and you need to assert token budgets.
+- Your app uses different AI providers and you want a consistent validation interface across both.
+
+## Helpers
+
+### `askClaudeTextValidation`
+
+Sends the original prompt and candidate response to Claude and returns a structured verdict.
+
+Conforms to the [Anthropic Messages API](https://docs.anthropic.com/en/api/messages).
+
+````typescript
+async function askClaudeTextValidation(
+  systemPrompt: string,
+  originalPrompt: string,
+  aiResponseText: string,
+) {
+  const SCHEMA_INSTRUCTIONS = `
+You MUST respond with ONLY a valid JSON object — no markdown, no explanation, no backticks.
+{
+  "isValidForPrompt": boolean,
+  "score": number (0.00–1.00),
+  "issues": {
+    "missingRequirements":    [string],
+    "incorrectInformation":   [string],
+    "offTopicContent":        [string],
+    "formattingProblems":     [string],
+    "safetyOrPolicyConcerns": [string]
+  },
+  "explanation": string
+}`;
+
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key":         process.env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+      "content-type":      "application/json",
+    },
+    body: JSON.stringify({
+      model:      "claude-sonnet-4-6",
+      max_tokens: 1024,
+      system:     systemPrompt + "\n\n" + SCHEMA_INSTRUCTIONS,
+      messages: [{
+        role:    "user",
+        content:
+          "PROMPT:\n" + originalPrompt +
+          "\n\nCANDIDATE ANSWER:\n" + aiResponseText +
+          "\n\nReturn the JSON verdict.",
+      }],
+    }),
+  });
+
+  if (!resp.ok) throw new Error(`Anthropic error ${resp.status}: ${await resp.text()}`);
+
+  const data       = await resp.json();
+  const rawText    = data.content?.find((b: any) => b.type === "text")?.text ?? "";
+  const validation = JSON.parse(rawText.replace(/```json|```/g, "").trim());
+  const usage      = data.usage; // { input_tokens, output_tokens }
+
+  return { validation, usage };
+}
+````
+
+### `askChatGPTTextValidation`
+
+Same signature and return shape as `askClaudeTextValidation`. Uses the OpenAI Responses API with structured JSON output.
+
+Conforms to the [OpenAI Responses API](https://platform.openai.com/docs/api-reference/responses/create).
+
+NPM needed: `openai@latest`
+
+```typescript
+import OpenAI from "openai";
+
+async function askChatGPTTextValidation(
+  systemPrompt: string,
+  originalPrompt: string,
+  aiResponseText: string,
+) {
+  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  const resp = await client.responses.create({
+    model:        "gpt-4.1",
+    instructions: systemPrompt,
+    input: [{
+      role:    "user",
+      content:
+        "PROMPT:\n" + originalPrompt +
+        "\n\nCANDIDATE ANSWER:\n" + aiResponseText +
+        "\n\nReturn the JSON verdict.",
+    }],
+    text: {
+      format: {
+        type:   "json_schema",
+        name:   "TextPromptValidation",
+        strict: true,
+        schema: {
+          type:                 "object",
+          additionalProperties: false,
+          required:             ["isValidForPrompt", "score", "issues", "explanation"],
+          properties: {
+            isValidForPrompt: { type: "boolean" },
+            score:            { type: "number", minimum: 0, maximum: 1, multipleOf: 0.01 },
+            issues: {
+              type:                 "object",
+              additionalProperties: false,
+              required: ["missingRequirements", "incorrectInformation", "offTopicContent", "formattingProblems", "safetyOrPolicyConcerns"],
+              properties: {
+                missingRequirements:    { type: "array", items: { type: "string" } },
+                incorrectInformation:   { type: "array", items: { type: "string" } },
+                offTopicContent:        { type: "array", items: { type: "string" } },
+                formattingProblems:     { type: "array", items: { type: "string" } },
+                safetyOrPolicyConcerns: { type: "array", items: { type: "string" } },
+              },
+            },
+            explanation: { type: "string" },
+          },
+        },
+      },
+    },
+  });
+
+  const validation = JSON.parse(resp.output_text);
+  const usage = {
+    input_tokens:  resp.usage?.input_tokens  ?? 0,
+    output_tokens: resp.usage?.output_tokens ?? 0,
+  };
+
+  return { validation, usage };
+}
+```
+
+---
+
+## Return shape
+
+Both helpers return `{ validation, usage }` with the same structure.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `validation.isValidForPrompt` | `boolean` | Hard gate — did the response satisfy the prompt? |
+| `validation.score` | `number` | Quality score 0–1. Assert `>= 0.8` as a starting threshold. |
+| `validation.issues.*` | `string[]` | Arrays of flagged issues by category. |
+| `validation.explanation` | `string` | Step-by-step reasoning from the judge model. |
+| `usage.input_tokens` | `number` | Tokens consumed by the prompt. |
+| `usage.output_tokens` | `number` | Tokens consumed by the response. |
+
+---
+
+## Full sample test
+
+import Sample from '/snippets/flows/llm-validation.mdx';
+
+<Sample />

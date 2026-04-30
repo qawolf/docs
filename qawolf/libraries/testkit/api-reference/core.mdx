@@ -1,0 +1,119 @@
+---
+title: "Core Reference"
+description: "Reference notes for the top-level @qawolf/testkit entry point."
+sidebarTitle: "Core Reference"
+---
+
+The top-level package currently exposes:
+
+- `otp.fromUri(...)`
+- `configureTestkitClient(...)`
+- `getCurrentTestkitClient(...)`
+- `resetTestkitClient(...)`
+- `mountCifsShare(...)`
+- `startOpenVpn(...)`
+- `saveBaselineScreenshot(...)`
+- `saveEnvironmentVariable(...)`
+- `reloadEnvironmentVariables(...)`
+
+Example:
+
+```ts
+import {
+  configureTestkitClient,
+  mountCifsShare,
+  otp,
+  reloadEnvironmentVariables,
+  saveEnvironmentVariable,
+  startOpenVpn,
+} from "@qawolf/testkit";
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+configureTestkitClient(
+  createTestkitClient({
+    mountCifsShare: async () => "/Volumes/shared",
+    startOpenVpn: async () => "vpn-started",
+    startWireGuard: async () => "wireguard-started",
+  }),
+);
+
+const code = otp.fromUri("otpauth://totp/QA%20Wolf?secret=JBSWY3DPEHPK3PXP");
+
+await mountCifsShare({
+  mountPoint: "/Volumes/shared",
+  password: "secret",
+  share: "//server/share",
+  username: "wolf",
+});
+
+await startOpenVpn({ configPath: "/tmp/test.ovpn" });
+await saveEnvironmentVariable("SESSION_TOKEN", "abc123");
+await reloadEnvironmentVariables();
+console.log(code);
+```
+
+## Environment Variables
+
+Use `saveEnvironmentVariable(name, value)` to save a string value to the current QA Wolf environment and update `process.env[name]` for the running flow.
+
+Use `reloadEnvironmentVariables()` to fetch the latest environment variables for the current QA Wolf environment and copy string values into `process.env`.
+
+```ts
+import {
+  reloadEnvironmentVariables,
+  saveEnvironmentVariable,
+} from "@qawolf/testkit";
+
+await saveEnvironmentVariable("LOGIN_TOKEN", token);
+await reloadEnvironmentVariables();
+
+console.log(process.env["LOGIN_TOKEN"]);
+```
+
+These helpers are intended for QA Wolf runner environments. They require the runner-provided `QAWOLF_API_URL`, `QAWOLF_ENVIRONMENT_ID`, and `QAWOLF_TEAM_API_KEY` environment variables.
+
+## Error Behavior
+
+Client-dependent helpers throw when no client has been configured.
+
+Environment variable helpers throw when the QA Wolf API configuration is missing or when the API request fails.
+
+`saveBaselineScreenshot(...)` also throws when the configured client does not provide screenshot support.
+
+Examples:
+
+```ts
+import { mountCifsShare, resetTestkitClient } from "@qawolf/testkit";
+
+resetTestkitClient();
+
+await mountCifsShare({
+  mountPoint: "/Volumes/shared",
+  password: "secret",
+  share: "//server/share",
+  username: "wolf",
+});
+```
+
+```ts
+import {
+  configureTestkitClient,
+  saveBaselineScreenshot,
+} from "@qawolf/testkit";
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+configureTestkitClient(
+  createTestkitClient({
+    mountCifsShare: async () => "/Volumes/shared",
+    startOpenVpn: async () => "vpn-started",
+    startWireGuard: async () => "wireguard-started",
+  }),
+);
+
+await saveBaselineScreenshot(
+  {
+    screenshot: async () => Buffer.from("image"),
+  },
+  "login-page",
+);
+```

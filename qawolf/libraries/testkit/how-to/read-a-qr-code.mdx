@@ -1,0 +1,31 @@
+---
+title: "Read QR Code"
+description: "Decode a QR code from a page element."
+sidebarTitle: "Read QR Code"
+---
+
+Use `readQRCode(page, selector)` when the QR code is rendered in the browser.
+
+```ts
+import { readQRCode } from "@qawolf/testkit/web";
+
+const value = await readQRCode(page, "[data-testid='qr-code']");
+
+if (!value) throw new Error("QR code was not found");
+```
+
+The helper screenshots the matching locator, decodes the PNG bytes, and returns the QR code value.
+
+## Example: Follow A QR Login Link
+
+```ts
+const loginUrl = await readQRCode(page, ".login-qr-code");
+
+if (!loginUrl) throw new Error("Login QR code did not render");
+
+await page.goto(loginUrl);
+```
+
+Use a selector that points directly at the QR code image or canvas. Avoid capturing large containers with surrounding UI.
+
+For the exact return value, see the [Web Reference](/qawolf/libraries/testkit/api-reference/web).

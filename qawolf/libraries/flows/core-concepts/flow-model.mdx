@@ -1,0 +1,139 @@
+---
+title: "Flow Model"
+description: "Understand the two flow startup styles and when to use each one."
+sidebarTitle: "Flow Model"
+---
+
+A flow has three parts:
+
+```ts
+flow("Name shown in QA Wolf", target, async (runtime) => {
+  // test steps
+});
+```
+
+- **Name** appears in runs, bug reports, and logs.
+- **Target** selects the browser, device, or CLI environment.
+- **Callback** contains the workflow steps.
+
+## Callback Parameters
+
+Every flow callback can receive:
+
+- `input` for values passed into the flow
+- `setOutput(...)` for values a later flow can read
+- `test(...)` for named sub-steps
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+
+export default flow(
+  "Prepare account fixture",
+  "Basic",
+  async ({ input, setOutput, test }) => {
+    await test("publish account fixture", async () => {
+      setOutput("account", {
+        input,
+        role: "admin",
+      });
+    });
+  },
+);
+```
+
+Launch-enabled flows receive platform objects in addition to these parameters.
+
+## Launch In The Flow Definition
+
+Use `{ target, launch: true }` when the flow should start the session before the callback runs.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Checkout",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com/cart");
+  },
+);
+```
+
+The callback receives the launched object for that platform:
+
+| Entry point | Launch object |
+| --- | --- |
+| `@qawolf/flows/web` browser target | `page`, `context`, optional `browser` |
+| `@qawolf/flows/web` Electron target | `page` |
+| `@qawolf/flows/android` | `driver` |
+| `@qawolf/flows/ios` | `driver` |
+
+When startup needs options, pass an options object to `launch` instead of calling `launch(...)` manually.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Checkout with profile",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com/cart");
+  },
+);
+```
+
+Use this shape when the startup options are known before the callback runs.
+
+## Manual Launch Is For Advanced Flows
+
+Pass the target directly and call `launch(...)` inside the callback only when startup depends on callback logic.
+
+```ts
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
+
+export default flow("Checkout", "Web - Chrome", async () => {
+  const usePersistentProfile = process.env["USE_PROFILE"] === "true";
+
+  const launchResult = usePersistentProfile
+    ? await launch({
+        browserContext: "persistent",
+        userDataDir: "/tmp/qawolf-profile",
+      })
+    : await launch();
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    isPersistent(launchResult)
+      ? launchResult.page
+      : await launchResult.context.newPage();
+
+  await page.goto("https://example.com/cart");
+});
+```
+
+Use manual launch for advanced flows where startup is part of the test logic:
+
+- branch on runtime state before launching
+- delay launch until after setup steps
+- combine startup with callback-only data
+
+## CLI Flows Are Simpler
+
+CLI flows do not launch a browser or mobile app.
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+import { readFile } from "node:fs/promises";
+
+export default flow("Read build metadata", "Basic", async () => {
+  const metadata = await readFile("build-metadata.json", "utf8");
+
+  console.log(JSON.parse(metadata));
+});
+```

@@ -1,0 +1,167 @@
+---
+title: "Get Started"
+description: "Write QA Wolf flows for web, mobile, and CLI targets."
+sidebarTitle: "Get Started"
+---
+
+`@qawolf/flows` is the wrapper around QA Wolf test code. It tells the runner what to run, where to run it, and which runtime objects to inject.
+
+Most users should start with a launch-enabled flow.
+
+```ts
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Sign in",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com/login");
+    await page.getByLabel("Email").fill("qa@example.com");
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    await expect(page.getByText("Check your email")).toBeVisible();
+  },
+);
+```
+
+## Pick The Entry Point
+
+Import from the package that matches the target you are authoring for.
+
+<CodeGroup>
+
+```ts Web
+import { expect, flow } from "@qawolf/flows/web";
+```
+
+```ts Android
+import { expect, flow } from "@qawolf/flows/android";
+```
+
+```ts iOS
+import { flow } from "@qawolf/flows/ios";
+```
+
+```ts CLI
+import { flow } from "@qawolf/flows/cli";
+```
+
+</CodeGroup>
+
+Use the top-level package only for shared runtime helpers:
+
+```ts
+import { platform } from "@qawolf/flows";
+
+if (platform.target === "Web - Chrome") {
+  // Target-specific branch.
+}
+```
+
+## Start With `launch: true`
+
+`launch: true` asks QA Wolf to start the browser or mobile app before your callback runs.
+
+<CodeGroup>
+
+```ts Web
+export default flow(
+  "Open dashboard",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto("https://example.com/dashboard");
+  },
+);
+```
+
+```ts Android
+export default flow(
+  "Open Android app",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+```ts iOS
+export default flow(
+  "Open iOS app",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+</CodeGroup>
+
+Every flow callback can receive `input`, `setOutput(...)`, and `test(...)`.
+
+When `launch` is enabled, the callback also receives platform runtime objects:
+
+| Platform | Additional callback parameters |
+| --- | --- |
+| Web browser | `page`, `context`, optional `browser` |
+| Web Electron | `page` |
+| Android | `driver` |
+| iOS | `driver` |
+
+## Pass Launch Options In The Definition
+
+If startup needs options and those options are known up front, pass an object to `launch`.
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Open account with profile",
+  {
+    target: "Web - Chrome",
+    launch: {
+      browserContext: "persistent",
+      userDataDir: "/tmp/qawolf-profile",
+    },
+  },
+  async ({ page }) => {
+    await page.goto("https://example.com/account");
+  },
+);
+```
+
+This keeps startup declarative while still giving the callback a ready-to-use `page` or `driver`.
+
+## Launch Manually For Advanced Flow Control
+
+Pass the target directly and call `launch(...)` in the callback only when the flow must decide startup at runtime.
+
+```ts
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
+
+export default flow("Open account", "Web - Chrome", async () => {
+  const useSavedProfile = process.env["USE_SAVED_PROFILE"] === "true";
+
+  const launchResult = useSavedProfile
+    ? await launch({
+        browserContext: "persistent",
+        userDataDir: "/tmp/qawolf-profile",
+      })
+    : await launch();
+  if (isElectron(launchResult)) throw new Error("Expected browser launch");
+
+  const page =
+    isPersistent(launchResult)
+      ? launchResult.page
+      : await launchResult.context.newPage();
+
+  await page.goto("https://example.com/dashboard");
+});
+```
+
+This is the advanced path for startup branches, delayed startup, or startup that depends on callback-only data.
+
+## Next Steps
+
+- Read [Flow Model](/qawolf/libraries/flows/core-concepts/flow-model) for the two startup styles.
+- Use [Write a Web Flow](/qawolf/libraries/flows/how-to/write-a-web-flow), [Write an Android Flow](/qawolf/libraries/flows/how-to/write-an-android-flow), or [Write an iOS Flow](/qawolf/libraries/flows/how-to/write-an-ios-flow) for platform examples.
+- Keep [API Reference](/qawolf/libraries/flows/api-reference/index) nearby for exact option shapes.

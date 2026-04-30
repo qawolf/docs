@@ -1,0 +1,48 @@
+---
+title: "Mobile App From Env"
+description: "Launch a mobile build from runner-provided inputs or explicit environment variables."
+sidebarTitle: "Mobile App From Env"
+---
+
+Mobile flows usually get the app build from the runner. When `app` is omitted, Android and iOS launch fall back to `RUN_INPUT_PATH`.
+
+<CodeGroup>
+
+```ts Android
+const { driver } = await launch({
+  appPackage: "com.example.android",
+});
+```
+
+```ts iOS
+const { driver } = await launch({
+  bundleId: "com.example.ios",
+});
+```
+
+</CodeGroup>
+
+Use this when CI uploads the APK, AAB, IPA, or app bundle and QA Wolf sets `RUN_INPUT_PATH` for the run.
+
+## Use A Specific Environment Variable
+
+If your flow needs a different variable, pass `app.env`.
+
+```ts
+const { driver } = await launch({
+  app: { env: "ANDROID_APP_PATH" },
+  appPackage: "com.example.android",
+});
+```
+
+## Resolution Rule
+
+If `app` is present, launch resolves only that explicit app source:
+
+1. `app.path`
+2. `app.env`
+3. `app.url`
+
+It does not fall back to `RUN_INPUT_PATH` after an explicit `app` object fails to resolve.
+
+For platform-specific launch fields, see the [Android Reference](/qawolf/libraries/flows/api-reference/android) and [iOS Reference](/qawolf/libraries/flows/api-reference/ios).

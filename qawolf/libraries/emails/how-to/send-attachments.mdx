@@ -1,0 +1,46 @@
+---
+title: "Attachments"
+description: "Send email with file attachments."
+sidebarTitle: "Attachments"
+---
+
+`Pass` an `attachments` array to `sendMessage(...)`.
+
+```ts
+const inbox = await mail.inbox({ new: true });
+
+await inbox.sendMessage({
+  to: ["invoices@example.com"],
+  subject: "Invoice",
+  text: "Attached.",
+  attachments: [
+    {
+      fileName: "invoice.txt",
+      content: Buffer.from("invoice total: $10.00"),
+      type: "text/plain",
+    },
+  ],
+});
+```
+
+## Inline Attachment
+
+Use `contentId` when the HTML body references an inline file.
+
+```ts
+await inbox.sendMessage({
+  to: ["preview@example.com"],
+  subject: "Inline image",
+  html: '<img src="cid:logo" alt="Logo" />',
+  attachments: [
+    {
+      fileName: "logo.png",
+      contentId: "logo",
+      content: logoBuffer,
+      type: "image/png",
+    },
+  ],
+});
+```
+
+For all attachment fields, see the [Mail Reference](/qawolf/libraries/emails/api-reference/mail).
