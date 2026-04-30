@@ -6,10 +6,10 @@ icon: "network"
 
 By default, QA Wolf tests run on our cloud infrastructure, which means your app's network requests originate from our servers — not your corporate network. If your app needs to reach internal services (staging environments, internal APIs, services behind a firewall), you'll need to route your test device's traffic through a tunnel.
 
-`ios.routeTraffic()` sets up a per-app VPN on the test device that intercepts and redirects network traffic before your test runs. You can target specific apps by bundle ID, or limit routing to specific domains when testing with Safari.
+`device.routeTraffic()` sets up a per-app VPN on the test device that intercepts and redirects network traffic before your test runs. You can target specific apps by bundle ID, or limit routing to specific domains when testing with Safari.
 
 <Info>
-  Call `ios.routeTraffic()` before starting your WebDriver session so the tunnel is active from the first network request.
+  Call `device.routeTraffic()` before starting your WebDriver session so the tunnel is active from the first network request.
 </Info>
 
 ## Examples
@@ -20,7 +20,9 @@ By default, QA Wolf tests run on our cloud infrastructure, which means your app'
 // the app property makes sure all traffic 
 // from app with bundle id `com.example.myapp` will be rerouted
 
-const cleanup = await ios.routeTraffic({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
   apps: ["com.example.myapp"],
   tunnel: ...,
 });
@@ -36,7 +38,9 @@ await cleanup();
 // Only traffic to *.example.com and api.staging.io
 // goes through the tunnel. All other Safari traffic goes direct.
 
-const cleanup = await ios.routeTraffic({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
   apps: [],
   domains: ["*.example.com", "api.staging.io"],
   tunnel: ...,
@@ -48,7 +52,9 @@ await cleanup();
 **Route multiple apps simultaneously:**
 
 ```js
-const cleanup = await ios.routeTraffic({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
   apps: ["com.example.myapp", "com.example.companion"],
   tunnel: ...,
 });
@@ -74,7 +80,9 @@ Choose a tunnel type based on how your network is set up.
 Use if your team already has a WireGuard VPN or you need to simulate traffic from a specific geographic region.
 
 ```js
-const cleanup = await ios.routeTraffic({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
   apps: ["com.apple.mobilesafari"],
   tunnel: { 
 	type: "wireguard", 
@@ -92,7 +100,9 @@ await cleanup();
 Use if your organization uses a standard VPN setup with `.ovpn` config files.
 
 ```js
-const cleanup = await ios.routeTraffic({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
   apps: ["com.example.app"],
   tunnel: { 
 	type: "openvpn", 
@@ -110,7 +120,9 @@ await cleanup();
 Use this if your organization provides an HTTP/HTTPS proxy endpoint for accessing internal services, or if you're using a third-party geolocation proxy service.
 
 ```js
-const cleanup = await ios.routeTraffic({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
   apps: ["com.apple.mobilesafari"],
   tunnel: {
     type: "http-proxy",
@@ -131,7 +143,9 @@ await cleanup();
 Use this if your organization uses a third-party VPN that can't be configured as WireGuard or OpenVPN on our side. A QA Wolf team member will set up a relay VM that runs your VPN client and forwards traffic to your test device.
 
 ```js
-const cleanup = await ios.routeTraffic({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
   apps: ["com.example.app"],
   tunnel: {
     type: "relay",

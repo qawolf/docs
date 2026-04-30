@@ -122,17 +122,18 @@ export default flow(
         return distance;
       }
     });
-    await test("iOS Media - Start App and Inject Audio to microphone", async () => {
+    await test("iOS Media - Start App and Record Speaker Audio", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
-      const REFERENCE_AUDIO_PATH = process.env.AUDIO_PATH
+      const REFERENCE_AUDIO_PATH = process.env.REFERENCE_AUDIO_PATH;
+      if (!REFERENCE_AUDIO_PATH) {
+        throw new Error("REFERENCE_AUDIO_PATH environment variable is required");
+      }
 
       const fsPromises = await import("node:fs/promises");
 
-      const referenceBuffer = (
-        await fsPromises.readFile(process.env.REFERENCE_AUDIO_PATH)
-      ).toString("base64");
+      const referenceBuffer = await fsPromises.readFile(REFERENCE_AUDIO_PATH);
       const referenceResult = await device.calculateAudioFingerprint(
         driver,
         referenceBuffer,
@@ -162,8 +163,7 @@ export default flow(
       console.log("Done");
 
       // Download speaker recording
-      const result = await device.downloadSpeakerRecording(driver, filename);
-      const wavData = Buffer.from(result, "base64");
+      const wavData = await device.downloadSpeakerRecording(driver, filename);
       const recordingSavingPath = "/tmp/output.wav";
       await fsPromises.writeFile(recordingSavingPath, wavData);
       console.log("Successfully saved output.wav");

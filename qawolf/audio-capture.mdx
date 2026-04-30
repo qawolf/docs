@@ -22,8 +22,7 @@ const audioSessionId = startResult.id;
 const stopResult = await device.stopSpeakerRecording(driver, audioSessionId);
 
 // Download the recording
-const result = await device.downloadSpeakerRecording(driver, stopResult.filename);
-const wavData = Buffer.from(result, "base64");
+const wavData = await device.downloadSpeakerRecording(driver, stopResult.filename);
 await fsPromises.writeFile("/tmp/output.wav", wavData);
 ```
 
@@ -34,7 +33,7 @@ import { device } from "@qawolf/flows/ios";
 const fsPromises = await import("node:fs/promises");
 
 // Generate fingerprint for reference file
-const referenceBuffer = (await fsPromises.readFile(REFERENCE_AUDIO_PATH)).toString("base64");
+const referenceBuffer = await fsPromises.readFile(REFERENCE_AUDIO_PATH);
 const referenceResult = await device.calculateAudioFingerprint(driver, referenceBuffer);
 
 // Compare against recorded output
