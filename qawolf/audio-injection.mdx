@@ -9,12 +9,13 @@ sidebarTitle: "iOS"
 ## Example
 
 ```javascript
+import { device } from "@qawolf/flows/ios";
+
 // Inject Audio
-const ios = await import("@qawolf/run-globals-ios");
 const bundleId = process.env.BUNDLE_ID; // Bundle ID of app being tested
 const storagePath = process.env.STORAGE_PATH; // QA Wolf remote storage
 const audioPath = `${storagePath}/sample_audio_input.wav`;
-const cleanup = await ios.injectAudio(driver, bundleId, {
+const cleanup = await device.injectAudio(driver, bundleId, {
   data: audioPath,
 });
 // ... run your assertions while audio is being injected ...

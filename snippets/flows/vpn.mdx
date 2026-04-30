@@ -1,21 +1,18 @@
 ```js
-import { flow } from "@qawolf/flows/ios";
+import { flow, device } from "@qawolf/flows/ios";
+
 export default flow(
   "iOS - Residential Proxy With Safari",
-  "iOS - iPhone 15 (iOS 26)",
-  async ({ test, ...testContext }) => {
-    const { ios, wdio } = testContext;
-
+  { target: "iOS - iPhone 15 (iOS 26)", launch: { browserName: "safari" } },
+  async ({ driver, test }) => {
     await test("open google", async () => {
-      const safari = await wdio.startIos({ browserName: "safari" });
-
       // Discover your IP address
-      await safari.url("https://ip.me"); 
+      await driver.url("https://ip.me"); 
 
-      await safari.pause(5000);
+      await driver.pause(5000);
 
       // Configure and start QA Wolf's tunnel client
-      const cleanup = await ios.routeTraffic({
+      const cleanup = await device.routeTraffic({
         apps: [],
         domains: ["ip.me", "qawolf.com"],
         tunnel: {
@@ -28,11 +25,11 @@ export default flow(
       });
 
       // Start the iOS Safari app
-      await safari.activateApp('com.apple.mobilesafari');
-      await safari.url("https://qawolf.com");
+      await driver.activateApp('com.apple.mobilesafari');
+      await driver.url("https://qawolf.com");
 
       // Check your IP address again. It should have changed
-      await safari.url("https://ip.me"); 
+      await driver.url("https://ip.me"); 
     });
   },
 );

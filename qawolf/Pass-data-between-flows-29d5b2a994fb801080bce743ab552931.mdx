@@ -21,11 +21,11 @@ To create a Hopper flow, you need two flows — a **producer** and a **consumer*
 setOutput("TOKEN", "abc123", "USER_ID", "42");
 ```
 
-**In the consumer flow**, use `workflowInputs` to read values published by the producer:
+**In the consumer flow**, use `inputs` to read values published by the producer:
 
 ```javascript
-const token = workflowInputs["TOKEN"];
-const userId = workflowInputs["USER_ID"];
+const token = inputs["TOKEN"];
+const userId = inputs["USER_ID"];
 ```
 
 <Note>

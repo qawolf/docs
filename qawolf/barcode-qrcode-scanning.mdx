@@ -14,11 +14,11 @@ sidebarTitle: "iOS"
 
 ```js
 // Inject QR Code
-const ios = await import("@qawolf/run-globals-ios");
+import { device } from "@qawolf/flows/ios";
 
 const { bundleId } = await driver.execute("mobile: activeAppInfo");
 
-const cleanup = await ios.injectBarcode(driver, bundleId, {
+const cleanup = await device.injectBarcode(driver, bundleId, {
   value: "https://qawolf.com/qr-code",
 });
 
@@ -31,11 +31,11 @@ await cleanup();
 
 ```js
 // Inject EAN-13 Barcode
-const ios = await import("@qawolf/run-globals-ios");
+import { device } from "@qawolf/flows/ios";
 
 const { bundleId } = await driver.execute("mobile: activeAppInfo");
 
-const cleanup = await ios.injectBarcode(driver, bundleId, {
+const cleanup = await device.injectBarcode(driver, bundleId, {
   type: "org.gs1.EAN-13",
   value: "1234567890123",
 });
@@ -79,9 +79,9 @@ Some apps expect the camera to detect multiple codes simultaneously. To inject m
 
 ```js
 // Inject Multiple Barcodes (delivered to the delegate in one batch)
-const ios = await import("@qawolf/run-globals-ios");
+import { device } from "@qawolf/flows/ios";
 
-const cleanup = await ios.injectBarcode(driver, bundleId, [
+const cleanup = await device.injectBarcode(driver, bundleId, [
   { type: "org.iso.QRCode",  value: "https://example.com/qr-deep-link" },
   { type: "org.gs1.EAN",     value: "1234567890123" },
   { type: "org.gs1.Code128", value: "PRODUCT-SKU-12345" },
@@ -98,9 +98,9 @@ Some apps use the position of the detected code in the view. To include position
 
 ```js
 // Inject QR Code with Custom Bounds and Corners
-const ios = await import("@qawolf/run-globals-ios");
+import { device } from "@qawolf/flows/ios";
 
-const cleanup = await ios.injectBarcode(driver, bundleId, {
+const cleanup = await device.injectBarcode(driver, bundleId, {
   type: "org.iso.QRCode",
   value: "https://example.com",
   bounds: {
@@ -128,9 +128,9 @@ To include raw binary data alongside the decoded value:
 
 ```js
 // Inject QR Code with Raw Binary Data (iOS 13+)
-const ios = await import("@qawolf/run-globals-ios");
+import { device } from "@qawolf/flows/ios";
 
-const cleanup = await ios.injectBarcode(driver, bundleId, {
+const cleanup = await device.injectBarcode(driver, bundleId, {
   type: "org.iso.QRCode",
   value: "https://example.com",
   rawValue: Buffer.from("custom binary data"), // also accepts a base64-encoded string

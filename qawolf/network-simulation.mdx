@@ -9,15 +9,17 @@ icon: "signal"
 **Using a predefined condition:**
 
 ```js
+import { device } from "@qawolf/flows/ios";
+
 // Traffic must be routed through the gateway before applying
 // network conditions — use direct mode if you don't need a VPN
 
-const routeCleanup = await ios.routeTraffic({
+const routeCleanup = await device.routeTraffic({
     apps: ["com.example.app"],
     tunnel: { type: "direct" },
 });
 
-const conditionCleanup = await ios.simulateNetworkCondition(ios.NETWORK_3G);
+const conditionCleanup = await device.simulateNetworkCondition(device.NETWORK_3G);
 
 // ... verify the app handles slow network gracefully ...
 
@@ -28,7 +30,9 @@ await routeCleanup();
 **Custom conditions:**
 
 ```js
-const cleanup = await ios.simulateNetworkCondition({
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.simulateNetworkCondition({
   bandwidthKbps: 5000,
   latencyMs: 600,
   jitterMs: 50,
@@ -43,11 +47,13 @@ await cleanup();
 **Offline mode (no connectivity):**
 
 ```js
+import { device } from "@qawolf/flows/ios";
+
 // Simulates offline mode by dropping all packets.
 // Note: this may not trigger every app's offline UI —
 // some apps only show offline states when the connection drops abruptly
 
-const cleanup = await ios.simulateNetworkCondition(ios.NETWORK_OFFLINE);
+const cleanup = await device.simulateNetworkCondition(device.NETWORK_OFFLINE);
 
 // ... verify offline error handling, cached content ...
 
@@ -64,7 +70,7 @@ await cleanup();
 
 ## Notes
 
-- Before calling `ios.simulateNetworkCondition()`, you must call `ios.routeTraffic()`; otherwise, you will get an error.
+- Before calling `device.simulateNetworkCondition()`, you must call `device.routeTraffic()`; otherwise, you will get an error.
 - Always call cleanup functions in reverse order: restore network conditions first, then stop routing.
 - Bandwidth limiting applies to TCP traffic only.
 - Latency, jitter, and packet loss apply to all traffic (TCP and UDP).

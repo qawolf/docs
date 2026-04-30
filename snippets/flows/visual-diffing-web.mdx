@@ -3,23 +3,14 @@ import { expect, flow } from "@qawolf/flows/web";
 
 export default flow(
   "Landing Page Visual Tests - Desktop",
-  "Web - Chrome",
-  async ({ test, ...testContext }) => {
-    const { launch } = testContext;
-    let page;
-
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
     await test("Schedule Demo Visual Test", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
 
       //! Opening the home page of QA Wolf
-
-      //!! launch the context and browser
-      const { context, browser } = await launch();
-
-      //!! create a new page in the browser
-      page = await context.newPage();
 
       //!! navigate to the "https://www.qawolf.com/"
       await page.goto("https://www.qawolf.com/");

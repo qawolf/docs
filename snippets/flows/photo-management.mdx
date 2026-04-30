@@ -1,29 +1,27 @@
 ```js
-import { flow } from "@qawolf/flows/ios";
-import { expect } from "@qawolf/flows/web";
+import { flow, device, expect } from "@qawolf/flows/ios";
 
 export default flow(
   "iOS Media - Photo management in gallery",
-  "iOS - iPhone 15 (iOS 26)",
-  async ({ wdio, ios, test, ...testContext }) => {
+  {
+    target: "iOS - iPhone 15 (iOS 26)",
+    launch: { bundleId: "com.apple.mobileslideshow" },
+  },
+  async ({ driver, test }) => {
     await test("Photo push and save and list and delete", async () => {
-      const driver = await wdio.startIos({
-        "appium:bundleId": "com.apple.mobileslideshow",
-      });
-
 	  const baseDir = process.env.IMAGE_BASE_DIR;
 	  const fileName = "large.jpg";
 	  const imagePath = `${baseDir}/${fileName}`;
 
-      await ios.savePhoto(driver, imagePath);
+      await device.savePhoto(driver, imagePath);
 
-      const photosAfterPush = await ios.listPhotos(driver);
+      const photosAfterPush = await device.listPhotos(driver);
       expect(photosAfterPush.success).toBe(true);
       expect(photosAfterPush.totalCount).toBe(1);
 
-      await ios.deleteAllPhotos(driver);
+      await device.deleteAllPhotos(driver);
 
-      const photosAfterDelete = await ios.listPhotos(driver);
+      const photosAfterDelete = await device.listPhotos(driver);
       expect(photosAfterDelete.success).toBe(true);
       expect(photosAfterDelete.totalCount).toBe(0);
     });

@@ -14,18 +14,13 @@ const PAGE_LOAD_MAX_MS = 2000;
 
 export default flow(
   "Homepage",
-  "Web - Chrome",
-  async ({ test, ...testContext }) => {
+  { target: "Web - Chrome", launch: { args: ["--remote-debugging-port=9222"] } },
+  async ({ page, test }) => {
     await test("Performance test for homepage", async () => {
-      const { launch } = testContext;
 
       //--------------------------------
       // Arrange: Launch browser and navigate to homepage
       //--------------------------------
-      const { context } = await launch({ args: ["--remote-debugging-port=9222"] });
-      context.setDefaultTimeout(8000);
-      const page = await context.newPage();
-
       await page.goto(process.env.BASE_URL);
 
       //--------------------------------

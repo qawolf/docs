@@ -3,17 +3,13 @@ import { flow, expect } from "@qawolf/flows/web";
 
 export default flow(
   "Accessibility",
-  "Web - Chrome",
-   async ({ test, ...testContext }) => {
-    const { launch } = testContext;
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
 // Sample Test - Accessibility
 //--------------------------------
 // Arrange:
 //--------------------------------
 // Create user and log in
-const { context } = await launch();
-      context.setDefaultTimeout(8000);
-      const page = await context.newPage();
       await page.goto("https://www.qawolf.com/");
 
 // Navigate to Home page

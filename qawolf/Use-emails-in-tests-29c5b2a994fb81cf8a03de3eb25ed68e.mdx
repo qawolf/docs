@@ -1,37 +1,32 @@
 ---
 title: "Test a feature that sends or receives emails"
-description: "Use the built-in getInbox function to send, receive, and verify emails during your QA Wolf test flows."
+description: "Use mail.inbox() from @qawolf/emails to send, receive, and verify emails during your QA Wolf test flows."
 sidebarTitle: "Use emails in tests"
 icon: "mail"
 ---
 
-## Accessing `getInbox` in your flow
+## Accessing `mail` in your flow
 
-`getInbox` is available through `testContext` in your `flow()` callback — it does not need to be imported from a separate package.
+Import `mail` from `@qawolf/emails` at the top of your flow file. Runners configure the email client automatically; no additional setup is required.
 
-You can access it in two ways:
+```javascript
+import { flow } from "@qawolf/flows/web";
+import { mail } from "@qawolf/emails";
 
-1. Spread `testContext` and destructure from it, which is useful when you need to pass context to helpers:
-
-```text
-await flow("My Flow", "Web - Chrome", async ({ test, ...testContext }) => {
-  const { getInbox } = testContext;
-});
-```
-
-2. Destructure it directly from the flow context:
-
-```text
-await flow("My Flow", "Web - Chrome", async ({ test, getInbox }) => {
-  // getInbox is ready to use
-});
+export default flow(
+  "My Flow",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    const inbox = await mail.inbox();
+  },
+);
 ```
 
 ## Email addresses and inboxes
 
-When your app sends confirmation links, password resets, or invitation emails, you can test those flows directly inside QA Wolf using the built-in getInbox function.
+When your app sends confirmation links, password resets, or invitation emails, you can test those flows directly inside QA Wolf using `mail.inbox()`.
 
-`getInbox` gives you an email inbox you can send to, wait on, and read from — all inside your test runner. It can also generate **unique email addresses**, so every test run uses a fresh inbox.
+`mail.inbox()` gives you an email inbox you can send to, wait on, and read from — all inside your test runner. It can also generate **unique email addresses**, so every test run uses a fresh inbox.
 
 In addition, it includes helper functions to:
 
@@ -40,7 +35,7 @@ In addition, it includes helper functions to:
 - Wait for multiple messages over a period of time
 
 <Tip>
-  `getInbox()` returns the following object: `{ emailAddress, sendMessage, waitForMessage, waitForMessages }`.
+  `mail.inbox()` returns the following object: `{ emailAddress, sendMessage, waitForMessage, waitForMessages }`.
 </Tip>
 
 ## The Email Allowlist
@@ -80,19 +75,19 @@ When you set a default email address, any test or helper that accepts an email c
 The simplest way to access your test inbox is to add this line to your flow:
 
 ```javascript
-const { emailAddress } = await getInbox();
+const { emailAddress } = await mail.inbox();
 ```
 
-If you don't pass any options to `getInbox`, QA Wolf uses your **team's default email address**, which you can find by going to the **Flows** tab, selecting **Workspace settings** from the `Workspace name` dropdown, choosing Flows from the left navigation, and finding the email address marked as **default** under the **Email Allowlist**.
+If you don't pass any options to `mail.inbox`, QA Wolf uses your **team's default email address**, which you can find by going to the **Flows** tab, selecting **Workspace settings** from the `Workspace name` dropdown, choosing Flows from the left navigation, and finding the email address marked as **default** under the **Email Allowlist**.
 
 <Tip>
-  Any email address used with `getInbox` must be on your team's [Email Allowlist](/qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e#the-email-allowlist).
+  Any email address used with `mail.inbox` must be on your team's [Email Allowlist](/qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e#the-email-allowlist).
 </Tip>
 
 If you need to access a specific allowlisted email address:
 
 ```javascript
-const { emailAddress } = await getInbox({
+const { emailAddress } = await mail.inbox({
   address: "my-team+admin@qawolf.email",
 });
 ```
@@ -100,7 +95,7 @@ const { emailAddress } = await getInbox({
 You can even include a display name by using the following format:
 
 ```javascript
-const { emailAddress } = await getInbox({
+const { emailAddress } = await mail.inbox({
   address: "Gerald TheSpider <my-team@qawolf.email>",
 });
 ```
@@ -108,7 +103,7 @@ const { emailAddress } = await getInbox({
 If your test needs a brand-new inbox each run, set `new: true`.
 
 ```javascript
-const { emailAddress } = await getInbox({ new: true });
+const { emailAddress } = await mail.inbox({ new: true });
 // Example: my-team+a25sa5q@qawolf.email
 ```
 
@@ -117,7 +112,7 @@ QA Wolf automatically appends a random suffix after a + sign (i.e., plus address
 <Tip>
   Your application may not allow + symbols in email addresses. If so, you can specify a different delimiter using the `delimiter` option.
 
-  `const { emailAddress } = await getInbox({ new: true, delimiter: "-" });`
+  `const { emailAddress } = await mail.inbox({ new: true, delimiter: "-" });`
 
   The above generates new emails with random strings after the - symbol.
 </Tip>
@@ -127,7 +122,7 @@ QA Wolf automatically appends a random suffix after a + sign (i.e., plus address
 Often, you want your test to wait for a specific email to arrive and then verify its content. This approach is ideal for verifying signup confirmations or password reset links.
 
 ```javascript
-const { waitForMessage } = await getInbox({ new: true });
+const { waitForMessage } = await mail.inbox({ new: true });
 
 const message = await waitForMessage({ subject: /Welcome to QA Wolf/ });
 await expect(message.body).toContain("This is a test email");
@@ -136,7 +131,7 @@ await expect(message.body).toContain("This is a test email");
 Sometimes, you want to collect all emails received over a short window. This approach helps validate bulk or sequence-based email events (like multi-step onboarding).
 
 ```javascript
-const { waitForMessages } = await getInbox({ new: true });
+const { waitForMessages } = await mail.inbox({ new: true });
 
 const messages = await waitForMessages({ wait: 10000 });
 console.log(`Received ${messages.length} messages`);
@@ -147,7 +142,7 @@ console.log(`Received ${messages.length} messages`);
 Our platform includes the `sendMessage` helper for the less common case where your application **receives** or **reacts to incoming emails**. You can use it to simulate an external sender and verify how your app processes inbound messages (like replies, support emails, or automated triggers).
 
 ```javascript
-const { sendMessage } = await getInbox({ new: true });
+const { sendMessage } = await mail.inbox({ new: true });
 
 await sendMessage({
   to: "my-team+recipient@qawolf.email",

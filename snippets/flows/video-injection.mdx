@@ -1,23 +1,22 @@
 ```js
-import { flow } from "@qawolf/flows/ios";
-import * as ios from "@qawolf/run-globals-ios";
+import { flow, device, expect } from "@qawolf/flows/ios";
 
 export default flow(
   "iOS Media - Camera Video Injection",
-  "iOS - iPhone 15 (iOS 26)",
-  async ({ wdio, test, ...testContext }) => {
+  {
+    target: "iOS - iPhone 15 (iOS 26)",
+    launch: {
+      app: { env: "IPA_APP_BUILD" },
+      respectSystemAlerts: true,
+      autoAcceptAlerts: true,
+    },
+  },
+  async ({ driver, test }) => {
     await test("iOS Media - Camera Video Injections", async () => {
       //--------------------------------
       // Arrange:
       //--------------------------------
       // Install and Launch Trot app
-      const driver = await wdio.startIos({
-        "appium:app": process.env.IPA_APP_BUILD,
-        "appium:settings[respectSystemAlerts]": true,
-        "appium:autoAcceptAlerts": true,
-        "appium:iosInstallPause": "5000",
-      });
-
       // Tap "Media"
       await driver
         .$(
@@ -67,7 +66,7 @@ export default flow(
       // Inject video as the camera feed
 
       const storagePath = process.env.STORAGE_PATH
-      await ios.injectCamera(driver, "com.qawolf.trot", {
+      await device.injectCamera(driver, "com.qawolf.trot", {
         data: `${storagePath}/wolf.mp4`,
         type: "video",
       });
@@ -81,8 +80,7 @@ export default flow(
         `-ios predicate string:name == 'livePreview' AND type == 'XCUIElementTypeOther'`,
       );
       await previewElement.waitForDisplayed({ timeout: 5000 });
-      await wdio
-        .expect(driver)
+      await expect(driver)
         .toHaveScreenshot(
           previewElement,
           "video_recording_video_preview",
