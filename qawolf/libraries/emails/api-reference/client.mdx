@@ -18,18 +18,72 @@ Example:
 import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
 
 const client = await createEmailsClient({
-  emailerUrl: "https://emailer.example.com",
+  apiKey: process.env["QAWOLF_API_KEY"]!,
   pollForEmailsDefaultTimeoutMs: 30_000,
   teamId: "team_123",
+  url: "https://app.qawolf.com/api",
   waitForMessagesDefaultDelayMs: 1_000,
 });
 
 configureEmailsClient(client);
 ```
 
+## `EmailsClientOptions`
+
+`createEmailsClient(...)` accepts one of two transport configurations.
+
+Use the QA Wolf API configuration for new code:
+
+```ts
+const client = await createEmailsClient({
+  apiKey: process.env["QAWOLF_API_KEY"]!,
+  pollForEmailsDefaultTimeoutMs: 30_000,
+  teamId: "team_123",
+  url: "https://app.qawolf.com/api",
+  waitForMessagesDefaultDelayMs: 1_000,
+});
+```
+
+The client also supports an internal runner configuration:
+
+```ts
+const client = await createEmailsClient({
+  emailerUrl: process.env["EMAILER_URL"]!,
+  pollForEmailsDefaultTimeoutMs: 30_000,
+  teamId: "team_123",
+  waitForMessagesDefaultDelayMs: 1_000,
+});
+```
+
+Do not pass both configurations at the same time. If you use `apiKey` and
+`url`, do not pass `emailerUrl`.
+
+```ts
+type EmailsClientOptions =
+  | {
+      apiKey: string;
+      emailerUrl?: never;
+      logger?: (severity: string, message: string) => void;
+      pollForEmailsDefaultTimeoutMs: number;
+      teamId?: string;
+      url: string;
+      waitForMessagesDefaultDelayMs: number;
+    }
+  | {
+      apiKey?: never;
+      emailerUrl: string;
+      logger?: (severity: string, message: string) => void;
+      pollForEmailsDefaultTimeoutMs: number;
+      teamId?: string;
+      url?: never;
+      waitForMessagesDefaultDelayMs: number;
+    };
+```
+
 ## Role Of `createEmailsClient(...)`
 
-This creates a service-backed client that can be used directly by runners, tooling, or any environment that has access to the QA Wolf email service.
+This creates a service-backed client that can be used directly by local
+harnesses, tooling, or other runtime environments.
 
 Example:
 
@@ -37,12 +91,13 @@ Example:
 import { createEmailsClient } from "@qawolf/emails";
 
 const client = await createEmailsClient({
-  emailerUrl: "https://emailer.example.com",
+  apiKey: process.env["QAWOLF_API_KEY"]!,
   logger: (severity, message) => {
     console.log(severity, message);
   },
   pollForEmailsDefaultTimeoutMs: 30_000,
   teamId: "team_123",
+  url: "https://app.qawolf.com/api",
   waitForMessagesDefaultDelayMs: 1_000,
 });
 
@@ -51,7 +106,9 @@ const inbox = await client.getInbox({ new: true });
 
 ## Compatibility Note
 
-`buildGetInboxFn(...)` remains useful for compatibility with runtimes that still inject `getInbox` directly, but new runtime code should prefer `createEmailsClient(...)`.
+`buildGetInboxFn(...)` remains useful for compatibility with runtimes that still
+inject `getInbox` directly, but new runtime code should prefer
+`createEmailsClient(...)`.
 
 Example:
 
@@ -59,9 +116,10 @@ Example:
 import { buildGetInboxFn } from "@qawolf/emails";
 
 const getInbox = await buildGetInboxFn({
-  emailerUrl: "https://emailer.example.com",
+  apiKey: process.env["QAWOLF_API_KEY"]!,
   pollForEmailsDefaultTimeoutMs: 30_000,
   teamId: "team_123",
+  url: "https://app.qawolf.com/api",
   waitForMessagesDefaultDelayMs: 1_000,
 });
 
