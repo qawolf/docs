@@ -12,17 +12,30 @@ Runners and local execution environments create the client first:
 import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
 
 const emails = await createEmailsClient({
-  emailerUrl: process.env["EMAILER_URL"],
+  apiKey: process.env["QAWOLF_API_KEY"]!,
   logger(severity, message) {
     console.log(severity, message);
   },
   pollForEmailsDefaultTimeoutMs: 300_000,
   teamId: process.env["QAWOLF_TEAM_ID"],
+  url: process.env["QAWOLF_API_URL"]!,
   waitForMessagesDefaultDelayMs: 15_000,
 });
 
 configureEmailsClient(emails);
 ```
+
+## Runtime Values
+
+The recommended client setup needs:
+
+- `QAWOLF_API_URL`: QA Wolf API URL, ending in `/api`.
+- `QAWOLF_API_KEY`: API key used to authenticate requests.
+- `QAWOLF_TEAM_ID`: workspace/team ID used as `teamId`.
+
+QA Wolf-hosted runners configure email access automatically. Internal runners
+may still use `EMAILER_URL`, but new local harnesses and runtime integrations
+should prefer `QAWOLF_API_URL` with `QAWOLF_API_KEY`.
 
 ## Test Cleanup
 

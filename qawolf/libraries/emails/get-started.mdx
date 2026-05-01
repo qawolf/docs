@@ -67,15 +67,16 @@ This prevents the flow from reading a message that arrived earlier.
 ## Runtime Setup
 
 In normal QA Wolf runs, the runner configures the email client. Local harnesses
-can configure it explicitly.
+can configure it explicitly with the QA Wolf API.
 
 ```ts
 import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
 
 const client = await createEmailsClient({
-  emailerUrl: process.env["EMAILER_URL"]!,
+  apiKey: process.env["QAWOLF_API_KEY"]!,
   pollForEmailsDefaultTimeoutMs: 300_000,
   teamId: process.env["QAWOLF_TEAM_ID"],
+  url: process.env["QAWOLF_API_URL"]!,
   waitForMessagesDefaultDelayMs: 15_000,
 });
 
