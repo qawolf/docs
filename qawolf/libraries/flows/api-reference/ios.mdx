@@ -40,7 +40,7 @@ export default flow(
 
 All iOS flow callbacks receive:
 
-- `input`
+- `inputs`
 - `setOutput(...)`
 - `test(...)`
 
@@ -100,7 +100,7 @@ Use `flow(...)` for iOS authoring.
 
 Behavior from the implementation:
 
-- without launch, the callback receives `input`, `setOutput(...)`, and `test(...)`
+- without launch, the callback receives `inputs`, `setOutput(...)`, and `test(...)`
 - with `launch: true`, the flow calls `launch()` with default iOS startup
 - with `launch: <options>`, the flow calls `launch(options)`
 - when launch is enabled, the callback also receives `driver`

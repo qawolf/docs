@@ -24,14 +24,14 @@ CLI flows currently support one target.
 <CodeGroup>
 
 ```ts String target
-export default flow("CLI task", "Basic", async ({ input }) => {
-  console.log(input);
+export default flow("CLI task", "Basic", async ({ inputs }) => {
+  console.log(inputs);
 });
 ```
 
 ```ts Object target
-export default flow("CLI task", { target: "Basic" }, async ({ input }) => {
-  console.log(input);
+export default flow("CLI task", { target: "Basic" }, async ({ inputs }) => {
+  console.log(inputs);
 });
 ```
 
@@ -51,16 +51,16 @@ export default flow("Write report", "Basic", async () => {
 
 ## Pass Data To Later Flows
 
-Use `input` for values passed into the flow and `setOutput(...)` for values a later flow can read.
+Use `inputs` for values passed into the flow and `setOutput(...)` for values a later flow can read.
 
 ```ts
 export default flow(
   "Prepare account fixture",
   "Basic",
-  async ({ input, setOutput, test }) => {
+  async ({ inputs, setOutput, test }) => {
     await test("publish account fixture", async () => {
       setOutput("account", {
-        input,
+        inputs,
         role: "admin",
       });
     });
@@ -68,6 +68,6 @@ export default flow(
 );
 ```
 
-Use CLI flows for setup, teardown, notifications, and other non-UI work. Reach for `input`, `setOutput(...)`, and `test(...)` when you need QA Wolf runtime state.
+Use CLI flows for setup, teardown, notifications, and other non-UI work. Reach for `inputs`, `setOutput(...)`, and `test(...)` when you need QA Wolf runtime state.
 
 For the exact CLI target and callback context shape, see the [CLI Reference](/qawolf/libraries/flows/api-reference/cli).
