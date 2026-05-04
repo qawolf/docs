@@ -38,7 +38,7 @@ export default flow(
 
 All Android flow callbacks receive:
 
-- `input`
+- `inputs`
 - `setOutput(...)`
 - `test(...)`
 
@@ -98,7 +98,7 @@ Use `flow(...)` for Android authoring.
 
 Behavior from the implementation:
 
-- without launch, the callback receives `input`, `setOutput(...)`, and `test(...)`
+- without launch, the callback receives `inputs`, `setOutput(...)`, and `test(...)`
 - with `launch: true`, the flow calls `launch()` with default Android startup
 - with `launch: <options>`, the flow calls `launch(options)`
 - when launch is enabled, the callback also receives `driver`

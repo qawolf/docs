@@ -20,7 +20,7 @@ flow("Name shown in QA Wolf", target, async (runtime) => {
 
 Every flow callback can receive:
 
-- `input` for values passed into the flow
+- `inputs` for values passed into the flow
 - `setOutput(...)` for values a later flow can read
 - `test(...)` for named sub-steps
 
@@ -30,10 +30,10 @@ import { flow } from "@qawolf/flows/cli";
 export default flow(
   "Prepare account fixture",
   "Basic",
-  async ({ input, setOutput, test }) => {
+  async ({ inputs, setOutput, test }) => {
     await test("publish account fixture", async () => {
       setOutput("account", {
-        input,
+        inputs,
         role: "admin",
       });
     });

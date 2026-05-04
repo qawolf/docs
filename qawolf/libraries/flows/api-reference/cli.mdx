@@ -22,11 +22,11 @@ import { flow } from "@qawolf/flows/cli";
 export default flow(
   "Prepare release metadata",
   "Basic",
-  async ({ input, setOutput, test }) => {
+  async ({ inputs, setOutput, test }) => {
     await test("create release payload", async () => {
       setOutput("release", {
         generatedAt: new Date().toISOString(),
-        input,
+        inputs,
         status: "ready",
       });
     });
@@ -68,7 +68,7 @@ The callback receives the CLI flow context.
 
 Public callback parameters:
 
-- `input`
+- `inputs`
 - `setOutput(...)`
 - `test(...)`
 
@@ -82,11 +82,11 @@ import { flow } from "@qawolf/flows/cli";
 export default flow(
   "Prepare release metadata",
   "Basic",
-  async ({ input, setOutput, test }) => {
+  async ({ inputs, setOutput, test }) => {
     await test("create release payload", async () => {
       setOutput("release", {
         generatedAt: new Date().toISOString(),
-        input,
+        inputs,
         status: "ready",
       });
     });
