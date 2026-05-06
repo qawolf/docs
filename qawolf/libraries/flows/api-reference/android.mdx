@@ -24,11 +24,13 @@ import { device, flow } from "@qawolf/flows/android";
 export default flow(
   "Open Android app",
   { target: "Android - Pixel", launch: true },
-  async ({ driver }) => {
-    await driver.pause(1000);
-    await device.setGeoLocation({
-      latitude: 37.7749,
-      longitude: -122.4194,
+  async ({ driver, test }) => {
+    await test("set location", async () => {
+      await driver.pause(1000);
+      await device.setGeoLocation({
+        latitude: 37.7749,
+        longitude: -122.4194,
+      });
     });
   },
 );
@@ -43,6 +45,10 @@ All Android flow callbacks receive:
 - `test(...)`
 
 Launch-enabled Android flows also receive `driver`.
+
+<Note>
+  `test(...)` can be omitted for simple flows where grouping steps into named sub-steps doesn't add value. For most flows, wrapping steps in `test(...)` is recommended — the label appears in your results and makes failures easier to locate.
+</Note>
 
 ## `testContextDependencies`
 
@@ -79,15 +85,17 @@ export const targetOnlyFlow = flow(
   "Target-only path",
   "Android - Pixel",
   async () => {
-    // call launch() imperatively when startup should happen in the callback
+    // call launch() explicitly when startup should happen in the callback
   },
 );
 
 export const launchedFlow = flow(
   "Launch-enabled path",
   { target: "Android - Pixel", launch: true },
-  async ({ driver }) => {
-    await driver.pause(1000);
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      await driver.pause(1000);
+    });
   },
 );
 ```
@@ -111,8 +119,10 @@ import { flow } from "@qawolf/flows/android";
 export default flow(
   "Launch in flow definition",
   { target: "Android - Pixel", launch: true },
-  async ({ driver }) => {
-    await driver.pause(1000);
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      await driver.pause(1000);
+    });
   },
 );
 ```
@@ -200,6 +210,8 @@ export default flow("Use Android defaults", "Android - Pixel", async () => {
 
 ### App Resolution
 
+When your CI pipeline uploads an Android build, QA Wolf sets `RUN_INPUT_PATH` to the uploaded file before the flow runs. Omit `app` in your launch call and QA Wolf will use that path automatically — you only need to provide the `appPackage`.
+
 When `app` is provided, the current resolution order is:
 
 1. `app.path`
@@ -227,11 +239,13 @@ await launch({
 });
 ```
 
-If `app` is present but does not resolve to a value, launch does not fall back to `RUN_INPUT_PATH`.
+<Note>
+  If `app` is present but does not resolve to a value, launch does not fall back to `RUN_INPUT_PATH`.
+</Note>
 
 ## `device`
 
-`device` is a runtime proxy over the Android emulator API. Use it for device-level operations that sit outside the main `flow(...)` and `launch()` path.
+`device` is a runtime proxy over the Android emulator API. Use it for device-level operations — such as setting location, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
 
 Example:
 
@@ -258,8 +272,10 @@ import { expect, flow } from "@qawolf/flows/android";
 export default flow(
   "Use runner expect",
   { target: "Android - Pixel", launch: true },
-  async ({ driver }) => {
-    await expect(driver).toBeDefined();
+  async ({ driver, test }) => {
+    await test("check driver", async () => {
+      await expect(driver).toBeDefined();
+    });
   },
 );
 ```

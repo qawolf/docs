@@ -75,7 +75,7 @@
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
               "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
               "qawolf/Uploading-manually",
-              "qawolf/select-a-target-device-and-os"
+              "qawolf/sharing-code-across-flows"
             ]
           },
           {
@@ -212,6 +212,13 @@
             "icon": "sparkles",
             "pages": [
               "qawolf/non-deterministic-ai-testing"
+            ]
+          },
+          {
+            "group": "Electron",
+            "icon": "monitor",
+            "pages": [
+              "qawolf/electron"
             ]
           }
         ]

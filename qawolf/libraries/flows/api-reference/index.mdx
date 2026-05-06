@@ -50,7 +50,7 @@ resetTarget();
 
 ## Target Literals
 
-The current preset target literals are:
+The target string must exactly match one of the supported values or your flow will fail to initialize.
 
 ```ts
 type Target =
@@ -83,3 +83,7 @@ type Target =
   | "iOS - iPhone 15 (iOS 26) (allowlisted)"
   | "iOS - iPhone 15 (iOS 26) (private)";
 ```
+
+<Note>
+  Apple ID Enabled and Allowlisted targets are available for flows that require a signed-in Apple ID or app allowlisting. Contact your team to enable these.
+</Note>
