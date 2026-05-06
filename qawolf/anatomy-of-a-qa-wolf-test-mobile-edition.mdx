@@ -6,6 +6,8 @@ icon: "puzzle"
 
 If Automation AI generated a flow for you and you want to understand what it produced, this page explains each part. If your team has written Playwright or Appium tests before, QA Wolf flows will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
 
+Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells the runner what to run, where to run it, and which runtime objects to inject into the callback.
+
 ## The import statement
 
 Every flow file starts with an import. Which package you import from depends on what you're testing.
@@ -35,7 +37,7 @@ import { flow } from "@qawolf/flows/cli";
 | `@qawolf/flows/web` | Testing a website, web app, or Electron desktop app |
 | `@qawolf/flows/ios` | Testing a native iOS app |
 | `@qawolf/flows/android` | Testing a native Android app |
-| `@qawolf/flows/cli` | Running setup, teardown, or other tasks that don't need a browser or device |
+| `@qawolf/flows/cli` | [Running setup, teardown, tasks that don't need browsers/devices](/qawolf/libraries/flows/api-reference/cli) |
 
 <Warning>
   For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`. Importing from `@playwright/test` will cause assertions to bypass QA Wolf's reporting.
@@ -61,18 +63,24 @@ export default flow(
 
 **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
 
-**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup at the same time. The target string must exactly match one of the supported values or your flow will fail to initialize — see [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals) for the current list.
+**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously. The target string must exactly match one of the supported values, or your flow will fail to initialize — see [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals) for the current list.
 
 **Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
 
 ## Launch styles
 
+| Style | When to use |
+| --- | --- |
+| `launch: true` | Most flows — default startup, no configuration needed |
+| Options object | Startup options are known up front — e.g., persistent browser context |
+| Explicit `launch()` | Startup depends on runtime logic — e.g., branching on an environment variable |
+
 ### Declarative launch — recommended
 
-Pass `launch: true` to use default startup, or pass an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs and the callback receives the platform object ready to use.
+Pass `launch: true` to use the default startup, or pass an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
 
 <Tip>
-  If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you so your callback starts with a ready-to-use `page`.
+  If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
 </Tip>
 
 <CodeGroup>
@@ -147,13 +155,13 @@ The callback receives a different object depending on the platform:
 
 ### Explicit launch — advanced flows only
 
-For advanced cases where startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/qawolf/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Launch Electron](/qawolf/electron).
+For advanced cases where the startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/qawolf/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Launch Electron](/qawolf/electron).
 
 ## Callback parameters
 
 Every flow callback receives three parameters regardless of platform:
 
-**`inputs`** — values passed into the flow from outside. Use this to read data that another flow in the same run published. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+`inputs` — values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
 
 **`setOutput(...)`** — publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
 
@@ -188,10 +196,10 @@ export default flow(
 
 Launch-enabled flows also receive the platform object (`page`, `context`, `browser`, or `driver`) as shown in the launch styles section above.
 
-For the full callback context shape see the API Reference for [Web](/qawolf/libraries/flows/api-reference/web#flow-callback-context), [Android](/qawolf/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/qawolf/libraries/flows/api-reference/ios#flow-callback-context).
+For the full callback context shape, see the API Reference for [Web](/qawolf/libraries/flows/api-reference/web#flow-callback-context), [Android](/qawolf/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/qawolf/libraries/flows/api-reference/ios#flow-callback-context).
 
 <Note>
-  `launch()`, `expect`, `device`, and `platform.target` only work while a flow is running inside the QA Wolf runner. Keep them inside the flow callback — not at the module level. Module-level code should be limited to imports, constants, and pure helper functions.
+  `launch()`, `expect`, `device`, and `platform.target` are stubs in the package code, and they are replaced by the runner at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. Module-level code should be limited to imports, constants, and pure helper functions.
 </Note>
 
 ## Environment variables
