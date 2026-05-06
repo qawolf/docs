@@ -4,7 +4,21 @@ description: "Reference notes for @qawolf/flows/cli."
 sidebarTitle: "CLI Reference"
 ---
 
-`@qawolf/flows/cli` is the smallest platform entry point in `@qawolf/flows`.
+`@qawolf/flows/cli` is the smallest platform entry point in `@qawolf/flows`. CLI flows run in Node and have no browser or mobile driver. Use them for work that needs to coordinate with other flows in a run but doesn't require UI interaction — data setup, teardown, sending notifications, or processing files.
+
+Because CLI flows run in Node, you can use the Node standard library directly for file, process, and network work:
+
+```ts
+import { flow } from "@qawolf/flows/cli";
+import { readFile } from "node:fs/promises";
+
+export default flow("Read build metadata", "Basic", async ({ test }) => {
+  await test("read metadata", async () => {
+    const metadata = await readFile("build-metadata.json", "utf8");
+    console.log(JSON.parse(metadata));
+  });
+});
+```
 
 ## Primary Exports
 
@@ -24,7 +38,7 @@ export default flow(
   "Basic",
   async ({ inputs, setOutput, test }) => {
     await test("create release payload", async () => {
-      setOutput("release", {
+      setOutput("RELEASE", {
         generatedAt: new Date().toISOString(),
         inputs,
         status: "ready",
@@ -68,11 +82,15 @@ The callback receives the CLI flow context.
 
 Public callback parameters:
 
-- `inputs`
-- `setOutput(...)`
-- `test(...)`
+- `inputs` — values published by an upstream flow in the same run
+- `setOutput(...)` — publishes values for downstream flows to read
+- `test(...)` — wraps named sub-steps that appear in your results
 
-CLI flows do not add launch helpers or platform-specific runtime objects.
+CLI flows do not receive `page`, `driver`, or any other launch object.
+
+<Note>
+  `test(...)` can be omitted for simple flows where grouping steps into named sub-steps doesn't add value. For most flows, wrapping steps in `test(...)` is recommended — the label appears in your results and makes failures easier to locate.
+</Note>
 
 Example:
 
@@ -84,7 +102,7 @@ export default flow(
   "Basic",
   async ({ inputs, setOutput, test }) => {
     await test("create release payload", async () => {
-      setOutput("release", {
+      setOutput("RELEASE", {
         generatedAt: new Date().toISOString(),
         inputs,
         status: "ready",
@@ -93,6 +111,8 @@ export default flow(
   },
 );
 ```
+
+See [Passing data between flows](/qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931) for how to use `inputs` and `setOutput` to coordinate with other flows in a run.
 
 ## `testContextDependencies`
 
@@ -107,7 +127,9 @@ Example:
 ```ts
 import { expect, flow } from "@qawolf/flows/cli";
 
-export default flow("Use runner expect", "Basic", async () => {
-  await expect("ready").toBeDefined();
+export default flow("Use runner expect", "Basic", async ({ test }) => {
+  await test("check value", async () => {
+    await expect("ready").toBeDefined();
+  });
 });
 ```
