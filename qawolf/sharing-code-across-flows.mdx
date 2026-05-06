@@ -9,13 +9,13 @@ icon: "code"
 For platform-specific implementation differences that don't fit neatly into a Page Object — such as log capture, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — write a helper function that handles the difference internally. The flow calls the helper and stays linear.
 
 ```typescript
-// src/helpers/console-logs-ios.ts
+// /src/helpers/console-logs-ios.ts
 export async function getConsoleLogs(driver: WebdriverIO.Browser) {
   const raw = await driver.getLogs("safariConsole");
   return raw.map((entry) => JSON.parse(entry.message));
 }
 
-// helpers/console-logs-android.ts
+//helpers/console-logs-android.ts
 export async function getConsoleLogs(driver: WebdriverIO.Browser) {
   const raw = await driver.getLogs("browser");
   return raw.map((entry) => entry.message);
@@ -31,7 +31,7 @@ export async function getConsoleLogs(driver: WebdriverIO.Browser) {
 Rather than writing one flow that handles multiple platforms, write separate flows using the entry point for each platform. The `device` API surface is consistent across platforms, so the flows look similar even though they run on different infrastructure.
 
 ```typescript
-// flows/set-location-android.ts
+// /src/flows/set-location-android.ts
 import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
@@ -46,7 +46,7 @@ export default flow(
 ```
 
 ```typescript
-// flows/set-location-ios.ts
+// /src/flows/set-location-ios.ts
 import { device, flow } from "@qawolf/flows/ios";
 
 export default flow(
