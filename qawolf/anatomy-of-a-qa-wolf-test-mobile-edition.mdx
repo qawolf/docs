@@ -44,7 +44,7 @@ import { flow } from "@qawolf/flows/cli";
 </Warning>
 
 <Note>
-  For iOS, Android, and CLI flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright.
+  For iOS, Android, and CLI flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright
 </Note>
 
 ## The flow wrapper
@@ -155,13 +155,13 @@ The callback receives a different object depending on the platform:
 
 ### Explicit launch — advanced flows only
 
-For advanced cases where the startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/qawolf/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Launch Electron](/qawolf/electron).
+For advanced cases where the startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/qawolf/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/qawolf/electron).
 
 ## Callback parameters
 
 Every flow callback receives three parameters regardless of platform:
 
-`inputs` — values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+**`inputs`** — values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
 
 **`setOutput(...)`** — publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
 
