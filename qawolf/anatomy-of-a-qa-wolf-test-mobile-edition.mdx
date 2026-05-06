@@ -1,32 +1,55 @@
 ---
 title: "Anatomy of a flow"
-description: "Learn the structure of every QA Wolf flow — imports, the flow wrapper, launch styles, and the AAA framework."
+description: "Learn the structure of every QA Wolf flow — imports, the flow wrapper, launch styles, callback parameters, and the AAA framework."
 icon: "puzzle"
 ---
 
 If Automation AI generated a flow for you and you want to understand what it produced, this page explains each part. If your team has written Playwright or Appium tests before, QA Wolf flows will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
 
+Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells the runner what to run, where to run it, and which runtime objects to inject into the callback.
+
 ## The import statement
 
-Import `flow` and `expect` from the package that matches your target platform.
+Every flow file starts with an import. Which package you import from depends on what you're testing.
 
 <CodeGroup>
+
 ```typescript Web
 import { flow, expect } from "@qawolf/flows/web";
 ```
+
 ```typescript iOS
 import { flow, expect } from "@qawolf/flows/ios";
 ```
+
 ```typescript Android
 import { flow, expect } from "@qawolf/flows/android";
 ```
+
+```typescript CLI
+import { flow } from "@qawolf/flows/cli";
+```
+
 </CodeGroup>
 
-Always import `expect` from the flows package — not from `@playwright/test`. Importing from `@playwright/test` will cause assertions to bypass QA Wolf's reporting.
+| Package | Use when |
+| --- | --- |
+| `@qawolf/flows/web` | Testing a website, web app, or Electron desktop app |
+| `@qawolf/flows/ios` | Testing a native iOS app |
+| `@qawolf/flows/android` | Testing a native Android app |
+| `@qawolf/flows/cli` | [Running setup, teardown, tasks that don't need browsers/devices](/qawolf/libraries/flows/api-reference/cli) |
+
+<Warning>
+  For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`. Importing from `@playwright/test` will cause assertions to bypass QA Wolf's reporting.
+</Warning>
+
+<Note>
+  For iOS, Android, and CLI flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright
+</Note>
 
 ## The flow wrapper
 
-`flow()` takes three arguments: a name, a target, and an async callback containing the test logic.
+`flow()` takes three arguments: a name, a configuration, and an async callback containing the test logic.
 
 ```typescript
 export default flow(
@@ -40,55 +63,67 @@ export default flow(
 
 **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
 
-**Target** — the device and environment the flow runs on. The format is `"Platform - Device (OS Version)"` for mobile and `"Web - Browser"` for web. The infrastructure resolves it at runtime — no additional configuration required.
+**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously. The target string must exactly match one of the supported values, or your flow will fail to initialize — see [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals) for the current list.
 
-**Callback** — the `async` function containing your test logic. What it receives depends on the launch style (see below).
+**Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
 
 ## Launch styles
 
-### `launch: true` — recommended
+| Style | When to use |
+| --- | --- |
+| `launch: true` | Most flows — default startup, no configuration needed |
+| Options object | Startup options are known up front — e.g., persistent browser context |
+| Explicit `launch()` | Startup depends on runtime logic — e.g., branching on an environment variable |
 
-Pass `{ target, launch: true }` and QA Wolf starts the session before your callback runs. The callback receives the platform object directly.
+### Declarative launch — recommended
+
+Pass `launch: true` to use the default startup, or pass an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
+
+<Tip>
+  If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
+</Tip>
 
 <CodeGroup>
+
 ```typescript Web
 export default flow(
   "Sign in",
   { target: "Web - Chrome", launch: true },
-  async ({ page }) => {
-    await page.goto(process.env.BASE_URL);
+  async ({ page, test }) => {
+    await test("navigate to sign in", async () => {
+      await page.goto(process.env.BASE_URL);
+    });
   },
 );
 ```
+
 ```typescript iOS
 export default flow(
   "Sign in",
-  { target: "iOS - iPhone 15 (18)", launch: true },
-  async ({ driver }) => {
-    // driver is ready to use
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      // driver is ready to use
+    });
   },
 );
 ```
+
 ```typescript Android
 export default flow(
   "Sign in",
-  { target: "Android - Pixel 7 (14)", launch: true },
-  async ({ driver }) => {
-    // driver is ready to use
+  { target: "Android - Pixel 9", launch: true },
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      // driver is ready to use
+    });
   },
 );
 ```
+
 </CodeGroup>
 
-The callback receives the launched object for that platform:
-
-| Entry point | Callback receives |
-|---|---|
-| `@qawolf/flows/web` | `page`, `context`, optional `browser` |
-| `@qawolf/flows/android` | `driver` |
-| `@qawolf/flows/ios` | `driver` |
-
-When startup needs options, pass an options object to `launch` instead of `true`:
+Pass an options object instead of `true` when you need to customize startup, such as reusing a browser profile. See the [Web API Reference](/qawolf/libraries/flows/api-reference/web) for the full list of options.
 
 ```typescript
 export default flow(
@@ -100,39 +135,74 @@ export default flow(
       userDataDir: "/tmp/qawolf-profile",
     },
   },
-  async ({ page }) => {
-    await page.goto(process.env.BASE_URL);
+  async ({ page, test }) => {
+    await test("navigate to sign in", async () => {
+      await page.goto(process.env.BASE_URL);
+    });
   },
 );
 ```
 
-### Manual launch — advanced flows only
+The callback receives a different object depending on the platform:
 
-Pass the target directly and call `launch()` inside the callback when startup depends on runtime logic.
+| Platform | Callback receives |
+| --- | --- |
+| Web browser | `page`, `context`, optional `browser` |
+| Web (Electron) | `page` |
+| iOS | `driver` — the Appium/WebdriverIO session for the device |
+| Android | `driver` — the Appium/WebdriverIO session for the device |
+| CLI | nothing additional — only `inputs`, `setOutput`, and `test` |
+
+### Explicit launch — advanced flows only
+
+For advanced cases where the startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/qawolf/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/qawolf/electron).
+
+## Callback parameters
+
+Every flow callback receives three parameters regardless of platform:
+
+**`inputs`** — values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+
+**`setOutput(...)`** — publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
 
 ```typescript
-import { flow, launch } from "@qawolf/flows/web";
-
-export default flow("Sign in", "Web - Chrome", async () => {
-  const useSavedProfile = process.env.USE_SAVED_PROFILE === "true";
-
-  const launchResult = await launch(
-    useSavedProfile
-      ? { browserContext: "persistent", userDataDir: "/tmp/qawolf-profile" }
-      : undefined,
-  );
-  if (!("context" in launchResult)) throw new Error("Expected browser launch");
-
-  const page =
-    "page" in launchResult
-      ? launchResult.page
-      : await launchResult.context.newPage();
-
-  await page.goto(process.env.BASE_URL);
-});
+setOutput("USER_ID", userId, "EMAIL", email);
 ```
 
-Use manual launch only when you need to branch on runtime state before launching, delay launch until after setup steps, or combine startup with callback-only data.
+<Info>
+  A consumer flow will not run until its producer has called `setOutput`. See [Passing data between flows](/qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931) for how producers and consumers work together.
+</Info>
+
+**`test(...)`** — wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
+
+```typescript
+export default flow(
+  "Create account",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, inputs, setOutput, test }) => {
+    await test("fill registration form", async () => {
+      await page.goto(process.env.BASE_URL);
+      await page.getByLabel("Email").fill(inputs["EMAIL"]);
+      await page.getByRole("button", { name: "Sign up" }).click();
+    });
+
+    await test("confirm account created", async () => {
+      const userId = await page.getByTestId("user-id").textContent();
+      setOutput("USER_ID", userId);
+    });
+  },
+);
+```
+
+Launch-enabled flows also receive the platform object (`page`, `context`, `browser`, or `driver`) as shown in the launch styles section above.
+
+For the full callback context shape, see the API Reference for [Web](/qawolf/libraries/flows/api-reference/web#flow-callback-context), [Android](/qawolf/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/qawolf/libraries/flows/api-reference/ios#flow-callback-context).
+
+<Note>
+  `launch()`, `expect`, `device`, and `platform.target` are stubs in the package code, and they are replaced by the runner at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
+  \
+  Module-level code should be limited to imports, constants, and pure helper functions.
+</Note>
 
 ## Environment variables
 
@@ -142,76 +212,106 @@ Reference environment variables with `process.env.VAR_NAME`. They are typically 
 await page.goto(process.env.BASE_URL);
 ```
 
-To set environment variables for your flows, see [Environment setup](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f#create-and-manage-environment-variables). To persist or reload environment variables from flow code, see [Using environment variables](/qawolf/Using-environment-variables-2c15b2a994fb8070926ac3adf9bcc57c#update-environment-variables-from-code).
+To set environment variables for your flows, see [Environment setup](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f#create-and-manage-environment-variables).
 
 ## The AAA framework
 
 QA Wolf flows follow the Arrange, Act, Assert (AAA) format.
 
-**Arrange** sets up state before the interaction.  
-**Act** performs the interaction being tested.  
+**Arrange** sets up state before the interaction.\
+**Act** performs the interaction being tested.\
 **Assert** verifies the expected outcome.
 
 <CodeGroup>
+
 ```typescript Web
 export default flow(
   "Complete checkout",
   { target: "Web - Chrome", launch: true },
-  async ({ page }) => {
-    //--------------------------------
-    // Arrange:
-    //--------------------------------
-    await page.goto(process.env.BASE_URL);
+  async ({ page, test }) => {
+    await test("arrange", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      await page.goto(process.env.BASE_URL);
+    });
 
-    //--------------------------------
-    // Act:
-    //--------------------------------
-    await page.fill("[data-testid='email']", "test@example.com");
-    await page.click("[data-testid='submit']");
+    await test("act", async () => {
+      //--------------------------------
+      // Act:
+      //--------------------------------
+      await page.fill("[data-testid='email']", "test@example.com");
+      await page.click("[data-testid='submit']");
+    });
 
-    //--------------------------------
-    // Assert:
-    //--------------------------------
-    await expect(page).toHaveURL(`${process.env.BASE_URL}/confirmation`);
+    await test("assert", async () => {
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      await expect(page).toHaveURL(`${process.env.BASE_URL}/confirmation`);
+    });
   },
 );
 ```
+
 ```typescript iOS
 export default flow(
   "Complete checkout",
-  { target: "iOS - iPhone 15 (18)", launch: true },
-  async ({ driver }) => {
-    //--------------------------------
-    // Arrange:
-    //--------------------------------
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("arrange", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).waitForDisplayed();
+    });
 
-    //--------------------------------
-    // Act:
-    //--------------------------------
+    await test("act", async () => {
+      //--------------------------------
+      // Act:
+      //--------------------------------
+      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).setValue("test@example.com");
+      await driver.$(`-ios predicate string:name == 'Sign in' AND type == 'XCUIElementTypeButton'`).click();
+    });
 
-    //--------------------------------
-    // Assert:
-    //--------------------------------
+    await test("assert", async () => {
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      await driver.$(`-ios predicate string:name == 'Welcome' AND type == 'XCUIElementTypeStaticText'`).waitForDisplayed({ timeout: 5000 });
+    });
   },
 );
 ```
+
 ```typescript Android
 export default flow(
   "Complete checkout",
-  { target: "Android - Pixel 7 (14)", launch: true },
-  async ({ driver }) => {
-    //--------------------------------
-    // Arrange:
-    //--------------------------------
+  { target: "Android - Pixel 9", launch: true },
+  async ({ driver, test }) => {
+    await test("arrange", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      await driver.$(`~Email`).waitForDisplayed();
+    });
 
-    //--------------------------------
-    // Act:
-    //--------------------------------
+    await test("act", async () => {
+      //--------------------------------
+      // Act:
+      //--------------------------------
+      await driver.$(`~Email`).setValue("test@example.com");
+      await driver.$(`~Sign in`).click();
+    });
 
-    //--------------------------------
-    // Assert:
-    //--------------------------------
+    await test("assert", async () => {
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      await driver.$(`~Welcome`).waitForDisplayed({ timeout: 5000 });
+    });
   },
 );
 ```
+
 </CodeGroup>

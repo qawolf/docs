@@ -29,4 +29,13 @@ Cause: The flow uses the no-`launch` path, so launched runtime objects are not i
 Check:
 
 - whether the flow should use `{ target, launch: true }`
-- whether the flow should call `launch()` imperatively inside the callback
+- whether the flow should call `launch()` explicitly inside the callback
+
+## Runtime API Called Outside The Flow Callback
+
+Cause: `launch()`, `expect`, `device`, or `platform.target` was called at the module level, outside the flow callback.
+
+Check:
+
+- that all runtime API calls are inside the flow callback, not at the top of the file
+- that module-level code is limited to imports, constants, and pure helper functions

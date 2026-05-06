@@ -1,29 +1,54 @@
 ---
 title: "Passing data between flows"
-description: "Share data between flows using Hopper Flows to coordinate multi-user, multi-device test scenarios in a single run."
+description: "Share data between flows to coordinate multi-user, multi-device test scenarios in a single run."
 sidebarTitle: "Passing data between flows"
 icon: "share-2"
 ---
 
-QA Wolf runs all flows in parallel by default, but some workflows require coordination and data sharing among concurrently running flows. During a run, any flow can both produce data for other flows and consume data from other flows.
+## `inputs` and `setOutput`
 
-For example, one flow might create a new user, another might log in as that user, and a third might verify the user's activity — all within the same coordinated run. We call these linked user journeys **Hopper Flows**.
+Every flow callback receives two parameters for passing data between flows:
 
-Hopper Flows enable end-to-end, multi-user, multi-platform testing — the kind of real-world scenarios that single-flow testing can't reproduce.
+**`inputs`** — a key-value map of values published by an upstream flow in the same run. Read a value by its key:
 
-## Share data across flows
+```typescript
+const token = inputs["TOKEN"];
+const userId = inputs["USER_ID"];
+```
 
-To create a Hopper flow, you need two flows — a **producer** and a **consumer**. They can belong to the same folder and share tags.
+**`setOutput(...)`** — publishes one or more key-value pairs that a downstream flow can read via its `inputs`. You can publish multiple values in a single call:
 
-**In the producer flow**, use `setOutput` to publish key-value pairs that other flows can access:
-
-```javascript
+```typescript
 setOutput("TOKEN", "abc123", "USER_ID", "42");
 ```
 
+Keys are uppercase by convention.
+
+## Share data across flows
+
+Some workflows require coordination and data sharing among concurrently running flows. During a run, any flow can both produce data for other flows and consume data from other flows.
+
+For example, one flow might create a new user, another might log in as that user, and a third might verify the user's activity — all within the same coordinated run.
+
+To share data between flows, you need two flows — a **producer** and a **consumer**. They can belong to the same folder and share tags.
+
+<Note>
+  You may see these coordinated flows referred to as **Hopper Flows** in QA Wolf — the term for multi-user, multi-device, multi-platform test scenarios that pass data between flows in a single run.
+</Note>
+
+**In the producer flow**, use `setOutput` to publish key-value pairs that other flows can access:
+
+```typescript
+setOutput("TOKEN", "abc123", "USER_ID", "42");
+```
+
+<Note>
+  If the same flow calls `setOutput` multiple times, it overwrites the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail with the error `Workflow run failed due to conflicting dependency outputs`.
+</Note>
+
 **In the consumer flow**, use `inputs` to read values published by the producer:
 
-```javascript
+```typescript
 const token = inputs["TOKEN"];
 const userId = inputs["USER_ID"];
 ```
@@ -32,11 +57,7 @@ const userId = inputs["USER_ID"];
   A consumer flow will not run until its producer has published. This is why Run Rules ordering matters — see below.
 </Note>
 
-<Note>
-  If the same flow calls `setOutput` multiple times, it overwrites the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail with the error `Workflow run failed due to conflicting dependency outputs`.
-</Note>
-
-## Run Hopper flows
+## Run flows that share data
 
 Producers and consumers must be included in the same scheduled run.
 

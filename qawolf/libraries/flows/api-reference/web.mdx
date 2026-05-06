@@ -26,9 +26,11 @@ import { expect, flow } from "@qawolf/flows/web";
 export default flow(
   "Open homepage",
   { target: "Web - Chrome", launch: true },
-  async ({ page }) => {
-    await page.goto("https://example.com");
-    await expect(page).toBeDefined();
+  async ({ page, test }) => {
+    await test("open homepage", async () => {
+      await page.goto("https://example.com");
+      await expect(page).toBeDefined();
+    });
   },
 );
 ```
@@ -59,7 +61,7 @@ Examples:
 ```ts
 import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
 
-export const manualLaunchFlow = flow("Open later", "Web - Chrome", async () => {
+export const explicitLaunchFlow = flow("Open later", "Web - Chrome", async () => {
   const launchResult = await launch();
   if (isElectron(launchResult)) throw new Error("Expected browser launch");
 
@@ -74,8 +76,10 @@ export const manualLaunchFlow = flow("Open later", "Web - Chrome", async () => {
 export const launchedFlow = flow(
   "Open immediately",
   { target: "Web - Chrome", launch: true },
-  async ({ page }) => {
-    await page.goto("https://example.com");
+  async ({ page, test }) => {
+    await test("open page", async () => {
+      await page.goto("https://example.com");
+    });
   },
 );
 ```
@@ -144,7 +148,7 @@ export default flow(
 );
 ```
 
-Electron example:
+Electron declarative launch example:
 
 ```ts
 import { flow } from "@qawolf/flows/web";
@@ -157,13 +161,28 @@ export default flow(
       executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
     },
   },
-  async ({ page }) => {
-    await page.goto("about:blank");
+  async ({ page, test }) => {
+    await test("open app", async () => {
+      await page.goto("about:blank");
+    });
   },
 );
 ```
 
-Manual `launch(...)` calls are different because they are not target-typed. Include `kind: "electron"` there and use `firstWindowPage` from the result.
+Explicit `launch(...)` calls are not target-typed. Include `kind: "electron"` and use `firstWindowPage` from the result:
+
+```ts
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow("Open Electron app", "Web - Chrome", async () => {
+  const { firstWindowPage } = await launch({
+    kind: "electron",
+    executablePath: "/Applications/MyApp.app/Contents/MacOS/MyApp",
+  });
+
+  await firstWindowPage.getByRole("button", { name: "Sign in" }).click();
+});
+```
 
 Static launch options infer a narrow return type when they determine the result shape:
 
@@ -189,6 +208,10 @@ Launch-enabled browser flows also receive:
 - optional `browser`
 
 Electron launch-enabled flows receive the first Electron window as `page`.
+
+<Note>
+  `test(...)` can be omitted for simple flows where grouping steps into named sub-steps doesn't add value. For most flows, wrapping steps in `test(...)` is recommended — the label appears in your results and makes failures easier to locate.
+</Note>
 
 ## `testContextDependencies`
 

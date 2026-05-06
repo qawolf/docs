@@ -1,0 +1,89 @@
+---
+title: "Share logic across flows"
+description: "Use helper functions and platform-specific entry points to keep flows linear and share logic across platforms."
+icon: "code"
+---
+
+## Helpers for platform differences
+
+For platform-specific implementation differences that don't fit neatly into a Page Object — such as log capture, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — write a helper function that handles the difference internally. The flow calls the helper and stays linear.
+
+```typescript
+// /src/helpers/console-logs-ios.ts
+export async function getConsoleLogs(driver: WebdriverIO.Browser) {
+  const raw = await driver.getLogs("safariConsole");
+  return raw.map((entry) => JSON.parse(entry.message));
+}
+
+//helpers/console-logs-android.ts
+export async function getConsoleLogs(driver: WebdriverIO.Browser) {
+  const raw = await driver.getLogs("browser");
+  return raw.map((entry) => entry.message);
+}
+```
+
+<Note>
+  Module-level code should be limited to imports, constants, and pure helper functions. Runtime APIs like `launch()`, `expect`, `device`, and `platform.target` only work inside the flow callback — calling them at the module level will throw.
+</Note>
+
+## Use platform-specific entry points
+
+Rather than writing one flow that handles multiple platforms, write separate flows using the entry point for each platform. The `device` API surface is consistent across platforms, so the flows look similar even though they run on different infrastructure.
+
+```typescript
+// /src/flows/set-location-android.ts
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Set location",
+  { target: "Android - Pixel 9", launch: true },
+  async ({ driver, test }) => {
+    await test("set device location", async () => {
+      await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });
+    });
+  },
+);
+```
+
+```typescript
+// /src/flows/set-location-ios.ts
+import { device, flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Set location",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("set device location", async () => {
+      await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });
+    });
+  },
+);
+```
+
+## Use environment variables to parameterize flows
+
+Environment variables let the same flow run against different environments without code changes. Reference them with `process.env.VAR_NAME`.
+
+```typescript
+await page.goto(process.env.BASE_URL);
+```
+
+See [Environment setup](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f#create-and-manage-environment-variables) for how to configure environment variables in QA Wolf.
+
+## Pass data between flows
+
+Use `inputs` and `setOutput` to share data between flows in the same run — for example, passing a user ID created in one flow to another flow that needs to log in as that user. See [Passing data between flows](/qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931) for the full model.
+
+## `platform.target` for edge cases
+
+For rare cases where a single flow genuinely needs to branch on the active platform at runtime, use `platform.target` from the top-level `@qawolf/flows` package.
+
+```typescript
+import { platform } from "@qawolf/flows";
+
+if (platform.target.startsWith("iOS - ")) {
+  // iOS-specific step
+}
+```
+
+Use this sparingly. If you find yourself branching on `platform.target` frequently, consider splitting into platform-specific flows instead. See the [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level) for the full `platform` API.
