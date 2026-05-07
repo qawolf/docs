@@ -130,10 +130,11 @@
             ]
           },
           {
-            "group": "Multi-user, multi-device",
+            "group": "Data sharing",
             "icon": "arrow-right-left",
             "pages": [
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
+              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/untitled-page"
             ]
           },
           {
@@ -219,6 +220,13 @@
             "icon": "monitor",
             "pages": [
               "qawolf/electron"
+            ]
+          },
+          {
+            "group": "Authentication",
+            "icon": "lock-keyhole",
+            "pages": [
+              "untitled-page"
             ]
           }
         ]
