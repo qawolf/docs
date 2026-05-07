@@ -122,9 +122,10 @@
             ]
           },
           {
-            "group": "Device hardware & compatibility",
-            "icon": "microchip",
+            "group": "Networking",
+            "icon": "network",
             "pages": [
+              "qawolf/connect-with-vpn-web",
               "qawolf/network-connectivity",
               "qawolf/network-simulation"
             ]
@@ -134,7 +135,8 @@
             "icon": "arrow-right-left",
             "pages": [
               "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
-              "qawolf/untitled-page"
+              "qawolf/untitled-page",
+              "qawolf/mount-a-file-share"
             ]
           },
           {

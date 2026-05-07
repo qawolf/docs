@@ -1,0 +1,76 @@
+---
+title: "Mount a file share"
+description: "Mount your CIFS/SMB file share onto the runner so your flow can read and write files during a test run."
+icon: "folder-open"
+---
+
+<Warning>
+  This helper requires runner support. In QA Wolf-managed runs, the runner configures this automatically. If you're building a custom runner, see the [Client Reference](/qawolf/libraries/testkit/api-reference/client).
+</Warning>
+
+## Examples
+
+**Mount your file share**
+
+```typescript
+import { mountCifsShare } from "@qawolf/testkit";
+
+const mountPoint = await mountCifsShare({
+  share: "//server/share",
+  mountPoint: "/mnt/share",
+  username: process.env["SHARE_USERNAME"]!,
+  password: process.env["SHARE_PASSWORD"]!,
+});
+```
+
+**Read a file from your file share**
+
+```typescript
+import { mountCifsShare } from "@qawolf/testkit";
+import { readFileSync } from "fs";
+
+const mountPoint = await mountCifsShare({
+  share: "//server/share",
+  mountPoint: "/mnt/share",
+  username: process.env["SHARE_USERNAME"]!,
+  password: process.env["SHARE_PASSWORD"]!,
+});
+
+const data = readFileSync(`${mountPoint}/test-data.csv`, "utf-8");
+```
+
+## When to use
+
+- Your app reads or writes files that live on your network drive.
+- Your flow needs test fixtures or input data from your network drive that can't be committed to a repository.
+- Your app writes output files to your network drive and your flow needs to verify them.
+- Your flow needs to upload files to your app that are sourced from your network drive.
+
+## Full example
+
+```typescript
+import { flow } from "@qawolf/flows/web";
+import { mountCifsShare } from "@qawolf/testkit";
+
+export default flow(
+  "Upload file from your file share",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
+    await test("mount file share", async () => {
+      const mountPoint = await mountCifsShare({
+        share: "//server/share",
+        mountPoint: "/mnt/share",
+        username: process.env["SHARE_USERNAME"]!,
+        password: process.env["SHARE_PASSWORD"]!,
+      });
+
+      await page.goto(process.env["BASE_URL"]!);
+      await page.setInputFiles('[type="file"]', `${mountPoint}/upload.csv`);
+    });
+
+    await test("verify upload", async () => {
+      await expect(page.getByText("Upload complete")).toBeVisible();
+    });
+  },
+);
+```
