@@ -27,3 +27,18 @@ Check:
 - the product under test actually sent the email
 - the address being used is allowed for the workspace
 - the timeout is long enough for the expected delivery path
+
+## Old emails are matched by waitForMessage
+
+Where possible, use `new: true` to generate a unique address for each run. This ensures `waitForMessage` only sees messages from the current run.
+
+If you must reuse a stable address, pass `after: new Date()` immediately before the action that triggers the email:
+
+```javascript
+const after = new Date();
+await page.getByRole("button", { name: "Send code" }).click();
+
+const message = await inbox.waitForMessage({ after });
+```
+
+If neither option is available and you are running a local harness, call `resetEmailsClient()` between test suites to clear the client state.
