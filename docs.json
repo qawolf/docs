@@ -215,7 +215,7 @@
             ]
           },
           {
-            "group": "Electron",
+            "group": "Desktop apps",
             "icon": "monitor",
             "pages": [
               "qawolf/electron"
