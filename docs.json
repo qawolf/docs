@@ -226,7 +226,8 @@
             "group": "Authentication",
             "icon": "lock-keyhole",
             "pages": [
-              "untitled-page"
+              "untitled-page",
+              "qawolf/test-mfa"
             ]
           }
         ]
