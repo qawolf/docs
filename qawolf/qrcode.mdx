@@ -1,0 +1,61 @@
+---
+title: "Test QR code authentication"
+description: "Read a QR code from the page and use its value to complete authentication."
+icon: "scan-qr-code"
+sidebarTitle: "QR Code"
+---
+
+## Examples
+
+**Read a QR code from the page**
+
+```typescript
+import { readQRCode } from "@qawolf/testkit/web";
+
+const qrValue = await readQRCode(page, "[data-testid='qr-code']");
+if (!qrValue) throw new Error("QR code was not visible");
+```
+
+**Follow a QR code login link**
+
+```typescript
+import { readQRCode } from "@qawolf/testkit/web";
+
+const qrValue = await readQRCode(page, "[data-testid='qr-code']");
+if (!qrValue) throw new Error("QR code was not visible");
+await page.goto(qrValue);
+```
+
+## When to use
+
+- Your app displays a QR code that a user scans to authenticate
+- Your app uses QR codes to initiate a login session on a second device
+- Your flow needs to extract a URL or token encoded in a QR code
+- Your app generates a QR code as part of an MFA or SSO flow
+
+## Full example
+
+```typescript
+import { flow } from "@qawolf/flows/web";
+import { readQRCode } from "@qawolf/testkit/web";
+
+export default flow(
+  "Log in via QR code",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
+    await test("navigate to login", async () => {
+      await page.goto(process.env["BASE_URL"]!);
+    });
+
+    await test("read and follow QR code", async () => {
+      const qrValue = await readQRCode(page, "[data-testid='qr-code']");
+      if (!qrValue) throw new Error("QR code was not visible");
+      await page.goto(qrValue);
+    });
+
+    await test("verify authenticated", async () => {
+      await expect(page).toHaveURL(/dashboard/);
+    });
+  },
+);
+```

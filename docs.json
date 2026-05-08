@@ -122,18 +122,21 @@
             ]
           },
           {
-            "group": "Device hardware & compatibility",
-            "icon": "microchip",
+            "group": "Networking",
+            "icon": "network",
             "pages": [
+              "qawolf/connect-with-vpn-web",
               "qawolf/network-connectivity",
               "qawolf/network-simulation"
             ]
           },
           {
-            "group": "Multi-user, multi-device",
+            "group": "Data sharing",
             "icon": "arrow-right-left",
             "pages": [
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931"
+              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/reuse-state-between-runs",
+              "qawolf/mount-a-file-share"
             ]
           },
           {
@@ -219,6 +222,14 @@
             "icon": "monitor",
             "pages": [
               "qawolf/electron"
+            ]
+          },
+          {
+            "group": "Authentication",
+            "icon": "lock-keyhole",
+            "pages": [
+              "qawolf/qrcode",
+              "qawolf/test-mfa"
             ]
           }
         ]

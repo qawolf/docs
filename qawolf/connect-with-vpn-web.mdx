@@ -1,0 +1,63 @@
+---
+title: "Connect to a VPN (web)"
+description: "Start an OpenVPN tunnel from a web flow to reach internal services or staging environments."
+icon: "network"
+---
+
+<Warning>
+  This helper requires runner support. In QA Wolf-managed runs, the runner configures this automatically. If you're building a custom runner, see the [Client Reference](/qawolf/libraries/testkit/api-reference/client).
+</Warning>
+
+## Examples
+
+**Start an OpenVPN tunnel**
+
+```typescript
+import { startOpenVpn } from "@qawolf/testkit";
+
+const pid = await startOpenVpn({
+  configPath: "/tmp/client.ovpn",
+});
+```
+
+**Limit routing to specific hosts**
+
+```typescript
+import { startOpenVpn } from "@qawolf/testkit";
+
+const pid = await startOpenVpn({
+  configPath: "/tmp/client.ovpn",
+  routeHosts: ["internal.example.com", "api.staging.io"],
+});
+```
+
+## When to use
+
+- Your web app connects to internal or staging services that aren't publicly accessible.
+- Your flow needs to reach an API behind a corporate firewall.
+- You need to test against a staging environment that requires VPN access.
+
+## Full example
+
+```typescript
+import { flow } from "@qawolf/flows/web";
+import { startOpenVpn } from "@qawolf/testkit";
+
+export default flow(
+  "Test internal API",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
+    await test("connect to VPN", async () => {
+      await startOpenVpn({
+        configPath: "/tmp/client.ovpn",
+        routeHosts: ["internal.example.com"],
+      });
+    });
+
+    await test("navigate to internal service", async () => {
+      await page.goto(process.env["INTERNAL_URL"]!);
+      await expect(page).toHaveURL(/internal/);
+    });
+  },
+);
+```

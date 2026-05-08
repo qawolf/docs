@@ -27,3 +27,17 @@ Check:
 
 - the selected element actually contains a QR code
 - the screenshot is stable and large enough to decode reliably
+
+## Update a baseline screenshot programmatically
+
+If the QA Wolf editor doesn't let you promote a new screenshot as the updated baseline, you can do it in flow code instead. Add `saveBaselineScreenshot` to the flow temporarily, run it once to save the new baseline, then remove it.
+
+```typescript
+import { saveBaselineScreenshot } from "@qawolf/testkit";
+
+await saveBaselineScreenshot(page, "revenue-chart");
+```
+
+<Warning>
+  The name must exactly match the name used in the corresponding `toHaveScreenshot` call. Remove this line once the baseline has been updated — it is not meant to run in normal test execution.
+</Warning>

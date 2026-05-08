@@ -1,0 +1,60 @@
+---
+title: "Reuse state between runs"
+icon: "repeat"
+description: "Use environment variables to carry state from one run into the next, so flows can skip work they've already done."
+---
+
+## Examples
+
+**Save a value for later runs**
+
+```typescript
+import { saveEnvironmentVariable } from "@qawolf/testkit";
+
+await saveEnvironmentVariable("SESSION_TOKEN", token);
+```
+
+**Read a value saved by a previous run**
+
+```typescript
+import { reloadEnvironmentVariables } from "@qawolf/testkit";
+
+await reloadEnvironmentVariables();
+const sessionToken = process.env["SESSION_TOKEN"];
+```
+
+## When to use
+
+- Your app requires a login or setup step that produces a value other flows need in future runs.
+- A flow generates a token, ID, or credential that should persist across runs.
+- You want to skip repeated setup work by reusing state from a previous run.
+- Your test environment requires a value that changes at runtime and needs to be available to later runs.
+
+## Full example
+
+```typescript
+import { flow } from "@qawolf/flows/web";
+import { reloadEnvironmentVariables, saveEnvironmentVariable } from "@qawolf/testkit";
+
+export default flow(
+  "Login and save session token",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
+    await reloadEnvironmentVariables();
+
+    if (!process.env["SESSION_TOKEN"]) {
+      await test("log in and save session token", async () => {
+        await page.goto(process.env["BASE_URL"]!);
+        await page.fill('[name="email"]', process.env["EMAIL"]!);
+        await page.fill('[name="password"]', process.env["PASSWORD"]!);
+        await page.click('[type="submit"]');
+
+        const token = await page.evaluate(() =>
+          localStorage.getItem("session_token")
+        );
+        await saveEnvironmentVariable("SESSION_TOKEN", token!);
+      });
+    }
+  },
+);
+```
