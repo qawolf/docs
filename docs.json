@@ -242,27 +242,6 @@
             "group": "@qawolf/flows",
             "icon": "route",
             "pages": [
-              "qawolf/libraries/flows/get-started",
-              {
-                "group": "Core Concepts",
-                "pages": [
-                  "qawolf/libraries/flows/core-concepts/flow-model",
-                  "qawolf/libraries/flows/core-concepts/targets",
-                  "qawolf/libraries/flows/core-concepts/runtime-and-launch"
-                ]
-              },
-              {
-                "group": "How-To",
-                "pages": [
-                  "qawolf/libraries/flows/how-to/write-a-web-flow",
-                  "qawolf/libraries/flows/how-to/write-a-cli-flow",
-                  "qawolf/libraries/flows/how-to/write-an-android-flow",
-                  "qawolf/libraries/flows/how-to/write-an-ios-flow",
-                  "qawolf/libraries/flows/how-to/persistent-browser-context",
-                  "qawolf/libraries/flows/how-to/launch-electron",
-                  "qawolf/libraries/flows/how-to/mobile-app-from-env"
-                ]
-              },
               {
                 "group": "API Reference",
                 "pages": [
@@ -286,24 +265,6 @@
             "group": "@qawolf/testkit",
             "icon": "wrench",
             "pages": [
-              "qawolf/libraries/testkit/get-started",
-              {
-                "group": "Core Concepts",
-                "pages": [
-                  "qawolf/libraries/testkit/core-concepts/entry-points",
-                  "qawolf/libraries/testkit/core-concepts/client-model"
-                ]
-              },
-              {
-                "group": "How-To",
-                "pages": [
-                  "qawolf/libraries/testkit/how-to/generate-an-otp",
-                  "qawolf/libraries/testkit/how-to/read-a-qr-code",
-                  "qawolf/libraries/testkit/how-to/configure-a-runner-client",
-                  "qawolf/libraries/testkit/how-to/save-a-baseline-screenshot",
-                  "qawolf/libraries/testkit/how-to/use-network-helpers"
-                ]
-              },
               {
                 "group": "API Reference",
                 "pages": [
@@ -326,27 +287,6 @@
             "group": "@qawolf/emails",
             "icon": "mail",
             "pages": [
-              "qawolf/libraries/emails/get-started",
-              {
-                "group": "Core Concepts",
-                "pages": [
-                  "qawolf/libraries/emails/core-concepts/inbox-model",
-                  "qawolf/libraries/emails/core-concepts/client-lifecycle"
-                ]
-              },
-              {
-                "group": "How-To",
-                "pages": [
-                  "qawolf/libraries/emails/how-to/get-an-inbox",
-                  "qawolf/libraries/emails/how-to/create-a-unique-address",
-                  "qawolf/libraries/emails/how-to/wait-for-a-message",
-                  "qawolf/libraries/emails/how-to/wait-for-many-messages",
-                  "qawolf/libraries/emails/how-to/send-a-message",
-                  "qawolf/libraries/emails/how-to/send-attachments",
-                  "qawolf/libraries/emails/how-to/configure-the-runtime-client",
-                  "qawolf/libraries/emails/how-to/login-code-flow"
-                ]
-              },
               {
                 "group": "API Reference",
                 "pages": [
