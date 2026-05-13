@@ -33,9 +33,9 @@ expect(photosAfterDelete.totalCount).toBe(0);
 
 ## When to use
 
-- Your app saves photos and you need to verify they appear in the library
-- Your app reads from the photo library and you need to set up known state before the test runs
-- You need to clean up photos between test runs to avoid state carrying over
+- Your app saves photos and you need to verify they appear in the library.
+- Your app reads from the photo library and you need to set up known state before the test runs.
+- You need to clean up photos between test runs to avoid state carrying over.
 
 <Warning>
   `deleteAllPhotos` permanently removes all photos from the device library. Use it only on test devices.

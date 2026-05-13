@@ -125,9 +125,21 @@
             "group": "Networking",
             "icon": "network",
             "pages": [
-              "qawolf/connect-with-vpn-web",
-              "qawolf/network-connectivity",
-              "qawolf/network-simulation"
+              {
+                "group": "Connect to VPN",
+                "icon": "globe-lock",
+                "pages": [
+                  "qawolf/network-connectivity",
+                  "qawolf/connect-with-vpn-web"
+                ]
+              },
+              {
+                "group": "Network Simulation",
+                "icon": "signal",
+                "pages": [
+                  "qawolf/network-simulation"
+                ]
+              }
             ]
           },
           {
@@ -143,7 +155,6 @@
             "group": "Mobile-native media",
             "icon": "tablet-smartphone",
             "pages": [
-              "qawolf/mobile-native-media",
               {
                 "group": "Photo library management",
                 "icon": "image",
@@ -218,7 +229,7 @@
             ]
           },
           {
-            "group": "Desktop apps",
+            "group": "Desktop",
             "icon": "monitor",
             "pages": [
               "qawolf/electron"
