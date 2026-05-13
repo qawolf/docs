@@ -1,69 +1,84 @@
 ---
-title: "Passing data between flows"
-description: "Share data between flows to coordinate multi-user, multi-device test scenarios in a single run."
-sidebarTitle: "Passing data between flows"
+title: "Pass data between flows"
+description: "Share authentication tokens, user IDs, and other values across flows in a coordinated run."
 icon: "share-2"
 ---
 
-## `inputs` and `setOutput`
+<Info>
+  Flows that pass data between each other are called **Hopper Flows** in QA Wolf — the pattern for multi-user, multi-device, and multi-platform test scenarios.
+</Info>
 
-Every flow callback receives two parameters for passing data between flows:
+## Examples
 
-**`inputs`** — a key-value map of values published by an upstream flow in the same run. Read a value by its key:
+**Create a user, then log in as that user**
 
-```typescript
-const token = inputs["TOKEN"];
-const userId = inputs["USER_ID"];
-```
-
-**`setOutput(...)`** — publishes one or more key-value pairs that a downstream flow can read via its `inputs`. You can publish multiple values in a single call:
+A common pattern: one flow creates a user and publishes credentials; a second flow logs in using those credentials.
 
 ```typescript
-setOutput("TOKEN", "abc123", "USER_ID", "42");
+// Flow 1: Create user (producer)
+await page.goto("https://app.example.com/admin/users/new");
+await page.fill('[name="email"]', "testuser@example.com");
+await page.fill('[name="password"]', "hunter2");
+await page.click('[type="submit"]');
+
+setOutput("USER_EMAIL", "testuser@example.com", "USER_PASSWORD", "hunter2");
 ```
-
-Keys are uppercase by convention.
-
-## Share data across flows
-
-Some workflows require coordination and data sharing among concurrently running flows. During a run, any flow can both produce data for other flows and consume data from other flows.
-
-For example, one flow might create a new user, another might log in as that user, and a third might verify the user's activity — all within the same coordinated run.
-
-To share data between flows, you need two flows — a **producer** and a **consumer**. They can belong to the same folder and share tags.
-
-<Note>
-  You may see these coordinated flows referred to as **Hopper Flows** in QA Wolf — the term for multi-user, multi-device, multi-platform test scenarios that pass data between flows in a single run.
-</Note>
-
-**In the producer flow**, use `setOutput` to publish key-value pairs that other flows can access:
 
 ```typescript
-setOutput("TOKEN", "abc123", "USER_ID", "42");
+// Flow 2: Log in (consumer)
+const email = inputs["USER_EMAIL"];
+const password = inputs["USER_PASSWORD"];
+
+await page.goto("https://app.example.com/login");
+await page.fill('[name="email"]', email);
+await page.fill('[name="password"]', password);
+await page.click('[type="submit"]');
 ```
 
-<Note>
-  If the same flow calls `setOutput` multiple times, it overwrites the key. However, if two or more different flows produce values for the same key and a third flow depends on both, that third flow will fail with the error `Workflow run failed due to conflicting dependency outputs`.
-</Note>
+**Create a user, log in, then verify activity**
 
-**In the consumer flow**, use `inputs` to read values published by the producer:
+Extend the chain: a third flow consumes the session token published by the login flow to verify downstream activity.
 
 ```typescript
-const token = inputs["TOKEN"];
-const userId = inputs["USER_ID"];
+// Flow 1: Create user (producer)
+setOutput("USER_EMAIL", "testuser@example.com", "USER_PASSWORD", "hunter2");
 ```
 
-<Note>
-  A consumer flow will not run until its producer has published. This is why Run Rules ordering matters — see below.
-</Note>
+```typescript
+// Flow 2: Log in (producer + consumer)
+const email = inputs["USER_EMAIL"];
+const password = inputs["USER_PASSWORD"];
 
-## Run flows that share data
+// ... log in ...
+const token = await page.evaluate(() => localStorage.getItem("auth_token"));
+setOutput("AUTH_TOKEN", token);
+```
 
-Producers and consumers must be included in the same scheduled run.
+```typescript
+// Flow 3: Verify activity (consumer)
+const token = inputs["AUTH_TOKEN"];
 
-- To run flows together, create a [schedule](/qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92) that targets **all flows** or flows with a **shared tag**
-- To control execution order, create a [Run Rule](/qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1) that ensures producers run before consumers. Run Rules can be defined using groups, tags, or specific flow names
+await page.setExtraHTTPHeaders({ Authorization: `Bearer ${token}` });
+await page.goto("https://app.example.com/activity");
+// ... assert expected activity ...
+```
 
-<Tip>
-  If a flow acts as both a producer and a consumer, create two Run Rules: one to run it after its producer and another to run it before its consumer.
-</Tip>
+## When to use
+
+- Your app has multi-step workflows that span separate user sessions.
+- Your test requires one user to create a resource another user acts on.
+- Your scenario involves multiple devices or platforms in a single run.
+- Your flow needs data that only exists after another flow has run.
+- Your test validates coordination between concurrent users or roles.
+
+## Notes
+
+**Key naming** — Keys are uppercase by convention: `AUTH_TOKEN`, `USER_EMAIL`, `USER_PASSWORD`.
+
+**Overwrites** — If the same flow calls `setOutput` multiple times, the last call wins for that key.
+
+**Conflicts** — If two different flows publish the same key and a third flow depends on both, the run fails with `Workflow run failed due to conflicting dependency outputs`.
+
+**Execution order** — A consumer will not run until its producer has published. Use [Run Rules](/qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1) to enforce producer-before-consumer ordering.
+
+**Scheduling** — Producers and consumers must be included in the same scheduled run. Target all flows or use a shared tag. See [Scheduling flows](/qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92).

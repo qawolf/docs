@@ -1,8 +1,7 @@
 ---
 title: "Assert visual appearance"
 description: "Use toHaveScreenshot to catch layout regressions and verify UI elements that can't be targeted with selectors."
-icon: "image"
-sidebarTitle: "Web & Mobile web screenshots"
+sidebarTitle: "Web & Mobile web "
 ---
 
 <Info>
@@ -72,10 +71,10 @@ await expect(page).toHaveScreenshot(
 
 ## When to use
 
-- Your test needs to assert the content or appearance of a `canvas` element — canvas is not part of the DOM and cannot be targeted with locators
-- You want to catch layout or style regressions after a redesign or component change
-- No selector or functional assertion can verify the visual state you need
-- Your app has pixel-perfect design requirements, and you want automated enforcement
+- Your test needs to assert the content or appearance of a `canvas` element — canvas is not part of the DOM and cannot be targeted with locators.
+- You want to catch layout or style regressions after a redesign or component change.
+- No selector or functional assertion can verify the visual state you need.
+- Your app has pixel-perfect design requirements, and you want automated enforcement.
 
 Avoid `toHaveScreenshot` when the area contains timestamps, live data, animations, or other frequently-changing content — these cause false failures. Use a functional assertion instead.
 
