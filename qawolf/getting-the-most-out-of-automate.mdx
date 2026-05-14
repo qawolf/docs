@@ -1,0 +1,97 @@
+---
+title: "Getting the most out of Automate"
+description: "Tips for writing better prompts and working more effectively with Automate."
+icon: "lightbulb"
+---
+
+Automate works best when you give it enough context to understand what you want and where to put it. The tips below cover both autonomous creation and guided creation.
+
+## Autonomous creation
+
+### Write a specific prompt
+
+Vague prompts produce unreliable results. A prompt like "Create a test for the rate quote flow" gives Automate very little to work with. A stronger prompt includes:
+
+- Where to start (URL or a reference to a login helper)
+- What the user does, step by step
+- What a successful outcome looks like
+- Anything specific you want asserted
+
+**Example:**
+
+```text
+Create a test for completing the rate quote application. Log in using the
+<specific name> login helper from <file where helper function is>.ts. Navigate to the application, fill in the required fields, and submit. Assert that the confirmation 
+message appears and that the new rate quote is visible in the list.
+```
+
+### Include assertions explicitly
+
+If there's something specific you need verified, say so. Automate won't always infer what matters to you — telling it what to assert produces more useful tests.
+
+---
+
+## Guided creation
+
+### Start prompts with "Insert code to"
+
+When adding code at a specific point in a test, beginning your prompt with "Insert code to" helps Automate understand it should add rather than replace.
+
+```text
+Insert code to click the Submit button and wait for the confirmation message.
+```
+
+### Control where code is inserted
+
+Automate inserts code relative to the current cursor position. If code ends up in the wrong place:
+
+- Click on the line where you want the code inserted before prompting
+- Or tell it explicitly: "Insert code on line 42 to..."
+
+### Hover before you prompt for elements
+
+When targeting an element inside a container — for example, the first link within a specific panel — hover over the container for a second, then click the element. This gives Automate locators for both, and you can ask it to chain them:
+
+```text
+Click the first link within the Recent Activity panel.
+```
+
+If you hover only on the element itself, Automate may use a less precise locator.
+
+### Trigger actions before prompting
+
+For interactions that produce a result (a download, a new page, a modal), trigger the action yourself first and let it complete. Then tell Automate what happened. This helps it understand the outcome, not just the selector.
+
+**Example:**
+
+1. Click the download button and wait for the download to start
+2. Then prompt: "Click the download button"
+
+### Use descriptive language for context
+
+A few phrases that help Automate understand what it's working with:
+
+- **"in the row"** — when an element is inside a table row
+- **"file"** — for file-related actions like clicking download or handling file inputs
+
+### Refactor whole-file changes
+
+For changes that apply across the entire test — updating all comments, removing hardcoded values, renaming variables — use "refactor" to signal that the change is global:
+
+```text
+Refactor to replace all hardcoded email addresses with the TEST_USER_EMAIL environment variable.
+```
+
+### Move code by selecting it first
+
+If you need Automate to move a block of code, select all the lines you want moved before prompting. This removes ambiguity about what should be relocated.
+
+### Fix errors directly
+
+If a run produces an error, you can ask Automate to address it without explaining the cause:
+
+```text
+Fix the error.
+```
+
+Automate will read the error output and attempt a fix.

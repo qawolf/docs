@@ -1,0 +1,63 @@
+---
+title: "Getting good results with Mapping"
+description: "Tips for getting more accurate, complete test outlines from Mapping."
+icon: "lightbulb"
+sidebarTitle: "Getting the most out of Mapping"
+---
+
+Mapping works best when you give it clear context upfront and steer it away from areas where it's likely to struggle. The tips below reflect patterns that tend to produce better outlines across a range of applications.
+
+## Write a strong opening prompt
+
+Mapping needs enough context to navigate your app and generate meaningful flows. A good opening prompt includes:
+
+- The URL to explore
+- Login credentials
+- The application name (used to name the folder Mapping creates)
+- Any specific task or scope
+
+Passing this as a JSON block makes it easier for Mapping to parse, though multiple sequential prompts work too.
+
+```text
+{
+  "url": "https://staging.yourapp.com/dashboard",
+  "email": "test-user@yourcompany.com",
+  "password": "your-password",
+  "application_name": "Your App",
+  "task": "Create a new folder called 'Your App' and outline the application."
+}
+```
+
+## Set a flow target
+
+Mapping defaults to outlining around 200 flows. If you want more coverage, specify a number explicitly — telling it to find "as many as possible" tends to stop at the default anyway.
+
+```text
+Outline up to 500 flows for this application.
+```
+
+## Skip auth flows when they cause problems
+
+If your app uses MFA or has a complex login flow, Mapping can get stuck trying to test authentication before it can explore anything else. Tell it to bypass this:
+
+```text
+Just log in first — don't test auth flows.
+```
+
+## Use manual browsing to supplement AI exploration
+
+You don't have to rely entirely on Mapping to find flows on its own. You can click through your app manually while in Mapping mode, and it will suggest flows based on what it observes. This is useful for:
+
+- Apps where automated exploration struggles (complex forms, file uploads, role-based access)
+- Specific flows you want to make sure are captured
+- Verifying that Mapping understood a flow correctly
+
+To use this: stop the AI, click through the flow yourself, and look for the **Add flows** button that appears.
+
+## Use Automate for flows that need more control
+
+Mapping is designed for breadth — getting a full outline of an app's testable surface quickly. For flows that require precise setup (multi-step forms, specific dropdown sequences, dynamic file uploads), use Automate instead. You can use Mapping to outline those flows and then automate them individually with more targeted prompts.
+
+<Tip>
+  A common pattern: run Mapping to generate a broad outline, then use Automate to build out the flows that need more precision.
+</Tip>
