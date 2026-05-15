@@ -1,191 +1,157 @@
 ---
-title: "Onboarding to QA Wolf Full Service"
-description: "What to expect during QA Wolf full service onboarding, including timelines, meetings, and setup steps."
-icon: "rocket"
-sidebarTitle: "Onboarding"
+title: "Onboarding"
 ---
 
-If you haven't already, now's a good time to get some basic setup out of the way:
+## title: "QA Wolf Full Service Onboarding" description: "What to expect during QA Wolf full service onboarding, including timelines, meetings, and setup steps." icon: "rocket" sidebarTitle: "Onboarding"
 
-- Connect your Slack, Teams, or Discord channel.
-- Choose an environment to test. If you're not sure, we suggest starting with the environment just below production (e.g., staging or QA).
-- Send environment credentials to your QA Lead by email, Slack, a password manager like 1Password, or input them directly into the QA Wolf platform. We're flexible!
-- Accept the invites to the [Kick-off Meeting](/qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294#-kick-off-meeting) and [Product Tour](/qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294#-product-tour-meeting).
+QA Wolf Full Service pairs your team with a dedicated QA engineering team that builds, runs, and maintains your automated test suite. This page walks through what onboarding looks like — from getting started to your first tests in production.
 
-Welcome to the wolf pack.
+If you're evaluating QA Wolf, [book a demo](https://www.qawolf.com/demo) to talk through your coverage goals.
 
-🐺 QA Wolf
+---
 
-## Onboarding
+## Before onboarding begins
 
-Onboarding with QA Wolf is easy, but there are a few things that you need to set up so we can begin developing a Test Plan and building your automated test suite.
+Onboarding typically kicks off 1 to 2 weeks after contract start, once a few prerequisites are in place.
 
-### <Icon icon="clock" /> Timeline
+### <Icon icon="message-circle" /> Communications
 
-1 to 2 weeks after contract start if all blockers are cleared.
+You'll connect a shared Slack, Teams, or Discord channel with the QA Wolf team. This is the primary channel for day-to-day communication throughout the engagement.
 
-### <Icon icon="check" /> Your onboarding to-dos
+### <Icon icon="monitor" /> Test environment
 
-<Steps>
-  <Step>
-    Connect your Slack, Teams, or Discord account with QA Wolf.
-  </Step>
-  <Step>
-    Send test environment credentials to your Account Executive, QA Engineering Lead, or Customer Success Manager.
+You'll identify an environment for QA Wolf to run tests against. If you're not sure which to use, staging or a QA environment just below production is a good starting point.
 
-    - Read: <Icon icon="clipboard-check" /> [ Preparing an environment for QA Wolf test runs](/qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a).
-    - Read: <Icon icon="layers" /> [QA Wolf Docs - Which environment should we run our tests on?](/qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be).
-  </Step>
-  <Step>
-    Identify a Champion (day-to-day) point of contact for QA Wolf who can clear blockers and make decisions about your test suite.
-  </Step>
-</Steps>
+- <Icon icon="clipboard-check" /> [Preparing an environment for QA Wolf test runs](/qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a)
+- <Icon icon="layers" /> [Which environment should we run tests on?](/qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be)
 
-### <Icon icon="users-round" /> Your QA team
+Your team will send environment credentials to your QA Engineering Lead or Customer Success Manager via email, Slack, or a password manager like 1Password.
 
-- Read: <Icon icon="user-cog" />[ QA Wolf Docs - Who will we be working with from QA Wolf?](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5#who-will-we-be-working-with-from-qa-wolf)
+### <Icon icon="user-check" /> Champion
 
-### <Icon icon="flag" /> Kick-off meeting
+You'll identify a day-to-day point of contact — a Champion — who can clear blockers and make decisions about the test suite on your team's behalf.
 
-**When**
+---
 
-Within 5 business days of the contract start date.
+## <Icon icon="clock" /> Timeline
+
+| Milestone | Target |
+| :-- | :-- |
+| Kick-off meeting | Within 5 business days of contract start |
+| Product tour meeting | Within 5 business days of contract start |
+| First Test Plan review | Within 15 business days of contract start |
+| Final Test Plan review | Within 20 business days of contract start |
+| Test creation phase | 2–3 months after Test Plan approval |
+
+---
+
+## <Icon icon="flag" /> Kick-off meeting
+
+**When:** Within 5 business days of contract start.
 
 **Agenda**
 
-- Introductions.
-- Review coverage goals.
-- Set expectations for the process.
-- Align on milestones.
+- Introductions
+- Review coverage goals
+- Set expectations for the process
+- Align on milestones
 
-**Attending**
+**Attendees**
 
 | From your team | From our team |
 | :-- | :-- |
-| Point of contact during the sales process | Customer Success Manager |
-| Champion (day-to-day) contact(s) who will be most hands-on working with us | QA Lead |
-| Any other team members you'd like to include (engineers, product managers, etc.) |  |
+| Point of contact from the sales process | Customer Success Manager |
+| Champion (day-to-day contact) | QA Lead |
+| Any other engineers or product managers you'd like to include |  |
 
-**Action items**
+**What to have ready**
 
-| Your responsibilities | Our responsibilities |
-| :-- | :-- |
-| Connect a shared Slack, Teams, or Discord channel. | Learn about QA priorities and onboarding goals. |
-| Share your environment credentials. |  |
+- A connected Slack, Teams, or Discord channel
+- Environment credentials
 
-### <Icon icon="map-pin" /> Product tour meeting
+---
 
-**When**
+## <Icon icon="map-pin" /> Product tour meeting
 
-Within 5 business days of the contract start date.
+**When:** Within 5 business days of contract start.
 
 **Agenda**
 
-- Introductions.
-- Walk through your app.
-- Identify testing priorities.
-- Identify areas to avoid.
+- Walk through your app
+- Identify testing priorities
+- Identify areas to avoid
 
-**Attending**
-
-| From your team | From our team |
-| :-- | :-- |
-| Product or engineering manager for each testable feature set | QA Engineering Lead |
-|  | Test outliner |
-
-**Action items**
-
-| Your responsibilities | Our responsibilities |
-| :-- | :-- |
-| Internally align on the product(s) that QA Wolf will be working with and what areas are the highest priority to build coverage for. | Record the product tour. |
-|  | Take detailed notes for test plan creation. |
-|  | Ask clarifying questions about priorities and product functionality. |
-
-### <Icon icon="ban" /> Common onboarding blockers
-
-These blockers can slow down onboarding progress. Please address them as soon as possible:
-
-- Your testing environment is unavailable, misconfigured, or unresponsive. Read <Icon icon="clipboard-check" />[ Preparing an environment for QA Wolf test runs](/qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a).
-- Your environment is not able to send emails to the @qawolf.email domain.
-
-## Implementation
-
-Once we understand your application and testing priorities, we're ready to start outlining a Test Plan and coding up your automated test suite.
-
-### <Icon icon="clock" /> Timeline
-
-- Planning phase: 2 to 4 weeks after the contract start date if all blockers are cleared.
-- Test creation phase: The next 2 to 3 months after the Test Plan is approved.
-
-### <Icon icon="check" /> Your test planning to-dos
-
-1. **Send over any existing test plans or internal priority lists** Anything you have is great: Google Sheets, a TestRail matrix, or just a list of priority features. If you don't have anything, don't worry about it — we'll work with you to determine priorities and coverage areas.
-2. **Export and send your existing E2E tests — if you have any**. We can convert that code to QA Wolf outlines and test code, or we can avoid the covered product areas if you plan to continue running and maintaining them internally.
-
-### <Icon icon="clipboard-check" /> First Test Plan review meeting
-
-**When**
-
-Within 15 business days of the contract start date.
-
-**Agenda**
-
-- Introductions.
-- Review the test plan.
-- Re-confirm priorities.
-- Provide feedback on the test plan's coverage areas.
-- Confirm the scope of work.
-
-**Attending**
+**Attendees**
 
 | From your team | From our team |
 | :-- | :-- |
 | Product or engineering manager for each testable feature set | QA Engineering Lead |
 |  | Test outliner |
 
-**Action items**
+**What to have ready**
 
-| Your responsibilities | Our responsibilities |
+- Internal alignment on which products QA Wolf will test and what areas are highest priority
+
+---
+
+## <Icon icon="clipboard-check" /> Test planning
+
+Once the QA Wolf team understands your application and priorities, they'll begin outlining a Test Plan.
+
+**What to send before the first review**
+
+- Any existing test plans or priority lists — a spreadsheet, TestRail matrix, or a plain list all work
+- Any existing E2E tests you want converted to QA Wolf format, or flagged as already-covered areas
+
+### <Icon icon="clipboard-check" /> First Test Plan review
+
+**When:** Within 15 business days of contract start.
+
+**Agenda**
+
+- Review the draft test plan
+- Re-confirm priorities
+- Provide feedback on coverage areas
+- Confirm scope of work
+
+**Attendees**
+
+| From your team | From our team |
 | :-- | :-- |
-| Answer questions from the test outliners on Slack, Teams, or Discord. | Prepare detailed outlines for all tests within budget. |
-|  | Field questions about the test plan and outlining process. |
-|  | Respond to outline feedback and changes in your team's priorities. |
+| Product or engineering manager for each testable feature set | QA Engineering Lead |
+|  | Test outliner |
 
 ### <Icon icon="badge-check" /> Final Test Plan review
 
-**When**
-
-Within 20 business days of the contract start date.
+**When:** Within 20 business days of contract start.
 
 **Agenda**
 
-- Introductions.
-- Recap feedback from the first review.
-- Review changes/updates to the test plan.
-- Review the AAA framework.
-- Finalize the scope of work.
+- Recap feedback from the first review
+- Review updates to the test plan
+- Review the AAA framework
+- Finalize scope of work
 
-**Attending**
+**Attendees**
 
 | From your team | From our team |
 | :-- | :-- |
 | Product or engineering manager for each testable feature set | QA Engineering Lead |
 |  | Test outliner |
 
-**Action items**
+**What happens next**
 
-| Your responsibilities | Our responsibilities |
-| :-- | :-- |
-| Identify any remaining gaps or issues. | Convert all approved outlines to the [AAA framework](https://www.qawolf.com/blog/intro-to-aaa) in preparation for coding. |
-| Approve the scope of work. | Update outlines and priorities based on feedback from the first review. |
+- QA Wolf converts all approved outlines to the [AAA framework](https://www.qawolf.com/blog/intro-to-aaa) in preparation for coding
+- Test creation begins and runs for the next 2 to 3 months
 
 ### <Icon icon="ban" /> Common test planning blockers
 
-- Your stakeholders aren't aligned on testing goals and priorities, which prevents us from finalizing a Test Plan.
-- Your team is unresponsive when QA Wolf reports possible bugs or asks for product clarification.
-- Your team is unavailable to review the test plan.
+- Stakeholders aren't aligned on testing goals, which prevents finalizing the Test Plan
+- Your team is unavailable to review the test plan or respond to product clarification questions
 
 ### <Icon icon="ban" /> Common test creation blockers
 
-- Your test environment is too unstable to run end-to-end tests reliably.
-  - Read: <Icon icon="clipboard-check" />[ Preparing an environment for QA Wolf test runs](/qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a).
+- The test environment is too unstable to run end-to-end tests reliably — see <Icon icon="clipboard-check" /> [Preparing an environment for QA Wolf test runs](/qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a)
+
+```text
+```
