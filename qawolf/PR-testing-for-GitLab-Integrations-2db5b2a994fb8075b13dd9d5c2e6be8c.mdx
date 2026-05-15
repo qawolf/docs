@@ -1,10 +1,3 @@
----
-title: "How to enable PR testing for GitLab Integrations"
-description: "Run QA Wolf tests against preview environments on merge requests and report results back to GitLab."
-sidebarTitle: "PR testing for GitLab Integrations"
-icon: "git-merge"
----
-
 <Check>
   Your GitLab integration and deploy notifications must already be set up.
 </Check>
@@ -12,7 +5,7 @@ icon: "git-merge"
 PR testing won't work until QA Wolf configures your workspace to support it. QA Wolf will:
 
 - Set up a trigger that matches your preview deployments
-- Provide the deployment_type value to use for preview tests
+- Provide the deployment\_type value to use for preview tests
 - Confirm how QA Wolf should identify the merge request (for example, by branch name or merge request ID)
 - Confirm the preview URL variable name used in your pipeline
 
@@ -60,7 +53,7 @@ notify_qawolf:
 
 - Your pipeline already creates a preview environment for each merge request.
 - The preview environment URL is available as `PREVIEW_URL` when this job runs.
-- A prior job (such as deploy_preview) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
+- A prior job (such as deploy\_preview) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
 
 When the merge request pipeline runs, this job sends the preview URL to QA Wolf, which starts a test run against that environment.
 
