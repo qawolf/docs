@@ -1,3 +1,9 @@
+---
+title: "How to integrate with GitLab"
+description: "Connect QA Wolf to GitLab CI/CD to automatically trigger test runs when you deploy code from your repository."
+sidebarTitle: "GitLab"
+---
+
 If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. The integration connects directly to your QA Wolf environments.
 
 <Tip>
@@ -81,11 +87,9 @@ You can also define additional variables, such as a deployment URL, if your pipe
   </Step>
 </Steps>
 
-## Add the deploy success notification to GitLab CI/CD
+## Add the deploy notification to GitLab CI/CD
 
-QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment.
-
-Add a job to your `.gitlab-ci.yml` that runs after your deploy step completes successfully.
+QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment. Add a job to your `.gitlab-ci.yml` that runs after your deploy step completes successfully.
 
 ```yml expandable
 stages:
