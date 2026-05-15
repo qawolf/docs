@@ -1,3 +1,9 @@
+---
+title: "How to integrate a mobile build with GitHub Actions"
+description: "Upload mobile build artifacts and trigger QA Wolf test runs using prebuilt GitHub Actions in your workflow."
+sidebarTitle: "GitHub Actions"
+---
+
 ## When to use GitHub Actions
 
 This guide is for teams that use **GitHub Actions** as their CI system and want a simple, declarative way to upload mobile builds and trigger test runs without writing custom scripts. Use GitHub Actions if your repository already builds mobile artifacts in a GitHub Actions workflow and you prefer using prebuilt actions over maintaining Node.js scripts or Fastlane lanes. This guide assumes your mobile builds already run in GitHub Actions and produce a build artifact.
@@ -5,8 +11,7 @@ This guide is for teams that use **GitHub Actions** as their CI system and want 
 ## Before you begin
 
 1. Make sure your GitHub Actions workflow produces a mobile build artifact (APK, AAB, or IPA).
-2. A QA Wolf API key is stored as a GitHub secret (**QAWOLF\_API\_KEY**).
-3. Artifact naming conventions are defined for your environments. See [Artifact naming conventions](#artifact-naming-conventions) below.
+2. Artifact naming conventions are defined for your environments. See [Artifact naming conventions](#artifact-naming-conventions) below.
 
 Before mobile test runs can execute, QA Wolf must enable mobile triggers for your workspace. QA Wolf will handle this and may ask you for:
 
@@ -17,16 +22,16 @@ Before mobile test runs can execute, QA Wolf must enable mobile triggers for you
 
 Until this step is complete, CI jobs can upload artifacts and send deployment notifications, but mobile test runs will not start automatically.
 
-## How the GitHub Actions integration works
+## How GitHub Actions works with QA Wolf
 
 The GitHub Actions integration uses two QA Wolf-provided actions:
 
 <Steps>
   <Step>
-    Uploading a mobile build artifact to QA Wolf
+    Upload a mobile build artifact to QA Wolf.
   </Step>
   <Step>
-    Notifying QA Wolf of a deployment event to trigger a test run
+    Notify QA Wolf of a deployment event to trigger a test run.
   </Step>
 </Steps>
 
@@ -40,27 +45,15 @@ You provide the [artifact basename](#artifact-naming-conventions) when uploading
 
 Add the QA Wolf actions to an existing GitHub Actions workflow that builds your mobile app. The workflow must run after the build artifact has been created.
 
-Make sure the workflow has access to the **QAWOLF\_API\_KEY** secret.
-
-#### Add the QAWOLF\_API\_KEY secret
-
-<Steps>
-  <Step>
-    Open your GitHub repository and go to Settings.
-  </Step>
-  <Step>
-    Select **Secrets and variables → Actions**.
-  </Step>
-  <Step>
-    Add a new repository secret named **QAWOLF\_API\_KEY** and paste your API key.
-  </Step>
-</Steps>
-
-#### Find the QAWOLF\_API\_KEY
+### Find the QAWOLF\_API\_KEY
 
 <Steps>
   <Step>
     Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-17.png)
+    </Frame>
   </Step>
   <Step>
     Choose **Integrations**.
@@ -74,15 +67,29 @@ Make sure the workflow has access to the **QAWOLF\_API\_KEY** secret.
   </Step>
 </Steps>
 
+### Add the QAWOLF\_API\_KEY secret
+
+<Steps>
+  <Step>
+    Open your GitHub repository and go to **Settings**.
+  </Step>
+  <Step>
+    Select **Secrets and variables → Actions**.
+  </Step>
+  <Step>
+    Add a new repository secret named `QAWOLF_API_KEY` and paste your API key.
+  </Step>
+</Steps>
+
 ## Artifact naming conventions
 
 Mobile build artifacts must follow consistent naming conventions so QA Wolf can correctly associate each build with the right environment and make failures easier to diagnose.
 
 The artifact name is used to identify:
 
-- Which environment the build belongs to.
-- Whether the build is tied to a pull request.
-- Which build was used for a given test run.
+- Which environment the build belongs to
+- Whether the build is tied to a pull request
+- Which build was used for a given test run
 
 ### Static environments
 
@@ -192,16 +199,16 @@ If mobile triggers have not yet been enabled, this step will complete without st
 
 <Steps>
   <Step>
-    Run the GitHub Actions workflow
+    Run the GitHub Actions workflow.
   </Step>
   <Step>
-    Verify that the artifact upload step completes successfully
+    Verify that the artifact upload step completes successfully.
   </Step>
   <Step>
-    Confirm that the deployment notification step runs without errors
+    Confirm that the deployment notification step runs without errors.
   </Step>
   <Step>
-    Once mobile triggers are enabled, check the **Runs** tab for the triggered test run
+    Once mobile triggers are enabled, check the **Runs** tab for the triggered test run.
   </Step>
 </Steps>
 

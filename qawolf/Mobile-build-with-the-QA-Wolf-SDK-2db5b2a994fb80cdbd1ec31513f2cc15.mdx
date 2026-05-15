@@ -1,4 +1,10 @@
-## When to use the CI SDK
+---
+title: "How to integrate a mobile build with the QA Wolf SDK"
+description: "Upload mobile build artifacts and trigger test runs from any CI system using the QA Wolf CI SDK."
+sidebarTitle: "QA Wolf SDK"
+---
+
+## When to use the QA Wolf SDK
 
 This guide is for teams that do not use Fastlane or want a single, flexible way to upload mobile builds and trigger test runs from any CI system. Use the QA Wolf CI SDK if your mobile builds are produced directly in CI scripts; you want the same integration approach for mobile and web testing; you are not using GitHub Actions or prefer not to rely on prebuilt actions; or you need fine-grained control over when artifacts are uploaded and runs are triggered. This guide assumes only that your CI system can run Node.js.
 
@@ -18,16 +24,16 @@ Before mobile test runs can execute, QA Wolf must enable mobile triggers for you
 
 Until this step is complete, CI jobs can upload artifacts and send deployment notifications, but mobile test runs will not start automatically.
 
-## How the CI SDK integration works
+## How the QA Wolf SDK works
 
 The CI SDK performs two main tasks:
 
 <Steps>
   <Step>
-    Uploading a mobile build artifact to QA Wolf AND
+    Upload a mobile build artifact to QA Wolf.
   </Step>
   <Step>
-    Notifying QA Wolf of a deployment event to trigger a test run.
+    Notify QA Wolf of a deployment event to trigger a test run.
   </Step>
 </Steps>
 
@@ -44,8 +50,6 @@ Install the SDK in your CI job:
 ```bash
 npm install @qawolf/ci-sdk
 ```
-
-Make sure the job has access to the QAWOLF\_API\_KEY environment variable.
 
 ### Find the QAWOLF\_API\_KEY
 
@@ -69,15 +73,17 @@ Make sure the job has access to the QAWOLF\_API\_KEY environment variable.
   </Step>
 </Steps>
 
+Make sure the job has access to the `QAWOLF_API_KEY` environment variable.
+
 ## Artifact naming conventions
 
 Mobile build artifacts must follow consistent naming conventions so QA Wolf can correctly associate each build with the right environment and make failures easier to diagnose.
 
 The artifact name is used to identify:
 
-- Which environment the build belongs to.
-- Whether the build is tied to a pull request.
-- Which build was used for a given test run.
+- Which environment the build belongs to
+- Whether the build is tied to a pull request
+- Which build was used for a given test run
 
 ### Static environments
 
@@ -203,8 +209,8 @@ async function uploadRunArtifact(filePath: string): Promise<string> {
   const fileName = path.basename(filePath);
 
   const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage({
-	  // for mobile apps, we prefer static filenames based on the environment name
-	  // for example, use `app_staging.apk` for the Staging environment
+    // for mobile apps, we prefer static filenames based on the environment name
+    // for example, use `app_staging.apk` for the Staging environment
     destinationFilePath: fileName,
   });
 
@@ -274,7 +280,7 @@ If mobile triggers have not yet been enabled, this step will complete without st
     Confirm that the deployment notification step runs without errors.
   </Step>
   <Step>
-    Once mobile triggers are enabled, check the Runs tab for the test run that was triggered.
+    Once mobile triggers are enabled, check the **Runs** tab for the test run that was triggered.
   </Step>
 </Steps>
 
