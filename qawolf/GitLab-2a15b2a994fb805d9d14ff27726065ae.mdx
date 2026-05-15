@@ -47,48 +47,6 @@ If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server i
 <Steps>
   <Step>
     Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-11.png)
-    </Frame>
-  </Step>
-  <Step>
-    Choose **Integrations** and then click the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-12.png)
-    </Frame>
-  </Step>
-</Steps>
-
-### Add the QAWOLF\_API\_KEY secret
-
-<Steps>
-  <Step>
-    Open your GitLab project.
-  </Step>
-  <Step>
-    Go to **Settings → CI/CD → Variables**.
-  </Step>
-  <Step>
-    Click **Add variable**.
-  </Step>
-  <Step>
-    Name the variable `QAWOLF_API_KEY`, paste your API key, and save.
-  </Step>
-</Steps>
-
-You can also define additional variables, such as a deployment URL, if your pipeline uses them.
-
-### Find the QAWOLF\_API\_KEY
-
-<Steps>
-  <Step>
-    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-11.png)
-    </Frame>
   </Step>
   <Step>
     Choose **Integrations** and then click the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
@@ -154,45 +112,6 @@ notify_qawolf:
 ```
 
 This job tells QA Wolf that a new deployment is ready for testing.
-
-## Verify the integration
-
-QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment. Add a job to your `.gitlab-ci.yml` that runs after your deploy step completes successfully.
-
-```yml expandable
-stages:
-  - build
-  - deploy
-  - notify
-
-deploy:
-  stage: deploy
-  script:
-    - ./deploy.sh
-  environment:
-    name: staging
-
-notify_qawolf:
-  stage: notify
-  script:
-    - |
-      curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
-        -H "Authorization: Bearer $QAWOLF_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d "{
-          \"branch\": \"$CI_COMMIT_REF_NAME\",
-          \"deployment_type\": \"staging\",
-          \"deployment_url\": \"$QA_WOLF_DEPLOY_URL\",
-          \"sha\": \"$CI_COMMIT_SHA\",
-          \"hosting_service\": \"GitLab\"
-        }"
-  when: on_success
-  needs: ["deploy"]
-```
-
-This job tells QA Wolf that a new deployment is ready for testing.
-
-## Verify the integration
 
 <Steps>
   <Step>
