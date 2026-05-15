@@ -1,8 +1,8 @@
 ---
 title: "Integrating with Microsoft Teams"
 description: "Set up Microsoft Teams to receive QA Wolf notifications by configuring external access and shared channels."
-icon: "users"
 sidebarTitle: "Integrate MS Teams"
+icon: "users"
 ---
 
 ## Completion checklist
@@ -10,17 +10,17 @@ sidebarTitle: "Integrate MS Teams"
 <Card>
   In the [Teams Admin Center](https://admin.teams.microsoft.com/):
 
-  <Icon icon="square" /> Teams policies > Join external shared channels to On
+  <Icon icon="square" /> Teams policies \> [Join external shared channels to On](#enable-shared-channels-in-teams)
 
-  <Icon icon="square" /> Users > External Access > Ensure QA Wolf is not blocked
+  <Icon icon="square" /> Users \> External Access \> [Ensure QA Wolf is not blocked](#enable-external-access)
 
   In the [Microsoft Entra admin center](https://entra.microsoft.com/) (**as a Security Administrator**):
 
-  <Icon icon="square" /> Add QA Wolf's tenant ID - `3d41cc11-5772-457c-aad2-16b3924b22d0`
+  <Icon icon="square" /> [Add QA Wolf's tenant ID](#enable-cross-tenant-access-in-microsoft-entra) - `3d41cc11-5772-457c-aad2-16b3924b22d0`
 
-  <Icon icon="square" /> Verify access settings do not restrict access to or from QA Wolf, or adjust accordingly
+  <Icon icon="square" /> [Verify access settings](#check-access) do not restrict access to or from QA Wolf, or adjust accordingly
 
-  <Icon icon="square" /> Share your Microsoft Entra tenant ID with QA Wolf
+  <Icon icon="square" /> [Share your Microsoft Entra tenant ID with QA Wolf](#complete-setup)
 </Card>
 
 ### Enable shared channels in Teams
@@ -61,7 +61,8 @@ You must enable external access so QA Wolf team members can join your **Teams me
   <Step>
     Choose the appropriate option for allowing **Teams and Skype for Business users in external organizations**.
 
-    - Do not select **Block all external domains** — this setting prevents the integration from working.
+    Warning\> **Do not** select **Block all external domains** — this setting prevents the integration from working.
+
     - Allowing **qawolf.com** under **Allow only specific external domains** will ensure QA Wolf team members can participate while all other external domains remain blocked.
 
     <Frame>
