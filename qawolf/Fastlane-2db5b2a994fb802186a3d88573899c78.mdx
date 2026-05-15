@@ -61,6 +61,10 @@ The artifact name you provide is used to associate the build with the correct en
 <Steps>
   <Step>
     Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-13.png)
+    </Frame>
   </Step>
   <Step>
     Choose **Integrations**.
@@ -73,6 +77,10 @@ The artifact name you provide is used to associate the build with the correct en
     </Frame>
   </Step>
 </Steps>
+
+### Add the QAWOLF\_API\_KEY secret
+
+Store `QAWOLF_API_KEY` as a secret in your CI system and ensure it is exported as an environment variable in the job that runs Fastlane. The exact steps depend on your CI provider — refer to your CI system's documentation for storing secrets.
 
 ## Artifact naming conventions
 
