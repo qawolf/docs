@@ -62,7 +62,8 @@
             "group": "Map",
             "icon": "map",
             "pages": [
-              "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc"
+              "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc",
+              "qawolf/getting-the-most-out-of-mapping"
             ]
           },
           {
@@ -70,6 +71,7 @@
             "icon": "route",
             "pages": [
               "qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
+              "qawolf/getting-the-most-out-of-automate",
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
               "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
               "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
