@@ -1,38 +1,37 @@
 ---
 title: "How to integrate a mobile build with GitHub Actions"
 description: "Upload mobile build artifacts and trigger QA Wolf test runs using prebuilt GitHub Actions in your workflow."
-sidebarTitle: "Mobile: GitHub Actions"
-icon: "smartphone"
+sidebarTitle: "GitHub Actions"
 ---
 
-## Use GitHub Actions
+## When to use GitHub Actions
 
-This guide is for teams that use **GitHub Actions** as their CI system and want a simple, declarative way to upload mobile builds and trigger test runs without writing custom scripts.
+This guide is for teams that use **GitHub Actions** as their CI system and want a simple, declarative way to upload mobile builds and trigger test runs without writing custom scripts. Use GitHub Actions if your repository already builds mobile artifacts in a GitHub Actions workflow and you prefer using prebuilt actions over maintaining Node.js scripts or Fastlane lanes. This guide assumes your mobile builds already run in GitHub Actions and produce a build artifact.
 
-Use GitHub Actions if your repository already builds mobile artifacts in a GitHub Actions workflow and you prefer using prebuilt actions over maintaining Node.js scripts or Fastlane lanes.
+## Before you begin
 
-This guide assumes your mobile builds already run in GitHub Actions and produce a build artifact.
+1. Make sure your GitHub Actions workflow produces a mobile build artifact (APK, AAB, or IPA).
+2. Artifact naming conventions are defined for your environments. See [Artifact naming conventions](#artifact-naming-conventions) below.
 
-<Tip>
-  **Before using GitHub Actions:**
+Before mobile test runs can execute, QA Wolf must enable mobile triggers for your workspace. QA Wolf will handle this and may ask you for:
 
-  1. Make sure your GitHub Actions workflow produces a mobile build artifact (APK, AAB, or IPA)
-  2. A QA Wolf API key is stored as a GitHub secret (**QAWOLF\_API\_KEY**)
-  3. [Artifact naming conventions](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) are defined for your environments
+- Which environments you want to test.
+- Whether PR testing is enabled.
+- The artifact naming conventions you are using.
+- The upload and trigger method you chose.
 
-  Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
-</Tip>
+Until this step is complete, CI jobs can upload artifacts and send deployment notifications, but mobile test runs will not start automatically.
 
-## How the GitHub Actions integration works
+## How GitHub Actions works with QA Wolf
 
 The GitHub Actions integration uses two QA Wolf-provided actions:
 
 <Steps>
   <Step>
-    Uploading a mobile build artifact to QA Wolf
+    Upload a mobile build artifact to QA Wolf.
   </Step>
   <Step>
-    Notifying QA Wolf of a deployment event to trigger a test run
+    Notify QA Wolf of a deployment event to trigger a test run.
   </Step>
 </Steps>
 
@@ -40,29 +39,13 @@ The GitHub Actions integration uses two QA Wolf-provided actions:
   You can upload builds without triggering runs, which is useful during initial setup or validation.
 </Tip>
 
-You provide the [artifact basename](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
+You provide the [artifact basename](#artifact-naming-conventions) when uploading. QA Wolf applies the file extension automatically based on the uploaded file.
 
 ## Add QA Wolf actions to your workflow
 
 Add the QA Wolf actions to an existing GitHub Actions workflow that builds your mobile app. The workflow must run after the build artifact has been created.
 
-Make sure the workflow has access to the **QAWOLF\_API\_KEY** secret.
-
-#### Add the QAWOLF\_API\_KEY secret
-
-<Steps>
-  <Step>
-    Open your GitHub repository and go to Settings.
-  </Step>
-  <Step>
-    Select **Secrets and variables → Actions**.
-  </Step>
-  <Step>
-    Add a new repository secret named **QAWOLF\_API\_KEY** and paste your API key.
-  </Step>
-</Steps>
-
-#### Find the QAWOLF\_API\_KEY
+### Find the QAWOLF\_API\_KEY
 
 <Steps>
   <Step>
@@ -79,6 +62,70 @@ Make sure the workflow has access to the **QAWOLF\_API\_KEY** secret.
     </Frame>
   </Step>
 </Steps>
+
+### Add the QAWOLF\_API\_KEY secret
+
+<Steps>
+  <Step>
+    Open your GitHub repository and go to **Settings**.
+  </Step>
+  <Step>
+    Select **Secrets and variables → Actions**.
+  </Step>
+  <Step>
+    Add a new repository secret named `QAWOLF_API_KEY` and paste your API key.
+  </Step>
+</Steps>
+
+## Artifact naming conventions
+
+Mobile build artifacts must follow consistent naming conventions so QA Wolf can correctly associate each build with the right environment and make failures easier to diagnose.
+
+The artifact name is used to identify:
+
+- Which environment the build belongs to
+- Whether the build is tied to a pull request
+- Which build was used for a given test run
+
+### Static environments
+
+Static environments are long-lived environments such as staging or release environments.
+
+**Format**
+
+```text
+<prefix>-<environment-name>
+```
+
+**Example**
+
+```text
+app-staging
+```
+
+Use the same basename every time a build is generated for the same environment.
+
+### PR (ephemeral) environments
+
+PR environments are short-lived and tied to a specific pull request. These are only relevant if PR testing is enabled.
+
+**Format**
+
+```text
+<prefix>-<org>-<repo>-pr<number>
+```
+
+**Example**
+
+```text
+app-myorg-myrepo-pr123
+```
+
+Including the organization, repository, and pull request number ensures each build can be traced back to the correct change and environment.
+
+<Tip>
+  QA Wolf applies the file extension (.apk, .aab, or .ipa) automatically based on the uploaded artifact. You only need to provide the basename.
+</Tip>
 
 ## Upload a mobile build artifact
 
@@ -138,9 +185,9 @@ After uploading the artifact, notify QA Wolf that a new deployment is ready for 
       { "ANDROID_APP": "/home/wolf/run-inputs-executables/${{ steps.upload-run-input.outputs.destination-file-path }}" }
 ```
 
-<Danger>
+<Tip>
   The deployment type and environment key must match the values configured by QA Wolf for your workspace.
-</Danger>
+</Tip>
 
 If mobile triggers have not yet been enabled, this step will complete without starting a test run.
 
@@ -148,16 +195,16 @@ If mobile triggers have not yet been enabled, this step will complete without st
 
 <Steps>
   <Step>
-    Run the GitHub Actions workflow
+    Run the GitHub Actions workflow.
   </Step>
   <Step>
-    Verify that the artifact upload step completes successfully
+    Verify that the artifact upload step completes successfully.
   </Step>
   <Step>
-    Confirm that the deployment notification step runs without errors
+    Confirm that the deployment notification step runs without errors.
   </Step>
   <Step>
-    Once mobile triggers are enabled, check the **Runs** tab for the triggered test run
+    Once mobile triggers are enabled, check the **Runs** tab for the triggered test run.
   </Step>
 </Steps>
 

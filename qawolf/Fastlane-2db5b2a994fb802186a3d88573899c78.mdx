@@ -1,39 +1,43 @@
 ---
 title: "How to integrate a mobile build with Fastlane"
 description: "Use the QA Wolf Fastlane plugin to upload mobile build artifacts and trigger test runs from existing lanes."
-sidebarTitle: "Mobile: Fastlane"
-icon: "smartphone"
+sidebarTitle: "Fastlane"
 ---
 
-## When to use the Fastlane integration
+## When to use Fastlane
 
-This guide is for teams that already use Fastlane to build Android or iOS apps.
+This guide is for teams that already use Fastlane to build Android or iOS apps. If your mobile builds are defined as Fastlane lanes, the QA Wolf Fastlane plugin lets you upload build artifacts and trigger test runs within your existing mobile automation. This is the recommended option for mobile teams that use Fastlane today.
 
-If your mobile builds are defined as Fastlane lanes, the QA Wolf Fastlane plugin lets you upload build artifacts and trigger test runs within your existing mobile automation. This is the recommended option for mobile teams that use Fastlane today.
+If you do not use Fastlane, use the QA Wolf CI SDK instead. QA Wolf does not set up Fastlane or create build lanes—this guide assumes Fastlane is already installed and that it is producing a mobile build artifact.
 
-If you do not use Fastlane, use the QA Wolf CI SDK instead. QA Wolf does not set up Fastlane or create build lanes—this guide assumes Fastlane is already installed and producing a mobile build artifact.
+## Before you begin
 
-<Check>
-  Before configuring the Fastlane integration, make sure you have the following in place:
+Before configuring the Fastlane integration, make sure you have the following in place:
 
-  - A working Fastlane setup for your Android or iOS app
-  - A Fastlane lane that produces a mobile build artifact (APK, AAB, or IPA)
-  - A QA Wolf API key stored as a secret in your CI environment
-  - [Artifact naming conventions](/qawolf/Integrate-your-mobile-CI-pipeline-2da5b2a994fb8037bb15e410d7366fd2#artifact-naming-conventions) are defined for your environments
+- A working Fastlane setup for your Android or iOS app.
+- A Fastlane lane that produces a mobile build artifact (APK, AAB, or IPA).
+- A QA Wolf API key stored as a secret in your CI environment.
+- Artifact naming conventions are defined for your environments. See [Artifact naming conventions](#artifact-naming-conventions) below.
 
-  Mobile triggers must be enabled for your workspace by QA Wolf before test runs will execute.
-</Check>
+Before mobile test runs can execute, QA Wolf must enable mobile triggers for your workspace. QA Wolf will handle this and may ask you for:
 
-## How the Fastlane integration works
+- Which environments you want to test.
+- Whether PR testing is enabled.
+- The artifact naming conventions you are using.
+- The upload and trigger method you chose.
+
+Until this step is complete, CI jobs can upload artifacts and send deployment notifications, but mobile test runs will not start automatically.
+
+## How Fastlane works with QA Wolf
 
 The Fastlane integration uses a QA Wolf Fastlane plugin to perform two actions:
 
 <Steps>
   <Step>
-    Upload a mobile build artifact to QA Wolf
+    Upload a mobile build artifact to QA Wolf.
   </Step>
   <Step>
-    Notify QA Wolf of a deployment event so a test run can be triggered
+    Notify QA Wolf of a deployment event so a test run can be triggered.
   </Step>
 </Steps>
 
@@ -48,11 +52,11 @@ The artifact name you provide is used to associate the build with the correct en
     Add the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) to your project if it is not already installed. This is typically done in your **Fastfile** or plugin configuration, depending on how your project manages Fastlane plugins. Follow the instructions on the `README` to install.
   </Step>
   <Step>
-    Make sure your CI environment exports the **QAWOLF_API_KEY** environment variable so Fastlane can authenticate with QA Wolf.
+    Make sure your CI environment exports the **QAWOLF\_API\_KEY** environment variable so Fastlane can authenticate with QA Wolf.
   </Step>
 </Steps>
 
-### Find the QAWOLF_API_KEY
+### Find the QAWOLF\_API\_KEY
 
 <Steps>
   <Step>
@@ -66,13 +70,67 @@ The artifact name you provide is used to associate the build with the correct en
     Choose **Integrations**.
   </Step>
   <Step>
-    Generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of API Key under **API Access**.
+    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
 
     <Frame>
       ![](/images/integrating-with-CI-CD/image-14.png)
     </Frame>
   </Step>
 </Steps>
+
+### Add the QAWOLF\_API\_KEY secret
+
+Store `QAWOLF_API_KEY` as a secret in your CI system and ensure it is exported as an environment variable in the job that runs Fastlane. The exact steps depend on your CI provider — refer to your CI system's documentation for storing secrets.
+
+## Artifact naming conventions
+
+Mobile build artifacts must follow consistent naming conventions so QA Wolf can correctly associate each build with the right environment and make failures easier to diagnose.
+
+The artifact name is used to identify:
+
+- Which environment the build belongs to
+- Whether the build is tied to a pull request
+- Which build was used for a given test run
+
+### Static environments
+
+Static environments are long-lived environments such as staging or release environments.
+
+**Format**
+
+```text
+<prefix>-<environment-name>
+```
+
+**Example**
+
+```text
+app-staging
+```
+
+Use the same basename every time a build is generated for the same environment.
+
+### PR (ephemeral) environments
+
+PR environments are short-lived and tied to a specific pull request. These are only relevant if PR testing is enabled.
+
+**Format**
+
+```text
+<prefix>-<org>-<repo>-pr<number>
+```
+
+**Example**
+
+```text
+app-myorg-myrepo-pr123
+```
+
+Including the organization, repository, and pull request number ensures each build can be traced back to the correct change and environment.
+
+<Tip>
+  QA Wolf applies the file extension (.apk, .aab, or .ipa) automatically based on the uploaded artifact. You only need to provide the basename.
+</Tip>
 
 ## Upload a mobile build artifact
 
@@ -123,8 +181,6 @@ notify_deploy_qawolf(
 
 ## Verify the integration
 
-To verify the integration:
-
 <Steps>
   <Step>
     Run the Fastlane lane in CI.
@@ -146,5 +202,5 @@ If no run appears, the most common cause is a missing or incomplete QA Wolf plat
 
 - **Artifact uploads succeed, but no runs start:** Mobile triggers may not be enabled yet. Contact QA Wolf to complete platform configuration.
 - **Artifact not found during test execution:** Verify the artifact basename matches the expected naming conventions.
-- **Authentication errors:** Confirm QAWOLF_API_KEY is set correctly in your CI environment.
-- **Incorrect environment used:** Verify the environment key passed to notify_deploy_qawolf matches the configured value.
+- **Authentication errors:** Confirm QAWOLF\_API\_KEY is set correctly in your CI environment.
+- **Incorrect environment used:** Verify the environment key passed to notify\_deploy\_qawolf matches the configured value.

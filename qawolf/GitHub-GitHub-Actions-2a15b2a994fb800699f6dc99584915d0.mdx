@@ -2,36 +2,26 @@
 title: "How to integrate GitHub/GitHub Actions"
 description: "Connect QA Wolf to GitHub Actions to automatically trigger test runs when you deploy code from your repository."
 sidebarTitle: "GitHub/GitHub Actions"
-icon: "git-merge"
 ---
 
-<Check>
-  To proceed in this guide, you need:
+If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this is the recommended setup. The integration connects directly to your QA Wolf environments using GitHub Actions to notify QA Wolf of new deployments.
 
-  - Access to your QA Wolf team.
-  - Admin access to your GitHub repository.
+<Tip>
+  If your team self-hosts GitHub Enterprise Server without internet access, or has disabled GitHub Actions by policy, use the [QA Wolf CI SDK](/qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63) instead.
+</Tip>
+
+<Check>
+  Make sure you have:
+
+  - Access to your QA Wolf workspace
+  - Admin access to your GitHub repository
 </Check>
 
-QA Wolf integrates directly with GitHub to automatically run tests when you deploy code. This integration uses **GitHub Actions (GHA)** to notify QA Wolf of new deployments. Almost every GitHub organization can use it, including private repos and GitHub Enterprise Cloud.
-
-<Danger>
-  You cannot use GitHub Actions if your team:
-
-  - Self-hosts GitHub Enterprise Server without internet access.
-  - Explicitly disables GitHub Actions by policy.
-
-  If either applies, see the [SDK Integration Guide](/qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63) for an alternative.
-</Danger>
-
-## Integrate QA Wolf and GitHub Actions
+## Enable the GitHub integration in QA Wolf
 
 <Steps>
   <Step>
     Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-1.png)
-    </Frame>
   </Step>
   <Step>
     Choose **Integrations** and then click **Enable** next to **GitHub**. This opens GitHub, where you'll be prompted to sign in if you have not already done so.
@@ -54,18 +44,34 @@ QA Wolf integrates directly with GitHub to automatically run tests when you depl
   <Step>
     Click **Install**. Once installed, QA Wolf can create PR comments.
   </Step>
+</Steps>
+
+### Find the QAWOLF\_API\_KEY
+
+<Steps>
   <Step>
-    Return to QA Wolf **Integrations**, and generate your **QAWOLF_API_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
 
     <Frame>
       ![](/images/integrating-with-CI-CD/image-4.png)
     </Frame>
   </Step>
   <Step>
+    Choose **Integrations**.
+  </Step>
+  <Step>
+    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+  </Step>
+</Steps>
+
+### Add the QAWOLF\_API\_KEY secret
+
+<Steps>
+  <Step>
     Return to GitHub, go to your repository's **Settings** tab, click **Secrets and variables**, and then **Actions**.
   </Step>
   <Step>
-    Type QAWOLF_API_KEY in **Name** and paste the value you copied above into **Secret**.
+    Type `QAWOLF_API_KEY` in **Name** and paste your API key into **Secret**.
   </Step>
   <Step>
     Click **Add secret** to save.
@@ -80,9 +86,9 @@ QA Wolf integrates directly with GitHub to automatically run tests when you depl
   </Step>
 </Steps>
 
-## Install the action
+## Add the GitHub Actions workflow
 
-QA Wolf's official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy), will notify QA Wolf whenever a new deployment is ready for testing.
+QA Wolf's official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy), notifies QA Wolf whenever a new deployment is ready for testing.
 
 <Danger>
   This must be done for every repository you want connected to CI/CD.
@@ -97,7 +103,7 @@ QA Wolf's official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/
     </Frame>
   </Step>
   <Step>
-    If you already have actions, you can click **New workflow**.
+    If you already have actions, click **New workflow**.
 
     <Frame>
       ![](/images/integrating-with-CI-CD/image-7.png)
@@ -111,9 +117,9 @@ QA Wolf's official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/
     </Frame>
   </Step>
   <Step>
-    Copy the example below into your workflow file (usually .github/workflows/deploy.yml). Replace the values in `deployment-type` and `deployment-url` with your actual values.
+    Copy the example below into your workflow file (usually `.github/workflows/deploy.yml`). Replace the values in `deployment-type` and `deployment-url` with your actual values.
 
-    To get the value for `deployment-type`, reach out to QA Wolf, and we will provide this value for you.
+    To get the value for `deployment-type`, reach out to QA Wolf and we will provide this value for you.
 
     ```yaml
     - name: Notify QA Wolf
@@ -126,13 +132,13 @@ QA Wolf's official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/
   </Step>
 </Steps>
 
-## Validating the action
+## Verify the integration
 
 <Steps>
   <Step>
-    Push a new commit to your main branch. Wait for your deployment to complete.
+    Push a new commit to your main branch and wait for your deployment to complete.
   </Step>
   <Step>
-    Check your **Runs** tab in the QA Wolf app. If everything is working correctly, you should see a new run created for that environment.
+    Open QA Wolf and confirm a new run appears under the expected environment.
   </Step>
 </Steps>

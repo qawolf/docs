@@ -1,8 +1,7 @@
 ---
 title: "How to enable PR testing for GitHub Integrations"
 description: "Run QA Wolf tests against preview environments on pull requests and report results as GitHub status checks."
-sidebarTitle: "PR testing for GitHub Integrations"
-icon: "git-merge"
+sidebarTitle: "GitHub"
 ---
 
 ## What QA Wolf configures
@@ -19,11 +18,13 @@ PR testing won't work until QA Wolf configures your workspace to support it. QA 
 - Provide the deployment-type value to use for preview tests
 - Confirm the preview URL variable and the status check name (for example, **QA Wolf Test Results**)
 
-## Add a default passing PR check
+## Before you begin
 
 <Check>
   Each pull request must deploy a preview environment that QA Wolf can reach. Your CI should provide a stable preview URL per PR and a step that waits until the preview is live before tests start.
 </Check>
+
+## Add a default passing PR check
 
 Add a GitHub Actions workflow that creates a passing **QA Wolf Test Results** check when a PR is opened or updated. This prevents pull requests from being blocked before the merge queue run happens.
 
@@ -140,3 +141,5 @@ When the pull request enters the merge queue, this workflow sends the preview UR
     The merge completes only after this check finishes successfully.
   </Step>
 </Steps>
+
+\\

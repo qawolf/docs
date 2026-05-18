@@ -2,7 +2,6 @@
 title: "How to integrate with GitLab"
 description: "Connect QA Wolf to GitLab CI/CD to automatically trigger test runs when you deploy code from your repository."
 sidebarTitle: "GitLab"
-icon: "git-merge"
 ---
 
 If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. The integration connects directly to your QA Wolf environments.
@@ -25,10 +24,6 @@ If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server i
 <Steps>
   <Step>
     Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-9.png)
-    </Frame>
   </Step>
   <Step>
     Click **Integrations**, then click **Enable** next to **GitLab**. This opens GitLab, where you'll be prompted to sign in if you have not already done so. Follow the prompts to connect your GitLab account or group.
@@ -47,7 +42,22 @@ If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server i
   </Step>
 </Steps>
 
-## Add your QA Wolf API key to GitLab
+### Find the QAWOLF\_API\_KEY
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+  </Step>
+  <Step>
+    Choose **Integrations** and then click the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-12.png)
+    </Frame>
+  </Step>
+</Steps>
+
+### Add the QAWOLF\_API\_KEY secret
 
 <Steps>
   <Step>
@@ -60,39 +70,15 @@ If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server i
     Click **Add variable**.
   </Step>
   <Step>
-    Name the variable `QAWOLF_API_KEY`.
-  </Step>
-  <Step>
-    Paste your QA Wolf API key and save.
+    Name the variable `QAWOLF_API_KEY`, paste your API key, and save.
   </Step>
 </Steps>
 
 You can also define additional variables, such as a deployment URL, if your pipeline uses them.
 
-### Find your QA Wolf API key
+## Add the deploy notification to GitLab CI/CD
 
-<Steps>
-  <Step>
-    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-11.png)
-    </Frame>
-  </Step>
-  <Step>
-    Choose **Integrations** and then click the <Icon icon="clipboard" /> to copy the API Key to your clipboard.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-12.png)
-    </Frame>
-  </Step>
-</Steps>
-
-## Add the deploy success notification to GitLab CI/CD
-
-QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment.
-
-Add a job to your `.gitlab-ci.yml` that runs after your deploy step completes successfully.
+QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment. Add a job to your `.gitlab-ci.yml` that runs after your deploy step completes successfully.
 
 ```yml expandable
 stages:
@@ -126,8 +112,6 @@ notify_qawolf:
 ```
 
 This job tells QA Wolf that a new deployment is ready for testing.
-
-## Verify the integration
 
 <Steps>
   <Step>
