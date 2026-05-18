@@ -1,0 +1,164 @@
+---
+title: "Android Device Reference"
+description: "Reference notes for the `device` object from `@qawolf/flows/android`."
+---
+
+`device` is a runtime proxy over the Android emulator API. Use it for emulator-level operations — such as setting location, placing images in the virtual camera scene, or configuring network proxies — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
+
+`device` is only available while a flow is running.
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+```
+
+## `setGeoLocation`
+
+Sets the emulator's GPS location.
+
+```typescript
+function setGeoLocation(options: GeoLocationOptions): Promise<void>;
+
+type GeoLocationOptions = {
+  latitude: number;
+  longitude: number;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow("Set device location", "Android - Pixel", async () => {
+  await device.setGeoLocation({
+    latitude: 37.7749,
+    longitude: -122.4194,
+  });
+});
+```
+
+<Note>
+  Use this to test location-aware features without physically moving a device. See [Mock device location](/qawolf/android-location) for a full walkthrough.
+</Note>
+
+## `setVirtualSceneImage`
+
+Places an image into the Android emulator's virtual camera scene. Use this to test features that require the camera to see a specific image — such as barcode or QR code scanning.
+
+```typescript
+function setVirtualSceneImage(options: VirtualSceneImageOptions): Promise<void>;
+
+type VirtualSceneImageOptions = {
+  /** Path to the image file to place in the virtual scene. */
+  imagePath: string;
+  /** Where to place the image in the virtual scene. */
+  location: "table" | "wall";
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Scan barcode",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("place barcode image", async () => {
+      await device.setVirtualSceneImage({
+        imagePath: "/path/to/barcode.jpg",
+        location: "table",
+      });
+    });
+  },
+);
+```
+
+<Note>
+  Virtual scene is scoped to barcode/QR code scanning and augmented reality (AR) use cases. It is not a general photo or video injection mechanism. See [Android barcode and QR scanning](/qawolf/android-barcode-scanning) for a full walkthrough.
+</Note>
+
+## `playAutomation`
+
+Triggers a named automation macro on the Android emulator. Use this in combination with `setVirtualSceneImage` to animate the virtual camera toward a placed image.
+
+```typescript
+function playAutomation(options: PlayAutomationOptions): Promise<void>;
+
+type PlayAutomationOptions = {
+  /** Name of the automation macro to play. */
+  macroName: string;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Scan barcode",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("place barcode and animate camera", async () => {
+      await device.setVirtualSceneImage({
+        imagePath: "/path/to/barcode.jpg",
+        location: "table",
+      });
+
+      await device.playAutomation({
+        macroName: "Walk_to_image_room",
+      });
+    });
+  },
+);
+```
+
+## `setProxy`
+
+Configures a proxy for the Android emulator's network traffic.
+
+```typescript
+function setProxy(options: ProxyOptions): Promise<void>;
+
+type ProxyOptions = {
+  host: string;
+  port: number;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow("Set proxy", "Android - Pixel", async () => {
+  await device.setProxy({
+    host: "proxy.example.com",
+    port: 8080,
+  });
+});
+```
+
+## `clearProxy`
+
+Removes any proxy configuration from the Android emulator.
+
+```typescript
+function clearProxy(): Promise<void>;
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow("Clear proxy", "Android - Pixel", async () => {
+  await device.clearProxy();
+});
+```
+
+<Note>
+  Call `clearProxy()` at the end of any flow that sets a proxy to avoid affecting subsequent flows.
+</Note>

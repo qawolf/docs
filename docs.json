@@ -261,7 +261,8 @@
                   "qawolf/libraries/flows/api-reference/web",
                   "qawolf/libraries/flows/api-reference/cli",
                   "qawolf/libraries/flows/api-reference/android",
-                  "qawolf/libraries/flows/api-reference/ios"
+                  "qawolf/libraries/flows/api-reference/ios",
+                  "qawolf/libraries/flows/api-reference/android-device-reference"
                 ]
               },
               {
