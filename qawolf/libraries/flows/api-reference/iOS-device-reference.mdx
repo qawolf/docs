@@ -1,0 +1,660 @@
+---
+title: "iOS Device Reference"
+description: "Reference notes for the `device` object from `@qawolf/flows/ios`."
+---
+
+`device` is a runtime proxy over the iOS simulator and device API. Use it for device-level operations — such as injecting camera or audio input, managing photos, recording audio, simulating network conditions, or installing configuration profiles — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
+
+`device` is only available while a flow is running.
+
+```typescript
+import { device, flow } from "@qawolf/flows/ios";
+```
+
+## `injectCamera`
+
+Replaces the app's camera input with a provided image or video. Affects photo capture, video data output, video recording, and preview layers.
+
+```typescript
+function injectCamera(
+  driver: Browser,
+  bundleId: string,
+  source: CameraSource
+): Promise<() => Promise<void>>;
+
+type CameraSource = {
+  /** File path, URL, or data URI for the media to inject. */
+  data: string;
+  /** Media type. Default: inferred from file extension. */
+  type?: "image" | "video";
+  /** Delay in seconds before injection starts. */
+  delaySeconds?: number;
+};
+```
+
+Returns a cleanup function that removes the injection config and media file.
+
+<Warning>
+  Cannot be used simultaneously with `injectAudio` — they share the same config file.
+</Warning>
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Test camera feature",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("inject camera image", async () => {
+      const cleanup = await device.injectCamera(driver, "com.example.app", {
+        data: "/path/to/image.jpg",
+        type: "image",
+      });
+
+      // interact with your app's camera feature
+
+      await cleanup();
+    });
+  },
+);
+```
+
+## `injectAudio`
+
+Replaces the app's microphone input with a provided audio file. Affects `AVAudioRecorder` and `AVCaptureAudioDataOutput`.
+
+```typescript
+function injectAudio(
+  driver: Browser,
+  bundleId: string,
+  source: AudioSource
+): Promise<() => Promise<void>>;
+
+type AudioSource = {
+  /** File path, URL, or data URI for the audio to inject. */
+  data: string;
+  /** Delay in seconds before injection starts. */
+  delaySeconds?: number;
+};
+```
+
+Returns a cleanup function that removes the injection config and audio file.
+
+<Warning>
+  Cannot be used simultaneously with `injectCamera` — they share the same config file.
+</Warning>
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Test voice input",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("inject audio", async () => {
+      const cleanup = await device.injectAudio(driver, "com.example.app", {
+        data: "/path/to/audio.mp3",
+      });
+
+      // interact with your app's microphone feature
+
+      await cleanup();
+    });
+  },
+);
+```
+
+## `injectBarcode`
+
+Injects a barcode or QR code detection into the app's `AVCaptureMetadataOutput`. The injected barcode is delivered to the app's metadata output delegate as if scanned by the camera. The config file is auto-consumed after delivery.
+
+```typescript
+function injectBarcode(
+  driver: Browser,
+  bundleId: string,
+  barcodes: BarcodeConfig | BarcodeConfig[]
+): Promise<() => Promise<void>>;
+
+type BarcodeConfig = {
+  /** AVMetadataObjectType constant. Default: "org.iso.QRCode". */
+  type?: string;
+  /** The barcode or QR code value to inject. */
+  value: string;
+  /** Normalized bounds (0.0–1.0) for the detected barcode position. */
+  bounds?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  /** Corner points (0.0–1.0) for the detected barcode shape. */
+  corners?: { x: number; y: number }[];
+  /**
+   * Raw binary payload for `AVMetadataMachineReadableCodeObject.rawValue` (iOS 13+).
+   * Accepts a Buffer or base64-encoded string. Defaults to the UTF-8 encoding of `value`.
+   */
+  rawValue?: Buffer | string;
+};
+```
+
+Returns a cleanup function that removes the injection config.
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Scan QR code",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("inject QR code", async () => {
+      const cleanup = await device.injectBarcode(driver, "com.example.app", {
+        value: "https://example.com",
+      });
+
+      // your app's scanner receives the QR code
+
+      await cleanup();
+    });
+  },
+);
+```
+
+## `injectBeacon`
+
+Injects iBeacon detections into the app's `CLLocationManager`. Always triggers a region-entry callback. When `beacons` is provided, also triggers ranging callbacks.
+
+```typescript
+function injectBeacon(
+  driver: Browser,
+  bundleId: string,
+  config: BeaconConfig
+): Promise<() => Promise<void>>;
+
+type BeaconConfig = {
+  /** Beacon region UUID. */
+  uuid: string;
+  /**
+   * Beacons to simulate. When omitted or empty, only a region-entry callback is triggered.
+   */
+  beacons?: {
+    major: number | string;
+    minor: number | string;
+  }[];
+};
+```
+
+Returns a cleanup function that removes the injection config files.
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Test beacon detection",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("inject beacon", async () => {
+      const cleanup = await device.injectBeacon(driver, "com.example.app", {
+        uuid: "8613BEAD-5465-4515-8F9C-AEEA717484C9",
+        beacons: [{ major: 1, minor: 7 }],
+      });
+
+      // your app receives region-entry and ranging callbacks
+
+      await cleanup();
+    });
+  },
+);
+```
+
+## `installConfigurationProfile`
+
+Installs a configuration profile on the iOS simulator or device. Returns a cleanup function that removes the profile when called.
+
+```typescript
+function installConfigurationProfile(
+  driver: Browser,
+  profileString: string
+): Promise<() => Promise<unknown>>;
+```
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+const profile = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict></dict></plist>`;
+
+export default flow("Install profile", "iOS - iPhone 15 (iOS 26)", async () => {
+  const { driver } = await launch();
+  const cleanup = await device.installConfigurationProfile(driver, profile);
+
+  // run your tests
+
+  await cleanup();
+});
+```
+
+## `setWebViewDebugging`
+
+Enables or disables WebView debugging (Safari Web Inspector) for all `WKWebView` instances in the app. When enabled, WKWebViews become inspectable via Safari DevTools. The default behavior is enabled.
+
+```typescript
+function setWebViewDebugging(
+  driver: Browser,
+  bundleId: string,
+  enabled: boolean
+): Promise<() => Promise<void>>;
+```
+
+Returns a cleanup function that removes the config file, reverting to the default (enabled).
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Disable WebView debugging",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("disable debugging", async () => {
+      const cleanup = await device.setWebViewDebugging(driver, "com.example.app", false);
+
+      // run your tests
+
+      await cleanup();
+    });
+  },
+);
+```
+
+## `savePhoto`
+
+Saves an image file to the device's Photos library.
+
+```typescript
+function savePhoto(
+  driver: Browser,
+  filePath: string
+): Promise<SavePhotoResult>;
+
+type SavePhotoResult = {
+  success: boolean;
+  message?: string;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Save photo to library",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("save photo", async () => {
+      const result = await device.savePhoto(driver, "/path/to/image.jpg");
+      if (!result.success) throw new Error(result.message);
+    });
+  },
+);
+```
+
+## `listPhotos`
+
+Returns a list of all photo and video assets in the device's Photos library.
+
+```typescript
+function listPhotos(driver: Browser): Promise<ListPhotosResult>;
+
+type ListPhotosResult = {
+  success: boolean;
+  assets: PhotoAsset[];
+  totalCount: number;
+};
+
+type PhotoAsset = {
+  localIdentifier: string;
+  mediaType: string;
+  mediaSubtype: string;
+  creationDate: string;
+  modificationDate: string;
+  pixelWidth: number;
+  pixelHeight: number;
+  duration: number;
+  isFavorite: boolean;
+  isHidden: boolean;
+};
+```
+
+## `deleteAllPhotos`
+
+Deletes all photos and videos from the device's Photos library. Use this for test teardown to restore a clean state between runs.
+
+```typescript
+function deleteAllPhotos(driver: Browser): Promise<DeletePhotosResult>;
+
+type DeletePhotosResult = {
+  success: boolean;
+  deletedCount: number;
+  message?: string;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Clean up photos",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("delete all photos", async () => {
+      const result = await device.deleteAllPhotos(driver);
+      console.log(`Deleted ${result.deletedCount} photos`);
+    });
+  },
+);
+```
+
+## `startSpeakerRecording`
+
+Starts a recording session that captures audio output from the device speaker. Returns a session object with the ID needed to stop the recording.
+
+```typescript
+function startSpeakerRecording(driver: Browser): Promise<SpeakerRecordingSession>;
+
+type SpeakerRecordingSession = {
+  id: string;
+  status: string;
+};
+```
+
+## `stopSpeakerRecording`
+
+Stops an active speaker recording session. Also calculates the audio fingerprint automatically. Returns the recorded file details.
+
+```typescript
+function stopSpeakerRecording(
+  driver: Browser,
+  sessionId: string
+): Promise<SpeakerRecordingFile>;
+
+type SpeakerRecordingFile = {
+  filename: string;
+  fingerprint?: number[];
+  duration?: number;
+};
+```
+
+## `downloadSpeakerRecording`
+
+Downloads the recorded audio file as a Buffer in WAV format.
+
+```typescript
+function downloadSpeakerRecording(
+  driver: Browser,
+  filename: string
+): Promise<Buffer>;
+```
+
+Example combining `startSpeakerRecording`, `stopSpeakerRecording`, and `downloadSpeakerRecording`:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Record and verify speaker audio",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("record audio", async () => {
+      const session = await device.startSpeakerRecording(driver);
+
+      // trigger audio playback in your app
+
+      const file = await device.stopSpeakerRecording(driver, session.id);
+      const buffer = await device.downloadSpeakerRecording(driver, file.filename);
+
+      // assert against the buffer or fingerprint
+    });
+  },
+);
+```
+
+## `calculateAudioFingerprint`
+
+Calculates an audio fingerprint from a WAV audio buffer or file path. Use this to compare recorded audio against a known reference without byte-for-byte comparison.
+
+```typescript
+function calculateAudioFingerprint(
+  driver: Browser,
+  audioData: Buffer | string
+): Promise<AudioFingerprint>;
+
+type AudioFingerprint = {
+  fingerprint: number[];
+  duration: number;
+};
+```
+
+## `simulateNetworkCondition`
+
+Simulates a degraded network condition on the device. Returns a cleanup function that restores normal network conditions when called.
+
+```typescript
+function simulateNetworkCondition(
+  config: NetworkConditionConfig
+): Promise<() => Promise<void>>;
+
+type NetworkConditionConfig = {
+  bandwidthKbps?: number;
+  latencyMs?: number;
+  jitterMs?: number;
+  packetLossPercent?: number;
+};
+```
+
+Built-in presets:
+
+| Preset | Bandwidth | Latency | Jitter | Packet loss |
+| --- | --- | --- | --- | --- |
+| `device.NETWORK_2G_EDGE` | 240 Kbps | 300ms | 100ms | 1.5% |
+| `device.NETWORK_3G` | 1.8 Mbps | 100ms | 30ms | 0.5% |
+| `device.NETWORK_4G_LTE` | 12 Mbps | 30ms | 10ms | 0.1% |
+| `device.NETWORK_5G` | 100 Mbps | 10ms | 3ms | 0.01% |
+| `device.NETWORK_SATELLITE` | 5 Mbps | 600ms | 50ms | 1% |
+| `device.NETWORK_WIFI_CONGESTED` | 2 Mbps | 50ms | 40ms | 3% |
+| `device.NETWORK_VERY_BAD` | 100 Kbps | 500ms | 200ms | 10% |
+| `device.NETWORK_OFFLINE` | — | — | — | 100% |
+
+Example:
+
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Test on slow network",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    const cleanup = await device.simulateNetworkCondition(device.NETWORK_3G);
+
+    await test("load content on 3G", async () => {
+      // your test steps
+    });
+
+    await cleanup();
+  },
+);
+```
+
+## `getNetworkCondition`
+
+Returns the current network simulation state.
+
+```typescript
+function getNetworkCondition(): Promise<NetworkConditionStatus>;
+
+type NetworkConditionStatus = {
+  enabled: boolean;
+  config?: {
+    bandwidthKbps?: number;
+    latencyMs?: number;
+    jitterMs?: number;
+    packetLossPercent?: number;
+  };
+  interface?: string;
+};
+```
+
+## `routeTraffic`
+
+Routes network traffic for specific apps or domains through a tunnel. Returns a cleanup function that restores default routing when called.
+
+```typescript
+function routeTraffic(config: RouteTrafficConfig): Promise<() => Promise<void>>;
+
+type RouteTrafficConfig = {
+  apps: string[];
+  domains?: string[];
+  tunnel:
+    | { type: "direct" }
+    | { type: "http-proxy"; host: string; port: number; username?: string; password?: string }
+    | { type: "wireguard"; configPath: string }
+    | { type: "openvpn"; configPath: string }
+    | { type: "relay"; host: string; port: number; username: string; password: string; dialer?: "tls" | "tcp"; secure?: boolean };
+  socksHost?: string;
+  socksPort?: number;
+  inspect?: boolean;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/ios";
+
+export default flow("Route traffic through proxy", "iOS - iPhone 15 (iOS 26)", async () => {
+  const cleanup = await device.routeTraffic({
+    apps: ["com.example.app"],
+    tunnel: {
+      type: "http-proxy",
+      host: "proxy.example.com",
+      port: 8080,
+    },
+  });
+
+  // run your tests
+
+  await cleanup();
+});
+```
+
+## `getNetworkStatus`
+
+Returns the current network routing status including VPN state, active tunnels, and routed apps.
+
+```typescript
+function getNetworkStatus(): Promise<NetworkStatus>;
+
+type NetworkStatus = {
+  route: "direct" | "http-proxy" | "wireguard" | "openvpn" | "relay";
+  tunnels: Record<string, { status: "down" | "starting" | "up" | "error"; interface?: string; error?: string }>;
+  routingTables?: { activeTable: string; tables: Record<string, string[]> };
+  traffic?: {
+    routes: Record<string, { packets: number; bytes: number }>;
+    interfaces: Record<string, { rxPackets: number; txPackets: number; rxBytes: number; txBytes: number }>;
+  };
+  vpnApp: { bundleId: string; installed: boolean; pid?: number };
+  routedApps: string[];
+  routedDomains: string[];
+};
+```
+
+## `subscribeNetworkLogs`
+
+Subscribes to real-time network log events streamed from the Appium plugin. Returns a subscription object with `on()` and `close()` methods.
+
+```typescript
+function subscribeNetworkLogs(): NetworkLogSubscription;
+
+interface NetworkLogSubscription {
+  on(handler: (entry: RecordedEntry) => void): void;
+  close(): void;
+}
+```
+
+<Warning>
+  Requires `routeTraffic()` to have been called first with `inspect: true`.
+</Warning>
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/ios";
+
+export default flow("Inspect network traffic", "iOS - iPhone 15 (iOS 26)", async () => {
+  const cleanup = await device.routeTraffic({
+    apps: ["com.example.app"],
+    tunnel: { type: "direct" },
+    inspect: true,
+  });
+
+  const subscription = device.subscribeNetworkLogs();
+
+  subscription.on((entry) => {
+    if (entry.http) console.log(`${entry.http.method} ${entry.http.uri} → ${entry.http.statusCode}`);
+    if (entry.dns) console.log(`DNS ${entry.dns.name} → ${entry.dns.answer}`);
+  });
+
+  // trigger network activity in your app
+
+  subscription.close();
+  await cleanup();
+});
+```
+
+The `RecordedEntry` object contains the following fields:
+
+```typescript
+interface RecordedEntry {
+  service: string;
+  network: string;
+  remote?: string;
+  local?: string;
+  host?: string;
+  proto?: string;
+  http?: {
+    host: string;
+    method: string;
+    proto: string;
+    scheme: string;
+    uri: string;
+    statusCode: number;
+    request?: { contentLength: number; header: Record<string, string[]>; body: string | null };
+    response?: { contentLength: number; header: Record<string, string[]>; body: string | null };
+  };
+  websocket?: {
+    from: string;
+    fin: boolean; rsv1: boolean; rsv2: boolean; rsv3: boolean;
+    opcode: number; masked: boolean; maskKey: number; length: number; payload: string;
+  };
+  tls?: { serverName: string; cipherSuite: string; version: string; proto?: string };
+  dns?: { id: number; name: string; class: string; type: string; question: string; answer: string; cached: boolean };
+  sid: string;
+  time: string;
+  duration: number;
+}
+```

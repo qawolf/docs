@@ -1,8 +1,3 @@
----
-title: "Android Device Reference"
-description: "Reference notes for the `device` object from `@qawolf/flows/android`."
----
-
 `device` is a runtime proxy over the Android emulator API. Use it for emulator-level operations — such as setting location, placing images in the virtual camera scene, or configuring network proxies — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
 
 `device` is only available while a flow is running.
@@ -16,11 +11,14 @@ import { device, flow } from "@qawolf/flows/android";
 Sets the emulator's GPS location.
 
 ```typescript
-function setGeoLocation(options: GeoLocationOptions): Promise<void>;
+function setGeoLocation(options: GeoLocationOptions): Promise<string>;
 
 type GeoLocationOptions = {
   latitude: number;
   longitude: number;
+  altitude?: number;
+  satellites?: number;
+  velocity?: number;
 };
 ```
 
@@ -46,11 +44,11 @@ export default flow("Set device location", "Android - Pixel", async () => {
 Places an image into the Android emulator's virtual camera scene. Use this to test features that require the camera to see a specific image — such as barcode or QR code scanning.
 
 ```typescript
-function setVirtualSceneImage(options: VirtualSceneImageOptions): Promise<void>;
+function setVirtualSceneImage(options: VirtualSceneImageOptions): Promise<string>;
 
 type VirtualSceneImageOptions = {
-  /** Path to the image file to place in the virtual scene. */
-  imagePath: string;
+  /** Path to the image file to place in the virtual scene. Defaults to the default virtual scene image when omitted. */
+  image?: string;
   /** Where to place the image in the virtual scene. */
   location: "table" | "wall";
 };
@@ -67,7 +65,7 @@ export default flow(
   async ({ driver, test }) => {
     await test("place barcode image", async () => {
       await device.setVirtualSceneImage({
-        imagePath: "/path/to/barcode.jpg",
+        image: "/path/to/barcode.jpg",
         location: "table",
       });
     });
@@ -81,15 +79,22 @@ export default flow(
 
 ## `playAutomation`
 
-Triggers a named automation macro on the Android emulator. Use this in combination with `setVirtualSceneImage` to animate the virtual camera toward a placed image.
+Triggers an automation macro on the Android emulator. Use this in combination with `setVirtualSceneImage` to animate the virtual camera toward a placed image.
 
 ```typescript
-function playAutomation(options: PlayAutomationOptions): Promise<void>;
+function playAutomation(options: PlayAutomationOptions): Promise<string>;
 
-type PlayAutomationOptions = {
-  /** Name of the automation macro to play. */
-  macroName: string;
-};
+type PlayAutomationOptions =
+  | {
+      /** Name of a built-in emulator macro. */
+      macro: "Reset_position" | "Track_horizontal_plane" | "Track_vertical_plane" | "Walk_to_image_room";
+      /** Optional path to override the macro file. */
+      overrideMacroPath?: string;
+    }
+  | {
+      /** Path to a custom macro file. */
+      file: string;
+    };
 ```
 
 Example:
@@ -103,28 +108,32 @@ export default flow(
   async ({ driver, test }) => {
     await test("place barcode and animate camera", async () => {
       await device.setVirtualSceneImage({
-        imagePath: "/path/to/barcode.jpg",
+        image: "/path/to/barcode.jpg",
         location: "table",
       });
 
       await device.playAutomation({
-        macroName: "Walk_to_image_room",
+        macro: "Walk_to_image_room",
       });
     });
   },
 );
 ```
 
+<Note>
+  Available built-in macros are determined by the Android emulator. `Walk_to_image_room` is the macro used to animate the virtual camera toward a placed image. See [Android Emulator camera support](https://developer.android.com/studio/run/emulator-use-camera#arcore) for more detail on virtual scene automation.
+</Note>
+
 ## `setProxy`
 
 Configures a proxy for the Android emulator's network traffic.
 
 ```typescript
-function setProxy(options: ProxyOptions): Promise<void>;
+function setProxy(options: ProxyOptions): Promise<string>;
 
 type ProxyOptions = {
-  host: string;
-  port: number;
+  /** Proxy URL. Include credentials in the URL if authentication is required (e.g. `http://username:password@proxy.example.com:8080`). */
+  url: string;
 };
 ```
 
@@ -135,8 +144,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow("Set proxy", "Android - Pixel", async () => {
   await device.setProxy({
-    host: "proxy.example.com",
-    port: 8080,
+    url: "http://proxy.example.com:8080",
   });
 });
 ```
@@ -146,7 +154,7 @@ export default flow("Set proxy", "Android - Pixel", async () => {
 Removes any proxy configuration from the Android emulator.
 
 ```typescript
-function clearProxy(): Promise<void>;
+function clearProxy(): Promise<string>;
 ```
 
 Example:
