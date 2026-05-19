@@ -71,26 +71,31 @@ if (await allowBtn.isExisting()) {
 ## Full sample test
 
 ```typescript
-import { device, flow, launch } from "@qawolf/flows/ios";
+import { device, flow } from "@qawolf/flows/ios";
 
 export default flow(
   "Test beacon proximity",
   { target: "iOS - iPhone 15 (iOS 26)", launch: true },
   async ({ driver, test }) => {
-    await test("grant location permission", async () => {
+    await test("inject beacon and verify app response", async () => {
+      // Arrange
       const allowBtn = driver.$(`//XCUIElementTypeButton[@name='Allow']`);
       if (await allowBtn.isExisting()) {
         await allowBtn.click();
       }
-    });
 
-    await test("inject beacon", async () => {
-      const cleanup = await device.injectBeacon(driver, "com.example.app", {
+      await driver.$(`//XCUIElementTypeStaticText[@name='Nearby']`).waitForDisplayed({ timeout: 10_000 });
+
+      // Act
+      const cleanup = await device.injectBeacon(driver, process.env.BUNDLE_ID, {
         uuid: "8613BEAD-5465-4515-8F9C-AEEA717484C9",
         beacons: [{ major: 1, minor: 7 }],
       });
 
-      // assert your app responded to the beacon event
+      // Assert
+      await driver
+        .$(`//XCUIElementTypeStaticText[@name='Beacon Detected']`)
+        .waitForDisplayed({ timeout: 10_000 });
 
       await cleanup();
     });

@@ -84,13 +84,13 @@ export default flow(
   "Validate audio stream",
   "Web - Chrome",
   async ({ page, test }) => {
-    await test("navigate to audio player", async () => {
+    await test("navigate to player and assert stream metadata", async () => {
+      // Arrange
       await page.goto("https://your-app.com/player");
-    });
+      await page.locator("audio").waitFor({ state: "attached" });
 
-    await test("assert stream metadata", async () => {
+      // Act
       const { execa } = await import("execa");
-
       const streamUrl = await page.locator("audio").getAttribute("src");
 
       const { stdout } = await execa("ffprobe", [
@@ -101,6 +101,7 @@ export default flow(
         "-i", streamUrl,
       ]);
 
+      // Assert
       const metadata = JSON.parse(stdout);
       const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
 

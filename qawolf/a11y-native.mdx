@@ -1,5 +1,5 @@
 ---
-title: "Measure native mobile  accessibility"
+title: "Measure accessibility for native mobile"
 description: "Use accessibility IDs to verify that key screens are reachable and usable by screen readers on iOS and Android."
 sidebarTitle: "Native mobile"
 ---
@@ -76,25 +76,23 @@ export default flow(
   "Accessibility — login screen",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("verify login elements are accessible", async () => {
-      const email    = await driver.$("~Email");
-      const password = await driver.$("~Password");
-      const loginBtn = await driver.$("~Log in");
+    await test("verify login screen elements are accessible", async () => {
+      // Arrange
+      await driver.$("~Email").waitForDisplayed({ timeout: 10_000 });
 
-      await expect(email).toBeDisplayed();
-      await expect(password).toBeDisplayed();
-      await expect(loginBtn).toBeEnabled();
+      // Act
+      const email    = driver.$("~Email");
+      const password = driver.$("~Password");
+      const loginBtn = driver.$("~Log in");
 
       await email.setValue(process.env.USER_EMAIL);
       await password.setValue(process.env.USER_PASSWORD);
       await loginBtn.click();
 
-      const homeHeader = await driver.$("~Home");
-      await expect(homeHeader).toBeDisplayed();
-    });
+      // Assert
+      await expect(driver.$("~Home")).toBeDisplayed();
 
-    await test("verify icon buttons have meaningful labels", async () => {
-      const menuIcon = await driver.$("~Main menu");
+      const menuIcon = driver.$("~Main menu");
       await expect(menuIcon).toBeDisplayed();
 
       const label = await menuIcon.getAttribute("content-desc");

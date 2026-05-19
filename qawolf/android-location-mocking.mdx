@@ -98,15 +98,20 @@ export default flow(
   "Test location feature",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("set GPS location", async () => {
+    await test("set location and verify location-based content", async () => {
+      // Arrange
+      await driver.$(`//*[@text='Find Stores']`).click();
+
+      // Act
       await device.setGeoLocation({
         latitude: 40.78222,
         longitude: -73.96528,
       });
-    });
 
-    await test("verify location-based content", async () => {
-      // interact with your app's location-aware feature
+      // Assert
+      await driver
+        .$(`//*[@text='Stores near Central Park']`)
+        .waitForDisplayed({ timeout: 10_000 });
     });
   },
 );

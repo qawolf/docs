@@ -17,12 +17,8 @@ The sequence is: store the barcode image in team storage → place it on the vir
 **Scan a barcode on the virtual table**
 
 ```typescript
-import { device } from "@qawolf/flows/android";
-
-const barcodeImagePath = `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`;
-
 await device.setVirtualSceneImage({
-  image: barcodeImagePath,
+  image: `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`,
   location: "table",
 });
 
@@ -35,7 +31,7 @@ await device.playAutomation({
 
 ```typescript
 await device.setVirtualSceneImage({
-  image: barcodeImagePath,
+  image: `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`,
   location: "wall",
 });
 
@@ -62,11 +58,11 @@ export default flow(
   "Scan barcode",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("navigate to scan screen", async () => {
+    await test("scan barcode and verify value", async () => {
+      // Arrange
       await driver.$(`//*[@text='Scan']`).click();
-    });
 
-    await test("scan barcode", async () => {
+      // Act
       await device.setVirtualSceneImage({
         image: barcodeImagePath,
         location: "table",
@@ -79,9 +75,8 @@ export default flow(
       await driver
         .$(`//*[@text='Barcode Captured']`)
         .waitForDisplayed({ timeout: 10_000 });
-    });
 
-    await test("verify scanned value", async () => {
+      // Assert
       const value = await driver
         .$(`//android.widget.TextView[@resource-id='com.example.app:id/scanned_value']`)
         .getAttribute("text");

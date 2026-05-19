@@ -48,13 +48,21 @@ export default flow(
   "Record speaker audio",
   { target: "iOS - iPhone 15 (iOS 26)", launch: true },
   async ({ driver, test }) => {
-    await test("record audio", async () => {
+    await test("record audio and verify file was captured", async () => {
+      // Arrange
+      await driver.$(`//XCUIElementTypeButton[@name='Play']`).waitForDisplayed({ timeout: 10_000 });
+
+      // Act
       const session = await device.startSpeakerRecording(driver);
 
-      // trigger audio playback in your app
+      await driver.$(`//XCUIElementTypeButton[@name='Play']`).click();
+      await driver.pause(10_000);
 
       const file = await device.stopSpeakerRecording(driver, session.id);
       const buffer = await device.downloadSpeakerRecording(driver, file.filename);
+
+      // Assert
+      expect(buffer.length).toBeGreaterThan(0);
 
       const { writeFile } = await import("node:fs/promises");
       await writeFile("/tmp/output.wav", buffer);

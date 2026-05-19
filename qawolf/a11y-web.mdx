@@ -1,5 +1,5 @@
 ---
-title: "Measure web accessibility"
+title: "Measure web accessibility with axe-core"
 description: "Inject axe-core into a Playwright page to catch WCAG violations and gate releases on accessibility quality."
 sidebarTitle: "Web"
 ---
@@ -85,11 +85,11 @@ export default flow(
   "Accessibility",
   { target: "Web - Chrome", launch: true },
   async ({ page, test }) => {
-    await test("navigate to page", async () => {
+    await test("assert no accessibility violations", async () => {
+      // Arrange
       await page.goto("https://your-app.com");
-    });
 
-    await test("assert no critical or serious violations", async () => {
+      // Act
       await page.addScriptTag({
         url: "https://unpkg.com/axe-core@4.8.2/axe.min.js",
       });
@@ -99,6 +99,7 @@ export default flow(
         return violations;
       });
 
+      // Assert
       const critical = violations.filter((x) => x.impact === "critical");
       const serious  = violations.filter((x) => x.impact === "serious");
       const moderate = violations.filter((x) => x.impact === "moderate");

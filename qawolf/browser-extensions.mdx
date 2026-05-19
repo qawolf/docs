@@ -34,7 +34,7 @@ await extensionPage.goto(`chrome-extension://<extension-id>/popup.html`);
 
 ## When to use
 
-- Your app uses a Chrome extension and you need to test the full user flow with the extension installed
+- Your app uses a Chrome extension and you need to test the full user flow with the extension installed.
 - You need to test the extension's popup UI or options page directly
 - You need to verify that a content script modifies or interacts with a page correctly
 
@@ -49,7 +49,8 @@ export default flow(
   "Test Chrome extension popup",
   "Web - Chrome",
   async ({ test }) => {
-    await test("launch browser with extension", async () => {
+    await test("launch extension and verify popup renders", async () => {
+      // Arrange
       const { context } = await launch({
         browser: "chrome",
         persistentContext: true,
@@ -62,7 +63,6 @@ export default flow(
         ],
       });
 
-      // wait for extension to load — it may open a background page automatically
       await expect
         .poll(
           () => context.pages(),
@@ -70,11 +70,13 @@ export default flow(
         )
         .toHaveLength(2);
 
-      // grab the extension page
       const extensionPage = context.pages().at(-1);
+
+      // Act
       await extensionPage.locator("#open-popup").click();
 
-      // interact with the extension UI
+      // Assert
+      await expect(extensionPage.locator("#popup-content")).toBeVisible();
     });
   },
 );

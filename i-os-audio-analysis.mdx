@@ -17,7 +17,6 @@ See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device)
 **Compare recorded audio against a reference**
 
 ```typescript
-import { device } from "@qawolf/flows/ios";
 import { readFile } from "node:fs/promises";
 
 const session = await device.startSpeakerRecording(driver);
@@ -55,7 +54,7 @@ expect(result.similarity).toBeGreaterThan(0.85);
 
 ## Full sample test
 
-```typescript
+````typescript
 import { device, flow } from "@qawolf/flows/ios";
 import { readFile } from "node:fs/promises";
 
@@ -65,14 +64,20 @@ export default flow(
   "Verify audio playback",
   { target: "iOS - iPhone 15 (iOS 26)", launch: true },
   async ({ driver, test }) => {
-    await test("record and compare audio", async () => {
+    await test("record audio and compare against reference", async () => {
+      // Arrange
+      await driver.$(`//XCUIElementTypeButton[@name='Play']`).waitForDisplayed({ timeout: 10_000 });
+
+      // Act
       const session = await device.startSpeakerRecording(driver);
 
-      // trigger audio playback in your app
+      await driver.$(`//XCUIElementTypeButton[@name='Play']`).click();
+      await driver.pause(10_000);
 
       const file = await device.stopSpeakerRecording(driver, session.id);
       const buffer = await device.downloadSpeakerRecording(driver, file.filename);
 
+      // Assert
       const recordingFingerprint = file.fingerprint ??
         (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
 
@@ -85,4 +90,15 @@ export default flow(
     });
   },
 );
-```
+```        (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
+
+      const referenceBuffer = await readFile(REFERENCE_AUDIO_PATH);
+      const { fingerprint: referenceFingerprint } =
+        await device.calculateAudioFingerprint(driver, referenceBuffer);
+
+      const result = findBestMatch(recordingFingerprint, referenceFingerprint);
+      expect(result.similarity).toBeGreaterThan(0.85);
+    });
+  },
+);
+````

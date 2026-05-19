@@ -60,11 +60,18 @@ export default flow(
     });
 
     const page = await context.newPage();
-    await page.goto("https://your-app.com");
 
-    await test("interact with voice feature", async () => {
-      // trigger the feature that reads from the microphone
-      // the browser will receive the audio file as input
+    await test("inject audio and verify voice command response", async () => {
+      // Arrange
+      await page.goto("https://your-app.com/voice");
+      await page.locator(`[data-testid='mic-button']`).waitFor({ state: "visible" });
+
+      // Act
+      await page.locator(`[data-testid='mic-button']`).click();
+      await page.waitForTimeout(5_000);
+
+      // Assert
+      await expect(page.locator(`[data-testid='transcript']`)).toContainText("hello");
     });
   },
 );

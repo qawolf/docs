@@ -30,8 +30,8 @@ await runCommand(`adb pull '/sdcard/Recordings/My recording 1.m4a' ${process.env
 
 - Your app records audio or processes microphone input and you need to test that flow with known audio data.
 - Your app has voice commands or speech recognition features.
-- You need to run the same audio scenario repeatedly with consistent inputs.
 - Your app validates or analyzes microphone input.
+- Your test needs to run the same audio scenario repeatedly with consistent inputs.
 
 ## ffplay flags
 
@@ -48,12 +48,12 @@ export default flow(
   "Test audio recording",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("navigate to record screen", async () => {
+    await test("record injected audio and verify it was saved", async () => {
+      // Arrange
       await driver.$(`//*[@text='Record Audio']`).click();
       await driver.pause(3_000);
-    });
 
-    await test("inject audio and record", async () => {
+      // Act
       await runCommand(
         `ffplay -nodisp -t 10 -autoexit -hide_banner -loglevel error ${audioPath}`,
       );
@@ -61,9 +61,8 @@ export default flow(
       await driver.$(`//*[@text='Record']`).click();
       await driver.pause(10_000);
       await driver.$(`//*[@text='Done']`).click();
-    });
 
-    await test("verify recording was saved", async () => {
+      // Assert
       await driver.$(`//*[@text='Open Audio']`).waitForDisplayed({ timeout: 5_000 });
     });
   },

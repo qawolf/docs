@@ -106,51 +106,53 @@ export default flow(
     });
 
     const page = await context.newPage();
-    await page.goto("https://your-app.com");
 
-    const { rm, access } = await import("node:fs/promises");
-    await rm("/tmp/audioRecording.webm", { force: true });
+    await test("record audio and verify file was captured", async () => {
+      // Arrange
+      await page.goto("https://your-app.com/player");
+      await page.locator(`[data-testid='play-button']`).waitFor({ state: "visible" });
 
-    page.on("download", async (download) => {
-      await download.saveAs(`/tmp/${download.suggestedFilename()}`);
-    });
+      const { rm, access } = await import("node:fs/promises");
+      await rm("/tmp/audioRecording.webm", { force: true });
 
-    await page.evaluate(async () => {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { displaySurface: "browser" },
-        audio: { displaySurface: "browser" },
+      page.on("download", async (download) => {
+        await download.saveAs(`/tmp/${download.suggestedFilename()}`);
       });
 
-      const recorder = new MediaRecorder(stream);
-      window.__rec = recorder;
+      await page.evaluate(async () => {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { displaySurface: "browser" },
+          audio: { displaySurface: "browser" },
+        });
 
-      const chunks = [];
-      recorder.ondataavailable = (e) => chunks.push(e.data);
+        const recorder = new MediaRecorder(stream);
+        window.__rec = recorder;
 
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: chunks[0]?.type || "video/webm" });
-        stream.getVideoTracks()[0]?.stop();
+        const chunks = [];
+        recorder.ondataavailable = (e) => chunks.push(e.data);
 
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "audioRecording.webm";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      };
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, { type: chunks[0]?.type || "video/webm" });
+          stream.getVideoTracks()[0]?.stop();
 
-      recorder.start();
-    });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "audioRecording.webm";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        };
 
-    await test("record audio", async () => {
-      // trigger audio playback in your app
+        recorder.start();
+      });
 
+      // Act
+      await page.locator(`[data-testid='play-button']`).click();
       await page.waitForTimeout(10_000);
       await page.evaluate(() => window.__rec.stop());
       await page.waitForTimeout(10_000);
-    });
 
-    await test("verify recording exists", async () => {
+      // Assert
       async function exists(p) {
         try { await access(p); return true; } catch { return false; }
       }

@@ -40,9 +40,9 @@ await writeFile(`${process.env.TEAM_STORAGE_DIR}/recording.m4a`, buffer);
 
 ## When to use
 
-- Your app records audio or processes microphone input, and you need to test that flow with known audio data.
+- Your app records audio or processes microphone input and you need to test that flow with known audio data.
 - Your app has voice commands or speech recognition features that need consistent, repeatable input.
-- Your app validates or transforms microphone input, and you need to assert on the output.
+- Your app validates or transforms microphone input and you need to assert on the output.
 - Your test needs to simulate a specific audio input that is difficult to produce in a test environment.
 
 ## Supported file types
@@ -67,17 +67,22 @@ export default flow(
     },
   },
   async ({ driver, test }) => {
-    await test("inject audio", async () => {
+    await test("inject audio and verify recording was saved", async () => {
+      // Arrange
+      await driver.$(`//XCUIElementTypeButton[@name='Record Audio']`).click();
+
+      // Act
       const cleanup = await device.injectAudio(driver, process.env.BUNDLE_ID, {
         data: audioPath,
       });
 
-      // trigger the microphone feature in your app
+      await driver.$(`//XCUIElementTypeButton[@name='Record']`).click();
+      await driver.pause(10_000);
+      await driver.$(`//XCUIElementTypeButton[@name='Done']`).click();
 
       await cleanup();
-    });
 
-    await test("pull recording off device", async () => {
+      // Assert
       const recordingAsBase64 = await driver.execute("mobile: pullFile", {
         remotePath: `@${process.env.BUNDLE_ID}:/path/to/recording.m4a`,
       });
@@ -85,6 +90,8 @@ export default flow(
       const buffer = Buffer.from(recordingAsBase64, "base64");
       const { writeFile } = await import("node:fs/promises");
       await writeFile(`${process.env.TEAM_STORAGE_DIR}/recording.m4a`, buffer);
+
+      expect(buffer.length).toBeGreaterThan(0);
     });
   },
 );
