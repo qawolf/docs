@@ -4,152 +4,110 @@ description: "Validate audio streams and files using ffprobe and ffmpeg to asser
 sidebarTitle: "Web"
 ---
 
-QA Wolf runners include `ffprobe` and `ffmpeg` pre-installed. Use them via `execa` to inspect audio streams and downloaded files — asserting on metadata properties or detecting silence without needing to listen to the audio manually.
+Use `ffprobe` and `ffmpeg` via `execa` to inspect audio streams and downloaded files during a flow. Both tools are pre-installed on QA Wolf runners.
 
-## Inspect a stream with ffprobe
+See the [ffprobe documentation](https://ffmpeg.org/ffprobe.html) and [ffmpeg documentation](https://ffmpeg.org/ffmpeg.html) for the full list of available flags.
 
-Use `ffprobe` to validate a streaming audio URL — checking codec, bitrate, sample rate, channels, and duration without downloading the full file.
+## Examples
+
+**Inspect a stream URL**
+
+```typescript
+const { execa } = await import("execa");
+
+const streamUrl = await page.locator("audio").getAttribute("src");
+
+const { stdout } = await execa("ffprobe", [
+  "-v", "quiet",
+  "-print_format", "json",
+  "-show_format",
+  "-show_streams",
+  "-i", streamUrl,
+]);
+
+const metadata = JSON.parse(stdout);
+const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
+
+expect(audioStream.codec_name).toBe("aac");
+expect(parseInt(metadata.format.bit_rate) / 1000).toBeGreaterThan(100);
+```
+
+**Detect silence in a downloaded file**
+
+```typescript
+const { execa } = await import("execa");
+
+const { stderr } = await execa("ffmpeg", [
+  "-i", filePath,
+  "-af", "silencedetect=n=-50dB:d=1",
+  "-f", "null", "-",
+]);
+
+if (stderr.includes("silence_start")) {
+  throw new Error("Audio file contains silence.");
+}
+```
+
+**Assert file metadata**
+
+```typescript
+const { execa } = await import("execa");
+
+const { stdout } = await execa("ffprobe", [
+  "-v", "error",
+  "-show_entries", "format=bit_rate,duration",
+  "-show_streams",
+  "-of", "json",
+  filePath,
+]);
+
+const metadata = JSON.parse(stdout);
+const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
+
+expect(audioStream.codec_name).toBe("aac");
+expect(parseInt(metadata.format.bit_rate) / 1000).toBeGreaterThan(100);
+```
+
+## When to use
+
+- Your app streams audio and you need to assert on codec, bitrate, or sample rate.
+- Your app generates or downloads audio files and you need to verify they aren't silent or corrupted.
+- Your app plays back recordings and you need to confirm the file contains valid audio data.
+- Your test needs to validate audio properties that can't be asserted through the UI.
+
+## Full sample test
 
 ```typescript
 import { flow, launch } from "@qawolf/flows/web";
 
-export default flow("Validate audio stream", "Web - Chrome", async ({ page, test }) => {
-  await test("inspect stream metadata", async () => {
-    const { execa } = await import("execa");
+export default flow(
+  "Validate audio stream",
+  "Web - Chrome",
+  async ({ page, test }) => {
+    await test("navigate to audio player", async () => {
+      await page.goto("https://your-app.com/player");
+    });
 
-    const streamUrl = await page.locator("audio").getAttribute("src");
+    await test("assert stream metadata", async () => {
+      const { execa } = await import("execa");
 
-    const { stdout } = await execa("ffprobe", [
-      "-v", "quiet",
-      "-print_format", "json",
-      "-show_format",
-      "-show_streams",
-      "-i", streamUrl,
-    ]);
+      const streamUrl = await page.locator("audio").getAttribute("src");
 
-    const metadata = JSON.parse(stdout);
-    const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
+      const { stdout } = await execa("ffprobe", [
+        "-v", "quiet",
+        "-print_format", "json",
+        "-show_format",
+        "-show_streams",
+        "-i", streamUrl,
+      ]);
 
-    expect(audioStream).toBeTruthy();
-    expect(audioStream.codec_name).toBe("aac");
-    expect(parseInt(metadata.format.bit_rate) / 1000).toBeGreaterThan(100);
-  });
-});
-```
+      const metadata = JSON.parse(stdout);
+      const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
 
-## Validate a downloaded audio file
-
-Use `ffprobe` to check file metadata and `ffmpeg` to detect silence.
-
-```typescript
-async function validateAudioFile(filePath) {
-  const fs = await import("node:fs");
-  const { execa } = await import("execa");
-
-  if (!fs.existsSync(filePath)) {
-    throw new Error("File does not exist.");
-  }
-
-  const { stdout } = await execa("ffprobe", [
-    "-v", "error",
-    "-show_entries", "format=bit_rate,duration",
-    "-show_streams",
-    "-of", "json",
-    filePath,
-  ]);
-
-  const metadata = JSON.parse(stdout);
-  const format = metadata.format;
-  const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
-
-  if (!format || !audioStream) {
-    throw new Error("Invalid audio file.");
-  }
-
-  const { stderr } = await execa("ffmpeg", [
-    "-i", filePath,
-    "-af", "silencedetect=n=-50dB:d=1",
-    "-f", "null", "-",
-  ]);
-
-  if (stderr.includes("silence_start")) {
-    throw new Error("Audio file contains silence.");
-  }
-
-  return {
-    valid: true,
-    bitrate: parseInt(format.bit_rate) / 1000 + " kbps",
-    codec: audioStream.codec_name,
-    sampleRate: audioStream.sample_rate + " Hz",
-    channels: audioStream.channels,
-    duration: format.duration + " seconds",
-  };
-}
-```
-
-Usage:
-
-```typescript
-const filePath = await downloadAudio(page);
-const audioData = await validateAudioFile(filePath);
-
-expect(audioData.valid).toBeTruthy();
-expect(Math.abs(parseInt(audioData.bitrate) - normalBitrate)).toBeLessThanOrEqual(1);
-```
-
-## Generate a test audio file
-
-If your test needs a known audio input with a specific duration and silence period, use this helper to generate one programmatically.
-
-```typescript
-async function generateCustomAudioFile(totalDuration = 60, silenceDuration = 30) {
-  const { writeFile } = await import("node:fs/promises");
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const audioFilePath = `/tmp/custom_audio_${timestamp}.wav`;
-
-  const sampleRate = 44100;
-  const channels = 1;
-  const bitDepth = 16;
-  const dataSize = totalDuration * sampleRate * channels * (bitDepth / 8);
-  const fileSize = 44 + dataSize;
-  const buffer = Buffer.alloc(fileSize);
-
-  buffer.write("RIFF", 0);
-  buffer.writeUInt32LE(fileSize - 8, 4);
-  buffer.write("WAVE", 8);
-  buffer.write("fmt ", 12);
-  buffer.writeUInt32LE(16, 16);
-  buffer.writeUInt16LE(1, 20);
-  buffer.writeUInt16LE(channels, 22);
-  buffer.writeUInt32LE(sampleRate, 24);
-  buffer.writeUInt32LE(sampleRate * channels * (bitDepth / 8), 28);
-  buffer.writeUInt16LE(channels * (bitDepth / 8), 32);
-  buffer.writeUInt16LE(bitDepth, 34);
-  buffer.write("data", 36);
-  buffer.writeUInt32LE(dataSize, 40);
-
-  let offset = 44;
-  const silenceSamples = silenceDuration * sampleRate;
-  const noiseSamples = (totalDuration - silenceDuration) * sampleRate;
-
-  for (let i = 0; i < silenceSamples; i++) {
-    buffer.writeInt16LE(0, offset);
-    offset += 2;
-  }
-
-  for (let i = 0; i < noiseSamples; i++) {
-    buffer.writeInt16LE(Math.floor((Math.random() * 2 - 1) * 32767), offset);
-    offset += 2;
-  }
-
-  await writeFile(audioFilePath, buffer);
-  return audioFilePath;
-}
-```
-
-Usage:
-
-```typescript
-// 50 second file: 10s silence, then 40s white noise
-const audioFilePath = await generateCustomAudioFile(50, 10);
+      expect(audioStream).toBeTruthy();
+      expect(audioStream.codec_name).toBe("aac");
+      expect(parseInt(metadata.format.bit_rate) / 1000).toBeGreaterThan(100);
+    });
+  },
+);
 ```

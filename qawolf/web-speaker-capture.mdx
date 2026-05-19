@@ -6,7 +6,86 @@ sidebarTitle: "Web"
 
 Use Playwright's `getDisplayMedia` API with Chrome flags to record audio playing in a browser tab. The recording is saved as a `.webm` file that can be downloaded and analyzed.
 
-## Example
+<Warning>
+  Playwright initializes the fake audio device once per browser instance. You cannot swap audio sources mid-flow. If you need to record different audio content, launch a new browser instance for each.
+</Warning>
+
+## Examples
+
+**Record audio from a browser tab**
+
+```typescript
+const { rm } = await import("node:fs/promises");
+await rm("/tmp/audioRecording.webm", { force: true });
+
+page.on("download", async (download) => {
+  await download.saveAs(`/tmp/${download.suggestedFilename()}`);
+});
+
+await page.evaluate(async () => {
+  const stream = await navigator.mediaDevices.getDisplayMedia({
+    video: { displaySurface: "browser" },
+    audio: { displaySurface: "browser" },
+  });
+
+  const recorder = new MediaRecorder(stream);
+  window.__rec = recorder;
+
+  const chunks = [];
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+
+  recorder.onstop = () => {
+    const blob = new Blob(chunks, { type: chunks[0]?.type || "video/webm" });
+    stream.getVideoTracks()[0]?.stop();
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "audioRecording.webm";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  recorder.start();
+});
+
+// trigger audio playback in your app
+
+await page.waitForTimeout(10_000);
+await page.evaluate(() => window.__rec.stop());
+await page.waitForTimeout(10_000);
+```
+
+**Download audio from a page element**
+
+If your app exposes audio via a `<video>` or `<audio>` element, download it directly without screen capture:
+
+```typescript
+const audioUrl = await page.locator("video").getAttribute("src");
+
+const [download] = await Promise.all([
+  page.waitForEvent("download"),
+  page.evaluate((url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "audio.m4a");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }, audioUrl),
+]);
+
+const filePath = await download.path();
+```
+
+## When to use
+
+- Your app streams or plays audio and you need to verify the correct audio played.
+- Your app generates audio output and you need to capture it for analysis.
+- Your test needs to validate audio content that can't be asserted through the UI.
+- Your app has a media player and you need to confirm playback works end to end.
+
+## Full sample test
 
 ```typescript
 import { flow, launch } from "@qawolf/flows/web";
@@ -33,8 +112,7 @@ export default flow(
     await rm("/tmp/audioRecording.webm", { force: true });
 
     page.on("download", async (download) => {
-      const suggested = download.suggestedFilename();
-      await download.saveAs(`/tmp/${suggested}`);
+      await download.saveAs(`/tmp/${download.suggestedFilename()}`);
     });
 
     await page.evaluate(async () => {
@@ -80,56 +158,4 @@ export default flow(
     });
   },
 );
-```
-
-## Chrome flags
-
-| Flag | Description |
-| --- | --- |
-| `--enable-experimental-web-platform-features` | Enables `getDisplayMedia` and related APIs |
-| `--use-fake-device-for-media-stream` | Provides a dummy camera and microphone |
-| `--use-fake-ui-for-media-stream` | Auto-accepts media permission dialogs |
-| `--enable-usermedia-screen-capturing` | Allows `getDisplayMedia` without a user gesture |
-| `--auto-select-desktop-capture-source=Entire screen` | Automatically selects the entire screen as the capture source |
-
-<Warning>
-  Playwright initializes the fake audio device once per browser instance. You cannot swap audio sources mid-flow. If you need to record different audio content, launch a new browser instance for each.
-</Warning>
-
-## Download audio from a page element
-
-If your app exposes audio via a `<video>` or `<audio>` element, you can download it directly without screen capture:
-
-```typescript
-async function downloadAudio(page) {
-  let pathToDownloadedFile;
-
-  await expect(async () => {
-    await page.waitForTimeout(1_000);
-    const audioUrl = await page.locator("video").getAttribute("src");
-
-    const [download] = await Promise.all([
-      page.waitForEvent("download"),
-      page.evaluate((url) => {
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "audio.m4a");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }, audioUrl),
-    ]);
-
-    pathToDownloadedFile = await download.path();
-
-    if (!pathToDownloadedFile.toLowerCase().endsWith(".m4a")) {
-      const { rename } = await import("node:fs/promises");
-      const newName = pathToDownloadedFile + ".m4a";
-      await rename(pathToDownloadedFile, newName);
-      pathToDownloadedFile = newName;
-    }
-  }).toPass({ timeout: 20_000 });
-
-  return pathToDownloadedFile;
-}
 ```

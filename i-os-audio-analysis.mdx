@@ -4,112 +4,48 @@ description: "Compare recorded audio against a reference file using Chromaprint 
 sidebarTitle: "iOS"
 ---
 
-Use `device.calculateAudioFingerprint()` to generate a Chromaprint fingerprint from a recorded audio file and compare it against a known reference. Chromaprint supports fuzzy matching — small differences in volume or encoding do not affect the result, making it resilient to minor variations in playback.
+Use `device.calculateAudioFingerprint()` to generate a Chromaprint fingerprint from a recorded audio file and compare it against a known reference. Chromaprint supports fuzzy matching — small differences in volume or encoding don't affect the result, making it resilient to minor variations in playback.
 
 See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device) for the full API.
 
-## How it works
-
-1. Record a reference audio file from a known-good playback
-2. During the test, record the audio output using `device.startSpeakerRecording()`
-3. Generate fingerprints for both files using `device.calculateAudioFingerprint()`
-4. Compare the fingerprints using the `findBestMatch` helper and assert on similarity
-
-## Example
-
-```typescript
-import { device, flow, launch } from "@qawolf/flows/ios";
-
-const REFERENCE_AUDIO_PATH = `${process.env.TEAM_STORAGE_DIR}/reference.wav`;
-
-export default flow(
-  "Verify audio playback",
-  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
-  async ({ driver, test }) => {
-    await test("record audio output", async () => {
-      const session = await device.startSpeakerRecording(driver);
-
-      // trigger audio playback in your app
-
-      const file = await device.stopSpeakerRecording(driver, session.id);
-      const buffer = await device.downloadSpeakerRecording(driver, file.filename);
-
-      // generate fingerprint for the recording
-      const recordingFingerprint = file.fingerprint ??
-        (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
-
-      // generate fingerprint for the reference
-      const { readFile } = await import("node:fs/promises");
-      const referenceBuffer = await readFile(REFERENCE_AUDIO_PATH);
-      const { fingerprint: referenceFingerprint } =
-        await device.calculateAudioFingerprint(driver, referenceBuffer);
-
-      // compare
-      const result = findBestMatch(recordingFingerprint, referenceFingerprint);
-      expect(result.similarity).toBeGreaterThan(0.85);
-    });
-  },
-);
-```
-
-## `findBestMatch` helper
-
-Slides the shorter fingerprint across the longer one and returns the best similarity score. A score of `1.0` is a perfect match; `0.85` or above is a reliable threshold for most use cases.
-
-```typescript
-function findBestMatch(shortFp, longFp) {
-  if (shortFp.length === 0 || longFp.length === 0) {
-    return { similarity: 0, hammingDistance: 0, offset: 0, windowSize: 0 };
-  }
-
-  if (shortFp.length > longFp.length) {
-    [shortFp, longFp] = [longFp, shortFp];
-  }
-
-  const windowSize = shortFp.length;
-  const maxOffset = longFp.length - windowSize;
-  let bestSimilarity = 0;
-  let bestDistance = Infinity;
-  let bestOffset = 0;
-
-  for (let offset = 0; offset <= maxOffset; offset++) {
-    let totalDistance = 0;
-    for (let i = 0; i < windowSize; i++) {
-      totalDistance += hammingDistance(shortFp[i], longFp[offset + i]);
-    }
-    const maxBits = windowSize * 32;
-    const similarity = 1 - totalDistance / maxBits;
-    if (similarity > bestSimilarity) {
-      bestSimilarity = similarity;
-      bestDistance = totalDistance;
-      bestOffset = offset;
-    }
-  }
-
-  return {
-    similarity: bestSimilarity,
-    hammingDistance: bestDistance,
-    offset: bestOffset,
-    windowSize,
-  };
-}
-
-function hammingDistance(a, b) {
-  let distance = 0;
-  let xor = (a ^ b) >>> 0;
-  while (xor !== 0) {
-    distance++;
-    xor &= xor - 1;
-  }
-  return distance;
-}
-```
-
 <Note>
-  `stopSpeakerRecording()` automatically calculates a fingerprint and includes it in the returned `SpeakerRecordingFile` as `file.fingerprint`. You only need to call `calculateAudioFingerprint()` separately for the reference file, or if you need to fingerprint a buffer you already have.
+  Store your reference audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions. `stopSpeakerRecording()` automatically calculates a fingerprint — you only need to call `calculateAudioFingerprint()` separately for the reference file.
 </Note>
 
-## Choosing a similarity threshold
+## Examples
+
+**Compare recorded audio against a reference**
+
+```typescript
+import { device } from "@qawolf/flows/ios";
+import { readFile } from "node:fs/promises";
+
+const session = await device.startSpeakerRecording(driver);
+
+// trigger audio playback in your app
+
+const file = await device.stopSpeakerRecording(driver, session.id);
+const buffer = await device.downloadSpeakerRecording(driver, file.filename);
+
+const recordingFingerprint = file.fingerprint ??
+  (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
+
+const referenceBuffer = await readFile(`${process.env.TEAM_STORAGE_DIR}/reference.wav`);
+const { fingerprint: referenceFingerprint } =
+  await device.calculateAudioFingerprint(driver, referenceBuffer);
+
+const result = findBestMatch(recordingFingerprint, referenceFingerprint);
+expect(result.similarity).toBeGreaterThan(0.85);
+```
+
+## When to use
+
+- Your app plays audio and you need to verify the correct track or sound effect played.
+- Your app uses text-to-speech and you need to validate the output matches expected speech.
+- Your app plays audio prompts and you need to confirm they haven't changed after an update.
+- Your app has audio-dependent features and functional assertions aren't sufficient.
+
+## Similarity thresholds
 
 | Threshold | Use case |
 | --- | --- |
@@ -117,8 +53,36 @@ function hammingDistance(a, b) {
 | `> 0.85` | Same content with minor volume or quality variations (recommended default) |
 | `> 0.70` | Looser match — same song or speech with notable differences |
 
-## Use cases
+## Full sample test
 
-- Verify your app plays the correct audio track or sound effect
-- Validate text-to-speech output matches an expected phrase
-- Confirm audio prompts play correctly after app updates
+```typescript
+import { device, flow } from "@qawolf/flows/ios";
+import { readFile } from "node:fs/promises";
+
+const REFERENCE_AUDIO_PATH = `${process.env.TEAM_STORAGE_DIR}/reference.wav`;
+
+export default flow(
+  "Verify audio playback",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("record and compare audio", async () => {
+      const session = await device.startSpeakerRecording(driver);
+
+      // trigger audio playback in your app
+
+      const file = await device.stopSpeakerRecording(driver, session.id);
+      const buffer = await device.downloadSpeakerRecording(driver, file.filename);
+
+      const recordingFingerprint = file.fingerprint ??
+        (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
+
+      const referenceBuffer = await readFile(REFERENCE_AUDIO_PATH);
+      const { fingerprint: referenceFingerprint } =
+        await device.calculateAudioFingerprint(driver, referenceBuffer);
+
+      const result = findBestMatch(recordingFingerprint, referenceFingerprint);
+      expect(result.similarity).toBeGreaterThan(0.85);
+    });
+  },
+);
+```

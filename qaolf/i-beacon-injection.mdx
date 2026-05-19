@@ -4,18 +4,71 @@ description: "Simulate iBeacon proximity events in your iOS app without physical
 sidebarTitle: "iOS"
 ---
 
-Apps that use `CLLocationManager` for Bluetooth proximity detection — retail check-ins, indoor navigation, asset tracking — can be tested using `device.injectBeacon()`. This simulates the device detecting a nearby iBeacon, triggering region-entry and ranging callbacks in your app as if real hardware were present.
+Use `device.injectBeacon()` to simulate the device detecting a nearby iBeacon, triggering `CLLocationManager` callbacks in your app as if real hardware were present. Pushing a `.region` file triggers a region-entry callback; also pushing a `.beacon` file triggers ranging callbacks.
 
 See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device) for the full `injectBeacon` API.
 
-## How it works
+## Examples
 
-iBeacon injection works by pushing config files to the device that the QA Wolf agent delivers to the app's `CLLocationManager` as simulated beacon events:
+**Region entry and ranging**
 
-- Pushing a `.region` file triggers `locationManager(_:didEnterRegion:)`
-- Also pushing a `.beacon` file triggers `locationManager(_:didRangeBeacons:inRegion:)`
+```typescript
+const cleanup = await device.injectBeacon(driver, "com.example.app", {
+  uuid: "8613BEAD-5465-4515-8F9C-AEEA717484C9",
+  beacons: [{ major: 1, minor: 7 }],
+});
 
-## Example — region entry and ranging
+// assert your app responded to the beacon event
+
+await cleanup();
+```
+
+**Region entry only (no ranging)**
+
+Omit the `beacons` array to trigger only a region-entry event.
+
+```typescript
+const cleanup = await device.injectBeacon(driver, "com.example.app", {
+  uuid: "e62c96fd-014a-454f-9b41-32245d802bb3",
+});
+
+// assert your app responded to the region entry
+
+await cleanup();
+```
+
+## When to use
+
+- Your app uses iBeacon proximity for retail check-ins, loyalty triggers, or location-based promotions.
+- Your app uses indoor navigation or asset tracking via Bluetooth beacons.
+- Your app responds to beacon region entry or exit events.
+- Your test needs to verify ranging callbacks with specific major/minor values.
+
+## Location permissions
+
+iBeacons require location permissions. Two important caveats:
+
+**`autoAcceptAlerts` chooses "Ask Next Time" for location dialogs.** If the permission dialog appears, Appium will not choose "Always Allow" — and there is no way to change it after the fact.
+
+**Background location access cannot be auto-accepted.** If your app requires "Change to Always Allow" for background beacon detection, you must handle the dialog manually using `respectSystemAlerts: true`:
+
+```typescript
+const { driver: d } = await launch({
+  bundleId: "com.example.app",
+  respectSystemAlerts: true,
+});
+
+const allowBtn = d.$(`//XCUIElementTypeButton[@name='Allow']`);
+if (await allowBtn.isExisting()) {
+  await allowBtn.click();
+}
+```
+
+<Warning>
+  `respectSystemAlerts: true` may slow down Appium performance. Use it only when you need to interact with system dialogs manually.
+</Warning>
+
+## Full sample test
 
 ```typescript
 import { device, flow, launch } from "@qawolf/flows/ios";
@@ -24,6 +77,13 @@ export default flow(
   "Test beacon proximity",
   { target: "iOS - iPhone 15 (iOS 26)", launch: true },
   async ({ driver, test }) => {
+    await test("grant location permission", async () => {
+      const allowBtn = driver.$(`//XCUIElementTypeButton[@name='Allow']`);
+      if (await allowBtn.isExisting()) {
+        await allowBtn.click();
+      }
+    });
+
     await test("inject beacon", async () => {
       const cleanup = await device.injectBeacon(driver, "com.example.app", {
         uuid: "8613BEAD-5465-4515-8F9C-AEEA717484C9",
@@ -37,62 +97,3 @@ export default flow(
   },
 );
 ```
-
-## Example — region entry only (no ranging)
-
-Omit the `beacons` array to trigger only a region-entry event, without ranging callbacks.
-
-```typescript
-const cleanup = await device.injectBeacon(driver, "com.example.app", {
-  uuid: "e62c96fd-014a-454f-9b41-32245d802bb3",
-});
-
-// assert your app responded to the region entry
-
-await cleanup();
-```
-
-## Location permissions
-
-iBeacons require location permissions. There are two important caveats:
-
-**The permission dialog may not appear visibly.** Apple restricts when the location permission dialog is shown. If you use `autoAcceptAlerts: true` in your launch options and the dialog does appear, Appium will choose "Ask Next Time" rather than "Always Allow" — and there is no way to change it after the fact.
-
-**Background location access cannot be auto-accepted.** If your app requests the "Change to Always Allow" option (required for background beacon detection), this cannot be handled automatically. You need to interact with the dialog manually.
-
-To handle location permission dialogs manually, use `respectSystemAlerts: true` in your launch options, which makes system alert elements visible to Appium:
-
-```typescript
-import { flow, launch } from "@qawolf/flows/ios";
-
-export default flow(
-  "Test beacon with location permission",
-  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
-  async ({ driver, test }) => {
-    const { driver: d } = await launch({
-      bundleId: "com.example.app",
-      respectSystemAlerts: true,
-    });
-
-    await test("grant location permission", async () => {
-      const allowBtn = d.$(`//XCUIElementTypeButton[@name='Allow']`);
-      if (await allowBtn.isExisting()) {
-        await allowBtn.click();
-      }
-    });
-
-    await test("inject beacon", async () => {
-      const cleanup = await device.injectBeacon(d, "com.example.app", {
-        uuid: "8613BEAD-5465-4515-8F9C-AEEA717484C9",
-        beacons: [{ major: 1, minor: 7 }],
-      });
-
-      await cleanup();
-    });
-  },
-);
-```
-
-<Warning>
-  `respectSystemAlerts: true` may slow down Appium performance. Use it only when you need to interact with system dialogs manually.
-</Warning>

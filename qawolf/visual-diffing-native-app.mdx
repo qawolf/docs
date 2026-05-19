@@ -1,58 +1,33 @@
 ---
 title: "Native mobile screenshots"
 description: "Use toHaveScreenshot to catch visual regressions in native iOS and Android apps."
-sidebarTitle: "Native mobile"
 ---
 
 Use `expect(driver).toHaveScreenshot()` to compare a screenshot of the current native app screen against a stored baseline. This works for both iOS and Android.
 
 For web and mobile web visual diffing, see [Web & Mobile web screenshots](/qawolf/visual-diffing).
 
-expect(driver).toHaveScreenshot(name, options)
+## Examples
 
-- `name` — string used to identify and store the baseline image
-- `options.maxMisMatchPercentage` — percentage of pixels allowed to differ (0–100). Default: `0`
-- `options.skipDiffUI` — skip the visual diff UI in the editor
-
-## iOS example
+**iOS**
 
 ```typescript
-import { expect, flow, launch } from "@qawolf/flows/ios";
-
-export default flow(
-  "Visual regression — home screen",
-  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
-  async ({ driver, test }) => {
-    await test("assert home screen", async () => {
-      await expect(driver).toHaveScreenshot(
-        "home-screen",
-        { maxMisMatchPercentage: 1 }
-      );
-    });
-  },
+await expect(driver).toHaveScreenshot(
+  "home-screen",
+  { maxMisMatchPercentage: 1 }
 );
 ```
 
-## Android example
+**Android**
 
 ```typescript
-import { expect, flow, launch } from "@qawolf/flows/android";
-
-export default flow(
-  "Visual regression — home screen",
-  { target: "Android - Pixel", launch: true },
-  async ({ driver, test }) => {
-    await test("assert home screen", async () => {
-      await expect(driver).toHaveScreenshot(
-        "home-screen",
-        { maxMisMatchPercentage: 1 }
-      );
-    });
-  },
+await expect(driver).toHaveScreenshot(
+  "home-screen",
+  { maxMisMatchPercentage: 1 }
 );
 ```
 
-## Assert a specific element
+**Assert a specific element**
 
 Pass a WebdriverIO element instead of `driver` to scope the screenshot to a specific UI component:
 
@@ -65,21 +40,41 @@ await expect(
 );
 ```
 
-## How baselines work
-
-- On the first run, no baseline exists — the screenshot is saved automatically as the expected image
-- Baselines are stored in team storage under `_screenshots_` and are shared across all flows in the same team
-- On iOS, baselines are named by device screen size (e.g. `home-screen-ios-390×844-expected.png`) — a baseline captured on an iPhone 15 will not match an iPhone 15 Plus
-- To update a baseline after an intentional UI change, promote the new screenshot in the QA Wolf editor
-
 ## When to use
 
-- You want to catch layout or style regressions after a redesign or component change
-- No selector or functional assertion can verify the visual state you need
-- Your app has pixel-perfect design requirements and you want automated enforcement
+- Your app has a rendering-heavy screen like a chart or map that can't be asserted with selectors.
+- Your app has pixel-perfect design requirements and you want automated enforcement.
+- Your app has gone through a redesign and you need to catch layout regressions.
+- Your test needs to verify a visual state that no functional assertion can cover.
 
 Avoid `toHaveScreenshot` when the screen contains timestamps, live data, animations, or other frequently-changing content — these cause false failures. Use a functional assertion instead.
+
+## How baselines work
+
+- On the first run, no baseline exists — the screenshot is saved automatically as the expected image.
+- Baselines are stored in team storage under `_screenshots_` and are shared across all flows in the same team.
+- On iOS, baselines are named by device screen size (e.g. `home-screen-ios-390×844-expected.png`) — a baseline captured on an iPhone 15 will not match an iPhone 15 Plus.
+- To update a baseline after an intentional UI change, promote the new screenshot in the QA Wolf editor.
 
 <Note>
   `maxMisMatchPercentage` is a 0–100 percentage, unlike the web API's `maxDiffPixelRatio` which is a 0–1 ratio.
 </Note>
+
+## Full sample test
+
+```typescript
+import { expect, flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Visual regression — home screen",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("assert home screen appearance", async () => {
+      await expect(driver).toHaveScreenshot(
+        "home-screen",
+        { maxMisMatchPercentage: 1 }
+      );
+    });
+  },
+);
+```
