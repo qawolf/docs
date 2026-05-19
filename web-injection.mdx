@@ -7,15 +7,44 @@ sidebarTitle: "Web"
 Use Playwright's fake media device flags to inject a pre-recorded audio file as the browser's microphone input. This lets you test voice-activated features, speech recognition, and audio processing in web apps under controlled, repeatable conditions.
 
 <Note>
-  The audio file must be in a format supported by Playwright (WAV recommended). Store it in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
+  WAV format is recommended. Store your audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
 </Note>
 
-## Example
+<Warning>
+  Playwright initializes the fake audio device once per browser instance. You cannot swap the audio file mid-flow. If you need to test with different audio inputs, launch a new browser instance for each.
+</Warning>
+
+## Examples
+
+**Inject audio into the browser microphone**
+
+```typescript
+const { context } = await launch({
+  permissions: ["microphone"],
+  args: [
+    "--use-fake-device-for-media-stream",
+    "--use-fake-ui-for-media-stream",
+    `--use-file-for-fake-audio-capture=${process.env.TEAM_STORAGE_DIR}/voice-input.wav`,
+  ],
+});
+
+const page = await context.newPage();
+await page.goto("https://your-app.com");
+
+// trigger the feature that reads from the microphone
+```
+
+## When to use
+
+- Your app has speech recognition and you need to test that specific voice commands are interpreted correctly.
+- Your app has voice-activated controls and you need to verify they produce the expected behavior.
+- Your app processes or transforms microphone input and you need to assert on the output.
+- Your app has voice-controlled accessibility features and you need to confirm they work as expected.
+
+## Full sample test
 
 ```typescript
 import { flow, launch } from "@qawolf/flows/web";
-
-const audioPath = `${process.env.TEAM_STORAGE_DIR}/voice-input.wav`;
 
 export default flow(
   "Test voice input",
@@ -26,7 +55,7 @@ export default flow(
       args: [
         "--use-fake-device-for-media-stream",
         "--use-fake-ui-for-media-stream",
-        `--use-file-for-fake-audio-capture=${audioPath}`,
+        `--use-file-for-fake-audio-capture=${process.env.TEAM_STORAGE_DIR}/voice-input.wav`,
       ],
     });
 
@@ -40,22 +69,3 @@ export default flow(
   },
 );
 ```
-
-## Chrome flags
-
-| Flag | Description |
-| --- | --- |
-| `--use-fake-device-for-media-stream` | Use a fake input device instead of a real microphone |
-| `--use-fake-ui-for-media-stream` | Auto-accept media permission dialogs |
-| `--use-file-for-fake-audio-capture=<path>` | Use this audio file as the fake microphone input |
-
-<Warning>
-  Playwright initializes the fake audio device once per browser instance. You cannot swap the audio file mid-flow — the new file will not be picked up. If you need to test with different audio inputs, launch a new browser instance for each.
-</Warning>
-
-## Use cases
-
-- **Speech recognition** — test that your app correctly interprets specific voice commands or phrases
-- **Voice-activated controls** — verify that voice triggers produce the expected app behavior
-- **Audio processing** — test features that analyze or transform microphone input
-- **Accessibility** — verify that voice-controlled features work as expected
