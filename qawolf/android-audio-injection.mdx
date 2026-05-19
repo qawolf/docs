@@ -1,23 +1,45 @@
 ---
 title: "Audio injection (Android)"
 description: "Inject audio into the Android emulator's microphone input to test recording and voice features."
-sidebarTitle: "Android"
 ---
 
-The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `runCommand` with `ffplay` to play an audio file during a flow — your app will receive it as microphone input, allowing you to test recording features, voice commands, or any feature that reads from the microphone.
+The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `runCommand` with `ffplay` to play an audio file during a flow — your app will receive it as microphone input.
 
 <Note>
-  Audio injection works on Android emulators only. `ffplay` is pre-installed on QA Wolf runners.
+  `ffplay` is pre-installed on QA Wolf runners. Store your audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
 </Note>
 
-## How it works
+## Examples
 
-`ffplay` plays the audio file on the runner host. The emulator's audio passthrough picks it up and delivers it to the app as microphone input. Store your audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
-
-## Example
+**Inject audio into the microphone**
 
 ```typescript
-import { flow, launch } from "@qawolf/flows/android";
+await runCommand(
+  `ffplay -nodisp -t 10 -autoexit -hide_banner -loglevel error ${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
+);
+```
+
+**Pull a recording off the emulator**
+
+```typescript
+await runCommand(`adb pull '/sdcard/Recordings/My recording 1.m4a' ${process.env.TEAM_STORAGE_DIR}/recorded.m4a`);
+```
+
+## When to use
+
+- Your app records audio or processes microphone input and you need to test that flow with known audio data
+- Your app has voice commands or speech recognition features
+- You need to run the same audio scenario repeatedly with consistent inputs
+- Your app validates or analyzes microphone input
+
+## ffplay flags
+
+See the [ffplay documentation](https://ffmpeg.org/ffplay.html) for the full list of available flags.
+
+## Full sample test
+
+```typescript
+import { flow } from "@qawolf/flows/android";
 
 const audioPath = `${process.env.TEAM_STORAGE_DIR}/audio.mp3`;
 
@@ -31,18 +53,12 @@ export default flow(
     });
 
     await test("inject audio and record", async () => {
-      // play audio on the runner — emulator receives it as microphone input
       await runCommand(
         `ffplay -nodisp -t 10 -autoexit -hide_banner -loglevel error ${audioPath}`,
       );
 
-      // start recording in the app
       await driver.$(`//*[@text='Record']`).click();
-
-      // wait for recording to complete
       await driver.pause(10_000);
-
-      // stop recording
       await driver.$(`//*[@text='Done']`).click();
     });
 
@@ -52,27 +68,3 @@ export default flow(
   },
 );
 ```
-
-## ffplay flags
-
-| Flag | Description |
-| --- | --- |
-| `-nodisp` | Disable graphical display |
-| `-t <seconds>` | Stop playback after this many seconds |
-| `-autoexit` | Exit when playback finishes |
-| `-hide_banner` | Suppress version and build info |
-| `-loglevel error` | Only log errors |
-
-## Saving the recorded file
-
-To verify the recording programmatically, pull the file off the emulator with `adb pull` and save it to team storage:
-
-```typescript
-const finalRecordingPath = `${process.env.TEAM_STORAGE_DIR}/recorded.m4a`;
-
-await runCommand(`adb pull '/sdcard/Recordings/My recording 1.m4a' ${finalRecordingPath}`);
-```
-
-<Note>
-  The recording path on the emulator depends on the app. Check your app's storage location and update the path accordingly.
-</Note>
