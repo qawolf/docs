@@ -4,196 +4,79 @@ description: "Measure frame rate and CPU usage on the Android emulator during au
 sidebarTitle: "Android"
 ---
 
-QA Wolf flows can collect FPS and CPU metrics during test execution using `adb` commands via `runCommand`. This lets you assert on rendering performance and CPU load as part of an automated test.
+Use `adb` commands via `runCommand` to collect FPS and CPU metrics during a flow and assert on rendering performance and CPU load.
 
 <Note>
   Performance measurements run on the Android emulator. FPS values reflect emulator rendering, not physical device GPU performance. CPU values are per-core percentages and can exceed 100% on multi-core emulators (typically 4 cores).
 </Note>
 
-## FPS
+## Examples
 
-Use SurfaceFlinger's TimeStats to collect frame timing data around a rendering-heavy interaction.
-
-### Collect graphics stats
+**Assert average FPS**
 
 ```typescript
-import { flow } from "@qawolf/flows/android";
+await runCommand("adb shell dumpsys SurfaceFlinger --timestats -clear -enable");
 
-export default flow(
-  "Measure FPS",
-  { target: "Android - Pixel", launch: true },
-  async ({ driver, test }) => {
-    await test("start collecting FPS", async () => {
-      await runCommand("adb shell dumpsys SurfaceFlinger --timestats -clear -enable");
-    });
+// perform the rendering-heavy interaction you want to measure
 
-    await test("interact with app", async () => {
-      // perform the rendering-heavy interaction you want to measure
-    });
-
-    await test("assert average FPS", async () => {
-      const resTxt = await runCommand("adb shell dumpsys SurfaceFlinger --timestats -dump");
-      const match = resTxt.match(/averageFPS\s*=\s*(?<avgFps>\d+\.\d*)/);
-      const avgFps = Number(match.groups["avgFps"]);
-      expect(avgFps).toBeGreaterThan(40);
-    });
-  },
-);
+const resTxt = await runCommand("adb shell dumpsys SurfaceFlinger --timestats -dump");
+const match = resTxt.match(/averageFPS\s*=\s*(?<avgFps>\d+\.\d*)/);
+const avgFps = Number(match.groups["avgFps"]);
+expect(avgFps).toBeGreaterThan(40);
 ```
 
 <Warning>
   If the device is idle when you collect stats, the reported FPS may be near zero because there is no active rendering. Always start measuring immediately before a rendering-heavy action.
 </Warning>
 
-### SurfaceFlinger flags
-
-| Flag | Description |
-| --- | --- |
-| `--timestats -clear -enable` | Reset existing data and start collecting |
-| `--timestats -dump` | Output the collected data |
-
----
-
-## CPU
-
-Use the `top` command to sample CPU usage for your app's process. The recommended approach is to poll periodically while the test runs and analyze the collected samples at the end.
-
-### Helper functions
+**Sample CPU usage**
 
 ```typescript
-// Get a single CPU usage sample for a package
-async function getCpuUsageByPackage(driver, packageName) {
-  const processId = await runCommand(`adb shell pidof ${packageName}`);
-  const stdout = await runCommand(`adb shell top -n 1 -p ${processId}`);
+const packageName = await driver.getCurrentPackage();
+const processId = await runCommand(`adb shell pidof ${packageName}`);
+const stdout = await runCommand(`adb shell top -n 1 -p ${processId}`);
 
-  const lines = stdout.split("\n");
-  let systemCpu = null;
-  let processCpu = null;
-
-  for (const line of lines) {
-    if (line.includes("%cpu")) {
-      const systemMatch = line.match(
-        /(\d+)%cpu\s+(\d+)%user\s+(\d+)%nice\s+(\d+)%sys\s+(\d+)%idle/,
-      );
-      if (systemMatch) {
-        systemCpu = {
-          total: parseInt(systemMatch[1]),
-          user: parseInt(systemMatch[2]),
-          nice: parseInt(systemMatch[3]),
-          system: parseInt(systemMatch[4]),
-          idle: parseInt(systemMatch[5]),
-          usage: 100 - (parseInt(systemMatch[5]) / parseInt(systemMatch[1])) * 100,
-        };
-      }
-    }
-
-    if (line.includes(processId)) {
-      const values = line.trim().split(/\s+/);
-      processCpu = {
-        cpuUsage: values[8],
-        memUsage: values[9],
-      };
-    }
-  }
-
-  return { systemCpu, processCpu, raw: stdout };
-}
-
-// Poll CPU usage at a regular interval
-function monitorCpuUsage(driver, packageName, intervalMs = 3_000, config = {}) {
-  const { maxDurationMs = 60_000, verbose = false } = config;
-  const measurements = [];
-
-  const monitorId = setInterval(async () => {
-    try {
-      const result = await getCpuUsageByPackage(driver, packageName);
-      if (verbose) console.log(result);
-
-      if (result.processCpu) {
-        measurements.push({
-          timestamp: Date.now(),
-          systemCpu: result.systemCpu,
-          processCpu: result.processCpu,
-        });
-      }
-    } catch (error) {
-      console.error("Measurement failed:", error.message);
-    }
-  }, intervalMs);
-
-  setTimeout(() => clearInterval(monitorId), maxDurationMs);
-
-  return { monitorId, measurements };
-}
-
-// Analyze collected samples
-function analyzeCpuResults(monitorId, measurements) {
-  clearInterval(monitorId);
-
-  if (measurements.length === 0) {
-    console.log("No measurements collected");
-    return null;
-  }
-
-  const average = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
-  const processCpuValues = measurements.map((m) => Number(m.processCpu.cpuUsage));
-  const systemCpuValues = measurements.map((m) => Number(m.systemCpu.usage));
-
-  return {
-    samples: measurements.length,
-    process: {
-      avg: average(processCpuValues),
-      max: Math.max(...processCpuValues),
-      min: Math.min(...processCpuValues),
-    },
-    system: {
-      avg: average(systemCpuValues),
-      max: Math.max(...systemCpuValues),
-      min: Math.min(...systemCpuValues),
-    },
-  };
-}
+const match = stdout.match(/\S+\s+\S+\s+\S+\s+\S+\s+(\S+)/);
+const cpuUsage = parseFloat(match[1]);
+expect(cpuUsage).toBeLessThan(50);
 ```
 
-### Full example
+## When to use
+
+- Your app has animations or rendering-heavy screens and you need to assert on frame rate
+- Your app performs background processing and you need to verify CPU usage stays within acceptable limits
+- Your flow includes a workflow that should complete without excessive CPU load
+- Your team has performance budgets you want to enforce in CI
+
+## Full sample test
 
 ```typescript
 import { flow } from "@qawolf/flows/android";
 
 export default flow(
-  "Measure CPU usage",
+  "Measure performance",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    const packageName = await driver.getCurrentPackage();
-    const { monitorId, measurements } = monitorCpuUsage(driver, packageName, 1_000, {
-      verbose: true,
-    });
+    await test("assert FPS", async () => {
+      await runCommand("adb shell dumpsys SurfaceFlinger --timestats -clear -enable");
 
-    await test("interact with app", async () => {
-      // perform the workflow you want to measure
+      // perform the rendering-heavy interaction you want to measure
+
+      const resTxt = await runCommand("adb shell dumpsys SurfaceFlinger --timestats -dump");
+      const match = resTxt.match(/averageFPS\s*=\s*(?<avgFps>\d+\.\d*)/);
+      const avgFps = Number(match.groups["avgFps"]);
+      expect(avgFps).toBeGreaterThan(40);
     });
 
     await test("assert CPU usage", async () => {
-      const stats = analyzeCpuResults(monitorId, measurements);
-      console.log(stats);
+      const packageName = await driver.getCurrentPackage();
+      const processId = await runCommand(`adb shell pidof ${packageName}`);
+      const stdout = await runCommand(`adb shell top -n 1 -p ${processId}`);
 
-      // assert average process CPU usage stays below a threshold
-      expect(stats.process.avg).toBeLessThan(50);
+      const match = stdout.match(/\S+\s+\S+\s+\S+\s+\S+\s+(\S+)/);
+      const cpuUsage = parseFloat(match[1]);
+      expect(cpuUsage).toBeLessThan(50);
     });
   },
 );
 ```
-
-Example output:
-
-```json
-{
-  "samples": 26,
-  "process": { "avg": 12.1, "max": 111, "min": 0 },
-  "system": { "avg": 7.1, "max": 43.25, "min": 1 }
-}
-```
-
-<Note>
-  CPU values are percentages of a single CPU core. Values can exceed 100% because the emulator typically has 4 cores — a value of 111 means the process is using slightly more than one full core.
-</Note>

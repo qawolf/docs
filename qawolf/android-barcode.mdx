@@ -4,21 +4,57 @@ description: "Test barcode and QR code scanning features in Android apps using t
 sidebarTitle: "Android"
 ---
 
-The Android emulator's back camera supports virtual scene emulation. You can place a barcode or QR code image on the virtual table or wall, then trigger an animation that moves the camera toward it — simulating a real scan without a physical device.
+Use `device.setVirtualSceneImage()` and `device.playAutomation()` to place a barcode or QR code image in the emulator's virtual camera scene and animate the camera toward it — simulating a real scan without a physical device. See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device) for the full API.
 
-This uses `device.setVirtualSceneImage()` and `device.playAutomation()` from `@qawolf/flows/android`. See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device) for full API details.
+The sequence is: store the barcode image in team storage → place it on the virtual scene (`table` or `wall`) → play the `Walk_to_image_room` macro to animate the camera toward it → wait for your app to detect and process the scan.
 
-## How it works
+<Note>
+  Store your barcode image in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions. The image must encode the exact value your test expects.
+</Note>
 
-1. Store the barcode image in team storage
-2. Place the image on the virtual scene (`table` or `wall`)
-3. Play the `Walk_to_image_room` macro to animate the camera toward it
-4. Wait for your app to detect and process the scan
+## Examples
 
-## Example
+**Scan a barcode on the virtual table**
 
 ```typescript
-import { device, flow, launch } from "@qawolf/flows/android";
+import { device } from "@qawolf/flows/android";
+
+const barcodeImagePath = `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`;
+
+await device.setVirtualSceneImage({
+  image: barcodeImagePath,
+  location: "table",
+});
+
+await device.playAutomation({
+  macro: "Walk_to_image_room",
+});
+```
+
+**Scan a barcode on the virtual wall**
+
+```typescript
+await device.setVirtualSceneImage({
+  image: barcodeImagePath,
+  location: "wall",
+});
+
+await device.playAutomation({
+  macro: "Walk_to_image_room",
+});
+```
+
+## When to use
+
+- Your app has a barcode or QR code scanner and you need to test it without physical hardware
+- Your app uses QR codes to initiate a session, link an account, or navigate to a URL
+- Your app reads barcodes as part of a checkout, inventory, or verification flow
+- Your test needs to assert on a specific scanned value
+
+## Full sample test
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
 
 const barcodeImagePath = `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`;
 
@@ -26,7 +62,11 @@ export default flow(
   "Scan barcode",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("set up virtual scene", async () => {
+    await test("navigate to scan screen", async () => {
+      await driver.$(`//*[@text='Scan']`).click();
+    });
+
+    await test("scan barcode", async () => {
       await device.setVirtualSceneImage({
         image: barcodeImagePath,
         location: "table",
@@ -35,14 +75,13 @@ export default flow(
       await device.playAutomation({
         macro: "Walk_to_image_room",
       });
+
+      await driver
+        .$(`//*[@text='Barcode Captured']`)
+        .waitForDisplayed({ timeout: 10_000 });
     });
 
-    await test("verify scan", async () => {
-      // wait for your app to display the scanned value
-      const barcodeText = await driver
-        .$(`//android.widget.TextView[@resource-id='com.example.app:id/scanned_value']`)
-        .waitForDisplayed({ timeout: 10_000 });
-
+    await test("verify scanned value", async () => {
       const value = await driver
         .$(`//android.widget.TextView[@resource-id='com.example.app:id/scanned_value']`)
         .getAttribute("text");
@@ -53,44 +92,4 @@ export default flow(
     });
   },
 );
-```
-
-<Note>
-  The barcode image must encode the exact value your test expects. Store it in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions on adding files to team storage. If the scanned value doesn't match, verify the image in team storage encodes the correct barcode value.
-</Note>
-
-## Using `wall` instead of `table`
-
-The virtual scene supports two placement locations. `table` places the image on a horizontal surface; `wall` places it on a vertical surface. Use whichever your app's scanning UI is optimized for.
-
-```typescript
-await device.setVirtualSceneImage({
-  image: barcodeImagePath,
-  location: "wall",
-});
-```
-
-## Scanning mid-flow
-
-If your test needs to scan a barcode after other interactions, call `setVirtualSceneImage` and `playAutomation` at the point in the flow where the scan should happen — not at the start.
-
-```typescript
-await test("navigate to scan screen", async () => {
-  await driver.$(`//*[@text='Scan']`).click();
-});
-
-await test("scan barcode", async () => {
-  await device.setVirtualSceneImage({
-    image: barcodeImagePath,
-    location: "table",
-  });
-
-  await device.playAutomation({
-    macro: "Walk_to_image_room",
-  });
-
-  await driver
-    .$(`//*[@text='Barcode Captured']`)
-    .waitForDisplayed({ timeout: 10_000 });
-});
 ```

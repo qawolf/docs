@@ -122,6 +122,14 @@
             ]
           },
           {
+            "group": "Authentication",
+            "icon": "lock-keyhole",
+            "pages": [
+              "qawolf/qrcode",
+              "qawolf/test-mfa"
+            ]
+          },
+          {
             "group": "Networking",
             "icon": "network",
             "pages": [
@@ -134,7 +142,7 @@
                 ]
               },
               {
-                "group": "Network Simulation",
+                "group": "Network simulation",
                 "icon": "signal",
                 "pages": [
                   "qawolf/network-simulation"
@@ -166,9 +174,9 @@
                 "group": "Microphone injection",
                 "icon": "mic",
                 "pages": [
+                  "qawolf/android-audio-injection",
                   "qawolf/audio-injection",
-                  "web-injection",
-                  "qawolf/android-audio-injection"
+                  "web-injection"
                 ]
               },
               {
@@ -180,7 +188,7 @@
                 ]
               },
               {
-                "group": "Audio Analysis",
+                "group": "Audio analysis",
                 "icon": "audio-waveform",
                 "pages": [
                   "i-os-audio-analysis",
@@ -211,8 +219,8 @@
                 "group": "Barcode injection",
                 "icon": "scan-qr-code",
                 "pages": [
-                  "qawolf/barcode-qrcode-scanning",
-                  "qawolf/android-barcode"
+                  "qawolf/android-barcode",
+                  "qawolf/barcode-qrcode-scanning"
                 ]
               },
               {
@@ -236,16 +244,16 @@
             "group": "Performance",
             "icon": "gauge",
             "pages": [
-              "qawolf/web-performance",
-              "qawolf/android-performance"
+              "qawolf/android-performance",
+              "qawolf/web-performance"
             ]
           },
           {
             "group": "Visual diffing",
             "icon": "scan",
             "pages": [
-              "qawolf/visual-diffing",
-              "qawolf/visual-diffing-native-app"
+              "qawolf/visual-diffing-native-app",
+              "qawolf/visual-diffing"
             ]
           },
           {
@@ -261,14 +269,6 @@
             "pages": [
               "qawolf/electron",
               "qawolf/browser-extensions"
-            ]
-          },
-          {
-            "group": "Authentication",
-            "icon": "lock-keyhole",
-            "pages": [
-              "qawolf/qrcode",
-              "qawolf/test-mfa"
             ]
           },
           {
