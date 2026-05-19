@@ -4,36 +4,31 @@ description: "Use accessibility IDs to verify that key screens are reachable and
 sidebarTitle: "Native mobile"
 ---
 
+Use accessibility IDs to verify that key screens are reachable and usable by screen readers on iOS and Android. The `~` selector prefix is WebdriverIO shorthand for locating an element by its accessibility ID — this proves the element is correctly exposed to the accessibility layer and keeps your tests stable across visual refactors.
+
 <Info>
   This recipe covers accessibility spot-checking for native mobile. For operationalized a11y monitoring — scheduled runs, trend tracking, aggregated reports, and stakeholder dashboards — talk to your QA Wolf team about full-service accessibility testing.
 </Info>
 
 ## Examples
 
-**Verify a screen's key elements are reachable via accessibility semantics:**
+**Verify a screen's key elements are reachable via accessibility semantics**
 
 ```typescript
-const email     = await driver.$("~Email");
-const password  = await driver.$("~Password");
-const loginBtn  = await driver.$("~Log in");
+const email    = await driver.$("~Email");
+const password = await driver.$("~Password");
+const loginBtn = await driver.$("~Log in");
 
 await expect(email).toBeDisplayed();
 await expect(password).toBeDisplayed();
 await expect(loginBtn).toBeEnabled();
-
-await email.setValue(process.env.USER_EMAIL);
-await password.setValue(process.env.USER_PASSWORD);
-await loginBtn.click();
-
-const homeHeader = await driver.$("~Home");
-await expect(homeHeader).toBeDisplayed();
 ```
 
 <Tip>
   If you can't locate an element using `~`, that element is likely missing an accessibility label entirely — an accessibility bug worth raising with your dev team before writing the test.
 </Tip>
 
-**Assert that icon buttons have meaningful accessible names:**
+**Assert that icon buttons have meaningful accessible names**
 
 ```typescript
 const menuIcon = await driver.$("~Main menu");
@@ -47,21 +42,17 @@ if (!label || label.trim().length < 3) {
 
 ## When to use
 
-- You want to verify that a screen's key interactive elements are exposed to VoiceOver (iOS) or TalkBack (Android).
-- You need to catch regressions where a developer removed or renamed an accessibility label.
+- Your app has key interactive elements that must be exposed to VoiceOver (iOS) or TalkBack (Android).
+- Your team wants to catch regressions where a developer removed or renamed an accessibility label.
 - Your team wants a lightweight proxy for accessibility hygiene without a full WCAG audit.
-- You want to confirm that icon-only buttons have meaningful accessible names, not blank or placeholder labels.
+- Your app has icon-only buttons that must have meaningful accessible names.
 
-## How it works
-
-Tests locate elements using accessibility identifiers — attributes set by your developers that expose UI components to the OS accessibility layer.
+## Platform reference
 
 | Platform | Attribute | WebdriverIO selector |
 | --- | --- | --- |
 | Android | `content-desc` | `driver.$('~your-label')` |
 | iOS | `accessibilityIdentifier` / accessible name | `driver.$('~your-id')` |
-
-The `~` prefix is the WebdriverIO shorthand for locating an element by its accessibility ID. This is a double win: it proves the element is correctly exposed to the accessibility layer, and it keeps your tests stable across visual refactors.
 
 ## Quick reference
 
@@ -72,10 +63,45 @@ The `~` prefix is the WebdriverIO shorthand for locating an element by its acces
 | Assert an icon button has a meaningful label | `getAttribute('content-desc')` and check length |
 | Assert an error or toast is readable | `await expect($('~error-id')).toHaveText('...')` |
 
-## Notes
-
 <Warning>
-  QA Wolf does not run a WCAG rules engine against native app views. Native apps don't have a DOM, so axe-core style scanning isn't available for native iOS or Android.
+  QA Wolf does not run a WCAG rules engine against native app views. Native apps don't have a DOM, so axe-core style scanning isn't available for native iOS or Android. For deeper audits — color contrast, touch target size, reading order — supplement these tests with manual testing using VoiceOver on iOS, TalkBack on Android, or the Xcode Accessibility Inspector and Android Studio Layout Inspector.
 </Warning>
 
-For deeper audits — color contrast, touch target size, reading order — supplement these tests with manual testing using VoiceOver on iOS, TalkBack on Android, or the Xcode Accessibility Inspector and Android Studio Layout Inspector.
+## Full sample test
+
+```typescript
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Accessibility — login screen",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("verify login elements are accessible", async () => {
+      const email    = await driver.$("~Email");
+      const password = await driver.$("~Password");
+      const loginBtn = await driver.$("~Log in");
+
+      await expect(email).toBeDisplayed();
+      await expect(password).toBeDisplayed();
+      await expect(loginBtn).toBeEnabled();
+
+      await email.setValue(process.env.USER_EMAIL);
+      await password.setValue(process.env.USER_PASSWORD);
+      await loginBtn.click();
+
+      const homeHeader = await driver.$("~Home");
+      await expect(homeHeader).toBeDisplayed();
+    });
+
+    await test("verify icon buttons have meaningful labels", async () => {
+      const menuIcon = await driver.$("~Main menu");
+      await expect(menuIcon).toBeDisplayed();
+
+      const label = await menuIcon.getAttribute("content-desc");
+      if (!label || label.trim().length < 3) {
+        throw new Error("A11y: menu icon accessible label is missing or too short");
+      }
+    });
+  },
+);
+```
