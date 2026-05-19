@@ -1,102 +1,41 @@
----
-title: "Audio capture"
-description: "Record audio from the device speaker during a test and compare it against a reference file to verify playback."
-sidebarTitle: "iOS"
----
+Use `device.startSpeakerRecording()` to capture audio output from the iOS device speaker while your app is playing audio. The recording is saved as a WAV file that can be downloaded and analyzed.
 
-## Examples
+See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device) for the full API.
 
-**Record and download speaker output:**
+## Example
 
-```js
-import { device } from "@qawolf/flows/ios";
-const fsPromises = await import("node:fs/promises");
+```typescript
+import { device, flow, launch } from "@qawolf/flows/ios";
 
-// Start recording
-const startResult = await device.startSpeakerRecording(driver);
-const audioSessionId = startResult.id;
+export default flow(
+  "Record speaker audio",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("start recording", async () => {
+      const session = await device.startSpeakerRecording(driver);
 
-// Run your test steps that trigger audio playback
+      // trigger audio playback in your app
 
-// Stop recording
-const stopResult = await device.stopSpeakerRecording(driver, audioSessionId);
+      const file = await device.stopSpeakerRecording(driver, session.id);
+      const buffer = await device.downloadSpeakerRecording(driver, file.filename);
 
-// Download the recording
-const wavData = await device.downloadSpeakerRecording(driver, stopResult.filename);
-await fsPromises.writeFile("/tmp/output.wav", wavData);
+      const { writeFile } = await import("node:fs/promises");
+      await writeFile("/tmp/output.wav", buffer);
+    });
+  },
+);
 ```
 
-**Compare recorded audio against a reference file:**
-
-```js
-import { device } from "@qawolf/flows/ios";
-const fsPromises = await import("node:fs/promises");
-
-// Generate fingerprint for reference file
-const referenceBuffer = await fsPromises.readFile(REFERENCE_AUDIO_PATH);
-const referenceResult = await device.calculateAudioFingerprint(driver, referenceBuffer);
-
-// Compare against recorded output
-const bestMatch = findBestMatch(stopResult.fingerprint, referenceResult.fingerprint);
-expect(bestMatch.similarity).toBeGreaterThan(0.85);
-```
-
-Audio fingerprinting uses the Chromaprint algorithm, which supports fuzzy matching — small differences in volume or encoding do not affect the result.
-
-Here is a comparison algorithm you can use in your tests:
-
-```js
-function findBestMatch(shortFp, longFp) {
-  if (shortFp.length === 0 || longFp.length === 0) {
-    return { similarity: 0, hammingDistance: 0, offset: 0, windowSize: 0 };
-  }
-
-  if (shortFp.length > longFp.length) {
-    [shortFp, longFp] = [longFp, shortFp];
-  }
-
-  const windowSize = shortFp.length;
-  const maxOffset = longFp.length - windowSize;
-  let bestSimilarity = 0;
-  let bestDistance = Infinity;
-  let bestOffset = 0;
-
-  for (let offset = 0; offset <= maxOffset; offset++) {
-    let totalDistance = 0;
-    for (let i = 0; i < windowSize; i++) {
-      totalDistance += hammingDistance(shortFp[i], longFp[offset + i]);
-    }
-    const maxBits = windowSize * 32;
-    const similarity = 1 - totalDistance / maxBits;
-    if (similarity > bestSimilarity) {
-      bestSimilarity = similarity;
-      bestDistance = totalDistance;
-      bestOffset = offset;
-    }
-  }
-
-  return { similarity: bestSimilarity, hammingDistance: bestDistance, offset: bestOffset, windowSize };
-}
-
-function hammingDistance(a, b) {
-  let distance = 0;
-  let xor = (a ^ b) >>> 0;
-  while (xor !== 0) {
-    distance++;
-    xor &= xor - 1;
-  }
-  return distance;
-}
-```
+<Note>
+  `stopSpeakerRecording()` automatically calculates a Chromaprint fingerprint and includes it as `file.fingerprint`. You can use this directly for audio analysis without calling `calculateAudioFingerprint()` separately.
+</Note>
 
 ## When to use
 
-- Your app plays audio and you need to verify the correct sound played.
-- Your app uses text-to-speech and you need to validate the output.
-- Your app plays music or audio prompts and you need to confirm playback.
+- Your app plays audio and you need to verify the correct sound played
+- Your app uses text-to-speech and you need to validate the output
+- Your app plays music or audio prompts and you need to confirm playback
 
-## Full sample test
+## Analyzing the recording
 
-import Sample from '/snippets/flows/audio-capture.mdx';
-
-<Sample />
+To compare the recording against a reference file, see [Audio analysis (iOS)](/qawolf/ios-audio-analysis).

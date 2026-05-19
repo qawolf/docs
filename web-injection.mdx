@@ -1,0 +1,61 @@
+---
+title: "Microphone injection (Web)"
+description: "Replace the browser's microphone input with an audio file to test voice and speech features in web apps."
+sidebarTitle: "Web"
+---
+
+Use Playwright's fake media device flags to inject a pre-recorded audio file as the browser's microphone input. This lets you test voice-activated features, speech recognition, and audio processing in web apps under controlled, repeatable conditions.
+
+<Note>
+  The audio file must be in a format supported by Playwright (WAV recommended). Store it in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
+</Note>
+
+## Example
+
+```typescript
+import { flow, launch } from "@qawolf/flows/web";
+
+const audioPath = `${process.env.TEAM_STORAGE_DIR}/voice-input.wav`;
+
+export default flow(
+  "Test voice input",
+  "Web - Chrome",
+  async ({ test }) => {
+    const { context } = await launch({
+      permissions: ["microphone"],
+      args: [
+        "--use-fake-device-for-media-stream",
+        "--use-fake-ui-for-media-stream",
+        `--use-file-for-fake-audio-capture=${audioPath}`,
+      ],
+    });
+
+    const page = await context.newPage();
+    await page.goto("https://your-app.com");
+
+    await test("interact with voice feature", async () => {
+      // trigger the feature that reads from the microphone
+      // the browser will receive the audio file as input
+    });
+  },
+);
+```
+
+## Chrome flags
+
+| Flag | Description |
+| --- | --- |
+| `--use-fake-device-for-media-stream` | Use a fake input device instead of a real microphone |
+| `--use-fake-ui-for-media-stream` | Auto-accept media permission dialogs |
+| `--use-file-for-fake-audio-capture=<path>` | Use this audio file as the fake microphone input |
+
+<Warning>
+  Playwright initializes the fake audio device once per browser instance. You cannot swap the audio file mid-flow — the new file will not be picked up. If you need to test with different audio inputs, launch a new browser instance for each.
+</Warning>
+
+## Use cases
+
+- **Speech recognition** — test that your app correctly interprets specific voice commands or phrases
+- **Voice-activated controls** — verify that voice triggers produce the expected app behavior
+- **Audio processing** — test features that analyze or transform microphone input
+- **Accessibility** — verify that voice-controlled features work as expected

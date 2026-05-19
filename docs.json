@@ -139,6 +139,13 @@
                 "pages": [
                   "qawolf/network-simulation"
                 ]
+              },
+              {
+                "group": "Beacon injection",
+                "icon": "bluetooth",
+                "pages": [
+                  "qaolf/i-beacon-injection"
+                ]
               }
             ]
           },
@@ -152,8 +159,39 @@
             ]
           },
           {
-            "group": "Mobile-native media",
-            "icon": "tablet-smartphone",
+            "group": "Audio",
+            "icon": "ear",
+            "pages": [
+              {
+                "group": "Microphone injection",
+                "icon": "mic",
+                "pages": [
+                  "qawolf/audio-injection",
+                  "web-injection",
+                  "qawolf/android-audio-injection"
+                ]
+              },
+              {
+                "group": "Speaker capture",
+                "icon": "speaker",
+                "pages": [
+                  "qawolf/audio-capture",
+                  "qawolf/web-speaker-capture"
+                ]
+              },
+              {
+                "group": "Audio Analysis",
+                "icon": "audio-waveform",
+                "pages": [
+                  "i-os-audio-analysis",
+                  "web-audio-analysi"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Camera",
+            "icon": "camera",
             "pages": [
               {
                 "group": "Photo library management",
@@ -164,7 +202,7 @@
               },
               {
                 "group": "Camera injection",
-                "icon": "camera",
+                "icon": "switch-camera",
                 "pages": [
                   "qawolf/camera-and-audio-injection"
                 ]
@@ -175,20 +213,6 @@
                 "pages": [
                   "qawolf/barcode-qrcode-scanning",
                   "qawolf/android-barcode"
-                ]
-              },
-              {
-                "group": "Audio injection",
-                "icon": "mic",
-                "pages": [
-                  "qawolf/audio-injection"
-                ]
-              },
-              {
-                "group": "Audio capture",
-                "icon": "audio-waveform",
-                "pages": [
-                  "qawolf/audio-capture"
                 ]
               },
               {
@@ -212,7 +236,8 @@
             "group": "Performance",
             "icon": "gauge",
             "pages": [
-              "qawolf/web-performance"
+              "qawolf/web-performance",
+              "qawolf/android-performance"
             ]
           },
           {
