@@ -12,10 +12,47 @@ See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device)
   Audio injection is only available for apps that QA Wolf resigns during installation. It is not available for system apps or Safari.
 </Warning>
 
-## Example
+## Examples
+
+**Inject audio into the microphone**
 
 ```typescript
-import { device, flow, launch } from "@qawolf/flows/ios";
+const cleanup = await device.injectAudio(driver, process.env.BUNDLE_ID, {
+  data: `${process.env.TEAM_STORAGE_DIR}/sample_audio_input.wav`,
+});
+
+// trigger the microphone feature in your app
+
+await cleanup();
+```
+
+**Pull the recording off the device**
+
+```typescript
+const recordingAsBase64 = await driver.execute("mobile: pullFile", {
+  remotePath: `@${process.env.BUNDLE_ID}:/path/to/recording.m4a`,
+});
+
+const buffer = Buffer.from(recordingAsBase64, "base64");
+const { writeFile } = await import("node:fs/promises");
+await writeFile(`${process.env.TEAM_STORAGE_DIR}/recording.m4a`, buffer);
+```
+
+## When to use
+
+- Your app records audio or processes microphone input and you need to test that flow with known audio data.
+- Your app has voice commands or speech recognition features that need consistent, repeatable input.
+- Your app validates or transforms microphone input and you need to assert on the output.
+- Your test needs to simulate a specific audio input that is difficult to produce in a test environment.
+
+## Supported file types
+
+WAV
+
+## Full sample test
+
+```typescript
+import { device, flow } from "@qawolf/flows/ios";
 
 const audioPath = `${process.env.TEAM_STORAGE_DIR}/sample_audio_input.wav`;
 
@@ -30,10 +67,8 @@ export default flow(
     },
   },
   async ({ driver, test }) => {
-    await test("inject audio and record", async () => {
-      const bundleId = process.env.BUNDLE_ID;
-
-      const cleanup = await device.injectAudio(driver, bundleId, {
+    await test("inject audio", async () => {
+      const cleanup = await device.injectAudio(driver, process.env.BUNDLE_ID, {
         data: audioPath,
       });
 
@@ -41,33 +76,16 @@ export default flow(
 
       await cleanup();
     });
+
+    await test("pull recording off device", async () => {
+      const recordingAsBase64 = await driver.execute("mobile: pullFile", {
+        remotePath: `@${process.env.BUNDLE_ID}:/path/to/recording.m4a`,
+      });
+
+      const buffer = Buffer.from(recordingAsBase64, "base64");
+      const { writeFile } = await import("node:fs/promises");
+      await writeFile(`${process.env.TEAM_STORAGE_DIR}/recording.m4a`, buffer);
+    });
   },
 );
 ```
-
-## Supported file types
-
-WAV
-
-## When to use
-
-- Your app records audio or processes microphone input and you need to test that flow with known audio data.
-- You need to run the same scenario repeatedly with consistent inputs.
-
-## Pulling the recorded file off the device
-
-If your app saves the recording to its container, use `driver.execute("mobile: pullFile")` to retrieve it:
-
-```typescript
-const recordingAsBase64 = await driver.execute("mobile: pullFile", {
-  remotePath: `@${bundleId}:/path/to/recording.m4a`,
-});
-
-const buffer = Buffer.from(recordingAsBase64, "base64");
-const { writeFile } = await import("node:fs/promises");
-await writeFile(`${process.env.TEAM_STORAGE_DIR}/recording.m4a`, buffer);
-```
-
-<Note>
-  The `remotePath` format is `@<bundleId>:<path-within-app-container>`. Check your app's file storage location to get the correct path.
-</Note>
