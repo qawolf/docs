@@ -1,51 +1,50 @@
 ---
-title: "Android sensor mocking"
-sidebarTitle: "Android"
+title: "Mock hardware sensors (Android)"
+description: "Simulate accelerometer, gyroscope, light, and pressure sensor input on the Android emulator."
 ---
 
-## i--- title: "Mock hardware sensors (Android)" description: "Simulate accelerometer, gyroscope, light, and pressure sensor input on the Android emulator."
-
-The Android emulator exposes direct control over hardware sensors via `adb emu sensor set`. Use `runCommand` during a flow to simulate physical events — device tilt, ambient light changes, pressure variations — and test how your app responds.
+Use `runCommand` with `adb emu sensor set` to simulate hardware sensor input during a flow and test how your app responds to physical events.
 
 <Note>
   Sensor commands affect the emulator's sensor state directly. They work on emulators only — not physical devices.
 </Note>
 
-## Accelerometer
+## Examples
 
-Simulates acceleration force along the x, y, and z axes (including gravity). Values are in m/s².
+**Accelerometer** — acceleration force along x, y, z axes in m/s²
 
 ```typescript
 await runCommand("adb emu sensor set acceleration 19:9.81:0");
 ```
 
-## Gyroscope
-
-Simulates rate of rotation around the x, y, and z axes (without drift compensation). Values are in rad/s.
+**Gyroscope** — rate of rotation along x, y, z axes in rad/s
 
 ```typescript
 await runCommand("adb emu sensor set gyroscope 0.00:0.00:1.00");
 ```
 
-## Light
-
-Simulates ambient light level in lux (lx).
+**Light** — ambient light level in lux (lx)
 
 ```typescript
 await runCommand("adb emu sensor set light 100");
 ```
 
-## Pressure
-
-Simulates ambient air pressure in hectopascals (hPa).
+**Pressure** — ambient air pressure in hectopascals (hPa)
 
 ```typescript
 await runCommand("adb emu sensor set pressure 10");
 ```
 
+## When to use
+
+- Your app responds to device tilt or motion and you need to test that behavior.
+- Your app adjusts UI based on ambient light levels.
+- Your app reads barometric pressure for altitude or weather features.
+- Your app uses gyroscope data for orientation or gesture detection.
+
 ## Sensor value format
 
-The `adb emu sensor set` command takes values in the format `<value-a>[:<value-b>[:<value-c>]]`. Single-axis sensors (light, pressure) take one value; three-axis sensors (accelerometer, gyroscope) take three colon-separated values for x, y, and z.
+Single-axis sensors (light, pressure) take one value. Three-axis sensors (accelerometer, gyroscope) take three colon-separated values for x, y, and z.
 
 ```text
 adb emu sensor set <sensorname> <value-a>[:<value-b>[:<value-c>]]

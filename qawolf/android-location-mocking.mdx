@@ -1,5 +1,5 @@
 ---
-title: "Mock device geolocation "
+title: "Mock device location (Android)"
 description: "Set a custom GPS location on the Android emulator to test location-aware features in your app."
 sidebarTitle: "Android"
 ---
@@ -8,7 +8,88 @@ Use `device.setGeoLocation()` to override the emulator's GPS coordinates during 
 
 See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device) for the full `setGeoLocation` API.
 
-## Example
+## Examples
+
+**Set a GPS location**
+
+```typescript
+await device.setGeoLocation({
+  latitude: 40.78222,
+  longitude: -73.96528,
+});
+```
+
+## When to use
+
+- Your app shows location-aware content such as store finders, delivery zones, or regional pricing.
+- Your app restricts features by geography and you need to test from a specific location.
+- Your app uses GPS coordinates to personalize content and you need to assert on that behavior.
+- Your test needs to simulate a device in a different city or country.
+
+## Troubleshooting
+
+Some apps don't immediately respond to a location change. Try one or more of the following.
+
+**Grant location permissions automatically**
+
+Pass `autoGrantPermissions: true` in your launch options.
+
+```typescript
+const { driver } = await launch({
+  appPackage: "com.example.app",
+  autoGrantPermissions: true,
+});
+```
+
+**Toggle location services**
+
+```typescript
+await driver.toggleLocationServices();
+await driver.toggleLocationServices();
+```
+
+**Reload the session**
+
+```typescript
+await device.setGeoLocation({
+  latitude: 40.78222,
+  longitude: -73.96528,
+});
+
+await driver.reloadSession();
+```
+
+**Prime location tracking via Google Maps**
+
+Some apps rely on the system location provider being active. Open Google Maps and trigger location tracking before your app reads the location, then reload the session.
+
+```typescript
+await driver.activateApp("com.google.android.apps.maps");
+
+const skipBtn = driver.$(`//android.widget.Button[@text='SKIP']`);
+if (await skipBtn.isExisting()) {
+  await skipBtn.click();
+}
+
+const locationBtn = driver.$(
+  `//android.widget.FrameLayout[@resource-id='com.google.android.apps.maps:id/mylocation_button']`,
+);
+const contentDesc = await locationBtn.getAttribute("content-desc");
+if (contentDesc.includes("Re-center")) {
+  await locationBtn.click();
+}
+
+const permissionBtn = driver.$(
+  `//android.widget.Button[@resource-id='com.android.permissioncontroller:id/permission_allow_foreground_only_button']`,
+);
+if (await permissionBtn.isExisting()) {
+  await permissionBtn.click();
+}
+
+await driver.reloadSession();
+```
+
+## Full sample test
 
 ```typescript
 import { device, flow, launch } from "@qawolf/flows/android";
@@ -17,7 +98,7 @@ export default flow(
   "Test location feature",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("set location to Central Park, NYC", async () => {
+    await test("set GPS location", async () => {
       await device.setGeoLocation({
         latitude: 40.78222,
         longitude: -73.96528,
@@ -29,82 +110,4 @@ export default flow(
     });
   },
 );
-```
-
-## Troubleshooting
-
-Some apps don't immediately respond to a location change. If your app doesn't seem to pick up the new coordinates, try one or more of the following.
-
-### Grant location permissions automatically
-
-Pass `autoGrantPermissions: true` in your launch options to ensure location permissions are granted before the flow starts.
-
-```typescript
-import { flow, launch } from "@qawolf/flows/android";
-
-export default flow("Test location feature", "Android - Pixel", async () => {
-  const { driver } = await launch({
-    appPackage: "com.example.app",
-    autoGrantPermissions: true,
-  });
-});
-```
-
-### Toggle location services
-
-Toggling location services off and on can prompt the app to re-read the current location.
-
-```typescript
-await driver.toggleLocationServices();
-await driver.toggleLocationServices();
-```
-
-### Reload the session
-
-Reloading the session after setting the location forces the app to re-initialize with the new coordinates.
-
-```typescript
-await device.setGeoLocation({
-  latitude: 40.78222,
-  longitude: -73.96528,
-});
-
-await driver.reloadSession();
-```
-
-### Force location tracking via Google Maps
-
-Some apps rely on the system location provider being active. Opening Google Maps and triggering location tracking can prime the location stack before your app reads it. Call this before doing anything else in your flow, then reload the session.
-
-```typescript
-async function primeLocationWithGoogleMaps(driver) {
-  await driver.activateApp("com.google.android.apps.maps");
-
-  // skip login if first launch
-  const skipBtn = driver.$(`//android.widget.Button[@text='SKIP']`);
-  if (await skipBtn.isExisting()) {
-    await skipBtn.click();
-  }
-
-  // trigger location tracking
-  const locationBtn = driver.$(
-    `//android.widget.FrameLayout[@resource-id='com.google.android.apps.maps:id/mylocation_button']`,
-  );
-  const contentDesc = await locationBtn.getAttribute("content-desc");
-  if (contentDesc.includes("Re-center")) {
-    await locationBtn.click();
-  }
-
-  // grant precise location if prompted
-  const permissionBtn = driver.$(
-    `//android.widget.Button[@resource-id='com.android.permissioncontroller:id/permission_allow_foreground_only_button']`,
-  );
-  if (await permissionBtn.isExisting()) {
-    await permissionBtn.click();
-  }
-}
-
-// usage
-await primeLocationWithGoogleMaps(driver);
-await driver.reloadSession();
 ```
