@@ -1,9 +1,12 @@
 ---
 title: "Mock hardware sensors (Android)"
 description: "Simulate accelerometer, gyroscope, light, and pressure sensor input on the Android emulator."
+sidebarTitle: "Android"
 ---
 
-Use `runCommand` with `adb emu sensor set` to simulate hardware sensor input during a flow and test how your app responds to physical events.
+Use `runCommand` to send `adb emu sensor set` commands during a flow. This lets you simulate hardware sensor input and test how your app responds.
+
+See the [Android emulator sensor documentation](https://developer.android.com/studio/run/emulator-console#sensor-set) for available sensor names and value formats.
 
 <Note>
   Sensor commands affect the emulator's sensor state directly. They work on emulators only — not physical devices.
@@ -11,25 +14,25 @@ Use `runCommand` with `adb emu sensor set` to simulate hardware sensor input dur
 
 ## Examples
 
-**Accelerometer** — acceleration force along x, y, z axes in m/s²
+**Accelerometer**
 
 ```typescript
 await runCommand("adb emu sensor set acceleration 19:9.81:0");
 ```
 
-**Gyroscope** — rate of rotation along x, y, z axes in rad/s
+**Gyroscope**
 
 ```typescript
 await runCommand("adb emu sensor set gyroscope 0.00:0.00:1.00");
 ```
 
-**Light** — ambient light level in lux (lx)
+**Light**
 
 ```typescript
 await runCommand("adb emu sensor set light 100");
 ```
 
-**Pressure** — ambient air pressure in hectopascals (hPa)
+**Pressure**
 
 ```typescript
 await runCommand("adb emu sensor set pressure 10");
@@ -41,11 +44,3 @@ await runCommand("adb emu sensor set pressure 10");
 - Your app adjusts UI based on ambient light levels.
 - Your app reads barometric pressure for altitude or weather features.
 - Your app uses gyroscope data for orientation or gesture detection.
-
-## Sensor value format
-
-Single-axis sensors (light, pressure) take one value. Three-axis sensors (accelerometer, gyroscope) take three colon-separated values for x, y, and z.
-
-```text
-adb emu sensor set <sensorname> <value-a>[:<value-b>[:<value-c>]]
-```
