@@ -259,7 +259,8 @@
             "group": "Desktop",
             "icon": "monitor",
             "pages": [
-              "qawolf/electron"
+              "qawolf/electron",
+              "qawolf/browser-extensions"
             ]
           },
           {
