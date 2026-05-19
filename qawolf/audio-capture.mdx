@@ -6,7 +6,7 @@ sidebarTitle: "iOS"
 
 Use `device.startSpeakerRecording()` to capture audio output from the iOS device speaker while your app is playing audio. The recording is saved as a WAV file that can be downloaded and analyzed.
 
-See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device) for the full API.
+See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device-reference) for the full API.
 
 ## Examples
 
@@ -33,7 +33,7 @@ await writeFile("/tmp/output.wav", buffer);
 
 ## Analyzing the recording
 
-To compare the recording against a reference file, see [Audio analysis (iOS)](/qawolf/ios-audio-analysis).
+To compare the recording against a reference file, see [Audio analysis (iOS)](/qawolf/i-os-audio-analysis).
 
 <Note>
   `stopSpeakerRecording()` automatically calculates a Chromaprint fingerprint and includes it as `file.fingerprint`. You can use this directly for audio analysis without calling `calculateAudioFingerprint()` separately.

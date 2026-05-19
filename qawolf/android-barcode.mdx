@@ -4,7 +4,7 @@ description: "Test barcode and QR code scanning features in Android apps using t
 sidebarTitle: "Android"
 ---
 
-Use `device.setVirtualSceneImage()` and `device.playAutomation()` to place a barcode or QR code image in the emulator's virtual camera scene and animate the camera toward it — simulating a real scan without a physical device. See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device) for the full API.
+Use `device.setVirtualSceneImage()` and `device.playAutomation()` to place a barcode or QR code image in the emulator's virtual camera scene and animate the camera toward it — simulating a real scan without a physical device. See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full API.
 
 The sequence is: store the barcode image in team storage → place it on the virtual scene (`table` or `wall`) → play the `Walk_to_image_room` macro to animate the camera toward it → wait for your app to detect and process the scan.
 

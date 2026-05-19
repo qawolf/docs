@@ -6,7 +6,7 @@ sidebarTitle: "iOS"
 
 Use `device.calculateAudioFingerprint()` to generate a Chromaprint fingerprint from a recorded audio file and compare it against a known reference. Chromaprint supports fuzzy matching — small differences in volume or encoding don't affect the result, making it resilient to minor variations in playback.
 
-See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device) for the full API.
+See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device-reference) for the full API.
 
 <Note>
   Store your reference audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions. `stopSpeakerRecording()` automatically calculates a fingerprint — you only need to call `calculateAudioFingerprint()` separately for the reference file.

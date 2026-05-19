@@ -191,8 +191,8 @@
                 "group": "Audio analysis",
                 "icon": "audio-waveform",
                 "pages": [
-                  "i-os-audio-analysis",
-                  "web-audio-analysi"
+                  "qawolf/i-os-audio-analysis",
+                  "qa/wolf/web-audio-analysis"
                 ]
               }
             ]
