@@ -173,7 +173,8 @@
                 "group": "Barcode injection",
                 "icon": "scan-qr-code",
                 "pages": [
-                  "qawolf/barcode-qrcode-scanning"
+                  "qawolf/barcode-qrcode-scanning",
+                  "qawolf/android-barcode"
                 ]
               },
               {
@@ -241,6 +242,26 @@
             "pages": [
               "qawolf/qrcode",
               "qawolf/test-mfa"
+            ]
+          },
+          {
+            "group": "Sensors",
+            "icon": "circle-gauge",
+            "pages": [
+              {
+                "group": "Location Mocking",
+                "icon": "locate",
+                "pages": [
+                  "qawolf/android-location-mocking"
+                ]
+              },
+              {
+                "group": "Sensor Mocking",
+                "icon": "waves",
+                "pages": [
+                  "qawolf/android-sensor-mocking"
+                ]
+              }
             ]
           }
         ]

@@ -1,3 +1,8 @@
+---
+title: "Android Device Reference"
+description: "Reference notes for the `device` object from `@qawolf/flows/android`."
+---
+
 `device` is a runtime proxy over the Android emulator API. Use it for emulator-level operations — such as setting location, placing images in the virtual camera scene, or configuring network proxies — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
 
 `device` is only available while a flow is running.
@@ -74,7 +79,7 @@ export default flow(
 ```
 
 <Note>
-  Virtual scene is scoped to barcode/QR code scanning and augmented reality (AR) use cases. It is not a general photo or video injection mechanism. See [Android barcode and QR scanning](/qawolf/android-barcode-scanning) for a full walkthrough.
+  Virtual scene is scoped to barcode/QR code scanning and augmented reality (AR) use cases. It is not a general photo or video injection mechanism. See [Android barcode and QR scanning](/qawolf/android-barcode) for a full walkthrough.
 </Note>
 
 ## `playAutomation`
