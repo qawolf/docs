@@ -175,8 +175,8 @@
                 "icon": "mic",
                 "pages": [
                   "qawolf/android-audio-injection",
-                  "qawolf/audio-injection",
-                  "web-injection"
+                  "qawolf/ios-audio-injection",
+                  "web-audio-injection"
                 ]
               },
               {
