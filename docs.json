@@ -176,7 +176,7 @@
                 "pages": [
                   "qawolf/android-audio-injection",
                   "qawolf/ios-audio-injection",
-                  "web-audio-injection"
+                  "qawolf/web-audio-injection"
                 ]
               },
               {
