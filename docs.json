@@ -192,7 +192,7 @@
                 "icon": "audio-waveform",
                 "pages": [
                   "qawolf/i-os-audio-analysis",
-                  "qa/wolf/web-audio-analysis"
+                  "qawolf/web-audio-analysis"
                 ]
               }
             ]
