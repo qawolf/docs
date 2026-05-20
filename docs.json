@@ -127,6 +127,14 @@
             ]
           },
           {
+            "group": "Authentication",
+            "icon": "lock-keyhole",
+            "pages": [
+              "qawolf/qrcode",
+              "qawolf/test-mfa"
+            ]
+          },
+          {
             "group": "Networking",
             "icon": "network",
             "pages": [
@@ -139,10 +147,17 @@
                 ]
               },
               {
-                "group": "Network Simulation",
+                "group": "Network simulation",
                 "icon": "signal",
                 "pages": [
                   "qawolf/network-simulation"
+                ]
+              },
+              {
+                "group": "Beacon injection",
+                "icon": "bluetooth",
+                "pages": [
+                  "qawolf/i-beacon-injection"
                 ]
               }
             ]
@@ -157,8 +172,39 @@
             ]
           },
           {
-            "group": "Mobile-native media",
-            "icon": "tablet-smartphone",
+            "group": "Audio",
+            "icon": "ear",
+            "pages": [
+              {
+                "group": "Microphone injection",
+                "icon": "mic",
+                "pages": [
+                  "qawolf/android-audio-injection",
+                  "qawolf/ios-audio-injection",
+                  "qawolf/web-audio-injection"
+                ]
+              },
+              {
+                "group": "Speaker capture",
+                "icon": "speaker",
+                "pages": [
+                  "qawolf/audio-capture",
+                  "qawolf/web-speaker-capture"
+                ]
+              },
+              {
+                "group": "Audio analysis",
+                "icon": "audio-waveform",
+                "pages": [
+                  "qawolf/i-os-audio-analysis",
+                  "qawolf/web-audio-analysis"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Camera",
+            "icon": "camera",
             "pages": [
               {
                 "group": "Photo library management",
@@ -169,7 +215,7 @@
               },
               {
                 "group": "Camera injection",
-                "icon": "camera",
+                "icon": "switch-camera",
                 "pages": [
                   "qawolf/camera-and-audio-injection"
                 ]
@@ -178,21 +224,8 @@
                 "group": "Barcode injection",
                 "icon": "scan-qr-code",
                 "pages": [
+                  "qawolf/android-barcode",
                   "qawolf/barcode-qrcode-scanning"
-                ]
-              },
-              {
-                "group": "Audio injection",
-                "icon": "mic",
-                "pages": [
-                  "qawolf/audio-injection"
-                ]
-              },
-              {
-                "group": "Audio capture",
-                "icon": "audio-waveform",
-                "pages": [
-                  "qawolf/audio-capture"
                 ]
               },
               {
@@ -216,6 +249,7 @@
             "group": "Performance",
             "icon": "gauge",
             "pages": [
+              "qawolf/android-performance",
               "qawolf/web-performance"
             ]
           },
@@ -223,6 +257,7 @@
             "group": "Visual diffing",
             "icon": "scan",
             "pages": [
+              "qawolf/visual-diffing-native-app",
               "qawolf/visual-diffing"
             ]
           },
@@ -237,15 +272,28 @@
             "group": "Desktop",
             "icon": "monitor",
             "pages": [
-              "qawolf/electron"
+              "qawolf/electron",
+              "qawolf/browser-extensions"
             ]
           },
           {
-            "group": "Authentication",
-            "icon": "lock-keyhole",
+            "group": "Sensors",
+            "icon": "circle-gauge",
             "pages": [
-              "qawolf/qrcode",
-              "qawolf/test-mfa"
+              {
+                "group": "Location Mocking",
+                "icon": "locate",
+                "pages": [
+                  "qawolf/android-location-mocking"
+                ]
+              },
+              {
+                "group": "Sensor Mocking",
+                "icon": "waves",
+                "pages": [
+                  "qawolf/android-sensor-mocking"
+                ]
+              }
             ]
           }
         ]
@@ -266,7 +314,9 @@
                   "qawolf/libraries/flows/api-reference/web",
                   "qawolf/libraries/flows/api-reference/cli",
                   "qawolf/libraries/flows/api-reference/android",
-                  "qawolf/libraries/flows/api-reference/ios"
+                  "qawolf/libraries/flows/api-reference/android-device-reference",
+                  "qawolf/libraries/flows/api-reference/ios",
+                  "qawolf/libraries/flows/api-reference/ios-device-reference"
                 ]
               },
               {

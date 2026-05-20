@@ -1,0 +1,90 @@
+---
+title: "Android barcode and QR code scanning"
+description: "Test barcode and QR code scanning features in Android apps using the emulator's virtual camera scene."
+sidebarTitle: "Android"
+---
+
+Use `device.setVirtualSceneImage()` and `device.playAutomation()` to place a barcode or QR code image in the emulator's virtual camera scene and animate the camera toward it — simulating a real scan without a physical device. See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full API.
+
+The sequence is: store the barcode image in team storage → place it on the virtual scene (`table` or `wall`) → play the `Walk_to_image_room` macro to animate the camera toward it → wait for your app to detect and process the scan.
+
+<Note>
+  Store your barcode image in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions. The image must encode the exact value your test expects.
+</Note>
+
+## Examples
+
+**Scan a barcode on the virtual table**
+
+```typescript
+await device.setVirtualSceneImage({
+  image: `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`,
+  location: "table",
+});
+
+await device.playAutomation({
+  macro: "Walk_to_image_room",
+});
+```
+
+**Scan a barcode on the virtual wall**
+
+```typescript
+await device.setVirtualSceneImage({
+  image: `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`,
+  location: "wall",
+});
+
+await device.playAutomation({
+  macro: "Walk_to_image_room",
+});
+```
+
+## When to use
+
+- Your app has a barcode or QR code scanner and you need to test it without physical hardware.
+- Your app uses QR codes to initiate a session, link an account, or navigate to a URL.
+- Your app reads barcodes as part of a checkout, inventory, or verification flow.
+- Your test needs to assert on a specific scanned value.
+
+## Full sample test
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+const barcodeImagePath = `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`;
+
+export default flow(
+  "Scan barcode",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("scan barcode and verify value", async () => {
+      // Arrange
+      await driver.$(`//*[@text='Scan']`).click();
+
+      // Act
+      await device.setVirtualSceneImage({
+        image: barcodeImagePath,
+        location: "table",
+      });
+
+      await device.playAutomation({
+        macro: "Walk_to_image_room",
+      });
+
+      await driver
+        .$(`//*[@text='Barcode Captured']`)
+        .waitForDisplayed({ timeout: 10_000 });
+
+      // Assert
+      const value = await driver
+        .$(`//android.widget.TextView[@resource-id='com.example.app:id/scanned_value']`)
+        .getAttribute("text");
+
+      if (value !== "1234567890128") {
+        throw new Error(`Unexpected scan value: ${value}`);
+      }
+    });
+  },
+);
+```

@@ -1,0 +1,70 @@
+---
+title: "Microphone injection (Android)"
+description: "Inject audio into the Android emulator's microphone input to test recording and voice features."
+sidebarTitle: "Android"
+---
+
+The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `runCommand` with `ffplay` to play an audio file during a flow — your app will receive it as microphone input.
+
+<Note>
+  `ffplay` is pre-installed on QA Wolf runners. Store your audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
+</Note>
+
+## Examples
+
+**Inject audio into the microphone**
+
+```typescript
+await runCommand(
+  `ffplay -nodisp -t 10 -autoexit -hide_banner -loglevel error ${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
+);
+```
+
+**Pull a recording off the emulator**
+
+```typescript
+await runCommand(`adb pull '/sdcard/Recordings/My recording 1.m4a' ${process.env.TEAM_STORAGE_DIR}/recorded.m4a`);
+```
+
+## When to use
+
+- Your app records audio or processes microphone input and you need to test that flow with known audio data.
+- Your app has voice commands or speech recognition features.
+- Your app validates or analyzes microphone input.
+- Your test needs to run the same audio scenario repeatedly with consistent inputs.
+
+## ffplay flags
+
+See the [ffplay documentation](https://ffmpeg.org/ffplay.html) for the full list of available flags.
+
+## Full sample test
+
+```typescript
+import { flow } from "@qawolf/flows/android";
+
+const audioPath = `${process.env.TEAM_STORAGE_DIR}/audio.mp3`;
+
+export default flow(
+  "Test audio recording",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("record injected audio and verify it was saved", async () => {
+      // Arrange
+      await driver.$(`//*[@text='Record Audio']`).click();
+      await driver.pause(3_000);
+
+      // Act
+      await runCommand(
+        `ffplay -nodisp -t 10 -autoexit -hide_banner -loglevel error ${audioPath}`,
+      );
+
+      await driver.$(`//*[@text='Record']`).click();
+      await driver.pause(10_000);
+      await driver.$(`//*[@text='Done']`).click();
+
+      // Assert
+      await driver.$(`//*[@text='Open Audio']`).waitForDisplayed({ timeout: 5_000 });
+    });
+  },
+);
+```

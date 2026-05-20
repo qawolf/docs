@@ -1,0 +1,98 @@
+---
+title: "Microphone injection (iOS)"
+description: "Inject audio into your app's microphone input to test audio features without real hardware."
+sidebarTitle: "iOS"
+---
+
+Use `device.injectAudio()` to replace your app's microphone input with a pre-recorded audio file. This lets you test voice recording, speech recognition, and audio processing features under controlled, repeatable conditions.
+
+See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device-reference) for the full API.
+
+<Warning>
+  Audio injection is only available for apps that QA Wolf resigns during installation. It is not available for system apps or Safari.
+</Warning>
+
+## Examples
+
+**Inject audio into the microphone**
+
+```typescript
+const cleanup = await device.injectAudio(driver, process.env.BUNDLE_ID, {
+  data: `${process.env.TEAM_STORAGE_DIR}/sample_audio_input.wav`,
+});
+
+// trigger the microphone feature in your app
+
+await cleanup();
+```
+
+**Pull the recording off the device**
+
+```typescript
+const recordingAsBase64 = await driver.execute("mobile: pullFile", {
+  remotePath: `@${process.env.BUNDLE_ID}:/path/to/recording.m4a`,
+});
+
+const buffer = Buffer.from(recordingAsBase64, "base64");
+const { writeFile } = await import("node:fs/promises");
+await writeFile(`${process.env.TEAM_STORAGE_DIR}/recording.m4a`, buffer);
+```
+
+## When to use
+
+- Your app records audio or processes microphone input and you need to test that flow with known audio data.
+- Your app has voice commands or speech recognition features that need consistent, repeatable input.
+- Your app validates or transforms microphone input and you need to assert on the output.
+- Your test needs to simulate a specific audio input that is difficult to produce in a test environment.
+
+## Supported file types
+
+WAV
+
+## Full sample test
+
+```typescript
+import { device, flow } from "@qawolf/flows/ios";
+
+const audioPath = `${process.env.TEAM_STORAGE_DIR}/sample_audio_input.wav`;
+
+export default flow(
+  "Test microphone input",
+  {
+    target: "iOS - iPhone 15 (iOS 26)",
+    launch: {
+      app: { env: "IPA_BUILD_LOCATION" },
+      respectSystemAlerts: true,
+      autoAcceptAlerts: true,
+    },
+  },
+  async ({ driver, test }) => {
+    await test("inject audio and verify recording was saved", async () => {
+      // Arrange
+      await driver.$(`//XCUIElementTypeButton[@name='Record Audio']`).click();
+
+      // Act
+      const cleanup = await device.injectAudio(driver, process.env.BUNDLE_ID, {
+        data: audioPath,
+      });
+
+      await driver.$(`//XCUIElementTypeButton[@name='Record']`).click();
+      await driver.pause(10_000);
+      await driver.$(`//XCUIElementTypeButton[@name='Done']`).click();
+
+      await cleanup();
+
+      // Assert
+      const recordingAsBase64 = await driver.execute("mobile: pullFile", {
+        remotePath: `@${process.env.BUNDLE_ID}:/path/to/recording.m4a`,
+      });
+
+      const buffer = Buffer.from(recordingAsBase64, "base64");
+      const { writeFile } = await import("node:fs/promises");
+      await writeFile(`${process.env.TEAM_STORAGE_DIR}/recording.m4a`, buffer);
+
+      expect(buffer.length).toBeGreaterThan(0);
+    });
+  },
+);
+```

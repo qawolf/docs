@@ -38,6 +38,35 @@ The AI mapping agent creates and maintains a structured view of coverage by expl
   </Step>
 </Steps>
 
+## Map from a file
+
+Click <Icon icon="plus" /> in the chat input to attach a file, then use one of the following prompts depending on what you want.
+
+<Note>
+  Supported file types: CSV, JSON, Markdown, plain text, and YAML.
+</Note>
+
+### Generate flows from a file
+
+Parses the file and creates the folder structure and flow stubs immediately, without exploring the app. Supports most file and image types.
+
+Prompt: _"Upload the flows from this file."_
+
+### Map your app using a file as a guide
+
+Uses the file as a reference while the agent actively explores your app.
+
+<Steps>
+  <Step>
+    Navigate to your app in the browser panel, or include the URL and login credentials in your message.
+  </Step>
+  <Step>
+    Prompt: _"Map all the flows in this file."_
+  </Step>
+</Steps>
+
+When the session ends, the agent produces a CSV with each test case's coverage status, the flow that covers it, and the reason for any rejections.
+
 ## Review and publish mapped flows
 
 As the agent maps your application, newly discovered flows appear in the right panel. Review them before publishing.

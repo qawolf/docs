@@ -1,0 +1,84 @@
+---
+title: "Measure performance (Android)"
+description: "Measure frame rate and CPU usage on the Android emulator during automated flows."
+sidebarTitle: "Android"
+---
+
+Use `adb` commands via `runCommand` to collect FPS and CPU metrics during a flow and assert on rendering performance and CPU load.
+
+See the [Android `dumpsys` documentation](https://developer.android.com/tools/dumpsys) for more on SurfaceFlinger stats.
+
+<Note>
+  Performance measurements run on the Android emulator. FPS values reflect emulator rendering, not physical device GPU performance. CPU values are per-core percentages and can exceed 100% on multi-core emulators (typically 4 cores).
+</Note>
+
+## Examples
+
+**Assert average FPS**
+
+```typescript
+await runCommand("adb shell dumpsys SurfaceFlinger --timestats -clear -enable");
+
+// perform the rendering-heavy interaction you want to measure
+
+const resTxt = await runCommand("adb shell dumpsys SurfaceFlinger --timestats -dump");
+const match = resTxt.match(/averageFPS\s*=\s*(?<avgFps>\d+\.\d*)/);
+const avgFps = Number(match.groups["avgFps"]);
+expect(avgFps).toBeGreaterThan(40);
+```
+
+<Warning>
+  If the device is idle when you collect stats, the reported FPS may be near zero because there is no active rendering. Always start measuring immediately before a rendering-heavy action.
+</Warning>
+
+**Sample CPU usage**
+
+```typescript
+const packageName = await driver.getCurrentPackage();
+const processId = await runCommand(`adb shell pidof ${packageName}`);
+const stdout = await runCommand(`adb shell top -n 1 -p ${processId}`);
+
+const match = stdout.match(/\S+\s+\S+\s+\S+\s+\S+\s+(\S+)/);
+const cpuUsage = parseFloat(match[1]);
+expect(cpuUsage).toBeLessThan(50);
+```
+
+## When to use
+
+- Your app has animations or rendering-heavy screens and you need to assert on frame rate.
+- Your app performs background processing and you need to verify CPU usage stays within acceptable limits.
+- Your flow includes a workflow that should complete without excessive CPU load.
+- Your team has performance budgets you want to enforce in CI.
+
+## Full sample test
+
+```typescript
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Measure performance",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("assert FPS", async () => {
+      await runCommand("adb shell dumpsys SurfaceFlinger --timestats -clear -enable");
+
+      // perform the rendering-heavy interaction you want to measure
+
+      const resTxt = await runCommand("adb shell dumpsys SurfaceFlinger --timestats -dump");
+      const match = resTxt.match(/averageFPS\s*=\s*(?<avgFps>\d+\.\d*)/);
+      const avgFps = Number(match.groups["avgFps"]);
+      expect(avgFps).toBeGreaterThan(40);
+    });
+
+    await test("assert CPU usage", async () => {
+      const packageName = await driver.getCurrentPackage();
+      const processId = await runCommand(`adb shell pidof ${packageName}`);
+      const stdout = await runCommand(`adb shell top -n 1 -p ${processId}`);
+
+      const match = stdout.match(/\S+\s+\S+\s+\S+\s+\S+\s+(\S+)/);
+      const cpuUsage = parseFloat(match[1]);
+      expect(cpuUsage).toBeLessThan(50);
+    });
+  },
+);
+```

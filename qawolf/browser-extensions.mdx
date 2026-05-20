@@ -1,0 +1,83 @@
+---
+title: "Test Chrome extensions"
+description: "Load and test Chrome extensions in QA Wolf flows using Playwright's persistent context and Chrome flags."
+icon: "puzzle"
+sidebarTitle: "Chrome extensions"
+---
+
+Use `launch()` with Chrome flags to load an extension into the browser before your flow runs. This lets you test extension popup UIs, content scripts, and extension behavior alongside your app.
+
+<Note>
+  Store your extension zip in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions. Replace `<extension-id>` with your extension's ID, which you can find at `chrome://extensions` with Developer mode enabled.
+</Note>
+
+## Example
+
+```typescript
+import { flow, launch } from "@qawolf/flows/web";
+
+const extensionPath = `${process.env.TEAM_STORAGE_DIR}/my-extension.zip`;
+
+const { context } = await launch({
+  browser: "chromium",
+  persistentContext: true,
+  args: [
+    `--disable-extensions-except=${extensionPath}`,
+    `--load-extension=${extensionPath}`,
+  ],
+  permissions: ["clipboard-read", "clipboard-write"],
+});
+
+const extensionPage = await context.newPage();
+await extensionPage.goto(`chrome-extension://<extension-id>/popup.html`);
+```
+
+## When to use
+
+- Your app uses a Chrome extension and you need to test the full user flow with the extension installed.
+- You need to test the extension's popup UI or options page directly
+- You need to verify that a content script modifies or interacts with a page correctly
+
+## Full sample test
+
+```typescript
+import { flow, launch } from "@qawolf/flows/web";
+
+const extensionPath = `${process.env.TEAM_STORAGE_DIR}/my-extension.zip`;
+
+export default flow(
+  "Test Chrome extension popup",
+  "Web - Chrome",
+  async ({ test }) => {
+    await test("launch extension and verify popup renders", async () => {
+      // Arrange
+      const { context } = await launch({
+        browser: "chrome",
+        persistentContext: true,
+        acceptDownloads: true,
+        args: [
+          `--allow-file-access-from-files`,
+          `--disable-extensions-except=${extensionPath}`,
+          `--load-extension=${extensionPath}`,
+          `--no-sandbox`,
+        ],
+      });
+
+      await expect
+        .poll(
+          () => context.pages(),
+          { intervals: [1_000, 2_000, 10_000], timeout: 10_000 },
+        )
+        .toHaveLength(2);
+
+      const extensionPage = context.pages().at(-1);
+
+      // Act
+      await extensionPage.locator("#open-popup").click();
+
+      // Assert
+      await expect(extensionPage.locator("#popup-content")).toBeVisible();
+    });
+  },
+);
+```

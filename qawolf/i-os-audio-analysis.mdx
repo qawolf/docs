@@ -1,0 +1,104 @@
+---
+title: "Audio analysis (iOS)"
+description: "Compare recorded audio against a reference file using Chromaprint fingerprinting to verify your app plays the correct audio."
+sidebarTitle: "iOS"
+---
+
+Use `device.calculateAudioFingerprint()` to generate a Chromaprint fingerprint from a recorded audio file and compare it against a known reference. Chromaprint supports fuzzy matching — small differences in volume or encoding don't affect the result, making it resilient to minor variations in playback.
+
+See the [iOS Device Reference](/qawolf/libraries/flows/api-reference/ios-device-reference) for the full API.
+
+<Note>
+  Store your reference audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions. `stopSpeakerRecording()` automatically calculates a fingerprint — you only need to call `calculateAudioFingerprint()` separately for the reference file.
+</Note>
+
+## Examples
+
+**Compare recorded audio against a reference**
+
+```typescript
+import { readFile } from "node:fs/promises";
+
+const session = await device.startSpeakerRecording(driver);
+
+// trigger audio playback in your app
+
+const file = await device.stopSpeakerRecording(driver, session.id);
+const buffer = await device.downloadSpeakerRecording(driver, file.filename);
+
+const recordingFingerprint = file.fingerprint ??
+  (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
+
+const referenceBuffer = await readFile(`${process.env.TEAM_STORAGE_DIR}/reference.wav`);
+const { fingerprint: referenceFingerprint } =
+  await device.calculateAudioFingerprint(driver, referenceBuffer);
+
+const result = findBestMatch(recordingFingerprint, referenceFingerprint);
+expect(result.similarity).toBeGreaterThan(0.85);
+```
+
+## When to use
+
+- Your app plays audio and you need to verify the correct track or sound effect played.
+- Your app uses text-to-speech and you need to validate the output matches expected speech.
+- Your app plays audio prompts and you need to confirm they haven't changed after an update.
+- Your app has audio-dependent features and functional assertions aren't sufficient.
+
+## Similarity thresholds
+
+| Threshold | Use case |
+| --- | --- |
+| `> 0.95` | Near-identical audio — same file, minimal encoding differences |
+| `> 0.85` | Same content with minor volume or quality variations (recommended default) |
+| `> 0.70` | Looser match — same song or speech with notable differences |
+
+## Full sample test
+
+````typescript
+import { device, flow } from "@qawolf/flows/ios";
+import { readFile } from "node:fs/promises";
+
+const REFERENCE_AUDIO_PATH = `${process.env.TEAM_STORAGE_DIR}/reference.wav`;
+
+export default flow(
+  "Verify audio playback",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("record audio and compare against reference", async () => {
+      // Arrange
+      await driver.$(`//XCUIElementTypeButton[@name='Play']`).waitForDisplayed({ timeout: 10_000 });
+
+      // Act
+      const session = await device.startSpeakerRecording(driver);
+
+      await driver.$(`//XCUIElementTypeButton[@name='Play']`).click();
+      await driver.pause(10_000);
+
+      const file = await device.stopSpeakerRecording(driver, session.id);
+      const buffer = await device.downloadSpeakerRecording(driver, file.filename);
+
+      // Assert
+      const recordingFingerprint = file.fingerprint ??
+        (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
+
+      const referenceBuffer = await readFile(REFERENCE_AUDIO_PATH);
+      const { fingerprint: referenceFingerprint } =
+        await device.calculateAudioFingerprint(driver, referenceBuffer);
+
+      const result = findBestMatch(recordingFingerprint, referenceFingerprint);
+      expect(result.similarity).toBeGreaterThan(0.85);
+    });
+  },
+);
+```        (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
+
+      const referenceBuffer = await readFile(REFERENCE_AUDIO_PATH);
+      const { fingerprint: referenceFingerprint } =
+        await device.calculateAudioFingerprint(driver, referenceBuffer);
+
+      const result = findBestMatch(recordingFingerprint, referenceFingerprint);
+      expect(result.similarity).toBeGreaterThan(0.85);
+    });
+  },
+);
+````

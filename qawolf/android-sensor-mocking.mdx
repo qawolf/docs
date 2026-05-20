@@ -1,0 +1,46 @@
+---
+title: "Mock hardware sensors (Android)"
+description: "Simulate accelerometer, gyroscope, light, and pressure sensor input on the Android emulator."
+sidebarTitle: "Android"
+---
+
+Use `runCommand` to send `adb emu sensor set` commands during a flow. This lets you simulate hardware sensor input and test how your app responds.
+
+See the [Android emulator sensor documentation](https://developer.android.com/studio/run/emulator-console#sensor-set) for available sensor names and value formats.
+
+<Note>
+  Sensor commands affect the emulator's sensor state directly. They work on emulators only — not physical devices.
+</Note>
+
+## Examples
+
+**Accelerometer**
+
+```typescript
+await runCommand("adb emu sensor set acceleration 19:9.81:0");
+```
+
+**Gyroscope**
+
+```typescript
+await runCommand("adb emu sensor set gyroscope 0.00:0.00:1.00");
+```
+
+**Light**
+
+```typescript
+await runCommand("adb emu sensor set light 100");
+```
+
+**Pressure**
+
+```typescript
+await runCommand("adb emu sensor set pressure 10");
+```
+
+## When to use
+
+- Your app responds to device tilt or motion and you need to test that behavior.
+- Your app adjusts UI based on ambient light levels.
+- Your app reads barometric pressure for altitude or weather features.
+- Your app uses gyroscope data for orientation or gesture detection.
