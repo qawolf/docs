@@ -152,7 +152,7 @@
                 "group": "Beacon injection",
                 "icon": "bluetooth",
                 "pages": [
-                  "qaolf/i-beacon-injection"
+                  "qawolf/i-beacon-injection"
                 ]
               }
             ]
