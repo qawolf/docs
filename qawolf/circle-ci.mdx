@@ -1,0 +1,140 @@
+---
+title: "How to integrate with CircleCI"
+description: "Connect QA Wolf to CircleCI to automatically trigger test runs when you deploy code from your repository."
+sidebarTitle: "CircleCI"
+---
+
+<Warning>
+  Deployment triggers are configured for your main environment per your QA Wolf contract. Contact your QA Wolf representative before setting this up — a QAE must configure a deployment trigger for your environment before deploy notifications can initiate test runs.
+</Warning>
+
+<Check>
+  Make sure you have:
+
+  - Access to your QA Wolf workspace
+  - Admin access to your CircleCI project
+  - At least one QA Wolf environment already configured with a deployment trigger
+  - A QA Wolf API key
+</Check>
+
+## Set up your QAWOLF\_API\_KEY
+
+### Find the QAWOLF\_API\_KEY
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+  </Step>
+  <Step>
+    Choose **Integrations** and then click the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+  </Step>
+</Steps>
+
+### Add the QAWOLF\_API\_KEY secret
+
+<Steps>
+  <Step>
+    Open your CircleCI project and go to **Project Settings → Environment Variables**.
+  </Step>
+  <Step>
+    Click **Add Environment Variable**. Name it `QAWOLF_API_KEY`, paste your API key, and save.
+  </Step>
+</Steps>
+
+## Add the notify script to your repository
+
+Create a file at `.circleci/notifyQaWolf.mjs` in the repository that corresponds to the deployments QA Wolf will be testing.
+
+```javascript
+import assert from "assert";
+import { makeQaWolfSdk } from "https://esm.sh/@qawolf/ci-sdk@0.23.0";
+
+const apiKey = process.env.QAWOLF_API_KEY;
+assert(apiKey, "QAWOLF_API_KEY is required");
+
+const sha = process.env.CIRCLE_SHA1;
+assert(sha, "CIRCLE_SHA1 is required");
+
+const branch = process.env.CIRCLE_BRANCH;
+assert(branch, "CIRCLE_BRANCH is required");
+
+const deployConfig = {
+  branch,
+  // Required only if the target trigger requires matching a deployment type
+  deploymentType: "staging", // e.g., "production", "staging", "qa"
+  // Optional: Include deployment URL to override URL environment variable for the run
+  deploymentUrl: undefined,
+  hostingService: "GitHub", // Set to where your repo is hosted, e.g. "GitHub" or "GitLab"
+  // Optional: Include pull request number for PR testing
+  // pullRequestNumber: 123,
+  // Recommended: Include repository information
+  repository: {
+    name: "your-repo-name",
+    owner: "your-org-name",
+  },
+  sha,
+};
+
+const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey });
+
+const result = await attemptNotifyDeploy(deployConfig);
+if (result.outcome !== "success") {
+  // Fail the job.
+  throw Error(`Failed to notify QAWolf: ${JSON.stringify(result)}`);
+}
+
+// result.runId can be output from the job to be used in a CI-greenlight job.
+```
+
+<Note>
+  Replace `deploymentType` with the value your QA Wolf representative provides. Replace `name` and `owner` under `repository` with your actual repository details. Set `hostingService` to match where your code is hosted — `"GitHub"` or `"GitLab"` — not where your pipeline runs.
+</Note>
+
+## Add the notify job to your CircleCI config
+
+Add the `notify-qa-wolf` job to your `.circleci/config.yml` and place it in your workflow after your deploy step.
+
+```yaml
+version: 2.1
+
+orbs:
+  node: circleci/node@7.0.0
+
+jobs:
+  # build: TODO
+  # deploy: TODO
+  notify-qa-wolf:
+    executor: node/default
+    steps:
+      - checkout
+      - run: node --version
+      - run: node --experimental-network-imports .circleci/notifyQaWolf.mjs
+
+workflows:
+  build-deploy-test-workflow:
+    jobs:
+      # - build
+      # - deploy
+      - notify-qa-wolf
+```
+
+The `notify-qa-wolf` job must:
+
+- Use the `node/default` executor
+- Check out your code
+- Run `node --experimental-network-imports .circleci/notifyQaWolf.mjs`
+
+Place it after your deploy job in the workflow so it runs only once your environment is healthy.
+
+## Verify the integration
+
+<Steps>
+  <Step>
+    Push a new commit and wait for your CircleCI pipeline to complete.
+  </Step>
+  <Step>
+    Open QA Wolf and confirm a new run appears under the expected environment.
+  </Step>
+</Steps>
+
+- [QA Wolf CI SDK](/qawolf/Integrate-with-the-QA-Wolf-SDK-2db5b2a994fb8043be61f06f025d9c63)
