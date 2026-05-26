@@ -60,7 +60,7 @@ Options:
 - `--har-content <mode>` — `omit` or `full`. `full` includes response bodies and uses more memory. Default: `omit`.
 - `--output-dir <path>` — directory for artifacts. Default: `qawolf-output`.
 - `--headed` — show the browser window instead of running headless. Default: `false`.
-- `--env <env>` — environment ID or slug. When set, missing flows are pulled before the run.
+- `--env <env>` — environment ID. When set, missing flows are pulled before the run.
 
 Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments or an unrecognized flow target. See [Exit codes](/qawolf/libraries/cli/api-reference/exit-codes).
 
@@ -90,7 +90,7 @@ qawolf flows pull --env staging --yes
 
 Options:
 
-- `--env <env>` — required. The environment to pull from. Accepts an environment UUID or a kebab-case slug.
+- `--env <env>` — required. The environment ID to pull from.
 - `--out <path>` — destination directory. Defaults to `.qawolf/<env>/`.
 - `--yes` — overwrite locally-modified files without prompting. Default: `false`.
 
