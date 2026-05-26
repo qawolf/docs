@@ -507,5 +507,10 @@
       "github": "https://github.com/qawolf/qawolf",
       "linkedin": "https://www.linkedin.com/company/qa-wolf/"
     }
+  },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_qEW3U4XMuhdJa6Rf2QZvbyKcixM5mYyq5BYNopuSxBFw"
+    }
   }
 }
