@@ -8,29 +8,27 @@ icon: "file-question-mark"
 
 ### What is QA Wolf?
 
-QA Wolf is an AI testing platform. Engineering teams use it to get deep, comprehensive end-to-end test coverage without building or maintaining the infrastructure themselves. Three AI agents — Mapping AI, Automation AI, and Maintenance AI — handle exploration, test creation, and failure investigation. Human QA engineers review and take accountability for every output.
-
-QA Wolf has two products. **Self-Service** is AI-assisted — your team uses the platform directly to build and run E2E tests. [**Full Service**](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5) is a managed service — QA Wolf's team of QA engineers handles creation, execution, investigation, maintenance, and bug reporting on your behalf.
+QA Wolf is an AI testing platform. Engineering teams use it to get deep, comprehensive end-to-end test coverage without building or maintaining the infrastructure themselves. Two AI agents — Mapping AI and Automation AI — handle exploration and test creation. Teams that want additional hands-on support can add [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5), where QA Wolf's team handles creation, execution, investigation, maintenance, and bug reporting on your behalf.
 
 ### What kinds of testing does QA Wolf support?
 
 QA Wolf supports end-to-end testing for web, iOS, and Android apps — including PR testing, visual diffing, accessibility, performance, and more. See the [Solutions](/qawolf/solutions) page for the full list.
 
-### Can a QA engineer use QA Wolf without developer involvement?
+### Who is QA Wolf for?
 
-Yes. QA Wolf is designed to enable QA engineers to build, run, and maintain tests independently. Some setup — connecting to your CI/CD pipeline, configuring environments, VPN access — requires developer involvement up front. Day-to-day test authoring and maintenance does not.
+QA Wolf is built for engineering and product teams at software companies who need reliable, comprehensive end-to-end test coverage. It works for developers who want to own their test suite directly, and for non-technical team members who need visibility into coverage and results without writing code. Some initial setup — connecting to your CI/CD pipeline, configuring environments — requires developer involvement.
 
 ### Does QA Wolf replace our QA team?
 
-No. QA Wolf handles the infrastructure, execution, and a significant portion of the authoring and maintenance work. Your QA engineers define coverage strategy, review results, and own the outcomes. Under [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5), QA Wolf's team of QA engineers takes on that operational work directly.
+No. QA Wolf handles the infrastructure, execution, and a significant portion of the authoring and maintenance work. Your team defines coverage strategy, reviews results, and owns the outcomes. Teams that want to hand off that operational work entirely can add [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5).
 
 ### Does QA Wolf support agentic development workflows?
 
-Yes. QA Wolf is built for teams working in AI-assisted development, where AI IDEs and code generation tools accelerate the speed at which code moves. As development velocity increases, test coverage needs to keep up. QA Wolf's agents map, automate, and run tests in parallel so your QA cycle doesn't become the bottleneck.
+Yes. QA Wolf is built for teams working in AI-assisted development — where AI IDEs and code generation tools accelerate how fast code moves. As development velocity increases, test coverage needs to keep up. QA Wolf maps, automates, and runs tests in parallel so your QA cycle doesn't become the bottleneck.
 
 ### Can QA Wolf test AI-powered products?
 
-Yes. Testing non-deterministic outputs — AI chatbots, recommendation engines, generative features — requires a different approach than standard E2E testing. QA Wolf supports this. See ["Testing non-deterministic AI"](https://docs.qawolf.com/qawolf/non-deterministic-ai-testing) for guidance on structuring coverage for AI-powered functionality.
+Yes. Testing non-deterministic outputs — AI chatbots, recommendation engines, generative features — requires a different approach than standard E2E testing. QA Wolf supports this. See [Testing non-deterministic AI](/qawolf/non-deterministic-ai-testing) for how to structure coverage for AI-powered functionality.
 
 ### Does QA Wolf do mocked testing, load testing, or API testing?
 
@@ -38,7 +36,7 @@ QA Wolf focuses on end-to-end functional testing — real browsers, real devices
 
 ### How does QA Wolf handle flaky tests?
 
-Every test is rerun at least three times before a failure is reported, keeping the flake rate below 1%. Tests also create and clean up their own isolated data, which eliminates the data collisions that cause most flakes in shared-state test suites.
+Every test re-runs at least three times before a failure is reported, keeping the flake rate below 1%. Tests also create and clean up their own isolated data, which eliminates the data collisions that cause most flakes in shared-state test suites.
 
 ### How fast are test runs?
 
@@ -46,7 +44,7 @@ Every test in a suite runs in full parallel, each in its own container. Most sui
 
 ### Do I own the test code?
 
-Yes. Tests written in open-source Playwright and Appium are human-readable and portable. Your team owns every test and can run it outside QA Wolf's infrastructure if needed.
+Yes. Tests are written in open-source Playwright and Appium, are human-readable, and are portable. Your team owns every test and can run it outside QA Wolf's infrastructure if needed.
 
 ### Does QA Wolf integrate with our existing stack?
 
@@ -55,10 +53,6 @@ Yes. QA Wolf integrates with GitHub Actions, GitLab CI, CircleCI, Jira, Linear, 
 ### Is QA Wolf GDPR compliant?
 
 For compliance and data handling questions, contact [hello@qawolf.com](mailto:hello@qawolf.com). QA Wolf can provide documentation for your security review.
-
-### How much does QA Wolf cost?
-
-Pricing depends on your team's coverage needs and which product you're using. Contact [hello@qawolf.com](mailto:hello@qawolf.com) for a quote.
 
 ---
 
@@ -84,11 +78,11 @@ QA Wolf runs tests from a set of static IPv4 addresses. See [QA Wolf's static IP
 
 ### What Android devices does QA Wolf support?
 
-Android environments are emulator-based. Each environment is defined by an OS version and a hardware profile — screen dimensions, resolution, and display density. See the [Android device reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full list of supported devices.
+Android environments are emulator-based. Each environment is defined by an OS version and a hardware profile — screen dimensions, resolution, and display density. See the [Android device reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full supported matrix.
 
 ### How do I test MFA or SSO login flows?
 
-QA Wolf supports MFA testing, including QR code and TOTP-based flows. See [Test MFA](/qawolf/test-mfa) and [QR code testing](/qawolf/qrcode).
+QA Wolf supports MFA testing including QR code and TOTP-based flows. See [Test MFA](/qawolf/test-mfa) and [QR code testing](/qawolf/qrcode).
 
 ### How do I add users to my workspace?
 
@@ -100,7 +94,7 @@ If your team is on [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442
 
 ### How do I report a bug found during a test run?
 
-When a flow fails, QA Wolf's AI begins investigating within seconds. Every test is rerun at least three times before a failure is reported, keeping the flake rate below 1%. Every bug report includes reproduction steps, a video walkthrough, and Playwright trace logs. See [Manage bug reports](/qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f) and [Diagnose a failing flow](/qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5).
+When a flow fails, QA Wolf's AI begins investigating within seconds. Every test re-runs at least three times before a failure is reported, keeping the flake rate below 1%. Every bug report includes reproduction steps, a video walkthrough, and Playwright trace logs. See [Manage bug reports](/qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f) and [Diagnose a failing flow](/qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5).
 
 ### Can I run tests locally?
 
