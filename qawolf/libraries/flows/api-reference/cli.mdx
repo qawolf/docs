@@ -120,16 +120,21 @@ See [Passing data between flows](/qawolf/Pass-data-between-flows-29d5b2a994fb801
 
 ## `expect`
 
-Like the other platform entry points, the exported `expect` value is a type-safe stub in package code and is replaced by the runner when the flow executes.
+The exported `expect` is a re-export of the [`expect`](https://www.npmjs.com/package/expect) package — the same assertion library Jest uses. Use Jest's [`expect` reference](https://jestjs.io/docs/expect) for the full matcher list (`toBe`, `toEqual`, `toMatchObject`, `toThrow`, etc.).
+
+Always import `expect` from `@qawolf/flows/cli` rather than from `expect` or `jest` directly, so that future QA Wolf extensions stay in effect.
 
 Example:
 
 ```ts
 import { expect, flow } from "@qawolf/flows/cli";
 
-export default flow("Use runner expect", "Basic", async ({ test }) => {
-  await test("check value", async () => {
-    await expect("ready").toBeDefined();
+export default flow("Validate release payload", "Basic", async ({ inputs, test }) => {
+  await test("payload has expected shape", async () => {
+    expect(inputs).toMatchObject({
+      status: "ready",
+      generatedAt: expect.any(String),
+    });
   });
 });
 ```
