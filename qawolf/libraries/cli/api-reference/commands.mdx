@@ -1,0 +1,148 @@
+---
+title: "Commands Reference"
+description: "Reference notes for every qawolf CLI command and flag."
+sidebarTitle: "Commands"
+---
+
+The qawolf CLI exposes five top-level commands. Each section below documents the command's purpose, accepted arguments, and flags.
+
+## `auth`
+
+Manages authentication with the QA Wolf platform. Credentials are read from the `QAWOLF_API_KEY` environment variable first, then from the system keychain, then from a config file fallback.
+
+### `auth login`
+
+Prompts for an API key, validates it against the platform, and stores it locally. Requires an interactive terminal — in non-interactive contexts, set `QAWOLF_API_KEY` directly.
+
+```bash
+qawolf auth login
+```
+
+### `auth logout`
+
+Removes stored credentials. Credentials set via the `QAWOLF_API_KEY` environment variable cannot be removed by this command.
+
+```bash
+qawolf auth logout
+```
+
+### `auth whoami`
+
+Displays the authenticated team name, ID, optional slug, and the credential source.
+
+```bash
+qawolf auth whoami
+```
+
+## `flows`
+
+Manages and runs QA Wolf flows.
+
+### `flows run [pattern]`
+
+Runs flows matching `[pattern]`, or every flow when omitted. The default pattern matches `**/*.flow.{ts,js}` in the current working directory and in `.qawolf/<env>/` subdirectories.
+
+```bash
+qawolf flows run
+qawolf flows run "flows/checkout/**"
+qawolf flows run checkout --env staging --headed
+```
+
+Options:
+
+- `--retries <n>` — number of retries for each failing flow. Default: `0`.
+- `--bail` — stop after the first failure. Default: `false`.
+- `--workers <n>` — parallel worker count. Default: `1`. Currently capped at `1`.
+- `--timeout <ms>` — per-flow timeout in milliseconds. Default: `30000`.
+- `--video <mode>` — `on`, `off`, or `retain-on-failure`. Default: `off`.
+- `--trace <mode>` — Playwright trace mode. `on`, `off`, or `retain-on-failure`. Default: `off`.
+- `--har <mode>` — HAR capture mode. `on`, `off`, or `retain-on-failure`. Default: `off`.
+- `--har-content <mode>` — `omit` or `full`. `full` includes response bodies and uses more memory. Default: `omit`.
+- `--output-dir <path>` — directory for artifacts. Default: `qawolf-output`.
+- `--headed` — show the browser window instead of running headless. Default: `false`.
+- `--env <env>` — environment ID or slug. When set, missing flows are pulled before the run.
+
+Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments or an unrecognized flow target. See [Exit codes](/qawolf/libraries/cli/api-reference/exit-codes).
+
+### `flows list [pattern]`
+
+Lists flows matching `[pattern]`. By default, lists local flows; with `--remote`, lists flows from the QA Wolf platform.
+
+```bash
+qawolf flows list
+qawolf flows list "flows/checkout/**"
+qawolf flows list --remote
+```
+
+Options:
+
+- `--remote` — list flows from the QA Wolf platform instead of the local project. Default: `false`.
+
+### `flows pull`
+
+Downloads an environment's flows into the local `.qawolf/<env>/` cache.
+
+```bash
+qawolf flows pull --env staging
+qawolf flows pull --env 4e9c... --out ./snapshot
+qawolf flows pull --env staging --yes
+```
+
+Options:
+
+- `--env <env>` — required. The environment to pull from. Accepts an environment UUID or a kebab-case slug.
+- `--out <path>` — destination directory. Defaults to `.qawolf/<env>/`.
+- `--yes` — overwrite locally-modified files without prompting. Default: `false`.
+
+## `install`
+
+Installs every runtime dependency the project's flows need. With a `[pattern]` argument, only the dependencies for the matching flows are installed.
+
+```bash
+qawolf install
+qawolf install "flows/checkout/**"
+```
+
+### `install browsers [pattern]`
+
+Installs the Playwright browsers used by the project's web flows.
+
+```bash
+qawolf install browsers
+qawolf install browsers "flows/web/**"
+```
+
+### `install android [pattern]`
+
+Installs Android system images, AVDs, and the Appium driver used by the project's Android flows. Requires `ANDROID_HOME` or `ANDROID_SDK_ROOT`.
+
+```bash
+qawolf install android
+qawolf install android "flows/mobile/**"
+```
+
+## `init`
+
+Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. Adds the `@qawolf/flows` dependency and a `test:e2e` script to `package.json`.
+
+```bash
+qawolf init
+qawolf init --yes
+```
+
+Options:
+
+- `--yes` — overwrite existing files without prompting. Default: `false`.
+
+## `doctor`
+
+Diagnoses problems running flows locally. Checks the CLI version, Node.js version, Playwright installation, browser availability for web flows, and the Android SDK for Android flows.
+
+```bash
+qawolf doctor
+qawolf doctor --all
+```
+
+Options:
+
+- `--all` — run every platform check, including platforms the project does not use. Default: `false`.

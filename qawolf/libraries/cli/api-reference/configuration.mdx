@@ -1,0 +1,31 @@
+---
+title: "Configuration Reference"
+description: "Reference notes for the qawolf.config.ts file."
+sidebarTitle: "Configuration"
+---
+
+The qawolf CLI reads a `qawolf.config.ts` file at the project root. `qawolf init` generates this file with the defaults shown below. Fields set on the command line override the config.
+
+```typescript
+export default {
+  outputDir: ".qawolf",
+  timeout: 60_000,
+  retries: 0,
+  video: "retain-on-failure",
+};
+```
+
+## Fields
+
+- `outputDir` — directory for run artifacts such as videos, traces, and HAR files. Overridden by `--output-dir`.
+- `timeout` — per-flow timeout in milliseconds. Overridden by `--timeout`.
+- `retries` — number of retries for each failing flow. Overridden by `--retries`.
+- `video` — video capture mode. One of `"on"`, `"off"`, or `"retain-on-failure"`. Overridden by `--video`.
+
+## Generated Project Layout
+
+`qawolf init` writes the following files alongside `qawolf.config.ts`:
+
+- `src/flows/example.flow.ts` — a minimal web flow used as a starting point.
+- `.qawolf/.gitignore` — ignores the contents of `.qawolf/` except for the file itself.
+- `package.json` — created or updated to include `"type": "module"`, the `@qawolf/flows` dependency, and a `"test:e2e": "qawolf flows run"` script.

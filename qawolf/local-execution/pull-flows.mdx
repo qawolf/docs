@@ -1,0 +1,69 @@
+---
+title: "Pull your team's flows"
+description: "Download an environment's flows into a local cache without running them."
+sidebarTitle: "Pull flows"
+icon: "cloud-download"
+---
+
+For most workflows, [`qawolf flows run --env <env>`](/qawolf/local-execution/run-flows-locally) is enough — it pulls the environment's flows automatically on first use. Reach for `qawolf flows pull` when you want to download the flow files without running them: to inspect them, commit them to a repository, or refresh a stale cache.
+
+<Check>
+  Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/qawolf/local-execution/authenticate).
+</Check>
+
+## Pull an environment
+
+<Steps>
+  <Step>
+    Find the environment's ID or kebab-case slug in your QA Wolf workspace under **Workspace settings → Environments**.
+  </Step>
+  <Step>
+    Pull the flows:
+
+    ```bash
+    qawolf flows pull --env staging
+    ```
+
+    The CLI writes flows to `.qawolf/staging/` by default. To use a different destination, pass `--out`:
+
+    ```bash
+    qawolf flows pull --env staging --out ./snapshot
+    ```
+  </Step>
+  <Step>
+    List the pulled flows:
+
+    ```bash
+    qawolf flows list
+    ```
+  </Step>
+</Steps>
+
+## What `pull` writes
+
+Inside `.qawolf/<env>/`, the CLI stores:
+
+- the flow source files
+- a manifest tracking what was pulled and when
+- a `.env` file with the environment's variables, loaded automatically by `qawolf flows run`
+
+## Refresh a pulled environment
+
+Run `qawolf flows pull --env <env>` again. The CLI prompts before overwriting any file that has been modified locally. To skip the prompt and overwrite, pass `--yes`:
+
+```bash
+qawolf flows pull --env staging --yes
+```
+
+## List flows on the platform
+
+To see what is available on the platform without pulling, use `--remote`:
+
+```bash
+qawolf flows list --remote
+qawolf flows list "checkout/**" --remote
+```
+
+## What's not pulled
+
+File assets stored in QA Wolf cloud storage are not pulled. Web flows that read paths from `QAWOLF_*_DIR` environment variables cannot run locally until the assets are available on the machine. Mobile flows reference the APK or IPA build through an environment variable — make sure that path is set before running.

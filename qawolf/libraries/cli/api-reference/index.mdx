@@ -1,0 +1,33 @@
+---
+title: "API Reference"
+description: "API landing page for the qawolf CLI."
+sidebarTitle: "API Reference"
+---
+
+Use this section for stable command descriptions, flags, configuration, environment variables, and exit codes.
+
+## Commands
+
+- [`qawolf auth`](/qawolf/libraries/cli/api-reference/commands#auth) — manage authentication.
+- [`qawolf flows`](/qawolf/libraries/cli/api-reference/commands#flows) — run, list, and pull flows.
+- [`qawolf install`](/qawolf/libraries/cli/api-reference/commands#install) — install runtime dependencies for the project.
+- [`qawolf init`](/qawolf/libraries/cli/api-reference/commands#init) — scaffold a project in the current directory.
+- [`qawolf doctor`](/qawolf/libraries/cli/api-reference/commands#doctor) — diagnose problems running flows locally.
+
+Example invocation:
+
+```bash
+qawolf auth login
+qawolf flows pull --env <env>
+qawolf flows run
+```
+
+## Global Options
+
+The following flags apply to every command:
+
+- `--verbose` — emits debug logs to stderr.
+- `--json` — formats output as JSON.
+- `--agent` — formats output for agent consumption.
+
+When a recognized CI environment is detected (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `JENKINS_URL`, `BUILDKITE`), output defaults to JSON. When a recognized agent environment is detected (`CLAUDE_CODE`, `CURSOR_SESSION_ID`), output defaults to agent mode.

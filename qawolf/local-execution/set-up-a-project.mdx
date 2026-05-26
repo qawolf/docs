@@ -1,0 +1,66 @@
+---
+title: "Set up a local-only project"
+description: "Scaffold a project for hand-authoring flows that don't live on the QA Wolf platform."
+sidebarTitle: "Set up a project"
+icon: "folder-plus"
+---
+
+`qawolf init` scaffolds a project for writing flow files by hand. Most users should [pull flows from QA Wolf](/qawolf/local-execution/pull-flows) instead — the platform is where flow creation, AI-powered test generation, and team collaboration live, and `qawolf flows pull` brings those flows into a local cache the CLI can run from. Reach for `qawolf init` only when you want to author flows locally without the platform.
+
+## Scaffold a new project
+
+<Steps>
+  <Step>
+    Open a terminal in the directory you want to use as the project root:
+
+    ```bash
+    cd path/to/your/project
+    ```
+  </Step>
+  <Step>
+    Run the init command:
+
+    ```bash
+    qawolf init
+    ```
+
+    The CLI prompts before overwriting any existing files. To skip the prompts, pass `--yes`.
+  </Step>
+</Steps>
+
+The command creates the following files:
+
+- `qawolf.config.ts` — the project configuration. See the [Configuration reference](/qawolf/libraries/cli/api-reference/configuration) for the full list of fields.
+- `src/flows/example.flow.ts` — a minimal web flow you can edit or delete.
+- `.qawolf/.gitignore` — ignores artifacts produced by `qawolf flows run` and flows pulled from the platform.
+
+If your directory has no `package.json`, the CLI creates one. Otherwise, it adds the `@qawolf/flows` dependency and a `test:e2e` script that runs `qawolf flows run`.
+
+## Write a flow
+
+Flow files live anywhere in your project as long as they match the glob `**/*.flow.{ts,js}`. The example flow is a good starting point:
+
+```typescript
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Example",
+  { launch: true, target: "Web - Chrome" },
+  async ({ page, test }) => {
+    await test("navigate to example.com", async () => {
+      await page.goto("https://example.com");
+      await expect(page).toHaveTitle(/Example/);
+    });
+  },
+);
+```
+
+For the full flow authoring surface, see the [@qawolf/flows API reference](/qawolf/libraries/flows/api-reference/index).
+
+## Verify the setup
+
+```bash
+qawolf flows list
+```
+
+The command lists every flow the CLI can find in the project. If the example flow appears, the project is ready to run.

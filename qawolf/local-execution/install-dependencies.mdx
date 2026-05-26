@@ -1,0 +1,58 @@
+---
+title: "Install runtime dependencies"
+description: "Install the Playwright browsers, Android system images, and drivers your flows need to run."
+sidebarTitle: "Install dependencies"
+icon: "download"
+---
+
+[`qawolf flows run --env <env>`](/qawolf/local-execution/run-flows-locally) installs runtime dependencies automatically before its first run, so most users never invoke `qawolf install` directly. Reach for it when you want to install ahead of time — for example, to warm a CI cache between the checkout step and the run step — or when you're running flows from a [local-only project](/qawolf/local-execution/set-up-a-project).
+
+## Install everything the project needs
+
+<Steps>
+  <Step>
+    From the project root, run:
+
+    ```bash
+    qawolf install
+    ```
+
+    The CLI scans the project for flows, looks at each flow's `target`, and installs the dependencies required by every target it finds.
+  </Step>
+</Steps>
+
+## Install only for specific flows
+
+Pass a pattern to limit which flows are considered:
+
+```bash
+qawolf install "checkout/**"
+```
+
+This is useful in CI when a job only runs a subset of the suite.
+
+## Install browsers only
+
+```bash
+qawolf install browsers
+qawolf install browsers "flows/web/**"
+```
+
+Equivalent to running `playwright install` for the browsers your web flows target.
+
+## Install Android dependencies only
+
+<Check>
+  Set `ANDROID_HOME` (or `ANDROID_SDK_ROOT`) to the path of your Android SDK before running this command. Install the SDK through Android Studio's **SDK Manager** or the standalone `cmdline-tools` package.
+</Check>
+
+```bash
+qawolf install android
+qawolf install android "flows/mobile/**"
+```
+
+The command installs the Appium uiautomator2 driver, downloads the Android system images for each target the matching flows use, and creates the corresponding AVDs.
+
+## iOS support
+
+iOS flows are not yet executable by the CLI. `qawolf install` skips them and prints a clear error if you select an iOS-only pattern. iOS support requires macOS with Xcode when it ships.

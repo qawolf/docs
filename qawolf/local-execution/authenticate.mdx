@@ -1,0 +1,81 @@
+---
+title: "Authenticate the QA Wolf CLI"
+description: "Install the qawolf CLI and connect it to your workspace so it can pull and run your flows."
+sidebarTitle: "Authenticate"
+icon: "key"
+---
+
+Before the CLI can pull flows from your workspace or run flows that depend on environment variables, it needs an API key. You can log in interactively for local development, or pass the key through an environment variable for CI.
+
+## Install the CLI
+
+<Check>
+  Node.js 24 or later is required.
+</Check>
+
+Install the CLI globally with npm:
+
+```bash
+npm install -g @qawolf/cli
+```
+
+Verify the install:
+
+```bash
+qawolf --version
+```
+
+## Log in for local development
+
+<Steps>
+  <Step>
+    Generate an API key in your QA Wolf workspace under **Workspace settings → API keys**.
+  </Step>
+  <Step>
+    Run the login command:
+
+    ```bash
+    qawolf auth login
+    ```
+
+    The CLI prompts for your API key, validates it against the platform, and stores it in your system keychain. When a keychain is not available, the CLI falls back to a local config file in your user profile directory.
+  </Step>
+  <Step>
+    Confirm the connection:
+
+    ```bash
+    qawolf auth whoami
+    ```
+
+    The output shows the team name, ID, and where the credential was loaded from.
+  </Step>
+</Steps>
+
+## Authenticate in CI
+
+CI environments cannot prompt for input. Set the `QAWOLF_API_KEY` environment variable instead:
+
+```bash
+export QAWOLF_API_KEY=<your-api-key>
+qawolf flows pull --env staging
+```
+
+The CLI prefers `QAWOLF_API_KEY` over any credential stored by `qawolf auth login`, so the same machine can switch between accounts by setting or unsetting the variable.
+
+## Log out
+
+```bash
+qawolf auth logout
+```
+
+`qawolf auth logout` only removes credentials stored by `qawolf auth login`. Credentials set through `QAWOLF_API_KEY` cannot be removed by this command — unset the variable in your shell instead.
+
+## Switch the API URL
+
+By default the CLI talks to `https://app.qawolf.com`. Override this with `QAWOLF_API_URL` if your workspace uses a different host:
+
+```bash
+export QAWOLF_API_URL=https://qawolf.example.com
+```
+
+See the [Environment variables reference](/qawolf/libraries/cli/api-reference/environment-variables) for the full list of variables the CLI reads.

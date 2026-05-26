@@ -1,0 +1,112 @@
+---
+title: "Run flows locally"
+description: "Run your team's flows on your own machine — the CLI pulls, installs, and runs in one command."
+sidebarTitle: "Run flows locally"
+icon: "play"
+---
+
+`qawolf flows run --env <env>` is the recommended path. With one command, the CLI pulls the environment's flows into a local cache, installs the runtime dependencies they need (Playwright browsers, Android system images and AVDs), and runs them.
+
+<Check>
+  Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/qawolf/local-execution/authenticate).
+</Check>
+
+## Run an environment
+
+<Steps>
+  <Step>
+    Find the environment's ID or kebab-case slug in your QA Wolf workspace under **Workspace settings → Environments**.
+  </Step>
+  <Step>
+    From any directory, run:
+
+    ```bash
+    qawolf flows run --env staging
+    ```
+
+    On first run, the CLI:
+
+    1. pulls the environment's flows into `.qawolf/staging/`
+    2. loads the environment's `.env` file
+    3. installs the Playwright browsers and Android dependencies the flows need
+    4. runs every flow
+
+    Subsequent runs reuse the cache. To pull a fresh copy, see [Pull your team's flows](/qawolf/local-execution/pull-flows).
+  </Step>
+</Steps>
+
+## Run a subset
+
+Pass a glob pattern to limit which flows run:
+
+```bash
+qawolf flows run --env staging "checkout/**"
+qawolf flows run --env staging "src/flows/login.flow.ts"
+```
+
+Patterns are matched against absolute paths in the current directory and against the pulled cache under `.qawolf/<env>/`.
+
+## Watch the browser
+
+Pass `--headed` to see the browser window during a web run:
+
+```bash
+qawolf flows run --env staging --headed
+```
+
+`--headed` does not apply to Android flows.
+
+## Capture artifacts on failure
+
+By default, no video or trace is recorded. To keep artifacts only when a flow fails, set the mode to `retain-on-failure`:
+
+```bash
+qawolf flows run --env staging --video retain-on-failure --trace retain-on-failure
+```
+
+Artifacts land in `qawolf-output/` (or the directory set by `--output-dir`).
+
+To record HAR files of network traffic:
+
+```bash
+qawolf flows run --env staging --har retain-on-failure
+```
+
+By default the HAR captures headers and timing only. To include response bodies, pass `--har-content full`. Response bodies use significantly more memory and disk.
+
+## Retry failing flows
+
+```bash
+qawolf flows run --env staging --retries 2
+```
+
+The CLI retries each failing flow up to the given number of times. A flow that passes on retry is counted as a pass for exit-code purposes.
+
+## Stop after the first failure
+
+```bash
+qawolf flows run --env staging --bail
+```
+
+`--bail` is useful when iterating on a single flow and you want to fail fast.
+
+## Run flows you authored locally
+
+If you've scaffolded a [local-only project](/qawolf/local-execution/set-up-a-project) with `qawolf init`, run without `--env`:
+
+```bash
+qawolf flows run
+```
+
+The CLI discovers flows matching `**/*.flow.{ts,js}` in the current directory and runs them against locally-installed runtime dependencies. See [Install dependencies](/qawolf/local-execution/install-dependencies) if you need to install browsers or Android tooling explicitly.
+
+## Exit codes
+
+`qawolf flows run` exits with `0` when every flow passes and `1` when one or more fail. See [Exit codes](/qawolf/libraries/cli/api-reference/exit-codes) for the full list.
+
+## Current limitations
+
+- `--workers` is capped at `1`. Parallel execution is on the roadmap.
+- iOS flows are not executed. The CLI prints a clear error if an iOS flow is selected for a run.
+- Flows that target the legacy `"Basic"` platform pull successfully but cannot be executed by the CLI.
+- Dynamic-target flows — flows where `target` is a computed value rather than a string literal — are included in every run because the CLI cannot determine the platform ahead of time.
