@@ -5,7 +5,7 @@ sidebarTitle: "Run flows locally"
 icon: "play"
 ---
 
-`qawolf flows run --env <env>` is the recommended path. With one command, the CLI pulls the environment's flows into a local cache, installs the runtime dependencies they need (Playwright browsers, Android system images and AVDs), and runs them.
+`qawolf flows run --env <env>` is the recommended path. It runs your team's flows from the local `.qawolf/<env>/` cache, pulling them first only if they are not already cached locally, then installs the runtime dependencies they need (Playwright browsers, Android system images and AVDs) and runs them.
 
 <Check>
   Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/qawolf/local-execution/authenticate).
@@ -24,14 +24,14 @@ icon: "play"
     qawolf flows run --env staging
     ```
 
-    On first run, the CLI:
+    The CLI:
 
-    1. pulls the environment's flows into `.qawolf/staging/`
+    1. checks the local `.qawolf/staging/` cache, and pulls the environment's flows only if they are not already cached
     2. loads the environment's `.env` file
     3. installs the Playwright browsers and Android dependencies the flows need
     4. runs every flow
 
-    Subsequent runs reuse the cache. To pull a fresh copy, see [Pull your team's flows](/qawolf/local-execution/pull-flows).
+    To refresh the local cache against the platform, run `qawolf flows pull --env staging`. See [Pull your team's flows](/qawolf/local-execution/pull-flows).
   </Step>
 </Steps>
 
