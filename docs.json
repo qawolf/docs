@@ -390,8 +390,7 @@
                   "qawolf/libraries/cli/api-reference/index",
                   "qawolf/libraries/cli/api-reference/commands",
                   "qawolf/libraries/cli/api-reference/configuration",
-                  "qawolf/libraries/cli/api-reference/environment-variables",
-                  "qawolf/libraries/cli/api-reference/exit-codes"
+                  "qawolf/libraries/cli/api-reference/environment-variables"
                 ]
               },
               {
