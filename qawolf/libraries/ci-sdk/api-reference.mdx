@@ -16,7 +16,7 @@ Requires Node.js 18 or later. For older versions, pass a `fetch` polyfill to `ma
 ```javascript
 import { fetch } from "undici";
 
-const sdk = makeQaWolfSdk({ apiKey: "qawolf_xxxxx" }, { fetch });
+const sdk = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY }, { fetch });
 ```
 
 ## makeQaWolfSdk
@@ -52,17 +52,18 @@ const { attemptNotifyDeploy } = makeQaWolfSdk({
   apiKey: process.env.QAWOLF_API_KEY,
 });
 
-const result = await attemptNotifyDeploy({
-  branch: process.env.GIT_BRANCH,
-  sha: process.env.GIT_COMMIT_SHA,
+const deployConfig: DeployConfig = {
+  branch: undefined,
+  sha: undefined,
   deploymentType: "staging",
-  hostingService: "GitHub", // or "GitLab"
-  repository: {
-    name: "your-repo",
-    owner: "your-org",
-  },
-});
+  deploymentUrl: undefined,
+  hostingService: undefined,
+  commitUrl: undefined,
+  deduplicationKey: undefined,
+  variables: undefined,
+};
 
+const result = await attemptNotifyDeploy(deployConfig);
 if (result.outcome !== "success") {
   process.exit(1);
 }
@@ -96,6 +97,9 @@ const runId = result.runId;
 | --- | --- |
 | `outcome` | `"success"`, `"failed"`, or `"aborted"`. |
 | `runId` | ID of the triggered run. Pass to `pollCiGreenlightStatus`. |
+| `failReason` | Present when `outcome` is `"failed"`. Reason the notification failed. |
+| `abortReason` | Present when `outcome` is `"aborted"`. Reason the notification was aborted. |
+| `httpStatus` | HTTP status code if the notification failed or was aborted due to a network error. |
 
 <Note>
   A run is only created if there is a matching trigger in your QA Wolf configuration. `outcome: "success"` means the notification was accepted, not that a run was created.
@@ -113,9 +117,9 @@ const { pollCiGreenlightStatus } = makeQaWolfSdk({
 });
 
 const { outcome } = await pollCiGreenlightStatus({
-  runId, // retrieved from attemptNotifyDeploy result
+  runId,
   onRunStageChanged: (current, previous) => {
-    console.log(`Stage changed: ${previous} → ${current}`);
+    console.log(current, previous);
   },
   abortOnSuperseded: false,
 });
@@ -153,6 +157,8 @@ const { makePollCiGreenlightStatusIterator } = makeQaWolfSdk({
   apiKey: process.env.QAWOLF_API_KEY,
 });
 
+let underReviewStartTime: number | null = null;
+
 const iterator = makePollCiGreenlightStatusIterator({ runId: "your-run-id" });
 
 for await (const iteration of iterator) {
@@ -167,9 +173,10 @@ for await (const iteration of iterator) {
     case "initializing":
       break;
     case "underReview":
-      if (status.blockingBugsCount <= 3) {
-        console.log("Acceptable bug count, proceeding");
-        break;
+      if (stageChanged) underReviewStartTime = Date.now();
+      const timeInReview = underReviewStartTime ? Date.now() - underReviewStartTime : 0;
+      if (timeInReview > 10 * 60 * 1000) {
+        if (status.blockingBugsCount > 5) process.exit(1);
       }
       break;
     case "completed":
@@ -205,19 +212,25 @@ Each iteration yields either a status update or an abort notification:
 Notifies QA Wolf that an ephemeral environment has been terminated. Stops all runs targeting the environment and triggers flow promotion. See [webhooks/environment\_terminated](/rest/environment-terminated) for the underlying endpoint.
 
 ```javascript
-import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+import {
+  type NotifyTerminatedEphemeralEnvironmentInput,
+  makeQaWolfSdk,
+} from "@qawolf/ci-sdk";
 
 const { notifyTerminatedEphemeralEnvironment } = makeQaWolfSdk({
   apiKey: process.env.QAWOLF_API_KEY,
 });
 
-const result = await notifyTerminatedEphemeralEnvironment({
+const terminateConfig: NotifyTerminatedEphemeralEnvironmentInput = {
   deploymentUrl: "https://preview-123.example.com",
-});
+};
 
+const result = await notifyTerminatedEphemeralEnvironment(terminateConfig);
 if (result.outcome !== "success") {
   process.exit(1);
 }
+
+const environmentId = result.environmentId;
 ```
 
 ### Input fields
@@ -253,7 +266,11 @@ const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage(
   destinationFilePath: "app-staging",
 });
 
-if (!signedUrlResponse?.uploadUrl) {
+if (
+  !signedUrlResponse?.success ||
+  !signedUrlResponse.uploadUrl ||
+  !signedUrlResponse.playgroundFileLocation
+) {
   throw new Error("No upload URL received from QA Wolf");
 }
 
@@ -270,15 +287,15 @@ await fetch(signedUrlResponse.uploadUrl, {
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `destinationFilePath` | string | Filename and extension, optionally including directories. |
+| `destinationFilePath` | string | Filename and extension, optionally including directories. Reach out to your QA Wolf representative for the correct value. |
 
 ### Response fields
 
 | Field | Description |
 | --- | --- |
-| `uploadUrl` | Pre-signed URL for uploading the file via `PUT`. |
-| `playgroundFileLocation` | File path without team ID. Use to reference the file in flows and as a `variables` value in `attemptNotifyDeploy`. |
 | `success` | `true` if the signed URL was generated successfully. |
+| `uploadUrl` | Pre-signed URL for uploading the file via `PUT`. |
+| `playgroundFileLocation` | File path without team ID. Use as a `variables` value in `attemptNotifyDeploy`. |
 
 ## Versioning
 
