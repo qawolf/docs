@@ -1,9 +1,3 @@
----
-title: "How to integrate a mobile build with GitHub Actions"
-description: "Upload mobile build artifacts and trigger QA Wolf test runs using prebuilt GitHub Actions in your workflow."
-sidebarTitle: "GitHub Actions"
----
-
 ## When to use GitHub Actions
 
 This guide is for teams that use **GitHub Actions** as their CI system and want a simple, declarative way to upload mobile builds and trigger test runs without writing custom scripts. Use GitHub Actions if your repository already builds mobile artifacts in a GitHub Actions workflow and you prefer using prebuilt actions over maintaining Node.js scripts or Fastlane lanes. This guide assumes your mobile builds already run in GitHub Actions and produce a build artifact.
@@ -182,7 +176,7 @@ After uploading the artifact, notify QA Wolf that a new deployment is ready for 
     qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
     deployment-type: android_app
     variables: >
-      { "ANDROID_APP": "/home/wolf/run-inputs-executables/${{ steps.upload-run-input.outputs.destination-file-path }}" }
+      { "RUN_INPUT_PATH": "/home/wolf/run-inputs-executables/${{ steps.upload-run-input.outputs.destination-file-path }}" }
 ```
 
 <Tip>
