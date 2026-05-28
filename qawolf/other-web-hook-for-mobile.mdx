@@ -1,0 +1,165 @@
+---
+title: "Other CI  for mobile build testing"
+description: "Upload mobile build artifacts and trigger test runs from any CI system without Node.js."
+sidebarTitle: "Other (webhooks)"
+---
+
+Use this guide if your CI system cannot run Node.js. This includes environments such as ArgoCD, locked-down runners, and minimal containers.
+
+<Tip>
+  If your CI system supports Node.js, use [Other CI (Node)](/qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15) instead.
+</Tip>
+
+<Check>
+  Make sure you have:
+
+  - A CI pipeline that produces a mobile build artifact (APK, AAB, or IPA)
+  - The ability to make HTTP requests from your CI environment (e.g. `curl`)
+  - Admin access to your CI system's secret or environment variable storage
+  - A QA Wolf API key
+</Check>
+
+Before mobile test runs can execute, QA Wolf must enable mobile triggers for your workspace. QA Wolf will handle this and may ask you for:
+
+- Which environments you want to test.
+- Whether PR testing is enabled.
+- The artifact naming conventions you are using.
+
+Until this step is complete, CI jobs can upload artifacts and send deployment notifications, but mobile test runs will not start automatically.
+
+## Find the QAWOLF\_API\_KEY
+
+<Steps>
+  <Step>
+    Open the **Workspace name** dropdown in QA Wolf and click **Workspace Settings**.
+  </Step>
+  <Step>
+    Choose **Integrations**.
+  </Step>
+  <Step>
+    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+  </Step>
+</Steps>
+
+Store the key as a secret in your CI system named `QAWOLF_API_KEY`.
+
+## Artifact naming conventions
+
+Mobile build artifacts must follow consistent naming conventions so QA Wolf can correctly associate each build with the right environment.
+
+### Static environments
+
+**Format**
+
+```text
+<prefix>-<environment-name>
+```
+
+**Example**
+
+```text
+app-staging
+```
+
+### PR (ephemeral) environments
+
+**Format**
+
+```text
+<prefix>-<org>-<repo>-pr<number>
+```
+
+**Example**
+
+```text
+app-myorg-myrepo-pr123
+```
+
+<Tip>
+  QA Wolf applies the file extension (.apk, .aab, or .ipa) automatically based on the uploaded artifact. You only need to provide the basename.
+</Tip>
+
+## Upload the build artifact
+
+### Generate a signed URL
+
+```bash
+curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=app-staging" \
+  -H "Authorization: Bearer $QAWOLF_API_KEY"
+```
+
+On success, you'll receive:
+
+```json
+{
+  "fileLocation": "$TEAM_ID/app-staging",
+  "playgroundFileLocation": "app-staging",
+  "signedUrl": "https://..."
+}
+```
+
+Copy the `playgroundFileLocation` value — you'll use it in the notify step.
+
+### Upload the file
+
+```bash
+curl -X PUT \
+  --header "Content-Type: application/octet-stream" \
+  --data-binary @./path/to/build.apk \
+  "$SIGNED_URL"
+```
+
+## Trigger a test run
+
+After uploading the artifact, notify QA Wolf that a new deployment is ready for testing. Pass the `playgroundFileLocation` from the upload step as `RUN_INPUT_PATH`:
+
+```bash
+curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
+  -H "Authorization: Bearer $QAWOLF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "deployment_type": "staging",
+    "variables": {
+      "RUN_INPUT_PATH": "<playgroundFileLocation>"
+    }
+  }'
+```
+
+<Note>
+  Replace `deployment_type` with the value your QA Wolf representative provides. Replace `<playgroundFileLocation>` with the value returned in the upload step.
+</Note>
+
+<Warning>
+  A 200 response does not guarantee a run was created. Inspect the response body to confirm. See [webhooks/deploy\_success](/qawolf/deploy-success) for full response details.
+</Warning>
+
+If mobile triggers have not yet been enabled, this step will complete without starting a test run.
+
+## Verify the integration
+
+<Steps>
+  <Step>
+    Run the CI job.
+  </Step>
+  <Step>
+    Verify that the artifact upload completes successfully.
+  </Step>
+  <Step>
+    Confirm that the deployment notification step runs without errors.
+  </Step>
+  <Step>
+    Once mobile triggers are enabled, check the **Runs** tab for the test run that was triggered.
+  </Step>
+</Steps>
+
+## Troubleshooting and common issues
+
+- **If uploads succeed but no runs start:** Mobile triggers may not yet be enabled. Contact QA Wolf to complete platform configuration.
+- **If the artifact is not found during execution:** Verify that the artifact basename matches your naming conventions, and that `RUN_INPUT_PATH` is set to the `playgroundFileLocation` value from the upload step.
+- **If you see authentication errors:** Verify that **QAWOLF\_API\_KEY** is configured correctly in your CI environment.
+
+## Related
+
+- [webhooks/deploy\_success](/qawolf/deploy-success)
+- [v0/run-inputs-executables-signed-urls](/qawolf/run-inputs-executables-signed-urls)
+- [Other CI (Node)](/qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15)

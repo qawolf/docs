@@ -1,9 +1,3 @@
----
-title: "How to integrate mobile builds with our SDK"
-description: "Upload mobile build artifacts and trigger test runs from any CI system using the QA Wolf CI SDK."
-sidebarTitle: "Other CI (Node.js)"
----
-
 Use this guide if your CI system supports Node.js but is not GitHub Actions or Fastlane.
 
 <Tip>
@@ -13,10 +7,10 @@ Use this guide if your CI system supports Node.js but is not GitHub Actions or F
 <Check>
   Make sure you have:
 
-  - A CI pipeline that produces a mobile build artifact (APK, AAB, or IPA)
-  - Node.js 18 or later available in your CI environment
-  - Admin access to your CI system's secret or environment variable storage
-  - A QA Wolf API key
+  - A CI pipeline that produces a mobile build artifact (APK, AAB, or IPA).
+  - Node.js 18 or later available in your CI environment.
+  - Admin access to your CI system's secret or environment variable storage.
+  - A QA Wolf API key.
 </Check>
 
 Before mobile test runs can execute, QA Wolf must enable mobile triggers for your workspace. QA Wolf will handle this and may ask you for:
@@ -47,6 +41,10 @@ npm install @qawolf/ci-sdk
   </Step>
   <Step>
     Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-16.png)
+    </Frame>
   </Step>
 </Steps>
 
@@ -60,7 +58,7 @@ The artifact name is used to identify:
 
 - Which environment the build belongs to.
 - Whether the build is tied to a pull request.
-- Which build was used for a given test run.
+- Which build was used for a given test run
 
 ### Static environments
 
@@ -168,8 +166,6 @@ const { generateSignedUrlForRunInputsExecutablesStorage, attemptNotifyDeploy } =
       sha: undefined,
       variables: {
         RUN_INPUT_PATH: playgroundFileLocation,
-        // for mobile apps, the team may request that you use a different
-        // variable name here, such as ANDROID_APP
       },
     };
 
@@ -226,7 +222,7 @@ After uploading the artifact, notify QA Wolf that a new deployment is ready for 
 await sdk.attemptNotifyDeploy({
   deploymentType: "android_app",
   variables: {
-    ANDROID_APP: executablePath,
+    RUN_INPUT_PATH: executablePath,
   },
 });
 ```
@@ -264,3 +260,4 @@ If mobile triggers have not yet been enabled, this step will complete without st
 ## Related
 
 - [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference)
+- [CI greenlight](/qawolf/v0-ci-greenlight)
