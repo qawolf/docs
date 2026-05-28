@@ -43,7 +43,7 @@ const {
 
 ## attemptNotifyDeploy
 
-Notifies QA Wolf of a successful deployment to trigger a test run. See [webhooks/deploy\_success](/rest/deploy-success) for the underlying endpoint.
+Notifies QA Wolf of a successful deployment to trigger a test run. See [webhooks/deploy\_success](/qawolf/deploy-success) for the underlying endpoint.
 
 ```javascript
 import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
@@ -107,7 +107,7 @@ const runId = result.runId;
 
 ## pollCiGreenlightStatus
 
-Polls the [CI greenlight endpoint](/rest/ci-greenlight) until the run completes and returns whether it is safe to release.
+Polls the [CI greenlight endpoint](/qawolf/v0-ci-greenlight) until the run completes and returns whether it is safe to release.
 
 ```javascript
 import { makeQaWolfSdk } from "@qawolf/ci-sdk";
@@ -209,7 +209,7 @@ Each iteration yields either a status update or an abort notification:
 
 ## notifyTerminatedEphemeralEnvironment
 
-Notifies QA Wolf that an ephemeral environment has been terminated. Stops all runs targeting the environment and triggers flow promotion. See [webhooks/environment\_terminated](/rest/environment-terminated) for the underlying endpoint.
+Notifies QA Wolf that an ephemeral environment has been terminated. Stops all runs targeting the environment and triggers flow promotion. See [webhooks/environment\_terminated](/qawolf/environment_terminated) for the underlying endpoint.
 
 ```javascript
 import {
