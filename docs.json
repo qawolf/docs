@@ -299,9 +299,29 @@
         ]
       },
       {
-        "tab": "Libraries",
+        "tab": "References",
         "icon": "braces",
         "pages": [
+          {
+            "group": "@qawolf/emails",
+            "icon": "mail",
+            "pages": [
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/emails/api-reference/index",
+                  "qawolf/libraries/emails/api-reference/mail",
+                  "qawolf/libraries/emails/api-reference/client"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/emails/troubleshooting"
+                ]
+              }
+            ]
+          },
           {
             "group": "@qawolf/flows",
             "icon": "route",
@@ -350,23 +370,14 @@
             ]
           },
           {
-            "group": "@qawolf/emails",
-            "icon": "mail",
+            "group": "REST",
+            "icon": "code",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/emails/api-reference/index",
-                  "qawolf/libraries/emails/api-reference/mail",
-                  "qawolf/libraries/emails/api-reference/client"
-                ]
-              },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/emails/troubleshooting"
-                ]
-              }
+              "qawolf/rest-overview",
+              "qawolf/deploy-success",
+              "qawolf/environment_terminated",
+              "qawolf/v0-ci-greenlight",
+              "qawolf/run-inputs-executables-signed-urls"
             ]
           }
         ]
@@ -386,7 +397,9 @@
                 "pages": [
                   "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
                   "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
-                  "qawolf/circle-ci"
+                  "qawolf/circle-ci",
+                  "qawolf/other-ci-node",
+                  "qawolf/other-ci-webhook"
                 ]
               },
               {
