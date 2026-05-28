@@ -1,7 +1,6 @@
 ---
 title: "Other CI (Node)"
 description: "Trigger QA Wolf test runs from any CI system that supports Node.js."
-icon: "webhook"
 ---
 
 Use this guide if your CI system supports Node.js but does not have a dedicated QA Wolf integration page.
@@ -27,7 +26,7 @@ Use this guide if your CI system supports Node.js but does not have a dedicated 
     Open the **Workspace name** dropdown in QA Wolf and click **Workspace Settings**.
   </Step>
   <Step>
-    Choose **Integrations** and click the copy icon to the right of **API Key** under **API Access**.
+    Choose **Integrations** and click the  <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
   </Step>
 </Steps>
 
@@ -98,5 +97,3 @@ node .ci/notifyQaWolf.mjs
 ## Related
 
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk)
-- [CI greenlight](/rest/ci-greenlight)
-- [Other CI (webhook)](/qawolf/other-ci-webhook)
