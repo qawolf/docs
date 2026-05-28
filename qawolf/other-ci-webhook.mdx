@@ -52,7 +52,7 @@ curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
 Replace `$GIT_BRANCH` and `$GIT_COMMIT_SHA` with the environment variable names your CI system provides for the current branch and commit SHA. Replace `deployment_type` with the value your QA Wolf representative provides. Set `hosting_service` to where your code is hosted — `"GitHub"` or `"GitLab"` — not where your pipeline runs.
 
 <Warning>
-  A 200 response does not guarantee a run was created. Inspect the response body to confirm. See [webhooks/deploy\_success](/rest/deploy-success) for full response details.
+  A 200 response does not guarantee a run was created. Inspect the response body to confirm. See [webhooks/deploy\_success](/qawolf/deploy-success) for full response details.
 </Warning>
 
 ## Verify the integration
