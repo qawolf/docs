@@ -6,17 +6,13 @@ sidebarTitle: "Other (webhooks)"
 
 Use this guide if your CI system cannot run Node.js. This includes environments such as ArgoCD, locked-down runners, and minimal containers.
 
-<Tip>
-  If your CI system supports Node.js, use [Other CI (Node)](/qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15) instead.
-</Tip>
-
 <Check>
   Make sure you have:
 
-  - A CI pipeline that produces a mobile build artifact (APK, AAB, or IPA)
-  - The ability to make HTTP requests from your CI environment (e.g. `curl`)
-  - Admin access to your CI system's secret or environment variable storage
-  - A QA Wolf API key
+  - A CI pipeline that produces a mobile build artifact (APK, AAB, or IPA).
+  - The ability to make HTTP requests from your CI environment (e.g. `curl`).
+  - Admin access to your CI system's secret or environment variable storage.
+  - A QA Wolf API key.
 </Check>
 
 Before mobile test runs can execute, QA Wolf must enable mobile triggers for your workspace. QA Wolf will handle this and may ask you for:

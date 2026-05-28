@@ -11,10 +11,10 @@ sidebarTitle: "CircleCI"
 <Check>
   Make sure you have:
 
-  - Access to your QA Wolf workspace
-  - Admin access to your CircleCI project
-  - At least one QA Wolf environment already configured with a deployment trigger
-  - A QA Wolf API key
+  - Access to your QA Wolf workspace.
+  - Admin access to your CircleCI project.
+  - At least one QA Wolf environment already configured with a deployment trigger.
+  - A QA Wolf API key.
 </Check>
 
 ## Find the QAWOLF\_API\_KEY
@@ -118,9 +118,9 @@ workflows:
 
 The `notify-qa-wolf` job must:
 
-- Use the `node/default` executor
-- Check out your code
-- Run `node --experimental-network-imports .circleci/notifyQaWolf.mjs`
+- Use the `node/default` executor.
+- Check out your code.
+- Run `node --experimental-network-imports .circleci/notifyQaWolf.mjs`.
 
 Place it after your deploy job in the workflow so it runs only once your environment is healthy.
 
