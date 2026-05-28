@@ -370,17 +370,6 @@
             ]
           },
           {
-            "group": "REST",
-            "icon": "code",
-            "pages": [
-              "qawolf/rest-overview",
-              "qawolf/deploy-success",
-              "qawolf/environment_terminated",
-              "qawolf/v0-ci-greenlight",
-              "qawolf/run-inputs-executables-signed-urls"
-            ]
-          },
-          {
             "group": "@qawolf/ci-sdk",
             "icon": "arrow-left-right",
             "pages": [
@@ -396,6 +385,17 @@
                   "qawolf/libraries/ci-sdk/troubleshooting"
                 ]
               }
+            ]
+          },
+          {
+            "group": "REST",
+            "icon": "code",
+            "pages": [
+              "qawolf/rest-overview",
+              "qawolf/deploy-success",
+              "qawolf/environment_terminated",
+              "qawolf/v0-ci-greenlight",
+              "qawolf/run-inputs-executables-signed-urls"
             ]
           }
         ]
