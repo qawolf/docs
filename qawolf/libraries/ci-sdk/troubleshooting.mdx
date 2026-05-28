@@ -1,0 +1,82 @@
+---
+title: "Troubleshooting"
+description: "Common issues when integrating with @qawolf/ci-sdk."
+---
+
+Common issues when integrating `@qawolf/ci-sdk` into your CI pipeline.
+
+## `outcome` is `"success"` but no run was created
+
+Cause: The deployment notification was accepted but no trigger matched the request.
+
+Check:
+
+- `deploymentType` matches the value configured in your QA Wolf trigger
+- `hostingService` matches where your code is hosted, not where your pipeline runs
+- At least one trigger is configured for the target environment in QA Wolf
+- Contact your QA Wolf representative to confirm trigger configuration
+
+## `outcome` is `"failed"` or `"aborted"` on `attemptNotifyDeploy`
+
+Cause: The notification request was rejected or timed out.
+
+Check:
+
+- `QAWOLF_API_KEY` is set correctly in your CI environment
+- The key belongs to the correct QA Wolf workspace
+- Your CI runner has outbound HTTPS access to `app.qawolf.com`
+
+## `pollCiGreenlightStatus` times out
+
+Cause: The run did not complete within the polling timeout (default: two hours).
+
+Check:
+
+- The run is visible in the QA Wolf UI and has not stalled
+- The `pollTimeout` option is set appropriately for your expected run duration
+- The `runId` passed to `pollCiGreenlightStatus` matches the run you intend to poll
+
+## `pollCiGreenlightStatus` aborts with `"run-canceled"`
+
+Cause: The run was canceled, typically because a newer run superseded it.
+
+Check:
+
+- Whether a newer deployment notification was sent before this run completed
+- Whether `deduplicationKey` is configured correctly in `attemptNotifyDeploy`
+- A canceled run cannot be recovered — submit a new deployment notification if needed
+
+## Artifact upload succeeds but the run cannot find the file
+
+Cause: The file path passed to `attemptNotifyDeploy` via `variables` does not match the uploaded location.
+
+Check:
+
+- Use `playgroundFileLocation` from the `generateSignedUrlForRunInputsExecutablesStorage` response as the variable value
+- For mobile apps, prefix the path with `/home/wolf/run-inputs-executables/`
+- The variable name (`RUN_INPUT_PATH`, `ANDROID_APP`, etc.) matches what your QA Wolf trigger expects
+
+## `fetch is not defined` error
+
+Cause: The SDK requires `fetch`, which is only available natively in Node.js 18 or later.
+
+Check:
+
+- Node.js 18 or later is available in your CI environment
+- If you must use an older version, pass a `fetch` polyfill to `makeQaWolfSdk`:
+
+```javascript
+import { fetch } from "undici";
+
+const sdk = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY }, { fetch });
+```
+
+## Mobile triggers are enabled but runs are not starting
+
+Cause: Mobile triggers require additional platform configuration by QA Wolf before they activate.
+
+Check:
+
+- Contact your QA Wolf representative to confirm mobile triggers have been enabled for your workspace
+- Artifact naming conventions match what was agreed with QA Wolf
+- The artifact upload step is completing successfully before `attemptNotifyDeploy` is called

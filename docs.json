@@ -368,6 +368,23 @@
                 ]
               }
             ]
+          },
+          {
+            "group": "@qawolf/ci-sdk",
+            "icon": "arrow-left-right",
+            "pages": []
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              "qawolf/libraries/ci-sdk/api-reference"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "pages": [
+              "qawolf/libraries/ci-sdk/troubleshooting"
+            ]
           }
         ]
       },
