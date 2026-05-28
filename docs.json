@@ -385,7 +385,8 @@
                 "icon": "server",
                 "pages": [
                   "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
-                  "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae"
+                  "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
+                  "qawolf/circle-ci"
                 ]
               },
               {
