@@ -54,7 +54,7 @@ expect(result.similarity).toBeGreaterThan(0.85);
 
 ## Full sample test
 
-````typescript
+```typescript
 import { device, flow } from "@qawolf/flows/ios";
 import { readFile } from "node:fs/promises";
 
@@ -90,15 +90,4 @@ export default flow(
     });
   },
 );
-```        (await device.calculateAudioFingerprint(driver, buffer)).fingerprint;
-
-      const referenceBuffer = await readFile(REFERENCE_AUDIO_PATH);
-      const { fingerprint: referenceFingerprint } =
-        await device.calculateAudioFingerprint(driver, referenceBuffer);
-
-      const result = findBestMatch(recordingFingerprint, referenceFingerprint);
-      expect(result.similarity).toBeGreaterThan(0.85);
-    });
-  },
-);
-````
+```
