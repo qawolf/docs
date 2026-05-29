@@ -217,6 +217,31 @@ Electron launch-enabled flows receive the first Electron window as `page`.
 
 `testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.
 
+## `expect`
+
+The exported `expect` is the assertion helper for web flows, backed by [Playwright's `expect`](https://playwright.dev/docs/test-assertions). All Playwright matchers are available — including auto-retrying locator matchers like `toBeVisible`, `toHaveText`, `toHaveURL`, and `toHaveScreenshot`. See [Playwright's locator assertions reference](https://playwright.dev/docs/api/class-locatorassertions) for the full list.
+
+Always import `expect` from `@qawolf/flows/web` rather than from `@playwright/test` directly, so that QA Wolf's defaults (custom timeout, visual diffing) stay in effect.
+
+Example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Verify homepage",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
+    await test("hero heading is visible", async () => {
+      await page.goto("https://example.com");
+      await expect(page.getByRole("heading", { name: "Example Domain" })).toBeVisible();
+    });
+  },
+);
+```
+
+For visual regression assertions with `expect(page).toHaveScreenshot(...)`, see [Web & Mobile web screenshots](/qawolf/visual-diffing).
+
 ## Defaults
 
 - default `kind` is browser launch

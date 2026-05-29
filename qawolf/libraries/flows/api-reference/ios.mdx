@@ -284,7 +284,9 @@ export default flow("Install profile", "iOS - iPhone 15 (iOS 26)", async () => {
 
 ## `expect`
 
-The exported `expect` value is a type-safe stub in package code and is replaced by the runner during execution.
+The exported `expect` is the assertion helper for iOS flows, backed by [`expect-webdriverio`](https://webdriver.io/docs/api/expect-webdriverio). All WebdriverIO matchers are available — including auto-retrying element matchers like `toBeDisplayed`, `toExist`, `toHaveText`, and `toHaveAttribute`. See the [expect-webdriverio matchers reference](https://webdriver.io/docs/api/expect-webdriverio) for the full list.
+
+Always import `expect` from `@qawolf/flows/ios` rather than from `expect-webdriverio` directly, so that QA Wolf's defaults (timeout, `toHaveScreenshot`) stay in effect.
 
 Example:
 
@@ -292,12 +294,16 @@ Example:
 import { expect, flow } from "@qawolf/flows/ios";
 
 export default flow(
-  "Use runner expect",
+  "Verify welcome screen",
   { target: "iOS - iPhone 15 (iOS 26)", launch: true },
   async ({ driver, test }) => {
-    await test("check driver", async () => {
-      await expect(driver).toBeDefined();
+    await test("welcome heading is visible", async () => {
+      const heading = driver.$("~welcome-heading");
+      await expect(heading).toBeDisplayed();
+      await expect(heading).toHaveText("Welcome");
     });
   },
 );
 ```
+
+For visual regression assertions with `expect(driver).toHaveScreenshot(...)`, see [Native mobile screenshots](/qawolf/visual-diffing-native-app).

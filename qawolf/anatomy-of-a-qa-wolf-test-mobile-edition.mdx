@@ -199,7 +199,7 @@ Launch-enabled flows also receive the platform object (`page`, `context`, `brows
 For the full callback context shape, see the API Reference for [Web](/qawolf/libraries/flows/api-reference/web#flow-callback-context), [Android](/qawolf/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/qawolf/libraries/flows/api-reference/ios#flow-callback-context).
 
 <Note>
-  `launch()`, `expect`, `device`, and `platform.target` are stubs in the package code, and they are replaced by the runner at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
+  `launch()`, `device`, and `platform.target` are stubs in the package code, and they are replaced by the runner at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
   \
   Module-level code should be limited to imports, constants, and pure helper functions.
 </Note>

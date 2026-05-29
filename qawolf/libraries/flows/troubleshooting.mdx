@@ -13,15 +13,6 @@ Check:
 - the runner is setting the target before flow code executes
 - tests and local tooling call `configureTarget(...)` explicitly
 
-## `expect` Throws A Stub Error
-
-Cause: The package code is running outside the runner-provided execution environment.
-
-Check:
-
-- the flow is running through the expected runtime
-- local tooling is not calling the type-safe stub directly
-
 ## Callback Is Missing `page` Or `driver`
 
 Cause: The flow uses the no-`launch` path, so launched runtime objects are not injected into the callback automatically.
@@ -33,7 +24,7 @@ Check:
 
 ## Runtime API Called Outside The Flow Callback
 
-Cause: `launch()`, `expect`, `device`, or `platform.target` was called at the module level, outside the flow callback.
+Cause: `launch()`, `device`, or `platform.target` was called at the module level, outside the flow callback.
 
 Check:
 
