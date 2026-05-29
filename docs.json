@@ -511,7 +511,8 @@
   },
   "integrations": {
     "posthog": {
-      "apiKey": "phc_qEW3U4XMuhdJa6Rf2QZvbyKcixM5mYyq5BYNopuSxBFw"
+      "apiKey": "phc_qEW3U4XMuhdJa6Rf2QZvbyKcixM5mYyq5BYNopuSxBFw",
+      "sessionRecording": true
     }
   }
 }
