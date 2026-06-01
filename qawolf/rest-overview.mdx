@@ -1,0 +1,33 @@
+---
+title: "Overview"
+description: "The QA Wolf REST API provides direct HTTP access to core platform actions."
+---
+
+<Tip>
+  For most use cases, [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) is the recommended over direct endpoint access.
+</Tip>
+
+## Authentication
+
+All endpoints require a `QAWOLF_API_KEY` passed as a Bearer token.
+
+```bash
+Authorization: Bearer $QAWOLF_API_KEY
+```
+
+To find your API key, open the **Workspace Name** dropdown in QA Wolf and go to **Workspace Settings → Integrations → API Access**.
+
+## Base URL
+
+```text
+https://app.qawolf.com
+```
+
+## Endpoints
+
+| Endpoint | Method | Description |
+| --- | --- | --- |
+| [`/api/webhooks/deploy_success`](/qawolf/deploy-success) | `POST` | Notify QA Wolf of a successful deployment to trigger a run. |
+| [`/api/webhooks/environment_terminated`](/qawolf/environment_terminated) | `POST` | Notify QA Wolf that an ephemeral environment has been terminated. |
+| [`/api/v0/ci-greenlight/{root-run-id}`](/qawolf/v0-ci-greenlight) | `GET` | Poll for the outcome of a run to gate a pipeline. |
+| [`/api/v0/run-inputs-executables-signed-urls`](/qawolf/run-inputs-executables-signed-urls) | `GET` \+ `PUT` | Generate a signed URL and upload an executable file. |

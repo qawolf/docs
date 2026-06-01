@@ -1,0 +1,294 @@
+---
+title: "API Reference"
+description: "Reference documentation for @qawolf/ci-sdk."
+---
+
+`@qawolf/ci-sdk` provides a TypeScript SDK (CJS and ESM compatible) for interacting with the QA Wolf API from your CI pipeline.
+
+## Installation
+
+```bash
+npm install @qawolf/ci-sdk
+```
+
+<Note>
+  Requires Node.js 18 or later.
+</Note>
+
+```javascript
+import { fetch } from "undici";
+
+const sdk = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY }, { fetch });
+```
+
+## makeQaWolfSdk
+
+The entry point for all SDK functions. Pass your `QAWOLF_API_KEY` to initialize.
+
+```javascript
+import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+const {
+  attemptNotifyDeploy,
+  pollCiGreenlightStatus,
+  makePollCiGreenlightStatusIterator,
+  notifyTerminatedEphemeralEnvironment,
+  generateSignedUrlForRunInputsExecutablesStorage,
+} = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+```
+
+<Note>
+  SDK functions do not throw. They return a result object with an `outcome` field. Always inspect the outcome to determine whether your CI step should pass or fail.
+</Note>
+
+## attemptNotifyDeploy
+
+Notifies QA Wolf of a successful deployment, which starts a test run if one is configured. See [webhooks/deploy\_success](/qawolf/deploy-success) for the underlying endpoint.
+
+```javascript
+import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+const { attemptNotifyDeploy } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const deployConfig: DeployConfig = {
+  branch: undefined,
+  sha: undefined,
+  deploymentType: "staging",
+  deploymentUrl: undefined,
+  hostingService: undefined,
+  commitUrl: undefined,
+  deduplicationKey: undefined,
+  variables: undefined,
+};
+
+const result = await attemptNotifyDeploy(deployConfig);
+if (result.outcome !== "success") {
+  process.exit(1);
+}
+
+const runId = result.runId;
+// Store runId as a CI job output to pass to pollCiGreenlightStatus.
+```
+
+### DeployConfig fields
+
+| --- | --- | --- | | `branch` | string | VCS branch name. | | `sha` | string | VCS commit SHA. | | `deploymentType` | string | Required if the target trigger matches on deployment type. | | `deploymentUrl` | string | Overrides the environment URL. Available in tests as `process.env.URL`. | | `hostingService` | string | `"GitHub"` or `"GitLab"`. Defaults to `"GitHub"`. | | `commitUrl` | string | Pass with `sha` if no hosting service repo is configured. Makes the commit ID a clickable link in the QA Wolf UI.| | `pullRequestNumber` | number | VCS PR number, for PR testing. | | `mergeRequestNumber` | number | VCS MR number, for MR testing. | | `repository.name` | string | Repository name. | | `repository.owner` | string | Repository owner or organization (VCS). | | `repository.namespace` | string | Repository namespace or group (VCS). | | `ephemeralEnvironment` | boolean | Pass with `deploymentUrl` for ephemeral environments without a code-hosting integration. | | `deduplicationKey` | string | Custom key controlling run cancellation behavior. | | `variables` | object | Key/value pairs that override environment variables for triggered runs. |
+
+### Result fields
+
+| Field | Description |
+| --- | --- |
+| `outcome` | `"success"`, `"failed"`, or `"aborted"`. |
+| `runId` | ID of the triggered run. Pass to `pollCiGreenlightStatus`. |
+| `failReason` | Present when `outcome` is `"failed"`. Reason the notification failed. |
+| `abortReason` | Present when `outcome` is `"aborted"`. Reason the notification was aborted. |
+| `httpStatus` | HTTP status code if the notification failed or was aborted due to a network error. |
+
+<Note>
+  A run is only created if there is a matching trigger in your QA Wolf configuration. `outcome: "success"` means the notification was accepted, not that a run was created. Check `runId` to know whether a run was created.
+</Note>
+
+## pollCiGreenlightStatus
+
+Polls the [CI greenlight endpoint](/qawolf/v0-ci-greenlight) until the run completes and returns whether it is safe to release.
+
+```javascript
+import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+const { pollCiGreenlightStatus } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const { outcome } = await pollCiGreenlightStatus({
+  runId,
+  onRunStageChanged: (current, previous) => {
+    console.log(current, previous);
+  },
+  abortOnSuperseded: false,
+});
+
+if (outcome !== "success") {
+  process.exit(1);
+}
+```
+
+### Options
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `runId` | string | The run ID returned by `attemptNotifyDeploy`. |
+| `onRunStageChanged` | function | Optional callback fired when the run stage changes. |
+| `abortOnSuperseded` | boolean | Defaults to `false`. When `true`, polling aborts if the run is superseded. |
+| `pollTimeout` | number | Timeout in milliseconds. Defaults to two hours. |
+
+### Result fields
+
+| Field | Description |
+| --- | --- |
+| `outcome` | `"success"`, `"failed"`, or `"aborted"`. Only `"failed"` indicates bugs were found. |
+| `abortReason` | Present when `outcome` is `"aborted"`. Reason polling stopped. |
+| `httpStatus` | HTTP status code if polling was aborted due to a network error. |
+
+### Advanced: makePollCiGreenlightStatusIterator
+
+An async generator for fine-grained control over the polling lifecycle. Use this when you need custom early-exit logic — for example, proceeding after a time limit or when bug counts are within an acceptable threshold.
+
+```javascript
+import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+const { makePollCiGreenlightStatusIterator } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+let underReviewStartTime: number | null = null;
+
+const iterator = makePollCiGreenlightStatusIterator({ runId: "your-run-id" });
+
+for await (const iteration of iterator) {
+  if (iteration.isAborted) {
+    console.error(`Poll aborted: ${iteration.abortReason}`);
+    process.exit(1);
+  }
+
+  const { status, stageChanged } = iteration;
+
+  switch (status.runStage) {
+    case "initializing":
+      break;
+    case "underReview":
+      if (stageChanged) underReviewStartTime = Date.now();
+      const timeInReview = underReviewStartTime ? Date.now() - underReviewStartTime : 0;
+      if (timeInReview > 10 * 60 * 1000) {
+        if (status.blockingBugsCount > 5) process.exit(1);
+      }
+      break;
+    case "completed":
+      if (!status.greenlight) process.exit(1);
+      return;
+    case "canceled":
+      process.exit(1);
+    default:
+      status.runStage satisfies never;
+      throw new Error(`Unexpected run stage: ${status.runStage}`);
+  }
+}
+```
+
+Each iteration yields either a status update or an abort notification:
+
+| Field | Present when | Description |
+| --- | --- | --- |
+| `isAborted` | always | `false` for status updates, `true` for abort notifications. |
+| `status` | `isAborted: false` | Current `CiGreenlightStatus` from the API. |
+| `previousStatus` | `isAborted: false` | Status from the previous iteration. `undefined` on first iteration. |
+| `stageChanged` | `isAborted: false` | `true` if the run stage changed from the previous iteration. |
+| `elapsedMs` | always | Milliseconds elapsed since polling started. |
+| `abortReason` | `isAborted: true` | Why polling was aborted. |
+| `httpStatus` | `isAborted: true` | HTTP status code if applicable. |
+
+<Warning>
+  Handle all run stages in your `switch` statement. The `default: status.runStage satisfies never` pattern provides compile-time safety — TypeScript will error if a new stage is added and your code doesn't handle it.
+</Warning>
+
+## notifyTerminatedEphemeralEnvironment
+
+Notifies QA Wolf that an ephemeral environment has been terminated. Stops all runs targeting the environment and triggers flow promotion. See [webhooks/environment\_terminated](/qawolf/environment_terminated) for the underlying endpoint.
+
+```javascript
+import {
+  type NotifyTerminatedEphemeralEnvironmentInput,
+  makeQaWolfSdk,
+} from "@qawolf/ci-sdk";
+
+const { notifyTerminatedEphemeralEnvironment } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const terminateConfig: NotifyTerminatedEphemeralEnvironmentInput = {
+  deploymentUrl: "https://preview-123.example.com",
+};
+
+const result = await notifyTerminatedEphemeralEnvironment(terminateConfig);
+if (result.outcome !== "success") {
+  process.exit(1);
+}
+
+const environmentId = result.environmentId;
+```
+
+### Input fields
+
+Pass one of the following to identify the environment:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `environmentId` | string | ID of the ephemeral environment. |
+| `environmentAlias` | string | Alias of the ephemeral environment. |
+| `deploymentUrl` | string | Preview URL used when the environment was created. This should be the same `deploymentUrl` you passed to `attemptNotifyDeploy` along with `ephemeralEnvironment`: true when originally notifying us. |
+
+### Result fields
+
+| Field | Description |
+| --- | --- |
+| `outcome` | `"success"`, `"failed"`, or `"aborted"`. |
+| `environmentId` | ID of the terminated environment. |
+
+## generateSignedUrlForRunInputsExecutablesStorage
+
+Generates a signed URL for uploading a run input executable (APK, AAB, IPA, ZIP, CSV, PDF) to QA Wolf. See [v0/run-inputs-executables-signed-urls](/qawolf/Uploading-manually) for the underlying endpoint.
+
+```javascript
+import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+import fs from "fs/promises";
+
+const { generateSignedUrlForRunInputsExecutablesStorage } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage({
+  destinationFilePath: "app-staging",
+});
+
+if (
+  !signedUrlResponse?.success ||
+  !signedUrlResponse.uploadUrl ||
+  !signedUrlResponse.playgroundFileLocation
+) {
+  throw new Error("No upload URL received from QA Wolf");
+}
+
+const fileBuffer = await fs.readFile("./path/to/build.apk");
+
+await fetch(signedUrlResponse.uploadUrl, {
+  method: "PUT",
+  body: fileBuffer,
+  headers: { "Content-Type": "application/octet-stream" },
+});
+```
+
+### Input fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `destinationFilePath` | string | Filename and extension, optionally including directories. Reach out to your QA Wolf representative for the correct value. |
+
+### Response fields
+
+| Field | Description |
+| --- | --- |
+| `success` | `true` if the signed URL was generated successfully. |
+| `uploadUrl` | Pre-signed URL for uploading the file via `PUT`. |
+| `playgroundFileLocation` | File path without team ID. Use as a `variables` value in `attemptNotifyDeploy`. |
+
+## Versioning
+
+This package follows SemVer. Notes:
+
+- Use the `^` range operator — patch and minor updates will not introduce breaking changes.
+- Major version bumps indicate a breaking API change. QA Wolf will give advance notice.
+- Only top-level exports are covered by SemVer.
+- New fields in API response types are not considered breaking changes.

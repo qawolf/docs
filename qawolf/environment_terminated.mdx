@@ -1,0 +1,66 @@
+---
+title: "webhooks/environment_terminated"
+description: 'Stops all runs targeting the environment and requests flow promotion to the static base environment. The environment will show as "closed" in QA Wolf.'
+---
+
+`POST https://app.qawolf.com/api/webhooks/environment_terminated`
+
+<Warning>
+  If your build server supports `node`, use [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) instead of calling this endpoint directly. This gives you type safety and clearer errors and output."
+</Warning>
+
+## Request
+
+```bash
+curl -X POST https://app.qawolf.com/api/webhooks/environment_terminated \
+  -H "Authorization: Bearer $QAWOLF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"deploymentUrl": "<DeploymentUrl>"}'
+```
+
+## Request headers
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer <your-api-key>` |
+| `Content-Type` | `application/json` |
+
+## Request body
+
+Pass one of the following to identify the environment.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `environmentId` | string | ID of the ephemeral environment to terminate. |
+| `environmentAlias` | string | Alias of the ephemeral environment to terminate. |
+| `deploymentUrl` | string | Preview URL used when the environment was created via `deploy_success` with `ephemeral_environment: true`. |
+
+## Response
+
+```json
+{
+  "results": [
+    {
+      "environmentId": "cl1f6i0in15676w115vt43vw2",
+      "promotionTaskId": "ckzoog9wy01720xyrvl8ah7gu",
+      "code": "terminated"
+    }
+  ]
+}
+```
+
+## Response codes
+
+| Code | Description |
+| --- | --- |
+| `200` | Environment terminated successfully. |
+| `401` | Missing or invalid API key. |
+| `403` | Forbidden. Usually indicates a disabled team. |
+| `404` | Environment not found. |
+| `409` | Conflict. Environment is already terminated. |
+| `500` | Internal server error. Contact support if the issue persists. |
+
+## Related
+
+- [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference)
+- [Notify deploy](/qawolf/v0-ci-greenlight)

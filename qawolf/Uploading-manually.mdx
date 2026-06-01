@@ -1,58 +1,16 @@
 ---
 title: "Upload files"
-description: "Manually upload files to QA Wolf using the signed URL API."
+description: "Upload files to QA Wolf and use them in your test flows."
 icon: "upload"
 ---
 
-QA Wolf accepts file uploads via a two-step signed URL process:
+QA Wolf accepts file uploads via a two-step signed URL process. See [v0/run-inputs-executables-signed-urls](/qawolf/run-inputs-executables-signed-urls).
 
-1. Request a signed upload URL from the QA Wolf API
-2. Upload your file directly to that URL
+<Check>
+  Make sure you have:
 
-This method works for any supported file type and can be used for one-off uploads or as part of a custom automation.
-
-## Prerequisites
-
-- Your `QAWOLF_API_KEY` — available under `Workspace Name` **→ Workspace Settings → Integrations → API Access**
-
-## Step 1: Generate a signed URL
-
-Make a `GET` request with the filename (including extension) as the `file` query parameter.
-
-```bash
-curl -X GET \
-  "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=YOUR_FILENAME" \
-  -H "Authorization: Bearer $QAWOLF_API_KEY"
-```
-
-On success, you'll receive:
-
-```json
-{
-  "fileLocation": "$TEAM_ID/YOUR_FILENAME",
-  "playgroundFileLocation": "YOUR_FILENAME",
-  "signedUrl": "https://..."
-}
-```
-
-Copy the `signedUrl` — you'll use it in the next step.
-
-<Note>
-  The signed URL is temporary. Upload your file promptly after generating it.
-</Note>
-
-## Step 2: Upload the file
-
-Use the `signedUrl` from Step 1 to upload your file via a `PUT` request.
-
-```bash
-curl -X PUT \
-  --header "Content-Type: application/octet-stream" \
-  --data-binary @/path/to/your/file \
-  "$SIGNED_URL"
-```
-
-Once this completes successfully, the file is available in QA Wolf.
+  - Your `QAWOLF_API_KEY` — available under **Workspace Name → Workspace Settings → Integrations → API Access**
+</Check>
 
 ## Use an uploaded file in a flow
 
@@ -67,10 +25,6 @@ const driver = await wdio.startAndroid({
   "appium:app": APK_PATH,
 });
 ```
-
-<Note>
-  For mobile testing, the best approach is to upload new builds automatically as part of your CI/CD pipeline rather than uploading manually. See [Mobile build testing](/qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78) for how to set this up.
-</Note>
 
 ### Web file upload
 

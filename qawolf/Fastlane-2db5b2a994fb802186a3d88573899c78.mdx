@@ -1,9 +1,3 @@
----
-title: "How to integrate a mobile build with Fastlane"
-description: "Use the QA Wolf Fastlane plugin to upload mobile build artifacts and trigger test runs from existing lanes."
-sidebarTitle: "Fastlane"
----
-
 ## When to use Fastlane
 
 This guide is for teams that already use Fastlane to build Android or iOS apps. If your mobile builds are defined as Fastlane lanes, the QA Wolf Fastlane plugin lets you upload build artifacts and trigger test runs within your existing mobile automation. This is the recommended option for mobile teams that use Fastlane today.
@@ -175,7 +169,7 @@ If mobile triggers have not yet been enabled, this step will complete without st
 
 ```ruby
 notify_deploy_qawolf(
-  executable_environment_key: "ANDROID_APP"
+  executable_environment_key: "RUN_INPUT_PATH"
 )
 ```
 

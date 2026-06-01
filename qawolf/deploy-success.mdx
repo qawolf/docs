@@ -1,0 +1,91 @@
+---
+title: "webhooks/deploy_success"
+description: "Triggers a test run against a deployment."
+sidebarTitle: "webhooks/deploy_success"
+---
+
+`POST https://app.qawolf.com/api/webhooks/deploy_success`
+
+<Warning>
+  If your build server supports `node`, use [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) instead of calling this endpoint directly. This gives you type safety and clearer errors and output."
+</Warning>
+
+## Request
+
+```bash
+curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
+  -H "Authorization: Bearer $QAWOLF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "branch": "main",
+    "sha": "de12adda500f2bc5a29dbd89f4fb1b0e1a31de81",
+    "deployment_type": "staging",
+    "deployment_url": "https://staging.example.com",
+    "hosting_service": "GitHub"
+  }'
+```
+
+## Request headers
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer <your-api-key>` |
+| `Content-Type` | `application/json` |
+
+## Request body
+
+All fields are optional.
+
+### Commonly used
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `branch` | string | Git branch name. Used to display in the UI and match pull requests on any linked repo. |
+| `sha` | string | Git commit SHA. Used to create GitHub commit checks and display a link to the commit in the run UI. |
+| `deployment_type` | string | Required if the target trigger is configured to match a deployment type. |
+| `deployment_url` | string | Overrides the environment URL. Available in tests as `process.env.URL`. |
+
+### Advanced
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `hosting_service` | string | `"GitHub"` or `"GitLab"`. Defaults to `"GitHub"`. |
+| `commit_url` | string | Pass with `sha` if no hosting service repo is configured. Makes the commit ID a clickable link in the QA Wolf UI. |
+| `variables` | object | Key/value pairs that override environment variables for every run triggered by this notification. |
+| `deduplication_key` | string | Custom key controlling run cancellation behavior. By default, new runs cancel ongoing runs with the same branch/environment combination. |
+| `ephemeral_environment` | boolean | Pass with `deployment_url` if the deployment is not associated with a code-hosting integration. |
+
+## Response
+
+```json
+{
+  "results": [
+    {
+      "created_suite_id": "cl1f6i0in15676w115vt43vw2",
+      "trigger_id": "ckzoog9wy01720xyrvl8ah7gu"
+    }
+  ]
+}
+```
+
+`results` is an array of matched triggers. Each entry contains either `created_suite_id` if a run was created, `duplicate_suite_id` if a run for this SHA already exists, or `failure_reason` if the run could not be created.
+
+## Response codes
+
+| Code | Description |
+| --- | --- |
+| `200` | Request accepted. Inspect the response body to confirm a run was created. |
+| `401` | Missing or invalid API key. |
+| `403` | Forbidden. Usually indicates a disabled team. |
+| `404` | Run not found. |
+| `405` | Method not allowed. Use `POST`. |
+| `500` | Internal server error. Contact support if the issue persists. |
+
+<Note>
+  A 200 response does not guarantee a run was created. Inspect the response body to confirm.
+</Note>
+
+## Related
+
+- [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference)
+- [CI greenlight](/qawolf/v0-ci-greenlight)

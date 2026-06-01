@@ -1,0 +1,67 @@
+---
+title: "v0/run-inputs-executables-signed-urls"
+description: "Generate a signed URL and upload an executable file to QA Wolf."
+---
+
+`GET https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls`
+
+<Warning>
+  Only the following file types are accepted: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`, `.csv`, `.pdf`
+</Warning>
+
+## Generate a signed URL
+
+```bash
+curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH" \
+  -H "Authorization: Bearer $QAWOLF_API_KEY"
+```
+
+### Query parameters
+
+| Parameter | Description |
+| --- | --- |
+| `file` | Destination file path. At minimum the filename and extension. May include directories. |
+
+### Response
+
+```json
+{
+  "fileLocation": "$TEAM_ID/$DESTINATION_FILE_PATH",
+  "playgroundFileLocation": "$DESTINATION_FILE_PATH",
+  "signedUrl": "https://..."
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `fileLocation` | Full path including team ID. Use this to reference the file in run configurations. |
+| `playgroundFileLocation` | Path without team ID. Use this to reference the file in the playground. |
+| `signedUrl` | Pre-signed URL for uploading the file. Use in the next step. |
+
+## Upload the file
+
+`PUT {signedUrl}`
+
+The signed URL is returned by the previous request. It is not a fixed `/api/` endpoint — it points directly to Google Cloud Storage.
+
+```bash
+curl -X PUT \
+  --header "Content-Type: application/octet-stream" \
+  --data-binary @some_file.zip \
+  $SIGNED_URL
+```
+
+## Response codes
+
+| Code | Description |
+| --- | --- |
+| `200` | Success. |
+| `401` | Missing or invalid API key. |
+| `403` | Forbidden. Usually indicates a disabled team. |
+| `500` | Internal server error. Contact support if the issue persists. |
+
+## Related
+
+- [Upload files](/qawolf/Uploading-manually)
+- [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference)
+- [Notify deploy](/qawolf/deploy-success)

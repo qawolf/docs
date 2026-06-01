@@ -1,0 +1,98 @@
+---
+title: "v0/ci-greenlight"
+description: "Returns the outcome of a run for use as a pipeline gate."
+---
+
+`GET https://app.qawolf.com/api/v0/ci-greenlight/{root-run-id}`
+
+<Warning>
+  If your build server supports `node`, use [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.
+</Warning>
+
+## Request
+
+```bash
+curl https://app.qawolf.com/api/v0/ci-greenlight/<root-run-id> \
+  -H "Authorization: Bearer $QAWOLF_API_KEY"
+```
+
+## Request headers
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer <your-api-key>` |
+
+## Query parameters
+
+| Parameter | Values | Description |
+| --- | --- | --- |
+| `outcomeWhenBlockingBugsInOtherWorkflows` | `green` \| `red` | Defaults to `green`. When set to `red`, `greenlight` will be `false` if blocking bugs were found in workflows not executed in this run. Experimental. |
+
+## Response
+
+| Field | Description |
+| --- | --- |
+| `greenlight` | `true` when `runStage` is `"completed"` and zero blocking bugs were found. |
+| `relevantRunId` | ID of the most recent superseding run, if one exists. Otherwise matches `rootRunId`. |
+| `relevantRunUrl` | URL to the relevant run in QA Wolf. |
+| `relevantRunWithBugsUrl` | URL to the relevant run filtered to workflows diagnosed as bugs. |
+| `rootRunId` | ID of the run passed in the request. |
+| `rootRunUrl` | URL to the root run in QA Wolf. |
+| `runStage` | One of `"initializing"`, `"underReview"`, `"completed"`, `"canceled"`. |
+| `workflowsDisabledAfterRunCount` | Number of workflows disabled after review. |
+| `workflowsInRunCount` | Total number of workflows in this run. |
+| `workflowsUnderInvestigationCount` | Number of failed workflows requiring investigation. |
+
+### Conditional fields
+
+Present when `runStage` is `"underReview"` or `"completed"`, except where noted.
+
+| Field | Description |
+| --- | --- |
+| `blockingBugsCount` | Number of blocking bugs found after review. Present when `runStage` is `"completed"`. |
+| `nonBlockingBugsCount` | Number of non-blocking bugs found after review. Present when `runStage` is `"completed"`. |
+| `workflowsAutoRetryingCount` | Number of workflows still auto-retrying. Present when `runStage` is `"underReview"`. |
+| `blockingBugUrls` | Array of URLs to blocking bugs. |
+| `nonBlockingBugUrls` | Array of URLs to non-blocking bugs. |
+| `reproducedBugs` | Array of detailed bug objects. |
+
+## Interpreting `greenlight`
+
+`greenlight` is `true` only when:
+
+- `runStage` is `"completed"`, and
+- Zero blocking bugs were found.
+
+A bug is blocking if its priority is `"high"` or unset. Newly found bugs are unset by default and count as blocking. You can lower a bug's priority in the QA Wolf UI to make it non-blocking, then retry the greenlight poll.
+
+## Run stages
+
+| Stage | Description |
+| --- | --- |
+| `initializing` | Run is starting up. |
+| `underReview` | Run is in progress and under review. |
+| `completed` | Run has finished. |
+| `canceled` | Run was canceled. Polling should stop — a canceled run cannot be recovered. |
+
+## Superseding logic
+
+If a newer run has superseded the root run (identified by matching `deduplication_key`), this endpoint returns the greenlight status for the most recent superseding run. When `relevantRunId` differs from `rootRunId`, you are seeing the superseding run's status.
+
+When polling, use `relevantRunId` rather than `rootRunId` for faster queries.
+
+## Response codes
+
+| Code | Description |
+| --- | --- |
+| `200` | Success. |
+| `401` | Missing or invalid API key. |
+| `403` | Forbidden. Usually indicates a disabled team. |
+| `404` | Run not found. |
+| `405` | Method not allowed. Use `GET`. |
+| `410` | Gone. Returned for old or legacy runs. |
+| `500` | Internal server error. Contact support if the issue persists. |
+
+## Related
+
+- [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference)
+- [Notify deploy](/qawolf/deploy-success)

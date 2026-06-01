@@ -299,9 +299,29 @@
         ]
       },
       {
-        "tab": "Libraries",
+        "tab": "References",
         "icon": "braces",
         "pages": [
+          {
+            "group": "@qawolf/emails",
+            "icon": "mail",
+            "pages": [
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/emails/api-reference/index",
+                  "qawolf/libraries/emails/api-reference/mail",
+                  "qawolf/libraries/emails/api-reference/client"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/emails/troubleshooting"
+                ]
+              }
+            ]
+          },
           {
             "group": "@qawolf/flows",
             "icon": "route",
@@ -350,23 +370,32 @@
             ]
           },
           {
-            "group": "@qawolf/emails",
-            "icon": "mail",
+            "group": "@qawolf/ci-sdk",
+            "icon": "arrow-left-right",
             "pages": [
               {
                 "group": "API Reference",
                 "pages": [
-                  "qawolf/libraries/emails/api-reference/index",
-                  "qawolf/libraries/emails/api-reference/mail",
-                  "qawolf/libraries/emails/api-reference/client"
+                  "qawolf/libraries/ci-sdk/api-reference"
                 ]
               },
               {
                 "group": "Troubleshooting",
                 "pages": [
-                  "qawolf/libraries/emails/troubleshooting"
+                  "qawolf/libraries/ci-sdk/troubleshooting"
                 ]
               }
+            ]
+          },
+          {
+            "group": "REST",
+            "icon": "code",
+            "pages": [
+              "qawolf/rest-overview",
+              "qawolf/deploy-success",
+              "qawolf/environment_terminated",
+              "qawolf/v0-ci-greenlight",
+              "qawolf/run-inputs-executables-signed-urls"
             ]
           }
         ]
@@ -386,7 +415,9 @@
                 "pages": [
                   "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
                   "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
-                  "qawolf/circle-ci"
+                  "qawolf/circle-ci",
+                  "qawolf/other-ci-node",
+                  "qawolf/other-ci-webhook"
                 ]
               },
               {
@@ -403,7 +434,8 @@
                 "pages": [
                   "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
                   "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f",
-                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15"
+                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
+                  "qawolf/other-web-hook-for-mobile"
                 ]
               }
             ]

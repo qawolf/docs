@@ -1,0 +1,75 @@
+---
+title: "How to integrate with webhooks"
+description: "Trigger QA Wolf test runs from any CI system using the deploy webhook directly."
+sidebarTitle: "Other (webhooks)"
+---
+
+Use this guide if your CI system cannot run Node.js. This includes environments such as ArgoCD, locked-down runners, and minimal containers.
+
+<Tip>
+  If your CI system supports Node.js, use [Other CI (Node)](/qawolf/other-ci-node) instead.
+</Tip>
+
+<Check>
+  Make sure you have:
+
+  - A CI pipeline that runs after a successful deployment.
+  - The ability to make HTTP requests from your CI environment (e.g. `curl`).
+  - Admin access to your CI system's secret or environment variable storage.
+  - At least one QA Wolf environment already configured.
+  - A QA Wolf API key
+</Check>
+
+## Find the QAWOLF\_API\_KEY
+
+<Steps>
+  <Step>
+    Open the **Workspace name** dropdown in QA Wolf and click **Workspace Settings**.
+  </Step>
+  <Step>
+    Choose **Integrations** and click the  <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+  </Step>
+</Steps>
+
+Store the key as a secret in your CI system named `QAWOLF_API_KEY`.
+
+## Add the deploy notification to your pipeline
+
+Add a step to your CI pipeline that runs after your deployment is healthy:
+
+```bash
+curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
+  -H "Authorization: Bearer $QAWOLF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "branch": "$GIT_BRANCH",
+    "sha": "$GIT_COMMIT_SHA",
+    "deployment_type": "staging",
+    "hosting_service": "GitHub"
+  }'
+```
+
+Replace `$GIT_BRANCH` and `$GIT_COMMIT_SHA` with the environment variable names your CI system provides for the current branch and commit SHA. Replace `deployment_type` with the value your QA Wolf representative provides. Set `hosting_service` to where your code is hosted — `"GitHub"` or `"GitLab"` — not where your pipeline runs.
+
+<Warning>
+  A 200 response does not guarantee a run was created. Inspect the response body to confirm. See [webhooks/deploy\_success](/qawolf/deploy-success) for full response details.
+</Warning>
+
+## Verify the integration
+
+<Steps>
+  <Step>
+    Trigger your CI pipeline with a new deployment.
+  </Step>
+  <Step>
+    Confirm the notify step completes without errors.
+  </Step>
+  <Step>
+    Open QA Wolf and confirm a new run appears under the expected environment.
+  </Step>
+</Steps>
+
+## Related
+
+- [webhooks/deploy\_success](/qawolf/deploy-success)
+- [REST API](/qawolf/rest-overview)
