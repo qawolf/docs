@@ -243,6 +243,85 @@ await launch({
   If `app` is present but does not resolve to a value, launch does not fall back to `RUN_INPUT_PATH`.
 </Note>
 
+### Advanced Appium capabilities
+
+The named launch options above cover the most common settings. For anything else, use the `capabilities` escape hatch: its entries are spread into the underlying [webdriver.io `remote`](https://webdriver.io/docs/api) capabilities and passed straight to the Android driver.
+
+`startAndroid` is a thin wrapper around webdriver.io's `remote`, so capabilities that QA Wolf does not set itself are forwarded as-is. See the Appium references for the full list of available keys:
+
+- [Appium core capabilities](https://appium.io/docs/en/2.11/guides/caps/)
+- [UiAutomator2 (Android) driver capabilities](https://github.com/appium/appium-uiautomator2-driver)
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow(
+  "Launch with custom capabilities",
+  "Android - Pixel",
+  async () => {
+    const { driver } = await launch({
+      // Named options cover the common knobs:
+      autoGrantPermissions: true,
+      waitForIdleTimeout: 10,
+      // Anything else is passed through verbatim:
+      capabilities: {
+        "appium:disableWindowAnimation": true,
+        "appium:uiautomator2ServerLaunchTimeout": 60000,
+      },
+    });
+
+    await driver.pause(1000);
+  },
+);
+```
+
+<Note>
+  Named options take precedence over `capabilities` for the same key. In particular, `autoGrantPermissions` and `noReset` are always applied (using their defaults when omitted), so configure those through the named options rather than `capabilities`.
+</Note>
+
+### Migrating from `wdio.startAndroid`
+
+Older flows obtained a `wdio` handle from the test context and called `startAndroid` directly. With the flow API, pass the same configuration through the flow's `launch` options instead — map the settings that have a named option, and route the rest through `capabilities`. The `driver` you receive is the same webdriver.io `Browser` handle, so there is no separate "raw" driver to obtain.
+
+```ts
+// Before: raw wdio.startAndroid
+const driver = await wdio.startAndroid({
+  "appium:app": process.env.ANDROID_PATH,
+  "appium:appPackage": "com.example.android",
+  "appium:autoGrantPermissions": true,
+  "appium:disableWindowAnimation": true,
+  "appium:waitForIdleTimeout": 10,
+});
+```
+
+```ts
+// After: flow launch options
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open Android app",
+  {
+    target: "Android - Pixel",
+    launch: {
+      app: { env: "ANDROID_PATH" },
+      appPackage: "com.example.android",
+      autoGrantPermissions: true,
+      waitForIdleTimeout: 10,
+      capabilities: {
+        "appium:disableWindowAnimation": true,
+      },
+    },
+  },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+<Note>
+  `app: { env: "ANDROID_PATH" }` reads the path from the environment variable named `ANDROID_PATH`, replacing the raw `"appium:app": process.env.ANDROID_PATH` form.
+</Note>
+
 ## `device`
 
 `device` is a runtime proxy over the Android emulator API. Use it for device-level operations — such as setting location, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
