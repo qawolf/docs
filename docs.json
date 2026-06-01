@@ -45,16 +45,8 @@
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
           "qawolf/quick-start",
-          {
-            "group": "Reference",
-            "icon": "brain",
-            "pages": [
-              "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
-              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be",
-              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8",
-              "qawolf/faq"
-            ]
-          }
+          "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc",
+          "qawolf/faq"
         ]
       },
       {
@@ -109,7 +101,8 @@
             "pages": [
               "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
               "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
-              "qawolf/sso"
+              "qawolf/sso",
+              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be"
             ]
           }
         ]
@@ -484,7 +477,8 @@
             "icon": "book-open",
             "pages": [
               "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
-              "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5"
+              "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
+              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
             ]
           },
           {
