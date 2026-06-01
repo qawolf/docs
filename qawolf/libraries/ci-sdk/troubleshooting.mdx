@@ -63,7 +63,6 @@ Cause: The SDK requires `fetch`, which is only available natively in Node.js 18 
 Check:
 
 - Node.js 18 or later is available in your CI environment
-- If you must use an older version, pass a `fetch` polyfill to `makeQaWolfSdk`:
 
 ```javascript
 import { fetch } from "undici";
