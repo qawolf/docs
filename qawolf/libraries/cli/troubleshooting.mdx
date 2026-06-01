@@ -80,13 +80,14 @@ Check:
 - `@qawolf/testkit` is listed in `package.json` and installed
 - the command is being run from the project root, or from a directory inside a pulled environment
 
-## Parallel Worker Count Capped At 1
+## Android Flows Are Not Supported With `--workers > 1`
 
-Cause: `--workers <n>` was set to a value greater than `1`. Parallel workers are not yet supported.
+Cause: `--workers <n>` was set to a value greater than `1` and at least one Android flow was selected for the run.
 
 Check:
 
-- omit `--workers` or set it to `1`
+- rerun the Android flows with `--workers 1`
+- split the run into a web-only invocation with `--workers <n>` and an Android-only invocation with `--workers 1`
 
 ## Basic Target Flow Cannot Be Executed
 

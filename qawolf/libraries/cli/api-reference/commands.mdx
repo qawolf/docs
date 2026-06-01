@@ -52,8 +52,9 @@ Options:
 
 - `--retries <n>` — number of retries for each failing flow. Default: `0`.
 - `--bail` — stop after the first failure. Default: `false`.
-- `--workers <n>` — parallel worker count. Default: `1`. Currently capped at `1`.
+- `--workers <n>` — parallel worker count for web flows. Default: `1`. Android flows must run with `--workers 1`; the CLI errors out if Android flows are selected with a higher value.
 - `--timeout <ms>` — per-flow timeout in milliseconds. Default: `30000`.
+- `--junit [path]` — write a JUnit XML report. With no value, writes to `<output-dir>/junit-report.xml`. Pass an explicit path to override.
 - `--video <mode>` — `on`, `off`, or `retain-on-failure`. Default: `off`.
 - `--trace <mode>` — Playwright trace mode. `on`, `off`, or `retain-on-failure`. Default: `off`.
 - `--har <mode>` — HAR capture mode. `on`, `off`, or `retain-on-failure`. Default: `off`.

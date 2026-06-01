@@ -90,6 +90,28 @@ qawolf flows run --env staging --bail
 
 `--bail` is useful when iterating on a single flow and you want to fail fast.
 
+## Run web flows in parallel
+
+```bash
+qawolf flows run --env staging --workers 4
+```
+
+`--workers` controls how many web flows run concurrently. Android flows must run with `--workers 1` — the CLI errors out if Android flows are selected with a higher value.
+
+## Write a JUnit XML report
+
+```bash
+qawolf flows run --env staging --junit
+```
+
+The CLI writes a JUnit XML report to `qawolf-output/junit-report.xml` (or under the directory set by `--output-dir`). Pass an explicit path to override the default:
+
+```bash
+qawolf flows run --env staging --junit ./reports/results.xml
+```
+
+The XML report is written alongside the console output and is independent of `--json` and `--agent`.
+
 ## Run flows you authored locally
 
 If you've scaffolded a [local-only project](/qawolf/local-execution/set-up-a-project) with `qawolf init`, run without `--env`:
@@ -106,7 +128,7 @@ The CLI discovers flows matching `**/*.flow.{ts,js}` in the current directory an
 
 ## Current limitations
 
-- `--workers` is capped at `1`. Parallel execution is on the roadmap.
+- Android flows must run with `--workers 1`. Parallel execution is supported for web flows only.
 - iOS flows are not executed. The CLI prints a clear error if an iOS flow is selected for a run.
 - Flows that target the legacy `"Basic"` platform pull successfully but cannot be executed by the CLI.
 - Dynamic-target flows — flows where `target` is a computed value rather than a string literal — are included in every run because the CLI cannot determine the platform ahead of time.
