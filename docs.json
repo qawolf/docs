@@ -296,26 +296,6 @@
         "icon": "braces",
         "pages": [
           {
-            "group": "@qawolf/emails",
-            "icon": "mail",
-            "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/emails/api-reference/index",
-                  "qawolf/libraries/emails/api-reference/mail",
-                  "qawolf/libraries/emails/api-reference/client"
-                ]
-              },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/emails/troubleshooting"
-                ]
-              }
-            ]
-          },
-          {
             "group": "@qawolf/flows",
             "icon": "route",
             "pages": [
@@ -358,6 +338,26 @@
                 "group": "Troubleshooting",
                 "pages": [
                   "qawolf/libraries/testkit/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "@qawolf/emails",
+            "icon": "mail",
+            "pages": [
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/emails/api-reference/index",
+                  "qawolf/libraries/emails/api-reference/mail",
+                  "qawolf/libraries/emails/api-reference/client"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/emails/troubleshooting"
                 ]
               }
             ]
