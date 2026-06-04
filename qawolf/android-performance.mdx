@@ -4,7 +4,7 @@ description: "Measure frame rate and CPU usage on the Android emulator during au
 sidebarTitle: "Android"
 ---
 
-Use `adb` commands via `runCommand` to collect FPS and CPU metrics during a flow and assert on rendering performance and CPU load.
+Use `adb` commands via `device.adb(...)` to collect FPS and CPU metrics during a flow and assert on rendering performance and CPU load.
 
 See the [Android `dumpsys` documentation](https://developer.android.com/tools/dumpsys) for more on SurfaceFlinger stats.
 
@@ -17,11 +17,11 @@ See the [Android `dumpsys` documentation](https://developer.android.com/tools/du
 **Assert average FPS**
 
 ```typescript
-await runCommand("adb shell dumpsys SurfaceFlinger --timestats -clear -enable");
+await device.adb("shell dumpsys SurfaceFlinger --timestats -clear -enable");
 
 // perform the rendering-heavy interaction you want to measure
 
-const resTxt = await runCommand("adb shell dumpsys SurfaceFlinger --timestats -dump");
+const resTxt = await device.adb("shell dumpsys SurfaceFlinger --timestats -dump");
 const match = resTxt.match(/averageFPS\s*=\s*(?<avgFps>\d+\.\d*)/);
 const avgFps = Number(match.groups["avgFps"]);
 expect(avgFps).toBeGreaterThan(40);
@@ -35,8 +35,8 @@ expect(avgFps).toBeGreaterThan(40);
 
 ```typescript
 const packageName = await driver.getCurrentPackage();
-const processId = await runCommand(`adb shell pidof ${packageName}`);
-const stdout = await runCommand(`adb shell top -n 1 -p ${processId}`);
+const processId = await device.adb(`shell pidof ${packageName}`);
+const stdout = await device.adb(`shell top -n 1 -p ${processId}`);
 
 const match = stdout.match(/\S+\s+\S+\s+\S+\s+\S+\s+(\S+)/);
 const cpuUsage = parseFloat(match[1]);
@@ -53,18 +53,18 @@ expect(cpuUsage).toBeLessThan(50);
 ## Full sample test
 
 ```typescript
-import { flow } from "@qawolf/flows/android";
+import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Measure performance",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
     await test("assert FPS", async () => {
-      await runCommand("adb shell dumpsys SurfaceFlinger --timestats -clear -enable");
+      await device.adb("shell dumpsys SurfaceFlinger --timestats -clear -enable");
 
       // perform the rendering-heavy interaction you want to measure
 
-      const resTxt = await runCommand("adb shell dumpsys SurfaceFlinger --timestats -dump");
+      const resTxt = await device.adb("shell dumpsys SurfaceFlinger --timestats -dump");
       const match = resTxt.match(/averageFPS\s*=\s*(?<avgFps>\d+\.\d*)/);
       const avgFps = Number(match.groups["avgFps"]);
       expect(avgFps).toBeGreaterThan(40);
@@ -72,8 +72,8 @@ export default flow(
 
     await test("assert CPU usage", async () => {
       const packageName = await driver.getCurrentPackage();
-      const processId = await runCommand(`adb shell pidof ${packageName}`);
-      const stdout = await runCommand(`adb shell top -n 1 -p ${processId}`);
+      const processId = await device.adb(`shell pidof ${packageName}`);
+      const stdout = await device.adb(`shell top -n 1 -p ${processId}`);
 
       const match = stdout.match(/\S+\s+\S+\s+\S+\s+\S+\s+(\S+)/);
       const cpuUsage = parseFloat(match[1]);
