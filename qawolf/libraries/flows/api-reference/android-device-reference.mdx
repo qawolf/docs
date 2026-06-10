@@ -249,6 +249,32 @@ export default flow(
 );
 ```
 
+Real-world example — jump the device clock to test time-gated features (disable auto time, move the clock, then restore):
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Verify a time-gated feature can't be gamed",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("jump the device clock forward", async () => {
+      // Disable automatic time so the manual clock sticks
+      await device.adb("shell settings put global auto_time 0");
+
+      // Move the device clock forward 2 days
+      const targetMillis = Date.now() + 2 * 24 * 60 * 60 * 1000;
+      await device.adb(`shell cmd alarm set-time ${targetMillis}`);
+
+      // ... assert the time-gated feature (rewards/streaks) behaves correctly ...
+
+      // Restore automatic time
+      await device.adb("shell settings put global auto_time 1");
+    });
+  },
+);
+```
+
 <Note>
   Prefer a dedicated `device` method when one exists. See [Measure performance](/qawolf/android-performance) and [Mock hardware sensors](/qawolf/android-sensor-mocking) for `adb` usage in context.
 </Note>
