@@ -24,7 +24,11 @@ await device.passAudioAsMicrophoneInput({
 **Pull a recording off the emulator**
 
 ```typescript
-await device.adb(`pull '/sdcard/Recordings/My recording 1.m4a' ${process.env.TEAM_STORAGE_DIR}/recorded.m4a`);
+await device.adb([
+  "pull",
+  "/sdcard/Recordings/My recording 1.m4a",
+  `${process.env.TEAM_STORAGE_DIR}/recorded.m4a`,
+]);
 ```
 
 ## When to use
