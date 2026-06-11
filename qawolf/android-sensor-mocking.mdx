@@ -4,7 +4,11 @@ description: "Simulate accelerometer, gyroscope, light, and pressure sensor inpu
 sidebarTitle: "Android"
 ---
 
-Use `runCommand` to send `adb emu sensor set` commands during a flow. This lets you simulate hardware sensor input and test how your app responds.
+Use `device.adb(...)` to send `adb emu sensor set` commands during a flow. This lets you simulate hardware sensor input and test how your app responds.
+
+```typescript
+import { device } from "@qawolf/flows/android";
+```
 
 See the [Android emulator sensor documentation](https://developer.android.com/studio/run/emulator-console#sensor-set) for available sensor names and value formats.
 
@@ -17,25 +21,25 @@ See the [Android emulator sensor documentation](https://developer.android.com/st
 **Accelerometer**
 
 ```typescript
-await runCommand("adb emu sensor set acceleration 19:9.81:0");
+await device.adb("emu sensor set acceleration 19:9.81:0");
 ```
 
 **Gyroscope**
 
 ```typescript
-await runCommand("adb emu sensor set gyroscope 0.00:0.00:1.00");
+await device.adb("emu sensor set gyroscope 0.00:0.00:1.00");
 ```
 
 **Light**
 
 ```typescript
-await runCommand("adb emu sensor set light 100");
+await device.adb("emu sensor set light 100");
 ```
 
 **Pressure**
 
 ```typescript
-await runCommand("adb emu sensor set pressure 10");
+await device.adb("emu sensor set pressure 10");
 ```
 
 ## When to use

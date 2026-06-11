@@ -3,7 +3,7 @@ title: "Android Device Reference"
 description: "Reference notes for the `device` object from `@qawolf/flows/android`."
 ---
 
-`device` is a runtime proxy over the Android emulator API. Use it for emulator-level operations — such as setting location, placing images in the virtual camera scene, or configuring network proxies — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
+`device` is a runtime proxy over the Android emulator API. Use it for emulator-level operations — such as setting location, placing images in the virtual camera scene, configuring network proxies, passing audio to the microphone, or running raw `adb` commands — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
 
 `device` is only available while a flow is running.
 
@@ -174,4 +174,107 @@ export default flow("Clear proxy", "Android - Pixel", async () => {
 
 <Note>
   Call `clearProxy()` at the end of any flow that sets a proxy to avoid affecting subsequent flows.
+</Note>
+
+## `passAudioAsMicrophoneInput`
+
+Plays an audio file on the runner host so the emulator receives it as microphone input. Use this to test recording, voice, or speech-recognition features with known audio.
+
+```typescript
+function passAudioAsMicrophoneInput(options: PassAudioAsMicrophoneInputOptions): Promise<string>;
+
+type PassAudioAsMicrophoneInputOptions = {
+  /** File path on the runner host, or URL, for the audio to play. */
+  data: string;
+  /** Delay in seconds before playback starts. */
+  delaySeconds?: number;
+  /** Maximum playback duration in seconds. Omit to play the whole file. */
+  durationSeconds?: number;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Inject microphone audio",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("play audio into the microphone", async () => {
+      await device.passAudioAsMicrophoneInput({
+        data: `${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
+        durationSeconds: 10,
+      });
+    });
+  },
+);
+```
+
+<Note>
+  Playback is bounded by the command timeout (1 minute by default). For audio longer than a minute, pass `durationSeconds`. See [Microphone injection](/qawolf/android-audio-injection) for a full walkthrough.
+</Note>
+
+## `adb`
+
+Runs an `adb` command against the emulator and returns its combined stdout/stderr. Use this as an escape hatch for emulator or device operations not covered by a dedicated `device` method — such as `dumpsys`, `emu sensor set`, or `pull`.
+
+Pass the arguments either as a single string (split on whitespace; quote a single value that contains spaces) or as an array (preferred when building arguments programmatically). The command does not go through a host shell, so it does not expand variables or run pipes.
+
+```typescript
+function adb(command: string | string[]): Promise<string>;
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Run adb commands",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("send a keyevent and pull a file", async () => {
+      await device.adb("shell input keyevent 26");
+
+      // quote a value that contains spaces, or pass an array to avoid quoting
+      await device.adb([
+        "pull",
+        "/sdcard/Recordings/My recording 1.m4a",
+        `${process.env.TEAM_STORAGE_DIR}/recorded.m4a`,
+      ]);
+    });
+  },
+);
+```
+
+Real-world example — jump the device clock to test time-gated features (disable auto time, move the clock, then restore):
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Verify a time-gated feature can't be gamed",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("jump the device clock forward", async () => {
+      // Disable automatic time so the manual clock sticks
+      await device.adb("shell settings put global auto_time 0");
+
+      // Move the device clock forward 2 days
+      const targetMillis = Date.now() + 2 * 24 * 60 * 60 * 1000;
+      await device.adb(`shell cmd alarm set-time ${targetMillis}`);
+
+      // ... assert the time-gated feature (rewards/streaks) behaves correctly ...
+
+      // Restore automatic time
+      await device.adb("shell settings put global auto_time 1");
+    });
+  },
+);
+```
+
+<Note>
+  Prefer a dedicated `device` method when one exists. See [Measure performance](/qawolf/android-performance) and [Mock hardware sensors](/qawolf/android-sensor-mocking) for `adb` usage in context.
 </Note>
