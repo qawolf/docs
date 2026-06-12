@@ -45,7 +45,8 @@ Inside `.qawolf/<env>/`, the CLI stores:
 
 - the flow source files
 - a manifest tracking what was pulled and when
-- a `.env` file with the environment's variables, loaded automatically by `qawolf flows run`
+- an `assets/` directory with the file assets from QA Wolf team storage
+- a `.env` file with the environment's variables, loaded automatically by `qawolf flows run`; it also sets `TEAM_STORAGE_DIR` to the `assets/` directory so flow references to team storage resolve locally
 
 ## Refresh a pulled environment
 
@@ -66,4 +67,4 @@ qawolf flows list "checkout/**" --remote
 
 ## What's not pulled
 
-File assets stored in QA Wolf cloud storage are not pulled. Web flows that read paths from `QAWOLF_*_DIR` environment variables cannot run locally until the assets are available on the machine. Mobile flows reference the APK or IPA build through an environment variable — make sure that path is set before running.
+Mobile app binaries are not downloaded. Mobile flows reference the APK or IPA build through a `RUN_*` environment variable — make sure that path points to a build available on the machine before running.

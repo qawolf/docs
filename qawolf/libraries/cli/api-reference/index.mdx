@@ -13,6 +13,7 @@ Use this section for stable command descriptions, flags, configuration, environm
 - [`qawolf install`](/qawolf/libraries/cli/api-reference/commands#install) — install runtime dependencies for the project.
 - [`qawolf init`](/qawolf/libraries/cli/api-reference/commands#init) — scaffold a project in the current directory.
 - [`qawolf doctor`](/qawolf/libraries/cli/api-reference/commands#doctor) — diagnose problems running flows locally.
+- [`qawolf run`](/qawolf/libraries/cli/api-reference/commands#run) — trigger and manage QA Wolf runs on the platform.
 
 Example invocation:
 
@@ -29,8 +30,13 @@ The following flags apply to every command:
 - `--verbose` — emits debug logs to stderr.
 - `--json` — formats output as JSON.
 - `--agent` — formats output for agent consumption.
+- `-V, --version` — prints the CLI version.
 
 When a recognized CI environment is detected (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `JENKINS_URL`, `BUILDKITE`), output defaults to JSON. When a recognized agent environment is detected (`CLAUDE_CODE`, `CURSOR_SESSION_ID`), output defaults to agent mode.
+
+### Scripting output
+
+With `--json` or `--agent`, a command's structured result is emitted as a single JSON line on stdout, while progress and diagnostic text goes to stderr. Pipe stdout to parse results in scripts.
 
 ## Exit Codes
 

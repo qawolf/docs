@@ -5,7 +5,7 @@ sidebarTitle: "Install dependencies"
 icon: "download"
 ---
 
-[`qawolf flows run --env <env>`](/qawolf/local-execution/run-flows-locally) installs runtime dependencies automatically before its first run, so most users never invoke `qawolf install` directly. Reach for it when you want to install ahead of time — for example, to warm a CI cache between the checkout step and the run step — or when you're running flows from a [local-only project](/qawolf/local-execution/set-up-a-project).
+[`qawolf flows run --env <env>`](/qawolf/local-execution/run-flows-locally) installs npm dependencies and Playwright browsers automatically before its first run, so web-only users rarely invoke `qawolf install` directly. Android dependencies — system images, AVDs, and the Appium uiautomator2 driver — are not installed during a run: run `qawolf install android` (or `qawolf install`) explicitly before running Android flows. Also reach for `qawolf install` when you want to install ahead of time — for example, to warm a CI cache between the checkout step and the run step — or when you're running flows from a [local-only project](/qawolf/local-execution/set-up-a-project).
 
 ## Install everything the project needs
 
@@ -55,4 +55,4 @@ The command installs the Appium uiautomator2 driver, downloads the Android syste
 
 ## iOS support
 
-iOS flows are not yet executable by the CLI. `qawolf install` skips them and prints a clear error if you select an iOS-only pattern. iOS support requires macOS with Xcode when it ships.
+iOS flows are not yet executable by the CLI. `qawolf install` skips them with a warning ("iOS targets are not supported in v0.1.") rather than erroring. iOS support requires macOS with Xcode when it ships.
