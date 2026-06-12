@@ -70,21 +70,25 @@ type Target =
   | "Android - Pixel Tablet (Android 14)"
   | "Android - Tablet"
   | "iOS - Allowlisted iPhone"
-  | "iOS - Apple ID Enabled iPad"
-  | "iOS - Apple ID Enabled iPhone"
   | "iOS - iPad"
   | "iOS - iPad 11 (iOS 18)"
-  | "iOS - iPad 11 (iOS 18) (Apple ID)"
   | "iOS - iPad 11 (iOS 26)"
   | "iOS - iPhone 15 (iOS 17)"
   | "iOS - iPhone 15 (iOS 18)"
   | "iOS - iPhone 15 (iOS 26)"
-  | "iOS - iPhone 15 (iOS 26) (Apple ID)"
   | "iOS - iPhone 15 (iOS 26) (allowlisted)"
   | "iOS - iPhone 15 (iOS 26) (private)"
-  | "iOS - iPhone 17 (iOS 26)";
+  | "iOS - iPhone 17 (iOS 26)"
+  | "iOS 26 - Any iPad"
+  | "iOS 26 - Any iPhone"
+  | "Latest iOS (iPad)"
+  | "Latest iOS (iPhone)";
 ```
 
 <Note>
-  Apple ID Enabled and Allowlisted targets are available for flows that require a signed-in Apple ID or app allowlisting. Contact your team to enable these.
+  Allowlisted targets are used for the features that don't work after resigning such as universal links via associated domains.
+  
+  Private targets are used for advanced cases where the targets have to be allocated for a single team such as MDM testing.
+
+  Contact your QA Wolf representative to enable these targets.
 </Note>
