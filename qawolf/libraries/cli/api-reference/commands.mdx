@@ -4,7 +4,7 @@ description: "Reference notes for every qawolf CLI command and flag."
 sidebarTitle: "Commands"
 ---
 
-The qawolf CLI exposes five top-level commands. Each section below documents the command's purpose, accepted arguments, and flags.
+The qawolf CLI exposes six top-level commands. Each section below documents the command's purpose, accepted arguments, and flags.
 
 ## `auth`
 
@@ -124,7 +124,7 @@ qawolf install android "flows/mobile/**"
 
 ## `init`
 
-Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. Adds the `@qawolf/flows` dependency and a `test:e2e` script to `package.json`.
+Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. When no `package.json` exists, creates one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script; when one already exists, only adds the `test:e2e` script (after a prompt).
 
 ```bash
 qawolf init
@@ -137,7 +137,7 @@ Options:
 
 ## `doctor`
 
-Diagnoses problems running flows locally. Checks the CLI version, Node.js version, Playwright installation, browser availability for web flows, and the Android SDK for Android flows.
+Diagnoses problems running flows locally. Checks your environment (CLI and Node.js versions, API key, connectivity) and the dependencies your flows need, such as Playwright browsers and the Android SDK.
 
 ```bash
 qawolf doctor
@@ -147,3 +147,23 @@ qawolf doctor --all
 Options:
 
 - `--all` — run every platform check, including platforms the project does not use. Default: `false`.
+
+## `run`
+
+Triggers and manages runs on the QA Wolf platform. Unlike the local execution commands, `run` does not execute flows on your machine and requires authentication.
+
+### `run create`
+
+Creates a run on the QA Wolf platform.
+
+```bash
+qawolf run create --environment-id <id>
+qawolf run create --environment-id <id> --flow-ids <id>... --environment-variables KEY=VALUE
+```
+
+Options:
+
+- `--environment-id <value>` — the ID of the environment to run.
+- `--environment-variables <KEY=VALUE...>` — environment variables to set for the run.
+- `--flow-ids <values...>` — limit the run to specific flow IDs.
+- `--ignore-rules` — ignore the environment's run rules.

@@ -21,9 +21,11 @@ When a flow run fails for reasons that aren't in the flow itself — a missing b
 
     - the CLI version
     - the Node.js version against the required minimum
+    - your API key and connectivity to QA Wolf and the npm registry
     - the Playwright installation, if any flow targets a browser
     - browser availability for each target the project uses
     - the Android SDK, if any flow targets Android
+    - flow references to file assets that may not be available locally
   </Step>
   <Step>
     Read the output. Each check reports a pass, a warning, or a failure, with a remediation hint when it fails.
@@ -42,10 +44,10 @@ This is useful when copying the project to a new machine and you want a single c
 
 ## Read the log file
 
-The CLI writes structured logs to the platform's user cache directory:
+The CLI writes structured logs to the platform's log directory:
 
-- macOS: `~/Library/Caches/qawolf/qawolf.log`
-- Linux: `$XDG_CACHE_HOME/qawolf/qawolf.log` or `~/.cache/qawolf/qawolf.log`
+- macOS: `~/Library/Logs/qawolf/cli.log`
+- Linux: `$XDG_STATE_HOME/qawolf/cli.log` or `~/.local/state/qawolf/cli.log`
 
 Run with `--verbose` to mirror debug logs to stderr in real time:
 
