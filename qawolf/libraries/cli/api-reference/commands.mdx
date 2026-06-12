@@ -137,7 +137,7 @@ Options:
 
 ## `doctor`
 
-Diagnoses problems running flows locally. Checks the CLI version, Node.js version, API key presence, QA Wolf API reachability, npm registry reachability, Playwright installation and browser availability for web flows, the Android SDK for Android flows, and scans flows for file-asset environment variable references (`TEAM_STORAGE_DIR`, `QAWOLF_*_DIR`, `RUN_*`).
+Diagnoses problems running flows locally. Checks your environment (CLI and Node.js versions, API key, connectivity) and the dependencies your flows need, such as Playwright browsers and the Android SDK.
 
 ```bash
 qawolf doctor
@@ -150,7 +150,7 @@ Options:
 
 ## `run`
 
-Triggers and manages QA Wolf runs on the platform. Unlike the local execution commands, `run` does not execute flows on your machine — it requires authentication and creates runs on the QA Wolf platform.
+Triggers and manages runs on the QA Wolf platform. Unlike the local execution commands, `run` does not execute flows on your machine and requires authentication.
 
 ### `run create`
 

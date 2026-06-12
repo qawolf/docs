@@ -34,9 +34,7 @@ The following flags apply to every command:
 
 When a recognized CI environment is detected (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `JENKINS_URL`, `BUILDKITE`), output defaults to JSON. When a recognized agent environment is detected (`CLAUDE_CODE`, `CURSOR_SESSION_ID`), output defaults to agent mode.
 
-### Scripting output
-
-With `--json` or `--agent`, a command's structured result is emitted as a single JSON line on stdout, while progress and diagnostic text goes to stderr. Pipe stdout to parse results in scripts.
+With `--json` or `--agent`, the structured result is written to stdout and diagnostic text to stderr, so scripts can parse stdout directly.
 
 ## Exit Codes
 

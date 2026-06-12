@@ -5,7 +5,7 @@ sidebarTitle: "Run flows locally"
 icon: "play"
 ---
 
-`qawolf flows run --env <env>` is the recommended path. It runs your team's flows from the local `.qawolf/<env>/` cache, pulling them first only if they are not already cached locally, then installs the npm dependencies and Playwright browsers they need and runs them. Android flows require installing the Android tooling first with `qawolf install android` — see [Install dependencies](/qawolf/local-execution/install-dependencies).
+`qawolf flows run --env <env>` is the recommended path. It runs your team's flows from the local `.qawolf/<env>/` cache, pulling them first only if they are not already cached locally, then installs the npm dependencies and Playwright browsers they need and runs them. Android flows require installing the Android tooling first with `qawolf install android`. See [Install dependencies](/qawolf/local-execution/install-dependencies).
 
 <Check>
   Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/qawolf/local-execution/authenticate).
@@ -28,7 +28,7 @@ icon: "play"
 
     1. checks the local `.qawolf/staging/` cache, and pulls the environment's flows only if they are not already cached
     2. loads the environment's `.env` file
-    3. installs the npm dependencies and Playwright browsers the flows need — Android system images and AVDs are not installed automatically; run `qawolf install android` first
+    3. installs the npm dependencies and Playwright browsers the flows need
     4. runs every flow
 
     To refresh the local cache against the platform, run `qawolf flows pull --env staging`. See [Pull your team's flows](/qawolf/local-execution/pull-flows).
@@ -129,6 +129,6 @@ The CLI discovers flows matching `**/*.flow.{ts,js}` in the current directory an
 ## Current limitations
 
 - Android flows must run with `--workers 1`. Parallel execution is supported for web flows only.
-- iOS flows are not executed. When iOS flows are selected for a run, the CLI skips them with a warning rather than erroring.
+- iOS flows are not executed. The CLI skips them with a warning.
 - Flows that target the legacy `"Basic"` platform pull successfully but cannot be executed by the CLI.
-- Dynamic-target flows — flows where `target` is a computed value rather than a string literal — are skipped because the CLI cannot determine the platform ahead of time.
+- Flows where `target` is a computed value rather than a string literal are skipped because the CLI cannot determine the platform ahead of time.

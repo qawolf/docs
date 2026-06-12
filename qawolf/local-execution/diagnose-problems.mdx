@@ -21,13 +21,11 @@ When a flow run fails for reasons that aren't in the flow itself — a missing b
 
     - the CLI version
     - the Node.js version against the required minimum
-    - whether an API key is configured
-    - whether the QA Wolf API is reachable
-    - whether the npm registry is reachable
+    - your API key and connectivity to QA Wolf and the npm registry
     - the Playwright installation, if any flow targets a browser
     - browser availability for each target the project uses
     - the Android SDK, if any flow targets Android
-    - flows that reference file-asset environment variables (`TEAM_STORAGE_DIR`, `QAWOLF_*_DIR`, `RUN_*`)
+    - flow references to file assets that may not be available locally
   </Step>
   <Step>
     Read the output. Each check reports a pass, a warning, or a failure, with a remediation hint when it fails.
