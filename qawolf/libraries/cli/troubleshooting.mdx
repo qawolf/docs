@@ -1,0 +1,99 @@
+---
+title: "CLI Troubleshooting"
+description: "Common issues when running the qawolf CLI."
+sidebarTitle: "CLI Troubleshooting"
+---
+
+## `QAWOLF_API_KEY` Is Not Set
+
+Cause: The CLI could not find an API key in the environment, the system keychain, or the local config file.
+
+Check:
+
+- the `QAWOLF_API_KEY` environment variable is set in the current shell
+- credentials have been stored locally with `qawolf auth login`
+- the value has not been overwritten by another shell profile
+
+## QA Wolf API Rejected The Request (HTTP 401)
+
+Cause: The API key is invalid or has been revoked.
+
+Check:
+
+- the key matches one issued for the current workspace
+- the key was not truncated or copied with surrounding whitespace
+- `qawolf auth whoami` returns the expected team
+
+## QA Wolf API Rejected The Request (HTTP 403)
+
+Cause: The API key is valid but does not have access to the requested environment.
+
+Check:
+
+- the key was issued for a workspace that contains this environment
+- the environment ID matches one returned by the platform
+
+## Could Not Reach The QA Wolf API
+
+Cause: The CLI could not connect to the platform at `QAWOLF_API_URL`.
+
+Check:
+
+- the network can reach `https://app.qawolf.com` (or the URL configured in `QAWOLF_API_URL`)
+- `QAWOLF_API_URL` does not contain a typo or unexpected trailing path
+- corporate proxy and VPN settings allow outbound HTTPS
+
+## Flow Bundle Download Link Has Expired
+
+Cause: The signed URL the CLI received from the platform has expired before the bundle was downloaded.
+
+Check:
+
+- re-run `qawolf flows pull --env <env>` to fetch a fresh link
+- network conditions are not slowing the download past the link's expiration window
+
+## Android SDK Not Found
+
+Cause: `qawolf install android` could not locate the Android SDK at the path given by `ANDROID_HOME` or `ANDROID_SDK_ROOT`.
+
+Check:
+
+- `ANDROID_HOME` is exported in the current shell and points at the SDK root
+- the SDK is installed via Android Studio or via the standalone `cmdline-tools` package
+- `sdkmanager` exists at `$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager`
+
+## iOS Targets Are Not Supported
+
+Cause: The selected flow targets an iOS device. iOS execution is not yet supported by the CLI.
+
+Check:
+
+- the flow's `target` is set to a web or Android value
+- iOS flows are filtered out of the run with a pattern argument
+
+## Could Not Load `@qawolf/testkit`
+
+Cause: The runner could not resolve `@qawolf/testkit` from the project directory.
+
+Check:
+
+- `@qawolf/testkit` is listed in `package.json` and installed
+- the command is being run from the project root, or from a directory inside a pulled environment
+
+## Android Flows Are Not Supported With `--workers > 1`
+
+Cause: `--workers <n>` was set to a value greater than `1` and at least one Android flow was selected for the run.
+
+Check:
+
+- rerun the Android flows with `--workers 1`
+- split the run into a web-only invocation with `--workers <n>` and an Android-only invocation with `--workers 1`
+
+## Basic Target Flow Cannot Be Executed
+
+Cause: The flow targets `"Basic"`, the Node-only platform type. The CLI does not execute Basic flows.
+
+Check:
+
+- the flow has been ported to a supported target, or
+- the flow is excluded from the run with a pattern argument
