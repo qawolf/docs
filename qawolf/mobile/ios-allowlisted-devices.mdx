@@ -63,7 +63,15 @@ import { flow } from "@qawolf/flows/ios";
 export default flow(
   "Test push notifications",
   {
-    target: "iOS - iPhone 15 (iOS 26) (allowlisted)",
+    target: {
+      platform: "ios",
+      schemaVersion: 1,
+      meta: {
+        deviceModel: "iPhone 15",
+        iosVersion: "26",
+        targetDevices: "Allowlisted Device",
+      },
+    },
     launch: {
       app: { env: "IPA_BUILD_LOCATION" },
       capabilities: {
