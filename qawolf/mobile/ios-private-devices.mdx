@@ -40,3 +40,17 @@ Set `targetDevices` to `Team Dedicated Device` in your workflow's target configu
   },
 }
 ```
+
+```typescript
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Test on a dedicated device",
+  { target: "iOS - iPhone 15 (iOS 26) (private)", launch: true },
+  async ({ driver, test }) => {
+    await test("app launches", async () => {
+      // your test steps
+    });
+  },
+);
+```
