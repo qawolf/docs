@@ -6,6 +6,22 @@ sidebarTitle: "iOS"
 
 QA Wolf runs your iOS tests on real, physical devices. By default these devices are shared across customers, and QA Wolf cleans up data and configuration between runs so each run starts from a known state.
 
+Choose an iOS target in your flow and QA Wolf allocates a device for it.
+
+```typescript
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Open iOS app",
+  { target: "Latest iOS (iPhone)", launch: true },
+  async ({ driver, test }) => {
+    await test("app launches", async () => {
+      await driver.pause(1000);
+    });
+  },
+);
+```
+
 To install unreleased builds on shared devices without a per-app provisioning profile, QA Wolf resigns your app during installation. Resigning covers most test cases, but two situations need a different setup:
 
 - Some features cannot be tested on a resigned app — see [Allowlisted devices](/qawolf/mobile/ios-allowlisted-devices).
