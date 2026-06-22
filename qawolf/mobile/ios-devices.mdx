@@ -1,0 +1,14 @@
+---
+title: "iOS devices"
+description: "QA Wolf runs your iOS tests on real devices, with allowlisted and private device options for cases the shared pool can't cover."
+sidebarTitle: "iOS"
+---
+
+QA Wolf runs your iOS tests on real, physical devices. By default these devices are shared across customers, and QA Wolf cleans up data and configuration between runs so each run starts from a known state.
+
+To install unreleased builds on shared devices without a per-app provisioning profile, QA Wolf resigns your app during installation. Resigning covers most test cases, but two situations need a different setup:
+
+- Some features cannot be tested on a resigned app — see [Allowlisted devices](/qawolf/mobile/ios-allowlisted-devices).
+- Some tests need devices that are not shared with other customers — see [Private devices](/qawolf/mobile/ios-private-devices).
+
+See the [iOS Reference](/qawolf/libraries/flows/api-reference/ios) for the full list of targets and device controls.

@@ -96,6 +96,28 @@
             ]
           },
           {
+            "group": "Mobile",
+            "icon": "smartphone",
+            "pages": [
+              {
+                "group": "Android",
+                "icon": "bot",
+                "pages": [
+                  "qawolf/mobile/android-devices"
+                ]
+              },
+              {
+                "group": "iOS",
+                "icon": "apple",
+                "pages": [
+                  "qawolf/mobile/ios-devices",
+                  "qawolf/mobile/ios-allowlisted-devices",
+                  "qawolf/mobile/ios-private-devices"
+                ]
+              }
+            ]
+          },
+          {
             "group": "Setup",
             "icon": "sliders-horizontal",
             "pages": [
