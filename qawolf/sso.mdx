@@ -6,9 +6,7 @@ sidebarTitle: "SSO"
 ---
 
 <Warning>
-  Before configuring SSO, QA Wolf must enable the SSO configuration view for the workspace admin users who will perform the setup.
-
-  Contact QA Wolf and provide the email addresses of the workspace admins who should configure SSO.
+  SSO is currently free with every Full Service plan, but we intend to charge extra for it beginning sometime in 2027.
 </Warning>
 
 QA Wolf supports SSO via SAML 2.0 and OpenID Connect, which covers most enterprise identity providers, including Okta, Azure AD, Google, OneLogin, JumpCloud, Auth0, ADFS, and Shibboleth.
@@ -19,12 +17,13 @@ The person configuring SSO must have the following permissions:
 
 ### QA Wolf permissions
 
-- Workspace **admin access**.
+- **SSO Admin** role. Someone at your organization with the **Membership Manager** role will need to go to **Workspace Settings → Organization** and grant the **SSO Admin** role to the user who is going to follow these instructions. That user may need to sign out and back in after their role is updated.
 
 ### Identity provider permissions
 
 The administrator must be able to:
 
+- Verify your organization domain, such as by adding a TXT record.
 - Create applications in the identity provider.
 - Configure SAML or OIDC authentication settings.
 - Assign users or groups to applications.
