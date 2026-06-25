@@ -1,0 +1,42 @@
+---
+title: "Private devices (iOS)"
+description: "Run iOS tests on devices dedicated to your team for cases that need full device control or persistence across runs."
+sidebarTitle: "Private devices"
+---
+
+By default, QA Wolf shares iOS devices across customers and cleans up data and configuration between runs. Some tests need full control over a device, or need data and configuration to persist between runs. For these cases, QA Wolf can dedicate devices to a single team. These are called private devices.
+
+Example cases:
+
+- MDM (Mobile Device Management) testing
+- Tests that need data or configuration to persist across runs
+
+<Note>
+  Contact your QA Wolf representative to enable private devices for your team.
+</Note>
+
+## Allowlisted vs private devices
+
+| | Allowlisted devices | Private devices |
+| --- | --- | --- |
+| Device pool | Part of the shared device pool | Dedicated to your team |
+| Use case | Features that don't work on a resigned app | Tests where a device can't be shared |
+| State between runs | Cleaned up between every run | Can persist data and configuration |
+
+Private devices can do anything [allowlisted devices](/qawolf/mobile/ios-allowlisted-devices) can. You can share the UDIDs of private devices and skip resigning when that is needed for your tests.
+
+## Target private devices
+
+Set `targetDevices` to `Team Dedicated Device` in your workflow's target configuration so the run is scheduled on your team's devices. `deviceModel` and `iosVersion` depend on the devices QA Wolf allocated for your team.
+
+```typescript
+{
+  platform: "ios",
+  schemaVersion: 1,
+  meta: {
+    deviceModel: "iPhone 15",
+    iosVersion: "26",
+    targetDevices: "Team Dedicated Device",
+  },
+}
+```
