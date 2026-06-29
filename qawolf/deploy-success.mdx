@@ -1,13 +1,13 @@
 ---
 title: "webhooks/deploy_success"
-description: "Triggers a test run against a deployment."
+description: "Notify QA Wolf of a successful deployment to trigger a test run, including request format, headers, body fields, and example responses."
 sidebarTitle: "webhooks/deploy_success"
 ---
 
 `POST https://app.qawolf.com/api/webhooks/deploy_success`
 
 <Warning>
-  If your build server supports `node`, use [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) instead of calling this endpoint directly. This gives you type safety and clearer errors and output."
+  If your build server supports `node`, use [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) instead of calling this endpoint directly. This gives you type safety and clearer errors and output.
 </Warning>
 
 ## Request

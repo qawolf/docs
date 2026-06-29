@@ -1,0 +1,60 @@
+---
+title: "Diagnose problems running flows"
+description: "Use qawolf doctor to check your environment, find missing dependencies, and read the CLI's log file."
+sidebarTitle: "Diagnose problems"
+icon: "stethoscope"
+---
+
+When a flow run fails for reasons that aren't in the flow itself — a missing browser, an Android SDK that isn't on the path, a Node.js version mismatch — `qawolf doctor` is the first thing to run.
+
+## Run the diagnostics
+
+<Steps>
+  <Step>
+    From the project root, run:
+
+    ```bash
+    qawolf doctor
+    ```
+
+    The CLI checks:
+
+    - the CLI version
+    - the Node.js version against the required minimum
+    - your API key and connectivity to QA Wolf and the npm registry
+    - the Playwright installation, if any flow targets a browser
+    - browser availability for each target the project uses
+    - the Android SDK, if any flow targets Android
+    - flow references to file assets that may not be available locally
+  </Step>
+  <Step>
+    Read the output. Each check reports a pass, a warning, or a failure, with a remediation hint when it fails.
+  </Step>
+</Steps>
+
+## Check every platform
+
+`qawolf doctor` only checks the platforms your project actually uses. Pass `--all` to run every check, including platforms not used by the current project:
+
+```bash
+qawolf doctor --all
+```
+
+This is useful when copying the project to a new machine and you want a single command that surfaces every missing dependency.
+
+## Read the log file
+
+The CLI writes structured logs to the platform's log directory:
+
+- macOS: `~/Library/Logs/qawolf/cli.log`
+- Linux: `$XDG_STATE_HOME/qawolf/cli.log` or `~/.local/state/qawolf/cli.log`
+
+Run with `--verbose` to mirror debug logs to stderr in real time:
+
+```bash
+qawolf flows run --verbose
+```
+
+## Common issues
+
+The [CLI Troubleshooting reference](/qawolf/libraries/cli/troubleshooting) covers the specific errors the CLI emits, including authentication failures, missing Android SDK, expired download links, and the `@qawolf/testkit` resolution error.

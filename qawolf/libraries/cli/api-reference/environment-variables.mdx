@@ -1,0 +1,41 @@
+---
+title: "Environment Variables"
+description: "Environment variables the qawolf CLI reads for API access, Android and iOS SDK paths, and other runtime configuration."
+sidebarTitle: "Environment Variables"
+---
+
+The qawolf CLI reads the following environment variables.
+
+## `QAWOLF_API_KEY`
+
+API key for the QA Wolf platform. Used by `flows pull`, `flows list --remote`, and `flows run --env`. Required for any command that talks to the platform. Takes precedence over credentials stored via `qawolf auth login`.
+
+## `QAWOLF_API_URL`
+
+Base URL for the QA Wolf platform API. Defaults to `https://app.qawolf.com`. Trailing slashes are stripped.
+
+## `ANDROID_HOME`
+
+Path to the Android SDK root. Required by `qawolf install android` and by Android flow execution. `ANDROID_SDK_ROOT` is accepted as a fallback.
+
+## `ANDROID_SDK_ROOT`
+
+Fallback path to the Android SDK root, used when `ANDROID_HOME` is not set.
+
+## CI Detection
+
+The CLI treats the following variables as a signal that it is running in CI and switches the default output format to JSON:
+
+- `CI`
+- `GITHUB_ACTIONS`
+- `GITLAB_CI`
+- `CIRCLECI`
+- `JENKINS_URL`
+- `BUILDKITE`
+
+## Agent Detection
+
+The CLI treats the following variables as a signal that it is running inside an agent and switches the default output format to agent mode:
+
+- `CLAUDE_CODE`
+- `CURSOR_SESSION_ID`

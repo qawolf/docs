@@ -96,6 +96,28 @@
             ]
           },
           {
+            "group": "Mobile",
+            "icon": "smartphone",
+            "pages": [
+              {
+                "group": "Android",
+                "icon": "bot",
+                "pages": [
+                  "qawolf/mobile/android-devices"
+                ]
+              },
+              {
+                "group": "iOS",
+                "icon": "apple",
+                "pages": [
+                  "qawolf/mobile/ios-devices",
+                  "qawolf/mobile/ios-allowlisted-devices",
+                  "qawolf/mobile/ios-private-devices"
+                ]
+              }
+            ]
+          },
+          {
             "group": "Setup",
             "icon": "sliders-horizontal",
             "pages": [
@@ -381,6 +403,26 @@
             ]
           },
           {
+            "group": "@qawolf/cli",
+            "icon": "terminal",
+            "pages": [
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/cli/api-reference/index",
+                  "qawolf/libraries/cli/api-reference/commands",
+                  "qawolf/libraries/cli/api-reference/environment-variables"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/cli/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
             "group": "REST",
             "icon": "code",
             "pages": [
@@ -455,6 +497,18 @@
               "qawolf/Asana-2a15b2a994fb805287acdba6373e6758",
               "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
               "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
+            ]
+          },
+          {
+            "group": "Local execution",
+            "icon": "terminal",
+            "pages": [
+              "qawolf/local-execution/authenticate",
+              "qawolf/local-execution/run-flows-locally",
+              "qawolf/local-execution/pull-flows",
+              "qawolf/local-execution/install-dependencies",
+              "qawolf/local-execution/set-up-a-project",
+              "qawolf/local-execution/diagnose-problems"
             ]
           }
         ]

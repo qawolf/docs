@@ -4,10 +4,10 @@ description: "Inject audio into the Android emulator's microphone input to test 
 sidebarTitle: "Android"
 ---
 
-The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `runCommand` with `ffplay` to play an audio file during a flow — your app will receive it as microphone input.
+The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `device.passAudioAsMicrophoneInput(...)` to play an audio file during a flow — your app will receive it as microphone input.
 
 <Note>
-  `ffplay` is pre-installed on QA Wolf runners. Store your audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
+  Store your audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
 </Note>
 
 ## Examples
@@ -15,15 +15,20 @@ The Android emulator routes audio played on the runner host through to the emula
 **Inject audio into the microphone**
 
 ```typescript
-await runCommand(
-  `ffplay -nodisp -t 10 -autoexit -hide_banner -loglevel error ${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
-);
+await device.passAudioAsMicrophoneInput({
+  data: `${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
+  durationSeconds: 10,
+});
 ```
 
 **Pull a recording off the emulator**
 
 ```typescript
-await runCommand(`adb pull '/sdcard/Recordings/My recording 1.m4a' ${process.env.TEAM_STORAGE_DIR}/recorded.m4a`);
+await device.adb([
+  "pull",
+  "/sdcard/Recordings/My recording 1.m4a",
+  `${process.env.TEAM_STORAGE_DIR}/recorded.m4a`,
+]);
 ```
 
 ## When to use
@@ -33,14 +38,14 @@ await runCommand(`adb pull '/sdcard/Recordings/My recording 1.m4a' ${process.env
 - Your app validates or analyzes microphone input.
 - Your test needs to run the same audio scenario repeatedly with consistent inputs.
 
-## ffplay flags
+## Options
 
-See the [ffplay documentation](https://ffmpeg.org/ffplay.html) for the full list of available flags.
+`passAudioAsMicrophoneInput` accepts `delaySeconds` (wait before playback starts) and `durationSeconds` (cap playback length; omit to play the whole file). See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full signature.
 
 ## Full sample test
 
 ```typescript
-import { flow } from "@qawolf/flows/android";
+import { device, flow } from "@qawolf/flows/android";
 
 const audioPath = `${process.env.TEAM_STORAGE_DIR}/audio.mp3`;
 
@@ -54,9 +59,10 @@ export default flow(
       await driver.pause(3_000);
 
       // Act
-      await runCommand(
-        `ffplay -nodisp -t 10 -autoexit -hide_banner -loglevel error ${audioPath}`,
-      );
+      await device.passAudioAsMicrophoneInput({
+        data: audioPath,
+        durationSeconds: 10,
+      });
 
       await driver.$(`//*[@text='Record']`).click();
       await driver.pause(10_000);

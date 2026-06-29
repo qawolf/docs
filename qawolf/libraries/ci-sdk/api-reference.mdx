@@ -1,6 +1,6 @@
 ---
 title: "API Reference"
-description: "Reference documentation for @qawolf/ci-sdk."
+description: "Reference for the @qawolf/ci-sdk TypeScript package, including installation, initialization, and functions for triggering and polling test runs from CI."
 ---
 
 `@qawolf/ci-sdk` provides a TypeScript SDK (CJS and ESM compatible) for interacting with the QA Wolf API from your CI pipeline.
@@ -76,7 +76,22 @@ const runId = result.runId;
 
 ### DeployConfig fields
 
-| --- | --- | --- | | `branch` | string | VCS branch name. | | `sha` | string | VCS commit SHA. | | `deploymentType` | string | Required if the target trigger matches on deployment type. | | `deploymentUrl` | string | Overrides the environment URL. Available in tests as `process.env.URL`. | | `hostingService` | string | `"GitHub"` or `"GitLab"`. Defaults to `"GitHub"`. | | `commitUrl` | string | Pass with `sha` if no hosting service repo is configured. Makes the commit ID a clickable link in the QA Wolf UI.| | `pullRequestNumber` | number | VCS PR number, for PR testing. | | `mergeRequestNumber` | number | VCS MR number, for MR testing. | | `repository.name` | string | Repository name. | | `repository.owner` | string | Repository owner or organization (VCS). | | `repository.namespace` | string | Repository namespace or group (VCS). | | `ephemeralEnvironment` | boolean | Pass with `deploymentUrl` for ephemeral environments without a code-hosting integration. | | `deduplicationKey` | string | Custom key controlling run cancellation behavior. | | `variables` | object | Key/value pairs that override environment variables for triggered runs. |
+| Field | Type | Description |
+| --- | --- | --- |
+| `branch` | string | VCS branch name. |
+| `sha` | string | VCS commit SHA. |
+| `deploymentType` | string | Required if the target trigger matches on deployment type. |
+| `deploymentUrl` | string | Overrides the environment URL. Available in tests as `process.env.URL`. |
+| `hostingService` | string | `"GitHub"` or `"GitLab"`. Defaults to `"GitHub"`. |
+| `commitUrl` | string | Pass with `sha` if no hosting service repo is configured. Makes the commit ID a clickable link in the QA Wolf UI. |
+| `pullRequestNumber` | number | VCS PR number, for PR testing. |
+| `mergeRequestNumber` | number | VCS MR number, for MR testing. |
+| `repository.name` | string | Repository name. |
+| `repository.owner` | string | Repository owner or organization (VCS). |
+| `repository.namespace` | string | Repository namespace or group (VCS). |
+| `ephemeralEnvironment` | boolean | Pass with `deploymentUrl` for ephemeral environments without a code-hosting integration. |
+| `deduplicationKey` | string | Custom key controlling run cancellation behavior. |
+| `variables` | object | Key/value pairs that override environment variables for triggered runs. |
 
 ### Result fields
 

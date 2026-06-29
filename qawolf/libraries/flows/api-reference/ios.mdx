@@ -262,6 +262,88 @@ await launch({
   If `app` is present but does not resolve to a value, launch does not fall back to `RUN_INPUT_PATH`.
 </Note>
 
+### Advanced Appium capabilities
+
+The named launch options above cover the most common settings. For anything else, use the `capabilities` escape hatch: its entries are spread into the underlying [webdriver.io `remote`](https://webdriver.io/docs/api) capabilities and passed straight to the iOS driver.
+
+`startIos` is a thin wrapper around webdriver.io's `remote`, so capabilities that QA Wolf does not set itself are forwarded as-is. See the Appium references for the full list of available keys:
+
+- [Appium core capabilities](https://appium.io/docs/en/2.11/guides/caps/)
+- [XCUITest (iOS) driver capabilities](https://github.com/appium/appium-xcuitest-driver/blob/v8.3.1/docs/reference/capabilities.md)
+
+```ts
+import { flow, launch } from "@qawolf/flows/ios";
+
+export default flow(
+  "Launch with custom capabilities",
+  "iOS - iPhone 15 (iOS 26)",
+  async () => {
+    const { driver } = await launch({
+      // Named options cover the common knobs:
+      respectSystemAlerts: true,
+      waitForIdleTimeout: 10,
+      // Anything else is passed through verbatim:
+      capabilities: {
+        "appium:resetOnSessionStartOnly": true,
+        "appium:settings[useFirstMatch]": "true",
+        "appium:waitForQuiescence": "false",
+      },
+    });
+
+    await driver.pause(1000);
+  },
+);
+```
+
+<Note>
+  Named options take precedence over `capabilities` for the same key. In particular, `noReset`, `respectSystemAlerts`, and `snapshotMaxDepth` are always applied (using their defaults when omitted), so configure those through the named options rather than `capabilities`.
+</Note>
+
+### Migrating from `wdio.startIos`
+
+Older flows obtained a `wdio` handle from the test context and called `startIos` directly. With the flow API, pass the same configuration through the flow's `launch` options instead — map the settings that have a named option, and route the rest through `capabilities`. The `driver` you receive is the same webdriver.io `Browser` handle, so there is no separate "raw" driver to obtain.
+
+```ts
+// Before: raw wdio.startIos
+const driver = await wdio.startIos({
+  "appium:app": process.env.IOS_PATH,
+  "appium:settings[respectSystemAlerts]": true,
+  "appium:resetOnSessionStartOnly": true,
+  "appium:settings[useFirstMatch]": "true",
+  "appium:waitForQuiescence": "false",
+  "appium:waitForIdleTimeout": 10,
+});
+```
+
+```ts
+// After: flow launch options
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Open iOS app",
+  {
+    target: "iOS - iPhone 15 (iOS 26)",
+    launch: {
+      app: { env: "IOS_PATH" },
+      respectSystemAlerts: true,
+      waitForIdleTimeout: 10,
+      capabilities: {
+        "appium:resetOnSessionStartOnly": true,
+        "appium:settings[useFirstMatch]": "true",
+        "appium:waitForQuiescence": "false",
+      },
+    },
+  },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+<Note>
+  `app: { env: "IOS_PATH" }` reads the path from the environment variable named `IOS_PATH`, replacing the raw `"appium:app": process.env.IOS_PATH` form.
+</Note>
+
 ## `device`
 
 `device` is a runtime proxy over the iOS simulator or device API. Use it for device-level operations — such as installing configuration profiles, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
