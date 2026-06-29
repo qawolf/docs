@@ -17,8 +17,6 @@ The person configuring SSO must have the following permissions:
 
 ### QA Wolf permissions
 
-- **SSO Admin** role. Someone at your organization with the **Membership Manager** role will need to go to **Workspace Settings → Organization** and grant the **SSO Admin** role to the user who is going to follow these instructions. That user may need to sign out and back in after their role is updated.
-
 ### Identity provider permissions
 
 The administrator must be able to:
@@ -45,7 +43,7 @@ Depending on your identity provider, you may need:
 
 You can only set up SSO for verified email domains. In other words, you need to prove you own the domain name.
 
-After QA Wolf enables SSO configuration access:
+As the **SSO Admin**:
 
 1. Sign in to QA Wolf.
 2. Navigate to **Workspace Settings → Organization**.
@@ -53,9 +51,11 @@ After QA Wolf enables SSO configuration access:
 
 Follow the instructions to add and verify as many domains as needed for your organization.
 
+Follow the instructions to add and verify as many domains as needed for your organization.
+
 ### Open the SSO settings page
 
-After QA Wolf enables SSO configuration access:
+As the **SSO Admin**:
 
 1. Sign in to QA Wolf.
 2. Navigate to **Workspace Settings → Organization**.
@@ -83,7 +83,18 @@ Typical configuration fields include:
 
 ### Enter identity provider details in QA Wolf
 
-After creating the application in your identity provider, return to QA Wolf and enter the required identity provider configuration details. Then assign users or groups to the QA Wolf application in your identity provider.
+After creating the application in your identity provider, return to the QA Wolf SSO settings page and enter the details provided by your identity provider.
+
+Typical configuration fields include:
+
+| Setting | Description |
+| --- | --- |
+| Issuer URL | Unique identifier for your identity provider |
+| Metadata URL | URL where QA Wolf retrieves your identity provider's configuration |
+| X.509 Certificate | Certificate used to verify tokens from your identity provider |
+| Login URL | Endpoint where QA Wolf sends authentication requests |
+
+After saving, assign users or groups to the QA Wolf application in your identity provider.
 
 ---
 
