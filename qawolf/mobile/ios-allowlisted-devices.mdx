@@ -1,0 +1,88 @@
+---
+title: "Allowlisted devices (iOS)"
+description: "Test features that don't work on a resigned app — like push notifications and universal links — by signing your app for QA Wolf's devices."
+sidebarTitle: "Allowlisted devices"
+---
+
+QA Wolf installs unreleased iOS builds by resigning your app, which works for most tests. A few features cannot be tested on a resigned app, including:
+
+- Push notifications
+- Universal links (associated domains)
+
+These features depend on capabilities that require a provisioning profile tied to your app's bundle ID. Because you own the bundle ID, only you can produce that profile — so for these tests you sign the app for QA Wolf's devices instead of letting QA Wolf resign it. Devices set up this way are called allowlisted devices.
+
+<Note>
+  Contact your QA Wolf representative to enable allowlisted devices for your team.
+</Note>
+
+## Sign the app for QA Wolf's devices
+
+<Steps>
+  <Step>
+    QA Wolf shares a set of device UDIDs with you. Add these devices to the provisioning profile for your app's bundle ID.
+  </Step>
+  <Step>
+    Build and sign the app for those devices using that profile.
+  </Step>
+</Steps>
+
+## Include QA Wolf instrumentation
+
+When QA Wolf resigns an app, it injects an instrumentation library that lets your tests mock system behavior. When you sign the app yourself, include this library so mocking still works.
+
+- **Fastlane users** — use the `inject_qawolf_instrumentation` action from the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf).
+- **Non-Fastlane users** — use the injection [script in the plugin repository](https://github.com/qawolf/fastlane-plugin-qawolf/tree/main/scripts).
+
+<Warning>
+  After injecting the instrumentation library, resign the IPA. Fastlane users can use the [Fastlane resign action](https://docs.fastlane.tools/actions/resign/); otherwise resign the IPA with whatever your pipeline already uses.
+</Warning>
+
+## Target allowlisted devices
+
+Set `targetDevices` to `Allowlisted Device` in your workflow's target configuration so the run is scheduled on the devices you signed the app for. `deviceModel` and `iosVersion` depend on the devices QA Wolf allocated for your team.
+
+```typescript
+{
+  platform: "ios",
+  schemaVersion: 1,
+  meta: {
+    deviceModel: "iPhone 15",
+    iosVersion: "26",
+    targetDevices: "Allowlisted Device",
+  },
+}
+```
+
+## Disable resigning
+
+Because you signed the app yourself, disable QA Wolf's resigning when the app launches by setting the `qawolf:disableResigning` capability:
+
+```typescript
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Test push notifications",
+  {
+    target: {
+      platform: "ios",
+      schemaVersion: 1,
+      meta: {
+        deviceModel: "iPhone 15",
+        iosVersion: "26",
+        targetDevices: "Allowlisted Device",
+      },
+    },
+    launch: {
+      app: { env: "IPA_BUILD_LOCATION" },
+      capabilities: {
+        "qawolf:disableResigning": true,
+      },
+    },
+  },
+  async ({ driver, test }) => {
+    await test("notification is received", async () => {
+      // your test steps
+    });
+  },
+);
+```

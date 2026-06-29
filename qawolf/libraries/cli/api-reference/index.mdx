@@ -1,0 +1,50 @@
+---
+title: "API Reference"
+description: "API landing page for the qawolf CLI."
+sidebarTitle: "API Reference"
+---
+
+Use this section for stable command descriptions, flags, configuration, environment variables, and exit codes.
+
+## Commands
+
+- [`qawolf auth`](/qawolf/libraries/cli/api-reference/commands#auth) — manage authentication.
+- [`qawolf flows`](/qawolf/libraries/cli/api-reference/commands#flows) — run, list, and pull flows.
+- [`qawolf install`](/qawolf/libraries/cli/api-reference/commands#install) — install runtime dependencies for the project.
+- [`qawolf init`](/qawolf/libraries/cli/api-reference/commands#init) — scaffold a project in the current directory.
+- [`qawolf doctor`](/qawolf/libraries/cli/api-reference/commands#doctor) — diagnose problems running flows locally.
+- [`qawolf run`](/qawolf/libraries/cli/api-reference/commands#run) — trigger and manage QA Wolf runs on the platform.
+
+Example invocation:
+
+```bash
+qawolf auth login
+qawolf flows pull --env <env>
+qawolf flows run
+```
+
+## Global Options
+
+The following flags apply to every command:
+
+- `--verbose` — emits debug logs to stderr.
+- `--json` — formats output as JSON.
+- `--agent` — formats output for agent consumption.
+- `-V, --version` — prints the CLI version.
+
+When a recognized CI environment is detected (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `JENKINS_URL`, `BUILDKITE`), output defaults to JSON. When a recognized agent environment is detected (`CLAUDE_CODE`, `CURSOR_SESSION_ID`), output defaults to agent mode.
+
+With `--json` or `--agent`, the structured result is written to stdout and diagnostic text to stderr, so scripts can parse stdout directly.
+
+## Exit Codes
+
+Every qawolf CLI command exits with one of the codes below.
+
+| Code | Name | Meaning |
+| --- | --- | --- |
+| `0` | `success` | The command completed successfully. |
+| `1` | `testFailure` | One or more flows failed. |
+| `2` | `invalidArgs` | A Commander parse error, an unknown subcommand, or a bad flag value. |
+| `3` | `auth` | `QAWOLF_API_KEY` is missing or invalid. |
+| `4` | `network` | The QA Wolf API was unreachable, a download from storage failed, or a registry was unreachable. |
+| `5` | `config` | `qawolf.config.ts` is invalid, or a file collision occurred during `qawolf init`. |
