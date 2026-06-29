@@ -1,0 +1,25 @@
+---
+title: "Android devices"
+description: "QA Wolf runs your Android tests on ephemeral emulators that start from a clean state for every run."
+sidebarTitle: "Android"
+---
+
+QA Wolf runs your Android tests on ephemeral emulators. A fresh emulator is provisioned for each run and discarded when the run finishes, so every run starts from a clean, predictable state with no data or configuration carried over from a previous run.
+
+Because emulators are created on demand, you do not reserve or configure devices yourself. Choose an Android target in your flow and QA Wolf allocates an emulator for it.
+
+```typescript
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open Android app",
+  { target: "Android - Pixel 9 (Android 16)", launch: true },
+  async ({ driver, test }) => {
+    await test("app launches", async () => {
+      await driver.pause(1000);
+    });
+  },
+);
+```
+
+See the [Android Reference](/qawolf/libraries/flows/api-reference/android) for the full list of targets and device controls.
