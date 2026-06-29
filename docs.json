@@ -456,18 +456,9 @@
                 ]
               },
               {
-                "group": "PR Testing",
-                "icon": "git-merge",
-                "pages": [
-                  "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
-                  "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c"
-                ]
-              },
-              {
                 "group": "Mobile build testing",
                 "icon": "smartphone",
                 "pages": [
-                  "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
                   "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f",
                   "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
                   "qawolf/other-web-hook-for-mobile"
@@ -548,7 +539,15 @@
             "icon": "plug",
             "pages": [
               "qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a",
-              "qawolf/Integrating-with-microsoft-teams"
+              "qawolf/Integrating-with-microsoft-teams",
+              {
+                "group": "PR Testing",
+                "icon": "git-merge",
+                "pages": [
+                  "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
+                  "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c"
+                ]
+              }
             ]
           }
         ]
