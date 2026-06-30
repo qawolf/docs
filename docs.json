@@ -1,20 +1,15 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
   "theme": "aspen",
   "name": "QA Wolf Docs",
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "qawolf/Welcome-to-QA-Wolf"
-    }
-  ],
-  "icons": {
-    "library": "lucide"
-  },
   "colors": {
     "primary": "#3b3cef",
     "light": "#08edcb",
     "dark": "#3b3cef"
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://www.qawolf.com"
   },
   "favicon": {
     "light": "/favicon.png",
@@ -29,10 +24,55 @@
       "dark": "#0b0b2f"
     }
   },
+  "navbar": {
+    "links": [
+      {
+        "href": "https://www.qawolf.com/blog",
+        "label": "Blog"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Support",
+      "href": "mailto:hello@qawolf.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://twitter.com/qawolfhq",
+      "github": "https://github.com/qawolf/qawolf",
+      "linkedin": "https://www.linkedin.com/company/qa-wolf"
+    }
+  },
   "seo": {
     "metatags": {
       "canonical": "https://docs.qawolf.com"
     }
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "qawolf/Welcome-to-QA-Wolf"
+    }
+  ],
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_qEW3U4XMuhdJa6Rf2QZvbyKcixM5mYyq5BYNopuSxBFw",
+      "sessionRecording": true
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity"
+    ],
+    "display": "header"
   },
   "metadata": {
     "timestamp": true
@@ -123,7 +163,6 @@
             "pages": [
               "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
               "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
-              "qawolf/sso",
               "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be"
             ]
           }
@@ -540,6 +579,7 @@
             "pages": [
               "qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a",
               "qawolf/Integrating-with-microsoft-teams",
+              "qawolf/sso",
               {
                 "group": "PR Testing",
                 "icon": "git-merge",
@@ -553,45 +593,5 @@
         ]
       }
     ]
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg",
-    "href": "https://www.qawolf.com"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Blog",
-        "href": "https://www.qawolf.com/blog"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Support",
-      "href": "mailto:hello@qawolf.com"
-    }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity"
-    ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://twitter.com/qawolfhq",
-      "github": "https://github.com/qawolf/qawolf",
-      "linkedin": "https://www.linkedin.com/company/qa-wolf/"
-    }
-  },
-  "integrations": {
-    "posthog": {
-      "apiKey": "phc_qEW3U4XMuhdJa6Rf2QZvbyKcixM5mYyq5BYNopuSxBFw",
-      "sessionRecording": true
-    }
   }
 }
