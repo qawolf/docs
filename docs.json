@@ -123,7 +123,6 @@
             "pages": [
               "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
               "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
-              "qawolf/sso",
               "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be"
             ]
           }
@@ -548,7 +547,8 @@
             "icon": "plug",
             "pages": [
               "qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a",
-              "qawolf/Integrating-with-microsoft-teams"
+              "qawolf/Integrating-with-microsoft-teams",
+              "qawolf/sso"
             ]
           }
         ]
