@@ -1,0 +1,71 @@
+---
+title: "POM Troubleshooting"
+description: "Troubleshoot common issues when using @qawolf/pom, including unregistered pages, duplicate registrations, and stale page-hook flags."
+sidebarTitle: "Troubleshooting"
+---
+
+## `Unknown page: <name>` When Calling `create`
+
+Cause: The module that calls `registerPage` for that name has not been imported,
+so the registry is empty for it.
+
+Check:
+
+- the workspace's `register-pages` module is side-effect imported before any
+  `create(name)` / `createPage(name, ...)` call
+- the name passed to `create` exactly matches the name passed to `registerPage`
+
+## `Page "<name>" is already registered.`
+
+Cause: `registerPage` was called twice for the same name. The registry throws on
+a duplicate key rather than silently overwriting.
+
+Check:
+
+- the name is registered in exactly one place
+- two page objects are not registered under the same name
+
+## A Page Object's Popup Or Route Hook Never Runs
+
+Cause: Page hooks are collected by an own-property check on the **registered**
+class's prototype, so an override inherited from a base class is not detected.
+
+Check:
+
+- `popupHandlers()` / `routeInterceptors()` is declared directly on the class
+  passed to `registerPage`, not only on a base class it extends
+- the entry point calls `installPageHooks()` before navigating
+
+## `providesPageHooks: false` Entry Throws On Load
+
+Cause: A page object registered with `{ providesPageHooks: false }` later grew a
+`popupHandlers()` / `routeInterceptors()` override. Loading it throws so the
+stale flag surfaces instead of silently skipping hook installation.
+
+Check:
+
+- drop `{ providesPageHooks: false }` from that registration so its hooks are
+  installed
+
+## `this.create("X")` Is Typed As `any`
+
+Cause: The name is not present in the `RegisteredPages` map.
+
+Check:
+
+- the workspace augments `RegisteredPages` (via `declare module "@qawolf/pom"`)
+  with an `X: X` entry
+- the augmentation module is included in the TypeScript program
+
+## Two Registries / Pages Invisible To Each Other
+
+Cause: More than one copy of `@qawolf/pom` resolved at runtime. The registry is
+module-level state, so each copy has its own — a page registered through one is
+invisible to the other.
+
+Check:
+
+- a single installed copy of `@qawolf/pom` resolves at runtime (no duplicate in
+  a nested `node_modules`)
+- workspace code does not mix `@qawolf/pom` with a locally vendored copy of the
+  POM library

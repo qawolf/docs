@@ -382,6 +382,24 @@
             ]
           },
           {
+            "group": "@qawolf/pom",
+            "icon": "sitemap",
+            "pages": [
+              {
+                "group": "API Reference",
+                "pages": [
+                  "qawolf/libraries/pom/api-reference/index"
+                ]
+              },
+              {
+                "group": "Troubleshooting",
+                "pages": [
+                  "qawolf/libraries/pom/troubleshooting"
+                ]
+              }
+            ]
+          },
+          {
             "group": "@qawolf/testkit",
             "icon": "wrench",
             "pages": [
