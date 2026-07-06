@@ -36,11 +36,13 @@ Check:
   passed to `registerPage`, not only on a base class it extends
 - the entry point calls `installPageHooks()` before navigating
 
-## `providesPageHooks: false` Entry Throws On Load
+## `providesPageHooks: false` Contradicts The Class
 
-Cause: A page object registered with `{ providesPageHooks: false }` later grew a
-`popupHandlers()` / `routeInterceptors()` override. Loading it throws so the
-stale flag surfaces instead of silently skipping hook installation.
+Cause: A page object registered with `{ providesPageHooks: false }` declares a
+`popupHandlers()` / `routeInterceptors()` override. The registry throws so the
+stale flag surfaces instead of silently skipping hook installation — at
+`registerPage` time for an eagerly registered class, on first load for a lazy
+one.
 
 Check:
 
