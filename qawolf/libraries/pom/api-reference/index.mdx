@@ -203,7 +203,6 @@ registerPage("StaticPage", () => import("./pages/static-page.js"), {
 | `EntryPointPageObject` | Base class for the entry point; owns browser launch (`initializeBrowser`), `goto`, and `installPageHooks`. |
 | `registerPage(name, classOrLoader, options?)` | Register a page object by name, eagerly (class) or lazily (`() => import(...)`). |
 | `createPage(name, page)` | Construct a registered page object for a `Page`. Returns a promise. |
-| `getRegisteredPopupHandlers(page)` / `getRegisteredRouteInterceptors(page)` | Collect hook definitions from all registered page objects (used by `installPageHooks`). |
 | `PopupHandler` | Manages add/remove of popup handlers on a page. |
 | `NetworkMonitor` | Observes network activity and surfaces `NetworkError`s. |
 | `RegisteredPages` | Empty interface you augment to type `create(name)`. |
