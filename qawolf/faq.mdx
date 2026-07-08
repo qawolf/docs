@@ -1,7 +1,107 @@
 ---
 title: "FAQ"
-description: "Frequently asked questions about using the QA Wolf platform for end-to-end test automation."
+description: "Answers to common questions about QA Wolf."
 icon: "file-question-mark"
 ---
 
-# Coming Soon!
+## About QA Wolf
+
+### What is QA Wolf?
+
+QA Wolf is an AI testing platform. Engineering teams use it to get deep, comprehensive end-to-end test coverage without building or maintaining the infrastructure themselves. Two AI agents — Mapping AI and Automation AI — handle exploration and test creation. Teams that want additional hands-on support can add [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5), where QA Wolf's team handles creation, execution, investigation, maintenance, and bug reporting on your behalf.
+
+### What kinds of testing does QA Wolf support?
+
+QA Wolf supports end-to-end testing for web, iOS, and Android apps — including PR testing, visual diffing, accessibility, performance, and more. See the [Solutions](/qawolf/solutions) page for the full list.
+
+### Who is QA Wolf for?
+
+QA Wolf is built for engineering and product teams at software companies who need reliable, comprehensive end-to-end test coverage. It works for developers who want to own their test suite directly, and for non-technical team members who need visibility into coverage and results without writing code. Some initial setup — connecting to your CI/CD pipeline, configuring environments — requires developer involvement.
+
+### Does QA Wolf replace our QA team?
+
+No. QA Wolf handles the infrastructure, execution, and a significant portion of the authoring and maintenance work. Your team defines coverage strategy, reviews results, and owns the outcomes. Teams that want to hand off that operational work entirely can add [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5).
+
+### Does QA Wolf support agentic development workflows?
+
+Yes. QA Wolf is built for teams working in AI-assisted development — where AI IDEs and code generation tools accelerate how fast code moves. As development velocity increases, test coverage needs to keep up. QA Wolf maps, automates, and runs tests in parallel so your QA cycle doesn't become the bottleneck.
+
+### Can QA Wolf test AI-powered products?
+
+Yes. Testing non-deterministic outputs — AI chatbots, recommendation engines, generative features — requires a different approach than standard E2E testing. QA Wolf supports this. See [Testing non-deterministic AI](/qawolf/non-deterministic-ai-testing) for how to structure coverage for AI-powered functionality.
+
+### Does QA Wolf do mocked testing, load testing, or API testing?
+
+QA Wolf focuses on end-to-end functional testing — real browsers, real devices, real application behavior. It does not do load testing or mock-based unit testing. API testing is supported where it's part of an end-to-end flow.
+
+### How does QA Wolf handle flaky tests?
+
+Every test re-runs at least three times before a failure is reported, keeping the flake rate below 1%. Tests also create and clean up their own isolated data, which eliminates the data collisions that cause most flakes in shared-state test suites.
+
+### How fast are test runs?
+
+Every test in a suite runs in full parallel, each in its own container. Most suites complete in about 11 minutes.
+
+### Do I own the test code?
+
+Yes. Tests are written in open-source Playwright and Appium, are human-readable, and are portable. Your team owns every test and can run it outside QA Wolf's infrastructure if needed.
+
+### Does QA Wolf integrate with our existing stack?
+
+Yes. QA Wolf integrates with GitHub Actions, GitLab CI, CircleCI, Jira, Linear, Asana, Azure DevOps Boards, Slack, Teams, and more. See the [Integrations](/qawolf/CI-CD-Overview) section for the full list.
+
+### Is QA Wolf GDPR compliant?
+
+For compliance and data handling questions, contact [hello@qawolf.com](mailto:hello@qawolf.com). QA Wolf can provide documentation for your security review.
+
+---
+
+## Using QA Wolf
+
+### How do I set environment variables?
+
+Environment variables are configured at the environment level in QA Wolf. See [Environment settings](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f) for how to add and manage them.
+
+For passing data between flows at runtime, use [workflow inputs and outputs](/qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931) instead. The difference: environment variables are static configuration; workflow inputs/outputs are dynamic values passed between flows during a run.
+
+### How do I share state or cookies between flows?
+
+Use QA Wolf's state-sharing APIs. See [Reuse state between runs](/qawolf/reuse-state-between-runs) and [Pass data between flows](/qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931).
+
+### How do I run only certain flows in a deployment test?
+
+Tag your flows, then target a specific tag in your CI trigger. See [Use tags effectively](/qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb) and the [CI/CD overview](/qawolf/CI-CD-Overview).
+
+### What IP addresses does QA Wolf use?
+
+QA Wolf runs tests from a set of static IPv4 addresses. See [QA Wolf's static IPv4 addresses](/qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d) for the full list to add to your allowlist.
+
+### What Android devices does QA Wolf support?
+
+Android environments are emulator-based. Each environment is defined by an OS version and a hardware profile — screen dimensions, resolution, and display density. See the [Android device reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full supported matrix.
+
+### How do I test MFA or SSO login flows?
+
+QA Wolf supports MFA testing including QR code and TOTP-based flows. See [Test MFA](/qawolf/test-mfa) and [QR code testing](/qawolf/qrcode).
+
+### How do I add users to my workspace?
+
+Go to [Workspace settings](/qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f) and invite team members by email. SSO is also supported — see [Configure SSO](/qawolf/sso).
+
+### How do I request new test coverage?
+
+If your team is on [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5), follow the process in [Request new coverage](/qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47). If your team is on Self-Service, create a new flow directly — see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59).
+
+### How do I report a bug found during a test run?
+
+When a flow fails, QA Wolf's AI begins investigating within seconds. Every test re-runs at least three times before a failure is reported, keeping the flake rate below 1%. Every bug report includes reproduction steps, a video walkthrough, and Playwright trace logs. See [Manage bug reports](/qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f) and [Diagnose a failing flow](/qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5).
+
+### Can I run tests locally?
+
+Yes. The `@qawolf/flows` CLI supports local execution. See the [CLI API reference](/qawolf/libraries/flows/api-reference/cli) for usage.
+
+---
+
+## Can't find what you're looking for?
+
+If your team is on [Full Service](/qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5) or Self-Service, reach out through your shared Slack, Teams, or Discord channel. Otherwise, email [hello@qawolf.com](mailto:hello@qawolf.com).
