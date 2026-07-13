@@ -35,13 +35,13 @@
         "label": "Support"
       },
       {
-        "href": "https://app.qawolf.com/login",
-        "label": "Log in"
+        "href": "https://app.qawolf.com/sign-in",
+        "label": "Sign in"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Sign up",
+      "label": "Try for free",
       "href": "https://qawolf.com"
     }
   },
