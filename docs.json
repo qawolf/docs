@@ -29,12 +29,20 @@
       {
         "href": "https://www.qawolf.com/blog",
         "label": "Blog"
+      },
+      {
+        "href": "mailto:hello@qawolf.com",
+        "label": "Support"
+      },
+      {
+        "href": "https://app.qawolf.com/login",
+        "label": "Log in"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Support",
-      "href": "mailto:hello@qawolf.com"
+      "label": "Sign up",
+      "href": "https://qawolf.com"
     }
   },
   "footer": {
