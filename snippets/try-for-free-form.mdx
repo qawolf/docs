@@ -1,0 +1,65 @@
+{/*
+  Prototype: "Try for free" sign-up embed for Mintlify docs pages.
+  Mirrors the homepage component (Webflow form -> Zapier webhook -> redirect),
+  but adds a `source: "docs"` field so submissions can be told apart from
+  homepage submissions in whatever consumes the webhook downstream.
+
+  SETUP: this file goes in your Mintlify repo at /snippets/try-for-free-form.mdx
+  (Kirk wants this on 4 pages, so make it a snippet, not 4 copies).
+
+  Then on each target page (Welcome, Quick Start, Mapping AI, Automation AI),
+  add near the top:
+
+    import TryForFreeForm from '/snippets/try-for-free-form.mdx';
+
+  ...and drop <TryForFreeForm /> wherever the component should render
+  (e.g. right below the intro, per Kirk's ask).
+
+  Before merging anywhere real:
+  - Confirm with Amanda whether the Zap/CRM needs the `source` field mapped
+    on its end to actually split out docs vs. homepage in reporting.
+  - Confirm with Kirk whether /schedule-a-demo is the right place to send
+    someone converting from a docs page (currently hardcoded below).
+  - Test with a throwaway email first — this hits the *real* webhook.
+  */}
+
+<div style={{ maxWidth: 420, padding: '20px', border: '1px solid var(--gray-200, #e5e7eb)', borderRadius: '12px' }}>
+  <div id="try-for-free-form">
+    <p style={{ fontWeight: 600, marginBottom: '8px' }}>Try QA Wolf for free</p>
+
+    <form
+      onSubmit={(e) => {
+      e.preventDefault();
+      const email = e.target.elements['Email-2'].value;
+
+      fetch('https://hooks.zapier.com/hooks/catch/9281305/bzrnsj7', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          'Email-2': email,
+          source: 'docs', // <- flag so this can be split from homepage submissions
+        }),
+      });
+
+      document.getElementById('try-for-free-form').style.display = 'none';
+      document.getElementById('try-for-free-success').style.display = 'block';
+
+      // Homepage version redirects to /schedule-a-demo on success.
+      // Uncomment once Kirk confirms that's the right destination from docs:
+      // window.location.href = 'https://www.qawolf.com/schedule-a-demo';
+    }}
+      style={{ display: 'flex', gap: '8px' }}
+    >
+      <input type="email" name="Email-2" required placeholder="you@company.com" style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--gray-300, #d1d5db)' }} />
+
+      <button type="submit" style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'var(--primary, #111827)', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
+        Try for free
+      </button>
+    </form>
+  </div>
+
+  <div id="try-for-free-success" style={{ display: 'none' }}>
+    Thanks! We'll be in touch shortly.
+  </div>
+</div>
