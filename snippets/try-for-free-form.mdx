@@ -23,43 +23,84 @@
   - Test with a throwaway email first — this hits the *real* webhook.
   */}
 
-<div style={{ maxWidth: 420, padding: '20px', border: '1px solid var(--gray-200, #e5e7eb)', borderRadius: '12px' }}>
-  <div id="try-for-free-form">
-    <p style={{ fontWeight: 600, marginBottom: '8px' }}>Try QA Wolf for free</p>
+{/*
+  Layout below matches the actual site component: pill-shaped input + pill-shaped
+  button, side by side, same height, hard offset shadow. Colors/fonts below are
+  placeholders (per instruction to ignore those for now) — swap in real brand
+  tokens once the structural layout is confirmed to render correctly.
 
-    <form
-      onSubmit={(e) => {
-      e.preventDefault();
-      const email = e.target.elements['Email-2'].value;
+  Fix from the first draft: the input had no `minWidth: 0`, so as a flex child
+  it refused to shrink and blew out to fill/overflow its container, which is
+  also what pushed the button out of view. Explicit height + box-sizing on both
+  elements keeps them from ballooning regardless of what CSS Mintlify applies
+  around them.
+  */}
 
-      fetch('https://hooks.zapier.com/hooks/catch/9281305/bzrnsj7', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          'Email-2': email,
-          source: 'docs', // <- flag so this can be split from homepage submissions
-        }),
-      });
+<div id="try-for-free-form" style={{ display: 'flex', gap: '12px', maxWidth: 480 }}>
+  <form
+    onSubmit={(e) => {
+    e.preventDefault();
+    const email = e.currentTarget.querySelector('input[name="Email-2"]').value;
 
-      document.getElementById('try-for-free-form').style.display = 'none';
-      document.getElementById('try-for-free-success').style.display = 'block';
+    fetch('https://hooks.zapier.com/hooks/catch/9281305/bzrnsj7', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        'Email-2': email,
+        source: 'docs', // <- flag so this can be split from homepage submissions
+      }),
+    });
 
-      // Homepage version redirects to /schedule-a-demo on success.
-      // Uncomment once Kirk confirms that's the right destination from docs:
-      // window.location.href = 'https://www.qawolf.com/schedule-a-demo';
+    document.getElementById('try-for-free-form').style.display = 'none';
+    document.getElementById('try-for-free-success').style.display = 'block';
+
+    // Homepage version redirects to /schedule-a-demo on success.
+    // Uncomment once Kirk confirms that's the right destination from docs:
+    // window.location.href = 'https://www.qawolf.com/schedule-a-demo';
+  }}
+    style={{ display: 'flex', gap: '12px', flex: 1, boxSizing: 'border-box' }}
+  >
+    <input
+      type="email"
+      name="Email-2"
+      required
+      placeholder="your work email"
+      style={{
+      flex: '1 1 auto',
+      minWidth: 0,
+      height: '56px',
+      boxSizing: 'border-box',
+      padding: '0 20px',
+      borderRadius: '999px',
+      border: '2px solid #000',
+      boxShadow: '4px 4px 0 #000',
+      fontSize: '16px',
     }}
-      style={{ display: 'flex', gap: '8px' }}
+    />
+
+    <button
+      type="submit"
+      style={{
+      flex: '0 0 auto',
+      height: '56px',
+      boxSizing: 'border-box',
+      padding: '0 28px',
+      borderRadius: '999px',
+      border: '2px solid #000',
+      boxShadow: '4px 4px 0 #000',
+      background: '#6EE7C4',
+      fontWeight: 600,
+      fontSize: '16px',
+      whiteSpace: 'nowrap',
+      cursor: 'pointer',
+    }}
     >
-      <input type="email" name="Email-2" required placeholder="you@company.com" style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--gray-300, #d1d5db)' }} />
-
-      <button type="submit" style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'var(--primary, #111827)', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
-        Try for free
-      </button>
-    </form>
-  </div>
-
-  <div id="try-for-free-success" style={{ display: 'none' }}>
-    Thanks! We'll be in touch shortly.
-  </div>
+      Try for free
+    </button>
+  </form>
 </div>
+
+<p id="try-for-free-success" style={{ display: 'none' }}>
+  Thanks! We'll be in touch shortly.
+</p>
