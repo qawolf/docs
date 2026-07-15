@@ -41,6 +41,16 @@
   */}
 
 {/*
+  Styling below is pulled directly from the live homepage component's
+  computed styles (measured via devtools on the actual hero form), not
+  eyeballed from a screenshot: border-radius 10.8px (not a full pill —
+  the earlier draft over-rounded this), 1.5px black border, 3.6px hard
+  shadow, 44px height, 18px "GT Flexa" font at regular (400) weight, not
+  bold, 9.9px/13.5px padding, button fill #0DF2CC. Input is a fixed 300px
+  wide on the real site (not responsive/flexible), matched here too.
+  */}
+
+{/*
   IMPORTANT — button element type: the handler script controls the loading
   state by setting `submitButton.value` (e.g. to "Redirecting..."). That only
   updates visible text on an <input type="submit">, not a <button> element
@@ -75,14 +85,17 @@
       style={{
       flex: '0 0 auto',
       minWidth: 0,
-      width: '320px',
-      height: '56px',
+      width: '300px',
+      height: '44px',
       boxSizing: 'border-box',
-      padding: '0 20px',
-      borderRadius: '999px',
-      border: '2px solid #000',
-      boxShadow: '4px 4px 0 #000',
-      fontSize: '16px',
+      padding: '9.9px 13.5px',
+      borderRadius: '10.8px',
+      border: '1.5px solid #000',
+      boxShadow: '3.6px 3.6px 0 #000',
+      fontSize: '18px',
+      fontWeight: 400,
+      fontFamily: '"GT Flexa", Arial, sans-serif',
+      lineHeight: '18px',
       background: '#fff',
       color: '#000',
       colorScheme: 'light', // stop the browser auto-dark-styling this input in dark mode
@@ -94,17 +107,18 @@
       value="Try for free"
       style={{
       flex: '0 0 auto',
-      height: '56px',
+      height: '44px',
       boxSizing: 'border-box',
-      padding: '0 28px',
-      borderRadius: '999px',
-      border: '2px solid #000',
-      boxShadow: '4px 4px 0 #000',
-      background: '#6EE7C4',
+      padding: '9.9px 13.5px',
+      borderRadius: '10.8px',
+      border: '1.5px solid #000',
+      boxShadow: '3.6px 3.6px 0 #000',
+      background: '#0DF2CC',
       color: '#000',
-      fontWeight: 600,
-      fontSize: '16px',
-      lineHeight: '52px', // input[type=submit] can't use flex centering directly; match to height minus border
+      fontWeight: 400,
+      fontSize: '18px',
+      fontFamily: '"GT Flexa", Arial, sans-serif',
+      lineHeight: '18px', // input[type=submit] centers text vertically on its own; no flex trick needed here
       whiteSpace: 'nowrap',
       cursor: 'pointer',
       textAlign: 'center',
