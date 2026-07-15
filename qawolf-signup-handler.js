@@ -1,17 +1,12 @@
 /*
-  Verbatim handler from the app team, unmodified. Drop this file at the root
-  of the Mintlify docs repo's content directory — Mintlify automatically
-  includes any .js file found there as a real <script> tag on every page.
-  (Pasting this as an inline <script> inside an MDX file will NOT work:
-  React-rendered script tags don't execute, only ones present in raw HTML
-  or ones explicitly created via document.createElement do.)
+  Verbatim handler from the design team, unmodified. 
 
   Uses the default platformUrl ('https://app.qawolf.com') since
   document.currentScript.dataset won't be set when Mintlify includes this
   as an external file rather than an inline tag with data-platform-url — the
   fallback in the code already covers this, no changes needed here.
 
-  Do not merge/deploy this anywhere until both are confirmed:
+ Requires:
   1. CORS on app.qawolf.com's /api/trpc/* allows the docs origin.
   2. window.qawAttribution is loaded (or safely stubbed) on the docs domain.
   Until then every submission fails with the same generic "Failed to
