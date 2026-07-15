@@ -5,7 +5,6 @@
   homepage submissions in whatever consumes the webhook downstream.
 
   SETUP: this file goes in your Mintlify repo at /snippets/try-for-free-form.mdx
-  (Kirk wants this on 4 pages, so make it a snippet, not 4 copies).
 
   Then on each target page (Welcome, Quick Start, Mapping AI, Automation AI),
   add near the top:
@@ -13,14 +12,8 @@
     import TryForFreeForm from '/snippets/try-for-free-form.mdx';
 
   ...and drop <TryForFreeForm /> wherever the component should render
-  (e.g. right below the intro, per Kirk's ask).
+  (e.g. right below the intro).
 
-  Before merging anywhere real:
-  - Confirm with Amanda whether the Zap/CRM needs the `source` field mapped
-    on its end to actually split out docs vs. homepage in reporting.
-  - Confirm with Kirk whether /schedule-a-demo is the right place to send
-    someone converting from a docs page (currently hardcoded below).
-  - Test with a throwaway email first — this hits the *real* webhook.
   */}
 
 {/*
@@ -29,78 +22,85 @@
   placeholders (per instruction to ignore those for now) — swap in real brand
   tokens once the structural layout is confirmed to render correctly.
 
-  Fix from the first draft: the input had no `minWidth: 0`, so as a flex child
-  it refused to shrink and blew out to fill/overflow its container, which is
-  also what pushed the button out of view. Explicit height + box-sizing on both
-  elements keeps them from ballooning regardless of what CSS Mintlify applies
-  around them.
+
   */}
 
-<div id="try-for-free-form" style={{ display: 'flex', gap: '12px', maxWidth: 480 }}>
-  <form
-    onSubmit={(e) => {
-    e.preventDefault();
-    const email = e.currentTarget.querySelector('input[name="Email-2"]').value;
+<div style={{ display: 'flex', justifyContent: 'center', padding: '4px 8px 8px 4px' }}>
+  <div id="try-for-free-form" style={{ display: 'flex', gap: '12px' }}>
+    <form
+      onSubmit={(e) => {
+      e.preventDefault();
+      const email = e.currentTarget.querySelector('input[name="Email-2"]').value;
 
-    fetch('https://hooks.zapier.com/hooks/catch/9281305/bzrnsj7', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        'Email-2': email,
-        source: 'docs', // <- flag so this can be split from homepage submissions
-      }),
-    });
+      fetch('https://hooks.zapier.com/hooks/catch/9281305/bzrnsj7', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          'Email-2': email,
+          source: 'docs', // <- flag so this can be split from homepage submissions
+        }),
+      });
 
-    document.getElementById('try-for-free-form').style.display = 'none';
-    document.getElementById('try-for-free-success').style.display = 'block';
+      document.getElementById('try-for-free-form').style.display = 'none';
+      document.getElementById('try-for-free-success').style.display = 'block';
 
-    // Homepage version redirects to /schedule-a-demo on success.
-    // Uncomment once Kirk confirms that's the right destination from docs:
-    // window.location.href = 'https://www.qawolf.com/schedule-a-demo';
-  }}
-    style={{ display: 'flex', gap: '12px', flex: 1, boxSizing: 'border-box' }}
-  >
-    <input
-      type="email"
-      name="Email-2"
-      required
-      placeholder="your work email"
-      style={{
-      flex: '1 1 auto',
-      minWidth: 0,
-      height: '56px',
-      boxSizing: 'border-box',
-      padding: '0 20px',
-      borderRadius: '999px',
-      border: '2px solid #000',
-      boxShadow: '4px 4px 0 #000',
-      fontSize: '16px',
+      // Homepage version redirects to /schedule-a-demo on success.
+      // Uncomment once Kirk confirms that's the right destination from docs:
+      // window.location.href = 'https://www.qawolf.com/schedule-a-demo';
     }}
-    />
-
-    <button
-      type="submit"
-      style={{
-      flex: '0 0 auto',
-      height: '56px',
-      boxSizing: 'border-box',
-      padding: '0 28px',
-      borderRadius: '999px',
-      border: '2px solid #000',
-      boxShadow: '4px 4px 0 #000',
-      background: '#6EE7C4',
-      fontWeight: 600,
-      fontSize: '16px',
-      whiteSpace: 'nowrap',
-      cursor: 'pointer',
-    }}
+      style={{ display: 'flex', gap: '12px', boxSizing: 'border-box' }}
     >
-      Try for free
-    </button>
-  </form>
+      <input
+        type="email"
+        name="Email-2"
+        required
+        placeholder="your work email"
+        style={{
+        flex: '0 0 auto',
+        minWidth: 0,
+        width: '320px',
+        height: '56px',
+        boxSizing: 'border-box',
+        padding: '0 20px',
+        borderRadius: '999px',
+        border: '2px solid #000',
+        boxShadow: '4px 4px 0 #000',
+        fontSize: '16px',
+        background: '#fff',
+        color: '#000',
+        colorScheme: 'light', // stop the browser auto-dark-styling this input in dark mode
+      }}
+      />
+
+      <button
+        type="submit"
+        style={{
+        flex: '0 0 auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '56px',
+        boxSizing: 'border-box',
+        padding: '0 28px',
+        borderRadius: '999px',
+        border: '2px solid #000',
+        boxShadow: '4px 4px 0 #000',
+        background: '#6EE7C4',
+        color: '#000',
+        fontWeight: 600,
+        fontSize: '16px',
+        lineHeight: 1,
+        whiteSpace: 'nowrap',
+        cursor: 'pointer',
+      }}
+      >
+        Try for free
+      </button>
+    </form>
+  </div>
 </div>
 
-<p id="try-for-free-success" style={{ display: 'none' }}>
+<p id="try-for-free-success" style={{ display: 'none', textAlign: 'center' }}>
   Thanks! We'll be in touch shortly.
 </p>
