@@ -5,7 +5,7 @@ sidebarTitle: "Pull flows"
 icon: "cloud-download"
 ---
 
-For most workflows, [`qawolf flows run --env <env>`](/qawolf/local-execution/run-flows-locally) is enough — it pulls the environment's flows for you when they are not already cached locally. Reach for `qawolf flows pull` when you want to download the flow files without running them: to inspect them, commit them to a repository, or refresh a stale cache.
+For most workflows, [`qawolf flows run --env <env_id>`](/qawolf/local-execution/run-flows-locally) is enough — it pulls the environment's flows for you when they are not already cached locally. Reach for `qawolf flows pull` when you want to download the flow files without running them: to inspect them, commit them to a repository, or refresh a stale cache.
 
 <Check>
   Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/qawolf/local-execution/authenticate).
@@ -15,19 +15,19 @@ For most workflows, [`qawolf flows run --env <env>`](/qawolf/local-execution/run
 
 <Steps>
   <Step>
-    Find the environment's ID in your QA Wolf workspace under **Workspace settings → Environments**.
+    Find the environment's ID in the QA Wolf app. Open **Workspace settings → Environments** and select the environment. Copy the `id` query parameter from the page URL: `https://app.qawolf.com/<team_slug>/settings/environments?id=<env_id>`. Use that value, not the environment's display name.
   </Step>
   <Step>
     Pull the flows:
 
     ```bash
-    qawolf flows pull --env staging
+    qawolf flows pull --env <env_id>
     ```
 
-    The CLI writes flows to `.qawolf/staging/` by default. To use a different destination, pass `--out`:
+    The CLI writes flows to `.qawolf/<env_id>/` by default. To use a different destination, pass `--out`:
 
     ```bash
-    qawolf flows pull --env staging --out ./snapshot
+    qawolf flows pull --env <env_id> --out ./snapshot
     ```
   </Step>
   <Step>
@@ -41,7 +41,7 @@ For most workflows, [`qawolf flows run --env <env>`](/qawolf/local-execution/run
 
 ## What `pull` writes
 
-Inside `.qawolf/<env>/`, the CLI stores:
+Inside `.qawolf/<env_id>/`, the CLI stores:
 
 - the flow source files
 - a manifest tracking what was pulled and when
@@ -50,10 +50,10 @@ Inside `.qawolf/<env>/`, the CLI stores:
 
 ## Refresh a pulled environment
 
-Run `qawolf flows pull --env <env>` again. The CLI prompts before overwriting any file that has been modified locally. To skip the prompt and overwrite, pass `--yes`:
+Run `qawolf flows pull --env <env_id>` again. The CLI prompts before overwriting any file that has been modified locally. To skip the prompt and overwrite, pass `--yes`:
 
 ```bash
-qawolf flows pull --env staging --yes
+qawolf flows pull --env <env_id> --yes
 ```
 
 ## List flows on the platform

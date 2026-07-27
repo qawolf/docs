@@ -5,7 +5,7 @@ sidebarTitle: "Run flows locally"
 icon: "play"
 ---
 
-`qawolf flows run --env <env>` is the recommended path. It runs your team's flows from the local `.qawolf/<env>/` cache, pulling them first only if they are not already cached locally, then installs the npm dependencies and Playwright browsers they need and runs them. Android flows require installing the Android tooling first with `qawolf install android`. See [Install dependencies](/qawolf/local-execution/install-dependencies).
+`qawolf flows run --env <env_id>` is the recommended path. It runs your team's flows from the local `.qawolf/<env_id>/` cache, pulling them first only if they are not already cached locally, then installs the npm dependencies and Playwright browsers they need and runs them. Android flows require installing the Android tooling first with `qawolf install android`. See [Install dependencies](/qawolf/local-execution/install-dependencies).
 
 <Check>
   Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/qawolf/local-execution/authenticate).
@@ -15,23 +15,23 @@ icon: "play"
 
 <Steps>
   <Step>
-    Find the environment's ID in your QA Wolf workspace under **Workspace settings → Environments**.
+    Find the environment's ID in the QA Wolf app. Open **Workspace settings → Environments** and select the environment. Copy the `id` query parameter from the page URL: `https://app.qawolf.com/<team_slug>/settings/environments?id=<env_id>`. Use that value, not the environment's display name.
   </Step>
   <Step>
     From any directory, run:
 
     ```bash
-    qawolf flows run --env staging
+    qawolf flows run --env <env_id>
     ```
 
     The CLI:
 
-    1. checks the local `.qawolf/staging/` cache, and pulls the environment's flows only if they are not already cached
+    1. checks the local `.qawolf/<env_id>/` cache, and pulls the environment's flows only if they are not already cached
     2. loads the environment's `.env` file
     3. installs the npm dependencies and Playwright browsers the flows need
     4. runs every flow
 
-    To refresh the local cache against the platform, run `qawolf flows pull --env staging`. See [Pull your team's flows](/qawolf/local-execution/pull-flows).
+    To refresh the local cache against the platform, run `qawolf flows pull --env <env_id>`. See [Pull your team's flows](/qawolf/local-execution/pull-flows).
   </Step>
 </Steps>
 
@@ -40,18 +40,18 @@ icon: "play"
 Pass a glob pattern to limit which flows run:
 
 ```bash
-qawolf flows run --env staging "checkout/**"
-qawolf flows run --env staging "src/flows/login.flow.ts"
+qawolf flows run --env <env_id> "checkout/**"
+qawolf flows run --env <env_id> "src/flows/login.flow.ts"
 ```
 
-With `--env`, patterns are matched against the pulled cache under `.qawolf/<env>/`. Without `--env`, patterns are matched against both the current directory and the pulled cache.
+With `--env`, patterns are matched against the pulled cache under `.qawolf/<env_id>/`. Without `--env`, patterns are matched against both the current directory and the pulled cache.
 
 ## Watch the browser
 
 Pass `--headed` to see the browser window during a web run:
 
 ```bash
-qawolf flows run --env staging --headed
+qawolf flows run --env <env_id> --headed
 ```
 
 `--headed` does not apply to Android flows.
@@ -61,7 +61,7 @@ qawolf flows run --env staging --headed
 By default, no video or trace is recorded. To keep artifacts only when a flow fails, set the mode to `retain-on-failure`:
 
 ```bash
-qawolf flows run --env staging --video retain-on-failure --trace retain-on-failure
+qawolf flows run --env <env_id> --video retain-on-failure --trace retain-on-failure
 ```
 
 Artifacts land in `qawolf-output/` (or the directory set by `--output-dir`).
@@ -69,7 +69,7 @@ Artifacts land in `qawolf-output/` (or the directory set by `--output-dir`).
 To record HAR files of network traffic:
 
 ```bash
-qawolf flows run --env staging --har retain-on-failure
+qawolf flows run --env <env_id> --har retain-on-failure
 ```
 
 By default the HAR captures headers and timing only. To include response bodies, pass `--har-content full`. Response bodies use significantly more memory and disk.
@@ -77,7 +77,7 @@ By default the HAR captures headers and timing only. To include response bodies,
 ## Retry failing flows
 
 ```bash
-qawolf flows run --env staging --retries 2
+qawolf flows run --env <env_id> --retries 2
 ```
 
 The CLI retries each failing flow up to the given number of times. A flow that passes on retry is counted as a pass for exit-code purposes.
@@ -85,7 +85,7 @@ The CLI retries each failing flow up to the given number of times. A flow that p
 ## Stop after the first failure
 
 ```bash
-qawolf flows run --env staging --bail
+qawolf flows run --env <env_id> --bail
 ```
 
 `--bail` is useful when iterating on a single flow and you want to fail fast.
@@ -93,7 +93,7 @@ qawolf flows run --env staging --bail
 ## Run web flows in parallel
 
 ```bash
-qawolf flows run --env staging --workers 4
+qawolf flows run --env <env_id> --workers 4
 ```
 
 `--workers` controls how many web flows run concurrently. Android flows must run with `--workers 1` — the CLI errors out if Android flows are selected with a higher value.
@@ -101,13 +101,13 @@ qawolf flows run --env staging --workers 4
 ## Write a JUnit XML report
 
 ```bash
-qawolf flows run --env staging --junit
+qawolf flows run --env <env_id> --junit
 ```
 
 The CLI writes a JUnit XML report to `qawolf-output/junit-report.xml` (or under the directory set by `--output-dir`). Pass an explicit path to override the default:
 
 ```bash
-qawolf flows run --env staging --junit ./reports/results.xml
+qawolf flows run --env <env_id> --junit ./reports/results.xml
 ```
 
 The XML report is written alongside the console output and is independent of `--json` and `--agent`.
