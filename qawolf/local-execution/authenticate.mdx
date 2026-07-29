@@ -63,7 +63,7 @@ CI environments cannot prompt for input. Set the `QAWOLF_API_KEY` environment va
 
 ```bash
 export QAWOLF_API_KEY=<your-api-key>
-qawolf flows pull --env staging
+qawolf flows pull --env <env_id>
 ```
 
 The CLI prefers `QAWOLF_API_KEY` over any credential stored by `qawolf auth login`, so the same machine can switch between accounts by setting or unsetting the variable.

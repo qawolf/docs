@@ -40,12 +40,12 @@ Manages and runs QA Wolf flows.
 
 ### `flows run [pattern]`
 
-Runs flows matching `[pattern]`, or every flow when omitted. The default pattern matches `**/*.flow.{ts,js}` in the current working directory and in `.qawolf/<env>/` subdirectories.
+Runs flows matching `[pattern]`, or every flow when omitted. The default pattern matches `**/*.flow.{ts,js}` in the current working directory and in `.qawolf/<env_id>/` subdirectories.
 
 ```bash
 qawolf flows run
 qawolf flows run "flows/checkout/**"
-qawolf flows run checkout --env staging --headed
+qawolf flows run checkout --env <env_id> --headed
 ```
 
 Options:
@@ -61,7 +61,7 @@ Options:
 - `--har-content <mode>` — `omit` or `full`. `full` includes response bodies and uses more memory. Default: `omit`.
 - `--output-dir <path>` — directory for artifacts. Default: `qawolf-output`.
 - `--headed` — show the browser window instead of running headless. Default: `false`.
-- `--env <env>` — environment ID. When set, missing flows are pulled before the run.
+- `--env <env_id>` — environment ID. When set, missing flows are pulled before the run. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
 
 Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments or an unrecognized flow target. See [Exit codes](/qawolf/libraries/cli/api-reference/index#exit-codes).
 
@@ -81,18 +81,18 @@ Options:
 
 ### `flows pull`
 
-Downloads an environment's flows into the local `.qawolf/<env>/` cache.
+Downloads an environment's flows into the local `.qawolf/<env_id>/` cache.
 
 ```bash
-qawolf flows pull --env staging
-qawolf flows pull --env 4e9c... --out ./snapshot
-qawolf flows pull --env staging --yes
+qawolf flows pull --env <env_id>
+qawolf flows pull --env <env_id> --out ./snapshot
+qawolf flows pull --env <env_id> --yes
 ```
 
 Options:
 
-- `--env <env>` — required. The environment ID to pull from.
-- `--out <path>` — destination directory. Defaults to `.qawolf/<env>/`.
+- `--env <env_id>` — required. The environment ID to pull from. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
+- `--out <path>` — destination directory. Defaults to `.qawolf/<env_id>/`.
 - `--yes` — overwrite locally-modified files without prompting. Default: `false`.
 
 ## `install`
@@ -157,13 +157,13 @@ Triggers and manages runs on the QA Wolf platform. Unlike the local execution co
 Creates a run on the QA Wolf platform.
 
 ```bash
-qawolf run create --environment-id <id>
-qawolf run create --environment-id <id> --flow-ids <id>... --environment-variables KEY=VALUE
+qawolf run create --environment-id <env_id>
+qawolf run create --environment-id <env_id> --flow-ids <flow_id>... --environment-variables KEY=VALUE
 ```
 
 Options:
 
-- `--environment-id <value>` — the ID of the environment to run.
+- `--environment-id <env_id>` — the ID of the environment to run. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
 - `--environment-variables <KEY=VALUE...>` — environment variables to set for the run.
-- `--flow-ids <values...>` — limit the run to specific flow IDs.
+- `--flow-ids <flow_id>...` — limit the run to specific flow IDs.
 - `--ignore-rules` — ignore the environment's run rules.
