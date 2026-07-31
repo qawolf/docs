@@ -1,0 +1,130 @@
+{/*
+  "Try for free" sign-up embed for Mintlify docs pages, using the real
+  production handler (from the designer/engineer), not the Zapier webhook
+  guessed at earlier — that URL in the homepage's raw HTML turned out to be
+  vestigial. The actual mechanism is a direct call to QA Wolf's own backend:
+  POST https://app.qawolf.com/api/trpc/auth.submitSignUpEmail
+
+  SETUP: this file goes in your Mintlify repo at /snippets/try-for-free-form.mdx
+  (Kirk wants this on 4 pages, so make it a snippet, not 4 copies).
+
+  Then on each target page (Welcome, Quick Start, Mapping AI, Automation AI),
+  add near the top:
+
+    import TryForFreeForm from '/snippets/try-for-free-form.mdx';
+
+  ...and drop <TryForFreeForm /> wherever the component should render.
+
+  BLOCKERS before this can work at all (both confirmed by reading the actual
+  script, not guessed):
+
+  1. CORS: this fetches cross-origin from the docs domain to app.qawolf.com.
+     That only works if app.qawolf.com's API allows the docs origin. It almost
+     certainly doesn't yet — this is the real engineering ask for Haroon/
+     Mateus: add https://docs.qawolf.com to the allowed-origins list for
+     /api/trpc/*. No credentials/cookies are sent by this call, so they don't
+     need Access-Control-Allow-Credentials — just the origin added. Until
+     this is done, every submission will fail client-side with a generic
+     "Failed to connect to the server" message and no other clue why.
+
+  2. window.qawAttribution: the handler script calls
+     window.qawAttribution.getAttribution() with no null-check. If that
+     global isn't loaded on the docs domain, every submission throws and
+     falls into the same generic failure message. Ask whoever owns that
+     script whether it's safe/intended to load on docs.qawolf.com, or get a
+     no-op stub to use instead.
+
+  Until both of those are resolved, this will look "broken" in exactly the
+  same unhelpful way (generic connection error) regardless of which one is
+  actually missing — don't burn time debugging the form markup itself if
+  submissions are failing; check these two first.
+  */}
+
+{/*
+  Styling below is pulled directly from the live homepage component's
+  computed styles (measured via devtools on the actual hero form), not
+  eyeballed from a screenshot: border-radius 10.8px (not a full pill —
+  the earlier draft over-rounded this), 1.5px black border, 3.6px hard
+  shadow, 44px height, 18px "GT Flexa" font at regular (400) weight, not
+  bold, 9.9px/13.5px padding, button fill #0DF2CC. Input is a fixed 300px
+  wide on the real site (not responsive/flexible), matched here too.
+  */}
+
+{/*
+  IMPORTANT — button element type: the handler script controls the loading
+  state by setting `submitButton.value` (e.g. to "Redirecting..."). That only
+  updates visible text on an <input type="submit">, not a <button> element
+  (a <button>'s `.value` isn't what renders its label). Using <input
+  type="submit"> below so the loading-state swap actually works, instead of
+  a <button> that would silently not update its own text.
+
+  IMPORTANT — label mismatch: the script's config for this form kind sets
+  submitLabel: 'Get started', so after any failed submission, resetButton()
+  will change the visible label to "Get started", not back to "Try for
+  free". Either change submitLabel in the shared handler script to 'Try for
+  free' to match the brand copy everywhere, or accept that a failed attempt
+  changes the button's label. Left the initial value as "Try for free"
+  below to match the design; flagging this so it's a deliberate choice, not
+  a bug someone finds later.
+
+  Required markup contract from the handler script:
+  - form needs [data-signup-form]
+  - email input inside it needs [data-signup-email]
+  - a feedback/error element inside it needs [data-signup-feedback]
+  - the submit control must be <button type="submit"> or <input type="submit">
+  */}
+
+<div style={{ display: 'flex', justifyContent: 'center', padding: '4px 8px 8px 4px' }}>
+  <form data-signup-form style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-start' }}>
+    <input
+      data-signup-email
+      type="email"
+      name="email"
+      required
+      placeholder="your work email"
+      style={{
+      flex: '0 0 auto',
+      minWidth: 0,
+      width: '300px',
+      height: '44px',
+      boxSizing: 'border-box',
+      padding: '9.9px 13.5px',
+      borderRadius: '10.8px',
+      border: '1.5px solid #000',
+      boxShadow: '3.6px 3.6px 0 #000',
+      fontSize: '18px',
+      fontWeight: 400,
+      fontFamily: '"GT Flexa", Arial, sans-serif',
+      lineHeight: '18px',
+      background: '#fff',
+      color: '#000',
+      colorScheme: 'light', // stop the browser auto-dark-styling this input in dark mode
+    }}
+    />
+
+    <input
+      type="submit"
+      value="Try for free"
+      style={{
+      flex: '0 0 auto',
+      height: '44px',
+      boxSizing: 'border-box',
+      padding: '9.9px 13.5px',
+      borderRadius: '10.8px',
+      border: '1.5px solid #000',
+      boxShadow: '3.6px 3.6px 0 #000',
+      background: '#0DF2CC',
+      color: '#000',
+      fontWeight: 400,
+      fontSize: '18px',
+      fontFamily: '"GT Flexa", Arial, sans-serif',
+      lineHeight: '18px', // input[type=submit] centers text vertically on its own; no flex trick needed here
+      whiteSpace: 'nowrap',
+      cursor: 'pointer',
+      textAlign: 'center',
+    }}
+    />
+
+    <div data-signup-feedback style={{ display: 'none', width: '100%', textAlign: 'center', color: '#b00020', fontSize: '14px' }} />
+  </form>
+</div>
