@@ -1,5 +1,5 @@
 /*
-  Verbatim handler from the design team, unmodified. 
+  Verbatim handler from the design team, unmodified.
 
   Uses the default platformUrl ('https://app.qawolf.com') since
   document.currentScript.dataset won't be set when Mintlify includes this
@@ -29,8 +29,6 @@ const platformUrl = document.currentScript?.dataset.platformUrl || 'https://app.
 const requestTimeoutMs = 5000;
 const genericError = 'Something went wrong. Please try again.';
 const invalidEmail = 'Please enter a valid email address.';
-
-const boundForms = new WeakSet();
 
 function renderFatalBanner(message) {
   const banner = document.createElement('div');
@@ -143,101 +141,94 @@ const FORM_KINDS = [
   },
 ];
 
-function setupForm(form, kind) {
-  if (boundForms.has(form)) return;
-  boundForms.add(form);
+// Single delegated listener, attached once, here, synchronously — before
+// Mintlify's React app has rendered any page content. Doesn't matter when
+// (or how many times) a matching form gets added to the DOM afterward;
+// this only inspects the event's target at the moment something actually
+// gets submitted.
+document.addEventListener(
+  'submit',
+  async (event) => {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) return;
 
-  const emailInput = form.querySelector(kind.emailSelector);
-  if (!emailInput) {
-    renderFatalBanner(`missing ${kind.emailSelector} inside ${kind.formSelector}`);
-    return;
-  }
+    const kind = FORM_KINDS.find((k) => form.matches(k.formSelector));
+    if (!kind) return;
 
-  const feedbackEl = form.querySelector(kind.feedbackSelector);
-  if (!feedbackEl) {
-    renderFatalBanner(`missing ${kind.feedbackSelector} inside ${kind.formSelector}`);
-    return;
-  }
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
-  const submitButton = form.querySelector('button[type=submit], input[type=submit]');
-  if (!submitButton) {
-    renderFatalBanner(`missing submit button inside ${kind.formSelector}`);
-    return;
-  }
+    const emailInput = form.querySelector(kind.emailSelector);
+    if (!emailInput) {
+      renderFatalBanner(`missing ${kind.emailSelector} inside ${kind.formSelector}`);
+      return;
+    }
 
-  form.addEventListener(
-    'submit',
-    async (event) => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      if (submitButton.disabled) return;
-      feedbackEl.textContent = '';
-      feedbackEl.style.display = 'none';
-      submitButton.disabled = true;
-      submitButton.classList.add('is-loading');
-      submitButton.value = 'Redirecting...';
+    const feedbackEl = form.querySelector(kind.feedbackSelector);
+    if (!feedbackEl) {
+      renderFatalBanner(`missing ${kind.feedbackSelector} inside ${kind.formSelector}`);
+      return;
+    }
 
-      const resetButton = () => {
-        submitButton.disabled = false;
-        submitButton.classList.remove('is-loading');
-        submitButton.value = kind.submitLabel;
-      };
-      const fail = (message) => {
-        feedbackEl.textContent = message;
-        feedbackEl.style.display = 'block';
-        resetButton();
-      };
+    const submitButton = form.querySelector('button[type=submit], input[type=submit]');
+    if (!submitButton) {
+      renderFatalBanner(`missing submit button inside ${kind.formSelector}`);
+      return;
+    }
 
-      const email = (emailInput.value || '').trim();
+    if (submitButton.disabled) return;
+    feedbackEl.textContent = '';
+    feedbackEl.style.display = 'none';
+    submitButton.disabled = true;
+    submitButton.classList.add('is-loading');
+    submitButton.value = 'Redirecting...';
 
-      try {
-        const outcome = await postTrpc(kind.procedure, buildPayload(email), AbortSignal.timeout(requestTimeoutMs));
-        if (outcome.type === 'http-error' || outcome.type === 'bad-shape') {
-          fail(genericError);
-          return;
-        }
-        const errorMessage = kind.handleOutcome(outcome.result, email);
-        if (errorMessage) fail(errorMessage);
-      } catch (error) {
-        if (error?.name === 'TimeoutError') {
-          fail('Request timed out. Please try again.');
-        } else if (error?.name === 'AbortError') {
-          // Expected on page unload / navigation. Ignore silently.
-        } else {
-          fail('Failed to connect to the server. Please try again.');
-        }
+    const resetButton = () => {
+      submitButton.disabled = false;
+      submitButton.classList.remove('is-loading');
+      submitButton.value = kind.submitLabel;
+    };
+    const fail = (message) => {
+      feedbackEl.textContent = message;
+      feedbackEl.style.display = 'block';
+      resetButton();
+    };
+
+    const email = (emailInput.value || '').trim();
+
+    try {
+      const outcome = await postTrpc(kind.procedure, buildPayload(email), AbortSignal.timeout(requestTimeoutMs));
+      if (outcome.type === 'http-error' || outcome.type === 'bad-shape') {
+        fail(genericError);
+        return;
       }
-    },
-    true,
-  );
-
-  window.addEventListener('pageshow', () => {
-    submitButton.disabled = false;
-    submitButton.classList.remove('is-loading');
-    submitButton.value = kind.submitLabel;
-  });
-}
-
-function initFormHandlers() {
-  FORM_KINDS.forEach((kind) => {
-    document.querySelectorAll(kind.formSelector).forEach((form) => setupForm(form, kind));
-  });
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initFormHandlers);
-} else {
-  initFormHandlers();
-}
-
-// Handle forms (re)created later via Finsweet Attributes Inject.
-// Harmless no-op on Mintlify — Finsweet only exists on the Webflow marketing
-// site, so this array just sits unused here. Left in since it's verbatim.
-window.FinsweetAttributes ||= [];
-window.FinsweetAttributes.push([
-  'inject',
-  async (instances) => {
-    await Promise.all(instances.map((i) => i.loadingPromise));
-    initFormHandlers();
+      const errorMessage = kind.handleOutcome(outcome.result, email);
+      if (errorMessage) fail(errorMessage);
+    } catch (error) {
+      if (error?.name === 'TimeoutError') {
+        fail('Request timed out. Please try again.');
+      } else if (error?.name === 'AbortError') {
+        // Expected on page unload / navigation. Ignore silently.
+      } else {
+        fail('Failed to connect to the server. Please try again.');
+      }
+    }
   },
-]);
+  true,
+);
+
+// Resets any matching button's loading state when a page is restored from
+// bfcache (e.g. browser back button) mid-submission. Re-queries fresh each
+// time rather than relying on a reference captured at bind-time, since
+// delegation doesn't hold onto specific form/button elements ahead of time.
+window.addEventListener('pageshow', () => {
+  FORM_KINDS.forEach((kind) => {
+    document.querySelectorAll(kind.formSelector).forEach((form) => {
+      const submitButton = form.querySelector('button[type=submit], input[type=submit]');
+      if (!submitButton) return;
+      submitButton.disabled = false;
+      submitButton.classList.remove('is-loading');
+      submitButton.value = kind.submitLabel;
+    });
+  });
+});
