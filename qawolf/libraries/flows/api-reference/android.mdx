@@ -243,6 +243,25 @@ await launch({
   If `app` is present but does not resolve to a value, launch does not fall back to `RUN_INPUT_PATH`.
 </Note>
 
+### Supported app formats
+
+QA Wolf installs your app from either a local path or a URL, in either the `.apk` or `.aab` format.
+
+| Source | Format | What QA Wolf does |
+| --- | --- | --- |
+| local path | `.apk` | installs it as-is |
+| local path | `.aab` | converts it to installable APKs, then installs |
+| URL | `.apk` | downloads it, then installs |
+| URL | `.aab` | downloads it, converts it, then installs |
+
+In every case QA Wolf reads the build's `versionName` and `versionCode` and writes them to the run log, so you can confirm which build a run tested against.
+
+A URL is only fetched by QA Wolf when its path ends in `.apk` or `.aab`. A query string does not change that, so a signed or expiring download link works as long as the path keeps the extension. Anything else, such as a share page or a download endpoint that names the file elsewhere, is passed to the driver untouched.
+
+<Note>
+  Prefer handing us the `.apk` or `.aab`. You can install an app yourself with `device.adb("install-multiple ...")`, but then you own everything that comes with it: choosing the right split APKs for the device, reading the manifest for the launcher activity, and sizing the transfer. Passing `app` gets all of that handled for you.
+</Note>
+
 ### Advanced Appium capabilities
 
 The named launch options above cover the most common settings. For anything else, use the `capabilities` escape hatch: its entries are spread into the underlying [webdriver.io `remote`](https://webdriver.io/docs/api) capabilities and passed straight to the Android driver.
