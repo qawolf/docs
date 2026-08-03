@@ -247,14 +247,20 @@ await launch({
 
 QA Wolf installs your app from either a local path or a URL, in either the `.apk` or `.aab` format.
 
-| Source | Format | What QA Wolf does |
+| Source | Formats | What QA Wolf does |
 | --- | --- | --- |
-| local path | `.apk` | installs it as-is |
-| local path | `.aab` | converts it to installable APKs, then installs |
-| URL | `.apk` | downloads it, then installs |
-| URL | `.aab` | downloads it, converts it, then installs |
+| local path | `.apk`, `.aab` | installs the build, converting a `.aab` to installable APKs first |
+| URL | `.apk`, `.aab` | downloads the build, then the same as above |
 
 In every case QA Wolf reads the build's `versionName` and `versionCode` and writes them to the run log, so you can confirm which build a run tested against.
+
+```ts
+// a build your CI uploaded, or a path in your repository
+await launch({ app: { path: "apps/android/app.aab" } });
+
+// a link QA Wolf can fetch, including a signed or expiring one
+await launch({ app: { url: "https://builds.example.com/app.apk?token=abc" } });
+```
 
 A URL is only fetched by QA Wolf when its path ends in `.apk` or `.aab`. A query string does not change that, so a signed or expiring download link works as long as the path keeps the extension. Anything else, such as a share page or a download endpoint that names the file elsewhere, is passed to the driver untouched.
 
