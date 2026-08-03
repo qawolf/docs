@@ -252,8 +252,6 @@ QA Wolf installs your app from either a local path or a URL, in either the `.apk
 | local path | `.apk`, `.aab` | installs the build, converting a `.aab` to installable APKs first |
 | URL | `.apk`, `.aab` | downloads the build, then the same as above |
 
-In every case QA Wolf reads the build's `versionName` and `versionCode` and writes them to the run log, so you can confirm which build a run tested against.
-
 ```ts
 // a build your CI uploaded, or a path in your repository
 await launch({ app: { path: "apps/android/app.aab" } });
@@ -262,10 +260,24 @@ await launch({ app: { path: "apps/android/app.aab" } });
 await launch({ app: { url: "https://builds.example.com/app.apk?token=abc" } });
 ```
 
+In every case QA Wolf reads the build's `versionName` and `versionCode` and writes them to the run log, so you can confirm which build a run tested against:
+
+```
+App version (apps/android/app.aab): versionName=4.89.1, versionCode=43566
+```
+
 A URL is only fetched by QA Wolf when its path ends in `.apk` or `.aab`. A query string does not change that, so a signed or expiring download link works as long as the path keeps the extension. Anything else, such as a share page or a download endpoint that names the file elsewhere, is passed to the driver untouched.
 
+You can also install an app yourself over adb, which skips everything above:
+
+```ts
+// -r to replace an existing install, and a timeout large enough for the transfer
+await device.adb(["install-multiple", "-r", ...splitPaths], { timeout: 600_000 });
+await launch({ appPackage: "com.example.app", appActivity: ".MainActivity" });
+```
+
 <Note>
-  Prefer handing us the `.apk` or `.aab`. You can install an app yourself with `device.adb("install-multiple ...")`, but then you own everything that comes with it: choosing the right split APKs for the device, reading the manifest for the launcher activity, and sizing the transfer. Passing `app` gets all of that handled for you.
+  Prefer handing us the `.apk` or `.aab`. Installing over adb means you own everything that comes with it: choosing the right split APKs for the device, reading the manifest for the launcher activity, and sizing the transfer. Passing `app` gets all of that handled for you.
 </Note>
 
 ### Advanced Appium capabilities
