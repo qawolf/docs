@@ -5,9 +5,9 @@ sidebarTitle: "API Reference"
 ---
 
 `@qawolf/pom` provides Page Object Model (POM) infrastructure for
-[Playwright](https://playwright.dev): base classes for page objects, a central
-registry that lets page objects construct one another without circular imports,
-and automatic installation of popup and route-interception hooks.
+[Playwright](https://playwright.dev): base classes for page objects, a registry
+that constructs page objects by name and collects their page hooks, and
+automatic installation of popup and route-interception hooks.
 
 ## Requirements
 
@@ -27,11 +27,14 @@ npm install @qawolf/pom
 ## Defining a page object
 
 Extend `BasePageObject`. It stores the Playwright `Page` (available as
-`this.page`) and provides `this.create(...)` for constructing other page
-objects. Keep selectors in a private `locators` getter.
+`this.page`) and provides two ways to construct another page object: the static
+`createFromPage(page)` factory on a class you imported, and `this.create(name)`
+for a registered name. Keep selectors in a private `locators` getter.
 
 ```ts
 import { BasePageObject } from "@qawolf/pom";
+
+import { DashboardPage } from "./dashboard-page.js";
 
 export class LoginPage extends BasePageObject {
   private get locators() {
@@ -46,12 +49,27 @@ export class LoginPage extends BasePageObject {
     await this.locators.email.fill(email);
     await this.locators.password.fill(password);
     await this.locators.submit.click();
-    return this.create("DashboardPage");
+    return DashboardPage.createFromPage(this.page);
   }
 }
 ```
 
+`dashboard-page.js` may import `login-page.js` back, so two page objects that
+navigate to each other can both expose the trip. What Node cannot load is a page
+object that `extend`s a class in a file importing it back — see
+[Troubleshooting](/qawolf/libraries/pom/troubleshooting).
+
 ## The page registry
+
+The registry does two things: it constructs a page object from a name, and it is
+the list `installPageHooks()` walks to collect popup handlers and route
+interceptors. A direct import replaces the first job but not the second, so a
+page object that declares `popupHandlers()` or `routeInterceptors()` needs a
+registry entry however its instances get built.
+
+Constructing by name also keeps a page object's module out of the calling file's
+import graph until the first construction, which is worth having when a
+workspace holds many page objects.
 
 ### Registering
 
@@ -91,9 +109,8 @@ await loginPage.signIn("user@example.com", "hunter2");
 ```
 
 Inside a page object, use the protected `this.create(...)` instead — it shares
-the current `Page` and routes through the same registry, which is what lets
-page objects reference each other without importing each other's classes as
-values (avoiding circular imports). Use `import type` only for annotations:
+the current `Page` and goes through the same registry. Import the sibling's type
+for the return annotation:
 
 ```ts
 import { BasePageObject } from "@qawolf/pom";
@@ -108,7 +125,9 @@ export class DashboardPage extends BasePageObject {
 ```
 
 `create` / `createPage` are async because lazily registered modules load on
-first use.
+first use. Importing `SettingsPage` and calling
+`SettingsPage.createFromPage(this.page)` is the synchronous alternative, and
+needs no registry entry and no separate return-type annotation.
 
 ### Typing `this.create(...)`
 
@@ -179,8 +198,10 @@ export class CookieBannerPage extends BasePageObject {
 }
 ```
 
-`installPageHooks()` collects these across **every** registered page object,
-not just the entry point. Overrides are detected by an own-property check on the
+`installPageHooks()` collects these across **every** registered page object, not
+just the entry point — so register a page object that owns popups or routes even
+when your code only ever constructs it from a direct import. Its hooks never
+install otherwise. Overrides are detected by an own-property check on the
 registered class's prototype, so declare `popupHandlers()` /
 `routeInterceptors()` directly on the class you register — an override inherited
 from a base class is not picked up.
