@@ -112,10 +112,11 @@ first use.
 
 ### Typing `this.create(...)`
 
-By default `this.create("LoginPage")` returns `any`. Augment the
+By default `this.create("LoginPage")` returns `BasePageObject` — the name is
+just a string, so nothing tells TypeScript which class comes back. Augment the
 `RegisteredPages` interface — declared for exactly this purpose — to make the
 name-to-type mapping known, and `create` becomes fully typed. This is
-incremental: names you don't list keep the `any` fallback.
+incremental: names you don't list still come back as `BasePageObject`.
 
 ```ts
 import type { LoginPage } from "./pages/login-page.js";
