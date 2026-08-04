@@ -25,13 +25,32 @@ Check:
 - the name is registered in exactly one place
 - two page objects are not registered under the same name
 
-## A Page Object's Popup Or Route Hook Never Runs
+## `Cannot access '<name>' before initialization`
 
-Cause: Page hooks are collected by an own-property check on the **registered**
-class's prototype, so an override inherited from a base class is not detected.
+Cause: Two files import each other, and one of them uses the other's class while
+that file is still loading — almost always a page object that `extend`s a class
+declared in a file importing it back. Two page objects that import each other
+are fine; extending across that pair is not, because the file that loads second
+evaluates `extends` before the class exists.
 
 Check:
 
+- the base class lives in a file that imports neither of the two page objects
+- nothing else in the cycle runs at module top level against an imported
+  binding — using it inside a method body is fine, since both files have
+  finished loading by then
+
+## A Page Object's Popup Or Route Hook Never Runs
+
+Cause: The page object is not registered, or page hooks are collected by an
+own-property check on the **registered** class's prototype and the override is
+inherited from a base class.
+
+Check:
+
+- the page object is passed to `registerPage`, even if your code only ever
+  constructs it from a direct import — `installPageHooks()` walks the registry
+  and cannot see an unregistered class
 - `popupHandlers()` / `routeInterceptors()` is declared directly on the class
   passed to `registerPage`, not only on a base class it extends
 - the entry point calls `installPageHooks()` before navigating
