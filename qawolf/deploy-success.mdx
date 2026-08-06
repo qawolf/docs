@@ -68,7 +68,13 @@ All fields are optional.
 }
 ```
 
-`results` is an array of matched triggers. Each entry contains either `created_suite_id` if a run was created, `duplicate_suite_id` if a run for this SHA already exists, or `failure_reason` if the run could not be created.
+`results` is an array of matched triggers. Each entry contains one of: `created_suite_id` if a run was created, `duplicate_suite_id` if a run for this deployment already exists, or `failure_reason` if the run could not be created.
+
+On the first delivery of a deployment, a matched trigger returns `created_suite_id` even when the deployment duplicates one QA Wolf is already handling — deduplication is settled after this response is sent, so the synchronous response does not report it. To find out whether your run was superseded by a duplicate, poll [CI greenlight](/qawolf/v0-ci-greenlight) and compare `relevantRunId` with `rootRunId` (see [Superseding logic](/qawolf/v0-ci-greenlight#superseding-logic)).
+
+<Note>
+  You see `duplicate_suite_id` only when retrying `deploy_success` for the same `sha` after deduplication has already settled. On the first delivery, a matched trigger is never reported as a duplicate.
+</Note>
 
 ## Response codes
 
