@@ -15,10 +15,12 @@
 */
 
 function getPosthogIds() {
-  const posthog = window?.posthog;
-  if (!posthog) return {};
-  const posthogDistinctId = posthog.get_distinct_id();
-  const posthogSessionId = posthog.get_session_id();
+  const properties = readPosthogPersistedProperties();
+  if (!properties) return {};
+  // PostHog's persisted $sesid is [lastActivityTimestamp, sessionId, sessionStartTimestamp].
+  const sesid = properties['$sesid'];
+  const posthogSessionId = Array.isArray(sesid) && typeof sesid[1] === 'string' ? sesid[1] : undefined;
+  const posthogDistinctId = typeof properties.distinct_id === 'string' ? properties.distinct_id : undefined;
   return {
     posthogDistinctId,
     posthogSessionId,

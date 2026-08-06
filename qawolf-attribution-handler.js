@@ -102,22 +102,15 @@
 
   function getPosthogAttribution() {
     if (typeof window === 'undefined') return {};
-    var posthog = window.posthog;
-    if (!posthog || typeof posthog.get_property !== 'function' || typeof posthog.getSessionProperty !== 'function') return {};
+    const properties = readPosthogPersistedProperties();
+    if (!properties) return {};
 
     try {
-      const clientSessionProps = posthog.get_property('$client_session_props');
+      const clientSessionProps = properties['$client_session_props'];
       const cspProps = (clientSessionProps ? clientSessionProps.props : {}) || {};
-      const merged = {};
-      attributionUrlParams.concat(attributionCookies).forEach(function (key) {
-        merged[key] = posthog.getSessionProperty(key);
-      });
-      merged.landing_page = cspProps.u;
-      merged.referrer = cspProps.r;
       const output = {};
-      Object.keys(merged).forEach(function (key) {
-        if (merged[key]) output[key] = merged[key];
-      });
+      if (cspProps.u) output.landing_page = cspProps.u;
+      if (cspProps.r) output.referrer = cspProps.r;
       return output;
     } catch {
       return {};
