@@ -15,7 +15,7 @@ description: 'Stops all runs targeting the environment and requests flow promoti
 curl -X POST https://app.qawolf.com/api/webhooks/environment_terminated \
   -H "Authorization: Bearer $QAWOLF_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"deploymentUrl": "<DeploymentUrl>"}'
+  -d '{"deploymentUrl": "<DeploymentUrl>", "workspaceId": "<WorkspaceId>"}'
 ```
 
 ## Request headers
@@ -35,19 +35,22 @@ Pass one of the following to identify the environment.
 | `environmentAlias` | string | Alias of the ephemeral environment to terminate. |
 | `deploymentUrl` | string | Preview URL used when the environment was created via `deploy_success` with `ephemeral_environment: true`. |
 
+You may also pass `workspaceId`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `workspaceId` | string | Workspace that owns the environment. Only used alongside `environmentAlias` or `deploymentUrl`, since `environmentId` identifies its own workspace. Ignored by a workspace API key. With an organization or user API key, omitting it looks the alias up in your organization's first-created workspace. See [which workspace a request acts on](/qawolf/rest-overview#which-workspace-a-request-acts-on). |
+
 ## Response
 
 ```json
 {
-  "results": [
-    {
-      "environmentId": "cl1f6i0in15676w115vt43vw2",
-      "promotionTaskId": "ckzoog9wy01720xyrvl8ah7gu",
-      "code": "terminated"
-    }
-  ]
+  "code": "terminated",
+  "environmentId": "cl1f6i0in15676w115vt43vw2"
 }
 ```
+
+`warning` is present when the request needed a workspace and did not name one, in which case it reports the workspace QA Wolf used. It never changes the outcome. `@qawolf/ci-sdk` prints it for you.
 
 ## Response codes
 
