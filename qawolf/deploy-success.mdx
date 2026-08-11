@@ -21,7 +21,8 @@ curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
     "sha": "de12adda500f2bc5a29dbd89f4fb1b0e1a31de81",
     "deployment_type": "staging",
     "deployment_url": "https://staging.example.com",
-    "hosting_service": "GitHub"
+    "hosting_service": "GitHub",
+    "workspaceId": "ckz2y0o7j01914cgtra6lk4wn"
   }'
 ```
 
@@ -54,6 +55,7 @@ All fields are optional.
 | `variables` | object | Key/value pairs that override environment variables for every run triggered by this notification. |
 | `deduplication_key` | string | Custom key controlling run cancellation behavior. By default, new runs cancel ongoing runs with the same branch/environment combination. |
 | `ephemeral_environment` | boolean | Pass with `deployment_url` if the deployment is not associated with a code-hosting integration. |
+| `workspaceId` | string | Workspace to create runs in. Ignored by a workspace API key, which already implies its workspace. With an organization or user API key, omitting it uses your organization's first-created workspace. See [which workspace a request acts on](/qawolf/rest-overview#which-workspace-a-request-acts-on). |
 
 ## Response
 
@@ -62,13 +64,33 @@ All fields are optional.
   "results": [
     {
       "created_suite_id": "cl1f6i0in15676w115vt43vw2",
+      "outcome": "created",
       "trigger_id": "ckzoog9wy01720xyrvl8ah7gu"
     }
   ]
 }
 ```
 
-`results` is an array of matched triggers. Each entry contains one of: `created_suite_id` if a run was created, `duplicate_suite_id` if a run for this deployment already exists, or `failure_reason` if the run could not be created.
+`results` is an array of matched triggers. Each entry carries an `outcome` of `created`, `skipped`, or `failed`, alongside `created_suite_id` if a run was created, `duplicate_suite_id` if a run for this deployment already exists, or `failure_code` and `failure_message` if the run could not be created. Branch on `failure_code`, such as `billing-prevented` or `environment-not-ready`, and display `failure_message`. Treat `failure_code` as an open set, since new codes are added over time.
+
+<Warning>
+  A failed entry also carries `failure_reason`, which is deprecated. It holds an internal diagnostic whose values change without notice, so do not branch on it.
+</Warning>
+
+`warning` is present when the request needed a workspace and did not name one, in which case it reports the workspace QA Wolf used. It never changes the outcome. `@qawolf/ci-sdk` prints it for you.
+
+```json
+{
+  "results": [
+    {
+      "created_suite_id": "cl1f6i0in15676w115vt43vw2",
+      "outcome": "created",
+      "trigger_id": "ckzoog9wy01720xyrvl8ah7gu"
+    }
+  ],
+  "warning": "No workspaceId was sent, so this request used your first-created workspace: Acme (ckz2y0o7j01914cgtra6lk4wn). Send workspaceId to choose explicitly."
+}
+```
 
 On the first delivery of a deployment, a matched trigger returns `created_suite_id` even when the deployment duplicates one QA Wolf is already handling — deduplication is settled after this response is sent, so the synchronous response does not report it. To find out whether your run was superseded by a duplicate, poll [CI greenlight](/qawolf/v0-ci-greenlight) and compare `relevantRunId` with `rootRunId` (see [Superseding logic](/qawolf/v0-ci-greenlight#superseding-logic)).
 

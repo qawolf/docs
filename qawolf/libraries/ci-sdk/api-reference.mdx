@@ -63,6 +63,7 @@ const deployConfig: DeployConfig = {
   commitUrl: undefined,
   deduplicationKey: undefined,
   variables: undefined,
+  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
 };
 
 const result = await attemptNotifyDeploy(deployConfig);
@@ -92,6 +93,7 @@ const runId = result.runId;
 | `ephemeralEnvironment` | boolean | Pass with `deploymentUrl` for ephemeral environments without a code-hosting integration. |
 | `deduplicationKey` | string | Custom key controlling run cancellation behavior. |
 | `variables` | object | Key/value pairs that override environment variables for triggered runs. |
+| `workspaceId` | string | Workspace to create runs in. Ignored by a workspace API key, which already implies its workspace. Pass it with an organization or user API key. See [which workspace a request acts on](/qawolf/rest-overview#which-workspace-a-request-acts-on). |
 
 ### Result fields
 
@@ -244,6 +246,12 @@ Pass one of the following to identify the environment:
 | `environmentId` | string | ID of the ephemeral environment. |
 | `environmentAlias` | string | Alias of the ephemeral environment. |
 | `deploymentUrl` | string | Preview URL used when the environment was created. This should be the same `deploymentUrl` you passed to `attemptNotifyDeploy` along with `ephemeralEnvironment`: true when originally notifying us. |
+
+You may also pass `workspaceId`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `workspaceId` | string | Workspace that owns the environment. Only used alongside `environmentAlias` or `deploymentUrl`, since `environmentId` identifies its own workspace. Ignored by a workspace API key. Pass it with an organization or user API key. |
 
 ### Result fields
 

@@ -15,7 +15,25 @@ All endpoints require a `QAWOLF_API_KEY` passed as a Bearer token.
 Authorization: Bearer $QAWOLF_API_KEY
 ```
 
-To find your API key, open the **Workspace Name** dropdown in QA Wolf and go to **Workspace Settings → Integrations → API Access**.
+### Kinds of API key
+
+| Kind | Acts as | Where to create it |
+| --- | --- | --- |
+| Workspace | One workspace | **Workspace Settings → Integrations → API Access** |
+| Organization | The whole organization, across every workspace in it | **Workspace Settings → API Keys** |
+| User | The member who owns the key, across every workspace they can reach | **Workspace Settings → API Keys** |
+
+To reach either settings page, open the **Workspace Name** dropdown in QA Wolf.
+
+### Which workspace a request acts on
+
+A workspace API key implies its workspace, so requests never name one. An organization or user API key does not, so a request that is scoped to a single workspace resolves it in this order:
+
+1. The workspace named by a resource in the request, such as `environmentId`.
+2. The workspace named by `workspaceId`.
+3. Your organization's first-created workspace.
+
+Creating another workspace never changes step 3, so a pipeline that relies on it keeps running. Even so, pass `workspaceId` when your organization has more than one workspace: it states which workspace you meant, and it keeps working if the first-created workspace is ever deleted or disabled. Copy the ID from **Workspace Settings → API Keys**.
 
 ## Base URL
 
