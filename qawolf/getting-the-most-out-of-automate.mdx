@@ -5,34 +5,83 @@ icon: "lightbulb"
 sidebarTitle: "Get the most out of Automate"
 ---
 
-Automate works best when you give it enough context to understand what you want and where to put it. The tips below cover both autonomous creation and guided creation.
+Automate works best when you give it enough context to understand what you want and where to put it. It supports two ways of working:
+
+<CardGroup cols={2}>
+  <Card title="Autonomous creation" icon="rocket" href="#autonomous-creation">
+    No human in the loop. Front-load all the context into one prompt, hit run, and review the finished flow.
+  </Card>
+  <Card title="Guided creation" icon="handshake" href="#guided-creation">
+    A copilot workflow. Prompt for one small change at a time, discovering the app together with the AI.
+  </Card>
+</CardGroup>
+
+Both modes benefit from context you write down once. If you find yourself repeating the same background across sessions, put it in a [SKILL.md](/qawolf/reusable-ai-knowledge).
 
 ## Autonomous creation
+
+In this mode Automate works unattended, so everything it needs to know has to be in the prompt before you hit run.
 
 ### Write a specific prompt
 
 Vague prompts produce unreliable results. A prompt like "Create a test for the rate quote flow" gives Automate very little to work with. A stronger prompt includes:
 
-- Where to start (URL or a reference to a login helper)
+- Where to start (URL and login credentials)
 - What the user does, step by step
 - What a successful outcome looks like
 - Anything specific you want asserted
 
 **Example:**
 
-```text
-Create a test for completing the rate quote application. Log in using the
-<specific name> login helper from <file where helper function is>.ts. Navigate to the application, fill in the required fields, and submit. Assert that the confirmation 
-message appears and that the new rate quote is visible in the list.
+```handlebars wrap
+Create a test for the rate quote application. Go to {{your app URL}} and sign in with {{test user email}} and {{test user password}}. Navigate to the rate quote form, fill in the required fields, and submit. Assert that the confirmation message appears and that the new rate quote is visible in the list.
 ```
 
 ### Include assertions explicitly
 
 If there's something specific you need verified, say so. Automate won't always infer what matters to you — telling it what to assert produces more useful tests.
 
+### Link your app's documentation
+
+If a flow depends on setup that is only explained in your documentation, include the link in the flow description or your prompt. The AI reads linked documentation before it starts building and uses it to complete configuration steps it cannot discover from the UI alone.
+
+```handlebars wrap
+Create a test for connecting a Jira project. Follow the setup guide at {{your docs URL}} to configure the integration first.
+```
+
+### Structure the flow header around Arrange, Act, Assert
+
+When Automate completes a flow on its own, the comment block at the top of the flow is its specification. Structuring that header around [Arrange, Act, Assert](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#the-aaa-framework) tells Automate how far each verification should go.
+
+For example, a flow that disables a feature could simply reload the page and check that the toggle is still off. It could also go further and sign in as a different user to verify the feature is no longer accessible. An AAA header states which one you want, so Automate doesn't have to guess:
+
+```typescript
+/**
+ * Goal: Editor project transfers
+ *
+ * Test 1:
+ * Arrange: Log in as an enterprise owner and an enterprise editor. As the
+ *   owner, enable editor project transfers in workspace settings under
+ *   Privacy and Security.
+ * Act: As the editor, open the owner's project and go to project settings.
+ * Assert: The Move button is enabled.
+ *
+ * Test 2:
+ * Arrange: As the owner, disable editor project transfers.
+ * Act: As the editor, reload project settings.
+ * Assert: The Move button is disabled; check the tooltip content.
+ */
+```
+
+### Use descriptive flow names
+
+Before building a new flow, the AI searches your workspace for similar flows and reuses the parts that overlap instead of starting from scratch. Descriptive names help it find the right ones. If you want it to work from a specific example, [point it at a working reference](#point-automate-at-a-working-reference).
+
 ---
 
 ## Guided creation
+
+In this mode you stay in the loop, hand-holding Automate to completion. Use it when you don't have the full context yourself and are discovering the app at the same time as the AI, so it makes sense to work the problem together.
 
 ### Start prompts with "Insert code to"
 
@@ -48,6 +97,12 @@ Automate inserts code relative to the current cursor position. If code ends up i
 
 - Click on the line where you want the code inserted before prompting
 - Or tell it explicitly: "Insert code on line 42 to..."
+
+### Describe elements in plain language
+
+You don't need to tell Automate which Playwright locator to use. It's better at finding the most relevant locator itself. If you prescribe a locator and it turns out not to work, Automate gets stuck between obeying your instruction and producing a working test, and the result suffers.
+
+Say _"Click the Save button in the billing settings panel"_, not _"Click `page.locator('#btn-save-2')`"_.
 
 ### Hover before you prompt for elements
 
@@ -101,8 +156,8 @@ Automate will read the error output and attempt a fix.
 
 If you have a working example that you want Automate AI to follow, simply give it the path to that file and tell it what you'd like it to copy.
 
-```text
-Use the new apiLogin method as exemplified in this file: <path to file>
+```handlebars
+Use the new apiLogin method as exemplified in this file: {{path to file}}
 ```
 
 This will prevent having to re-describe the change each time.

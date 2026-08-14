@@ -1,0 +1,71 @@
+---
+title: "Give the AI reusable knowledge with SKILL.md"
+description: "Package knowledge about your app in SKILL.md files that the AI loads in every session."
+icon: "graduation-cap"
+sidebarTitle: "Reusable AI knowledge"
+---
+
+Prompts teach the AI about your app one session at a time. A skill makes that knowledge permanent. SKILL.md files are loaded in every autonomous creation, guided creation, and mapping session, so the AI starts with your context instead of asking you to repeat it.
+
+## What a skill looks like
+
+A skill is a Markdown file with two parts: frontmatter that names and describes it, and a body with the knowledge itself.
+
+```markdown
+---
+name: acme-conventions
+description: Domain terms and test conventions for the Acme app
+---
+
+# Logging in
+
+Always sign in through the SSO tile. The email and password form is
+deprecated and fails for most test users.
+
+# Domain terms
+
+- A "quote" is a rate quote, not a chat message.
+- "Members" and "subscribers" are the same object in the UI.
+
+# Conventions
+
+- Structure every flow header around Arrange, Act, Assert.
+- Prefer unique generated values over hardcoded ones for new records.
+```
+
+## Where skills live
+
+A skill can live anywhere in your workspace. The best practice is to give each SKILL.md its own folder:
+
+```text
+your-workspace/
+├── skills/
+│   ├── acme-conventions/
+│   │   └── SKILL.md
+│   └── payments-testing/
+│       └── SKILL.md
+├── src/
+│   ├── flows/
+│   └── pages/
+├── package.json
+└── tsconfig.json
+```
+
+## What belongs in a skill
+
+Good skill content is anything you would otherwise repeat across many prompts:
+
+- Domain vocabulary and what each term maps to in the UI
+- Environment quirks, such as which login method works and which test users are seeded
+- Team conventions, such as [structuring flow headers around AAA](/qawolf/getting-the-most-out-of-automate#structure-the-flow-header-around-arrange-act-assert)
+- Links to deeper documentation the AI should fetch when it becomes relevant
+
+Keep each skill focused on one topic. Knowledge that matters to a single flow belongs in that flow's prompt or header, not in a skill.
+
+## How each surface uses skills
+
+**Autonomous creation.** The quality of an unattended run depends on the context you front-load. A skill carries the standing context, so your prompt only needs to describe the flow itself.
+
+**Guided creation.** You stop re-explaining the same background at every step. The AI already knows your domain terms and conventions, so short prompts land correctly.
+
+**Mapping.** The agent explores your app already knowing what the features are called and which areas matter, which produces more accurate flow stubs.
