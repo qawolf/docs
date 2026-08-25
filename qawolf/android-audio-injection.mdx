@@ -4,7 +4,11 @@ description: "Inject audio into the Android emulator's microphone input to test 
 sidebarTitle: "Android"
 ---
 
-The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `device.passAudioAsMicrophoneInput(...)` to play an audio file during a flow — your app will receive it as microphone input.
+The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `device.passAudioAsMicrophoneInput(...)` to play an audio file during a flow, and your app will receive it as microphone input.
+
+<Warning>
+  **Start your app recording before you call this.** `passAudioAsMicrophoneInput` plays the file and resolves only once playback has finished, so awaiting it first plays the whole file into a microphone nobody is listening to, and the recording that follows captures silence. `delaySeconds` does not work around this either, since it is awaited inline as well.
+</Warning>
 
 <Note>
   Store your audio file in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/qawolf/Uploading-manually) for instructions.
@@ -14,11 +18,32 @@ The Android emulator routes audio played on the runner host through to the emula
 
 **Inject audio into the microphone**
 
+Start the recording in your app, then play the audio into it:
+
 ```typescript
+await driver.$(`//*[@text='Record']`).click();
+
 await device.passAudioAsMicrophoneInput({
   data: `${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
   durationSeconds: 10,
 });
+
+await driver.$(`//*[@text='Done']`).click();
+```
+
+**Start playback before your app begins listening**
+
+If your app needs audio already flowing when it starts listening, hold the promise and await it once the app is ready:
+
+```typescript
+const playback = device.passAudioAsMicrophoneInput({
+  data: `${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
+  durationSeconds: 10,
+});
+
+await driver.$(`//*[@text='Record']`).click();
+
+await playback;
 ```
 
 **Pull a recording off the emulator**
@@ -42,34 +67,45 @@ await device.adb([
 
 `passAudioAsMicrophoneInput` accepts `delaySeconds` (wait before playback starts) and `durationSeconds` (cap playback length; omit to play the whole file). See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full signature.
 
+`delaySeconds` delays playback, but the call still resolves only once playback has finished. Use it to line playback up with something your app does after it starts listening, not to start the recording after the call.
+
+## Verifying the injected audio
+
+Assert on something your app derived from the audio, such as the text a speech-recognition field transcribed. A file appearing on disk only proves your app recorded something, and a recording made in the wrong order contains silence while still producing a file.
+
+<Warning>
+  `device.captureAudioOutput` cannot confirm that injection reached your app. The capture is taken on the runner host, where the injected audio is present whether or not the emulator ever passed it to the guest, so it returns your audio even when your app heard nothing. The same is true of any other host-side check. Verify from inside the app instead.
+</Warning>
+
 ## Full sample test
 
 ```typescript
-import { device, flow } from "@qawolf/flows/android";
+import { device, expect, flow } from "@qawolf/flows/android";
 
 const audioPath = `${process.env.TEAM_STORAGE_DIR}/audio.mp3`;
 
 export default flow(
-  "Test audio recording",
+  "Test voice input",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("record injected audio and verify it was saved", async () => {
+    await test("app transcribes the injected speech", async () => {
       // Arrange
-      await driver.$(`//*[@text='Record Audio']`).click();
-      await driver.pause(3_000);
+      await driver.$(`//*[@text='Add note']`).click();
 
-      // Act
+      // Act: start listening first, then play the audio into the microphone
+      await driver.$(`//*[@content-desc='Voice input']`).click();
+
       await device.passAudioAsMicrophoneInput({
         data: audioPath,
         durationSeconds: 10,
       });
 
-      await driver.$(`//*[@text='Record']`).click();
-      await driver.pause(10_000);
       await driver.$(`//*[@text='Done']`).click();
 
-      // Assert
-      await driver.$(`//*[@text='Open Audio']`).waitForDisplayed({ timeout: 5_000 });
+      // Assert on what the app heard, not on whether a file was written
+      await expect(driver.$(`//*[@resource-id='note-body']`)).toHaveText(
+        "remember to buy oat milk",
+      );
     });
   },
 );
