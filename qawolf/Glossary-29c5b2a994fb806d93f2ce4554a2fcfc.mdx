@@ -1,6 +1,6 @@
 ---
 title: "Glossary"
-description: "Definitions of key QA Wolf terms including workspaces, environments, groups, flows, runs, and maps."
+description: "Definitions of key QA Wolf terms including workspaces, environments, groups, flows, runs, coverage outlines, and coverage maps."
 icon: "bookmark"
 ---
 
@@ -17,10 +17,6 @@ A **workspace** is the top-level container in the QA Wolf platform. All environm
 Under each workspace is an **environment**, which corresponds to a specific version of your app, such as development, staging, or production.
 
 Each environment can be [configured](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f) with separate variables (e.g., base URL, users, etc.), concurrency rates, and other settings relevant to the version of the application you're testing. Flows and tests are unique for each environment and not shared between environments.
-
-## Map
-
-The **map** shows the flows in an environment and how they are organized into folders. It provides a structured view of your tests so you can navigate and manage flows and tests more easily.
 
 ## Flow
 
@@ -42,6 +38,14 @@ A **test** verifies a specific behavior or step in your application. Multiple te
   | Folder | accounts |
   | Flow | happy-path-ios.flow.js |
 </Tip>
+
+## Coverage outline
+
+A **coverage outline** is the set of groups and flow stubs that define what needs to be tested in an environment. Outlining is the act of producing one: you point the agent at your application, it explores, and it proposes the groups and flows that represent the main areas and user journeys. An outline records scope — it does not contain test code until the flows are created.
+
+## Coverage map
+
+The **coverage map** is the visual representation of a coverage outline. It shows the flows in an environment and how they are organized into groups, so you can see the shape of your coverage and find gaps in it.
 
 ## Run
 

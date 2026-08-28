@@ -1,0 +1,57 @@
+---
+title: "Track and review agent jobs"
+description: "Check the status of outlining and creation jobs, review the flows they produced, and retry failures."
+icon: "zap"
+---
+
+**Automate jobs** lists every agent job in the environment, running and finished, for both outlining and creation. Use it to check on a job in progress, review what an agent produced, or work out why a job stopped.
+
+## Open Automate jobs
+
+From the **Flows** tab, click the <Icon icon="zap" /> icon in the left sidebar.
+
+<Frame>
+  ![The Automate jobs list](/images/automate-jobs.png)
+</Frame>
+
+Each row is one job: its status, the flows it covers, the environment and job group it ran against, when it ran, and who started it. Jobs still running show their progress, and jobs that hit a failure show how many flows failed.
+
+## Filter the list
+
+Three filters narrow the list, and they combine:
+
+- **Status** — one or more of Queued, In progress, Needs review, Merged, Partially merged, Canceled, and Error
+- **Environment** — jobs from a single environment
+- **Author** — jobs started by one person
+
+<Frame>
+  ![The Status filter open on the Automate jobs list](/images/automate-jobs-status.png)
+</Frame>
+
+Select **Sort** to order the list by newest or oldest first.
+
+## Review a job
+
+<Steps>
+  <Step>
+    Click **Review** on the job you want to inspect. The button names the number of flows waiting on you.
+
+    <Frame>
+      ![The review view for an Automate job](/images/automate-jobs-review.png)
+    </Frame>
+  </Step>
+  <Step>
+    Select a flow in the left panel. Each flow is marked with whether it passed or needs attention.
+  </Step>
+  <Step>
+    Inspect the flow with the tabs above it: **Outline** for what the flow covers, **Video** for a recording of the run, **Code** for the test code the agent wrote, and **Details** for the run's metadata.
+  </Step>
+</Steps>
+
+The agent chat for the job stays open on the right, so you can ask about a decision it made or tell it to change something.
+
+## Retry a failure
+
+Click **Retry flow** to run a single failing flow again, or **Retry failing** at the bottom of the flow list to retry all of them at once.
+
+For prompting practices that cut down on failures in the first place, see [Get the most out of AI flow creation](/qawolf/getting-the-most-out-of-automate).

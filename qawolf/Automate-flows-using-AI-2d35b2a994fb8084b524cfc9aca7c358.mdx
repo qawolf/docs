@@ -1,20 +1,42 @@
 ---
-title: "Automate flows using AI"
-description: "Use Automation AI to create, edit, and debug flows from plain-language or voice instructions."
+title: "Create flows with AI"
+description: "Use AI flow creation to create, edit, and debug flows from plain-language or voice instructions."
 icon: "bot"
-sidebarTitle: "Create flows with AI"
 ---
 
-Automation AI lets you create, edit, and debug flows by describing what you want in plain language or by speaking your instructions. You don't need to know the flow syntax to get started — the AI writes and updates the code for you.
+AI flow creation lets you create, edit, and debug flows by describing what you want in plain language or by speaking your instructions. You don't need to know the flow syntax to get started — the AI writes and updates the code for you.
 
 If you'd prefer to write flows manually, see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59).
 
-## Create a flow
+## Start a flow
 
-From the **Automate** tab, open the AI chat panel on the right side of the screen.
+Four entry points on the **Flows** tab create a new flow. Use whichever is closest to what you're already doing.
+
+- **Create flow** — the button above the flows list
+- <Icon icon="square-plus" /> — the add icon in the flows list toolbar
+- <Icon icon="plus" /> — at the top of the left sidebar
+- **The AI chat panel** — describe what you want and the agent builds it with you, which is [guided creation](/qawolf/getting-the-most-out-of-automate#guided-creation)
 
 <Frame>
-  ![Automate Chat](/images/automate-chat.png)
+  ![The flows list toolbar on the Flows tab](/images/flows-list-toolbar.png)
+</Frame>
+
+The <Icon icon="chevron-down" /> icon next to **Create flow** and the <Icon icon="plus" /> at the top of the sidebar open the same drawer, which holds **Outline flows**, <Icon icon="code" /> **IDE**, and <Icon icon="zap" /> **Automate jobs**.
+
+<Frame>
+  ![The create flow drawer](/images/create-flow-drawer.png)
+</Frame>
+
+- **Outline flows** starts an outlining session, which covers a whole application at once — see [Create a coverage outline](/qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc)
+- <Icon icon="code" /> **IDE** opens the file tree and code editor — see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)
+- <Icon icon="zap" /> **Automate jobs** lists every agent session, running and finished, for both outlining and creation — see [Track and review agent jobs](/qawolf/automate-jobs)
+
+## Describe the flow you want
+
+From the **Flows** tab, open the AI chat panel on the right side of the screen.
+
+<Frame>
+  ![AI chat panel on the Flows tab](/images/flows-ai-chat.png)
 </Frame>
 
 ### Type a description
@@ -26,12 +48,12 @@ Type a plain-language description of what you want the flow to do into the chat 
 Click the <Icon icon="mic" /> icon and speak your instructions.
 
 <Note>
-  Automation AI will create the required groups and flows if they don't already exist.
+  The agent will create the required groups and flows if they don't already exist.
 </Note>
 
 ## What happens next
 
-Automation AI generates the flow code and opens it in the editor. From here you can:
+The agent generates the flow code and opens it in the editor. From here you can:
 
 - **Run it immediately** using the **Run** button to see it execute in the browser panel
 - **Review the code** if you want to understand or manually adjust what was generated
@@ -49,4 +71,4 @@ For manual debugging, see [Debug tests & flows](/qawolf/Debug-tests-and-flows-2c
 
 ## Import a third-party library
 
-In the AI chat panel, ask Automation AI to import the package you need. It will handle the entire process automatically.
+In the AI chat panel, ask the agent to import the package you need. It will handle the entire process automatically.

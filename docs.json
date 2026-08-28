@@ -108,6 +108,7 @@
               "qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
               "qawolf/getting-the-most-out-of-mapping",
               "qawolf/getting-the-most-out-of-automate",
+              "qawolf/automate-jobs",
               "qawolf/reusable-ai-knowledge",
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
               "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
@@ -385,7 +386,7 @@
           },
           {
             "group": "@qawolf/pom",
-            "icon": "sitemap",
+            "icon": "folder-tree",
             "pages": [
               {
                 "group": "API Reference",

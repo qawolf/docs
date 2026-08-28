@@ -10,7 +10,7 @@ icon: "bug-play"
 Click **Run** to execute the flow. A live browser appears in the right panel where you can watch the code execute in real time.
 
 <Frame>
-  ![Automate Run Flow](/images/automate-run-flow.png)
+  ![A flow running in the IDE](/images/automate-run-flow.png)
 </Frame>
 
 When the flow completes successfully, a green **Flow passed** banner appears at the top of the editor.
@@ -20,12 +20,12 @@ When the flow completes successfully, a green **Flow passed** banner appears at 
 If something goes wrong, a red **Flow failed** banner appears at the top of the editor and the failed line is highlighted in red.
 
 <Frame>
-  ![Automate Failed Flow](/images/automate-failed-flow.png)
+  ![A failed flow in the IDE](/images/automate-failed-flow.png)
 </Frame>
 
 You have two options for fixing it:
 
-**Fix with AI** — click **Fix with AI** in the banner to let Automation AI diagnose and repair the failure automatically. You can also describe the problem in the AI chat panel or paste the error directly from the **Logs** tab.
+**Fix with AI** — click **Fix with AI** in the banner to let the agent diagnose and repair the failure automatically. You can also describe the problem in the AI chat panel or paste the error directly from the **Logs** tab.
 
 **Run selected lines** — reset the app state in the browser, select the lines you want to test, and click **Run**. This lets you iterate on a specific section without re-running the entire flow.
 
@@ -36,25 +36,25 @@ The bottom-right panel has four tabs that provide different views of your flow's
 **Problems** — the default tab when you open a flow. Appears when QA Wolf detects issues such as naming conflicts. Affected files and folders are marked with a yellow dot in the file tree. Resolve any problems listed before running or publishing to avoid confusing output.
 
 <Frame>
-  ![Automate Browser Element](/images/automate-browser-problem.png)
+  ![The Problems tab](/images/automate-browser-problem.png)
 </Frame>
 
 **Logs** — shows a timestamped execution log. When a flow fails, the error message here is the fastest way to understand what went wrong. You can paste the log output directly into the AI chat panel to get a fix.
 
 <Frame>
-  ![Automate Browser Log](/images/automate-browser-log.png)
+  ![The Logs tab](/images/automate-browser-log.png)
 </Frame>
 
 **Elements** — lets you enter a locator or CSS selector to highlight matching elements in the live browser. Useful for verifying selectors while writing or debugging a flow. See [Element picker](/qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179) for more details.
 
 <Frame>
-  ![Automate Browser Element](/images/automate-browser-element.png)
+  ![The Elements tab](/images/automate-browser-element.png)
 </Frame>
 
 **Details** — shows tags and readiness status for the current flow. Both fields can be edited directly from this tab. After a run, switches to show individual run steps with timing, useful for identifying slow or hung steps.
 
 <Frame>
-  ![Automate Browser Detail](/images/automate-browser-detail.png)
+  ![The Details tab](/images/automate-browser-detail.png)
 </Frame>
 
 ## Check run history
@@ -62,11 +62,11 @@ The bottom-right panel has four tabs that provide different views of your flow's
 The **Run History** tab shows a pass/fail chart and the result of the most recent run.
 
 <Frame>
-  ![Automate Run History 1](/images/automate-run-history-1.png)
+  ![The Run History tab](/images/automate-run-history-1.png)
 </Frame>
 
 <Note>
-  Run History only shows results from scheduled runs. Manual runs from the editor or Map tab do not appear here. See [How Runs work](/qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel) for a full explanation of run types.
+  Run History only shows results from scheduled runs. Manual runs from the editor or Flows tab do not appear here. See [How Runs work](/qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel) for a full explanation of run types.
 </Note>
 
 ## Manage tags and readiness status
@@ -76,5 +76,5 @@ The **Details** tab shows the tags and readiness status assigned to the current 
 After a run, the tab switches to display individual run steps with timing, which is useful for identifying slow or hung steps.
 
 <Frame>
-  ![Automate Browser Detail](/images/automate-flows-details.png)
+  ![Run steps with timing in the Details tab](/images/automate-flows-details.png)
 </Frame>

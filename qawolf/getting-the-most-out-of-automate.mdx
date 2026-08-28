@@ -1,11 +1,10 @@
 ---
-title: "Get the most out of Automate"
-description: "Tips for writing better prompts and working more effectively with Automate."
+title: "Get the most out of AI flow creation"
+description: "Tips for writing better prompts and working more effectively with AI flow creation."
 icon: "lightbulb"
-sidebarTitle: "Get the most out of AI flow creation"
 ---
 
-Automate works best when you give it enough context to understand what you want and where to put it. It supports two ways of working:
+AI flow creation works best when you give the agent enough context to understand what you want and where to put it. It supports two ways of working:
 
 <CardGroup cols={2}>
   <Card title="Autonomous creation" icon="rocket" href="#autonomous-creation">
@@ -21,11 +20,11 @@ Both modes benefit from context you write down once. If you find yourself repeat
 
 ## Autonomous creation
 
-In this mode Automate works unattended, so everything it needs to know has to be in the prompt before you hit run.
+In this mode the creation agent works unattended, so everything it needs to know has to be in the prompt before you hit run.
 
 ### Write a specific prompt
 
-Vague prompts produce unreliable results. A prompt like "Create a test for the rate quote flow" gives Automate very little to work with. A stronger prompt includes:
+Vague prompts produce unreliable results. A prompt like "Create a test for the rate quote flow" gives the agent very little to work with. A stronger prompt includes:
 
 - Where to start (URL and login credentials)
 - What the user does, step by step
@@ -40,7 +39,7 @@ Create a test for the rate quote application. Go to {{your app URL}} and sign in
 
 ### Include assertions explicitly
 
-If there's something specific you need verified, say so. Automate won't always infer what matters to you — telling it what to assert produces more useful tests.
+If there's something specific you need verified, say so. The agent won't always infer what matters to you — telling it what to assert produces more useful tests.
 
 ### Link your app's documentation
 
@@ -52,9 +51,9 @@ Create a test for connecting a Jira project. Follow the setup guide at {{your do
 
 ### Structure the flow header around Arrange, Act, Assert
 
-When Automate completes a flow on its own, the comment block at the top of the flow is its specification. Structuring that header around [Arrange, Act, Assert](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#the-aaa-framework) tells Automate how far each verification should go.
+When the agent completes a flow on its own, the comment block at the top of the flow is its specification. Structuring that header around [Arrange, Act, Assert](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#the-aaa-framework) tells the agent how far each verification should go.
 
-For example, a flow that disables a feature could simply reload the page and check that the toggle is still off. It could also go further and sign in as a different user to verify the feature is no longer accessible. An AAA header states which one you want, so Automate doesn't have to guess:
+For example, a flow that disables a feature could reload the page and check that the toggle is still off. It could also go further and sign in as a different user to verify the feature is no longer accessible. An AAA header states which one you want, so the agent doesn't have to guess:
 
 ```typescript
 /**
@@ -82,11 +81,11 @@ Before building a new flow, the AI searches your workspace for similar flows and
 
 ## Guided creation
 
-In this mode you stay in the loop, hand-holding Automate to completion. Use it when you don't have the full context yourself and are discovering the app at the same time as the AI, so it makes sense to work the problem together.
+In this mode you stay in the loop, hand-holding the creation agent to completion. Use it when you don't have the full context yourself and are discovering the app at the same time as the AI, so it makes sense to work the problem together.
 
 ### Start prompts with "Insert code to"
 
-When adding code at a specific point in a test, beginning your prompt with "Insert code to" helps Automate understand it should add rather than replace.
+When adding code at a specific point in a test, beginning your prompt with "Insert code to" helps the agent understand it should add rather than replace.
 
 ```text
 Insert code to click the Submit button and wait for the confirmation message.
@@ -94,30 +93,30 @@ Insert code to click the Submit button and wait for the confirmation message.
 
 ### Control where code is inserted
 
-Automate inserts code relative to the current cursor position. If code ends up in the wrong place:
+The agent inserts code relative to the current cursor position. If code ends up in the wrong place:
 
 - Click on the line where you want the code inserted before prompting
 - Or tell it explicitly: "Insert code on line 42 to..."
 
 ### Describe elements in plain language
 
-You don't need to tell Automate which Playwright locator to use. It's better at finding the most relevant locator itself. If you prescribe a locator and it turns out not to work, Automate gets stuck between obeying your instruction and producing a working test, and the result suffers.
+You don't need to tell the agent which Playwright locator to use. It's better at finding the most relevant locator itself. If you prescribe a locator and it turns out not to work, the agent gets stuck between obeying your instruction and producing a working test, and the result suffers.
 
 Say _"Click the Save button in the billing settings panel"_, not _"Click `page.locator('#btn-save-2')`"_.
 
 ### Hover before you prompt for elements
 
-When targeting an element inside a container — for example, the first link within a specific panel — hover over the container for a second, then click the element. This gives Automate locators for both, and you can ask it to chain them:
+When targeting an element inside a container — for example, the first link within a specific panel — hover over the container for a second, then click the element. This gives the agent locators for both, and you can ask it to chain them:
 
 ```text
 Click the first link within the Recent Activity panel.
 ```
 
-If you hover only on the element itself, Automate may use a less precise locator.
+If you hover only on the element itself, the agent may use a less precise locator.
 
 ### Trigger actions before prompting
 
-For interactions that produce a result (a download, a new page, a modal), trigger the action yourself first and let it complete. Then tell Automate what happened. This helps it understand the outcome, not just the selector.
+For interactions that produce a result (a download, a new page, a modal), trigger the action yourself first and let it complete. Then tell the agent what happened. This helps it understand the outcome, not only the selector.
 
 **Example:**
 
@@ -126,7 +125,7 @@ For interactions that produce a result (a download, a new page, a modal), trigge
 
 ### Use descriptive language for context
 
-A few phrases that help Automate understand what it's working with:
+A few phrases that help the agent understand what it's working with:
 
 - **"in the row"** — when an element is inside a table row
 - **"file"** — for file-related actions like clicking download or handling file inputs
@@ -141,21 +140,21 @@ Refactor to replace all hardcoded email addresses with the TEST_USER_EMAIL envir
 
 ### Move code by selecting it first
 
-If you need Automate to move a block of code, select all the lines you want moved before prompting. This removes ambiguity about what should be relocated.
+If you need the agent to move a block of code, select all the lines you want moved before prompting. This removes ambiguity about what should be relocated.
 
 ### Fix errors directly
 
-If a run produces an error, you can ask Automate to address it without explaining the cause:
+If a run produces an error, you can ask the agent to address it without explaining the cause:
 
 ```text
 Fix the error.
 ```
 
-Automate will read the error output and attempt a fix.
+The agent will read the error output and attempt a fix.
 
-### Point Automate at a working reference
+### Point the agent at a working reference
 
-If you have a working example that you want Automate AI to follow, simply give it the path to that file and tell it what you'd like it to copy.
+If you have a working example that you want the agent to follow, give it the path to that file and tell it what you'd like it to copy.
 
 ```handlebars
 Use the new apiLogin method as exemplified in this file: {{path to file}}
