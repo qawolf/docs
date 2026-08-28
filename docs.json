@@ -101,11 +101,6 @@
         "icon": "bot",
         "groups": [
           {
-            "group": "Map",
-            "icon": "map",
-            "pages": []
-          },
-          {
             "group": "Flows",
             "icon": "route",
             "pages": [
