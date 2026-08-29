@@ -70,6 +70,55 @@ Uses the file as a reference while the agent actively explores your app.
 
 When the session ends, the agent produces a CSV with each test case's coverage status, the flow that covers it, and the reason for any rejections.
 
+## Get better results
+
+Outlining works best when you give the agent clear context upfront and steer it away from areas where it's likely to struggle.
+
+### Write a strong opening prompt
+
+The agent needs enough context to navigate your app and generate meaningful flows. A good opening prompt includes:
+
+- The URL to explore
+- Login credentials
+- The application name (used to name the group the agent creates)
+- Any specific task or scope
+
+If every session needs the same background about your app, put it in a [SKILL.md](/qawolf/reusable-ai-knowledge) rather than repeating it in the prompt.
+
+### Set a flow target
+
+Outlining defaults to around 200 flows. If you want more coverage, specify a number explicitly — telling it to find "as many as possible" tends to stop at the default anyway.
+
+```text
+Outline up to 500 flows for this application.
+```
+
+### Skip auth flows when they cause problems
+
+If your app uses MFA or has a complex login flow, the agent can get stuck trying to test authentication before it can explore anything else. Tell it to bypass this:
+
+```text
+Just log in first — don't test auth flows.
+```
+
+### Use manual browsing to supplement AI exploration
+
+You don't have to rely entirely on the agent to find flows on its own. You can click through your app manually while outlining, and it will suggest flows based on what it observes. This is useful for:
+
+- Apps where automated exploration struggles (complex forms, file uploads, role-based access)
+- Specific flows you want to make sure are captured
+- Verifying that the agent understood a flow correctly
+
+To use this: stop the AI, click through the flow yourself, and look for the **Save as flows** button that appears.
+
+### Hand off flows that need more control
+
+Outlining is designed for breadth — capturing an app's testable surface quickly. For flows that need individual attention, use [AI flow creation](/qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358) to turn them into tests one at a time with more targeted prompts.
+
+<Tip>
+  A common pattern: outline the app to get broad coverage, then use AI flow creation to build out the flows that need more precision.
+</Tip>
+
 ## View the coverage map
 
 Select <Icon icon="grid-2x2" /> **All flows** in the left sidebar for the coverage map of every flow in the environment. The sidebar sits collapsed to a strip of icons — hover over it to expand it.
