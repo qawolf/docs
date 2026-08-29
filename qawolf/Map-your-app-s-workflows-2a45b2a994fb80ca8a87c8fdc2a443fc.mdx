@@ -67,26 +67,17 @@ Uses the file as a reference while the agent actively explores your app.
 
 When the session ends, the agent produces a CSV with each test case's coverage status, the flow that covers it, and the reason for any rejections.
 
-## Review and publish outlined flows
+## Review the flows the agent outlined
 
-As the agent explores your application, newly discovered flows appear in the right panel. Review them before publishing.
+Every outlining session becomes a job. Open it from <Icon icon="zap" /> **Automate jobs** to see the flows it produced and inspect them one at a time.
 
-<Steps>
-  <Step>
-    Review the flows in the **New** tab on the right panel. These are the flow stubs the agent has created.
+<Frame>
+  ![The review view for an outlining job](/images/automate-jobs-review.png)
+</Frame>
 
-    <Frame>
-      ![New flows discovered while outlining](/images/outline-new-flows.png)
-    </Frame>
-  </Step>
-  <Step>
-    When satisfied, click **Publish** to add the flows to your coverage outline. This creates the group structure and empty flow files in the IDE.
+The left panel lists every flow in the job, marked with whether it passed or needs attention. Select one to read its **Outline**, and use **Retry flow** on anything that failed. See [Track and review agent jobs](/qawolf/automate-jobs) for the full review workflow.
 
-    <Note>
-      Publishing during an outlining session creates group structure and empty flow stubs automatically. You don't need to review and publish manually — this happens as part of outlining.
-    </Note>
-  </Step>
-</Steps>
+Publishing adds the flows to your coverage outline, creating the group structure and empty flow files in the IDE.
 
 ## Continue or revisit an outlining session
 
@@ -101,4 +92,4 @@ Once published, your flows appear in <Icon icon="grid-2x2" /> **All flows**, the
 - Review run status across all flows — see [Reviewing run results](/qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318)
 - Run flows manually — see [How runs work](/qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel)
 - Apply tags and manage readiness — see [Use tags effectively](/qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb)
-- Open a flow in the editor to write or edit code — see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)
+- Open a flow in the editor to write or edit code — see [Create flows in the IDE](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)

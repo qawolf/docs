@@ -6,20 +6,29 @@ icon: "bot"
 
 AI flow creation lets you create, edit, and debug flows by describing what you want in plain language or by speaking your instructions. You don't need to know the flow syntax to get started — the AI writes and updates the code for you.
 
-If you'd prefer to write flows manually, see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59).
+If you'd prefer to write flows manually, see [Create flows in the IDE](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59).
 
 ## Start a flow
 
-Four entry points on the **Flows** tab create a new flow. Use whichever is closest to what you're already doing.
+Four entry points on the **Flows** tab create a new flow: two hand the work to the agent, and two drop you into the IDE to write it yourself.
+
+**With AI**
 
 - **Create flow** — the button above the flows list
-- <Icon icon="square-plus" /> — in the flows list toolbar, which opens a menu with **New flow** and **New folder**
-- <Icon icon="plus" /> — at the top of the left sidebar
-- **The AI chat panel** — describe what you want and the agent builds it with you, which is [guided creation](/qawolf/getting-the-most-out-of-automate#guided-creation)
+- **Create flow** — the large purple button on the **All flows** page
+
+Both open the AI chat panel, ready for you to describe the flow you want. Working with the agent one prompt at a time is [guided creation](/qawolf/getting-the-most-out-of-automate#guided-creation).
+
+**In the IDE**
+
+- <Icon icon="square-plus" /> in the flows list toolbar — opens a menu with **New flow** and **New folder**
+- <Icon icon="code" /> **IDE** — hover over the left sidebar to expand it, then select **IDE** and create the file from the explorer
 
 <Frame>
   ![The New flow and New folder menu in the flows list toolbar](/images/flows-list-toolbar.png)
 </Frame>
+
+See [Create flows in the IDE](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59) for writing the test code by hand.
 
 The <Icon icon="chevron-down" /> icon next to **Create flow** opens a drawer with **Outline flows**, which starts an outlining session across a whole application at once — see [Create a coverage outline](/qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc).
 
@@ -29,10 +38,10 @@ The <Icon icon="chevron-down" /> icon next to **Create flow** opens a drawer wit
 
 ## Switch between views
 
-Below **Create flow**, the left sidebar switches between the three views on the **Flows** tab:
+The left sidebar switches between the three views on the **Flows** tab. It sits collapsed to a strip of icons — hover over it to expand it and see the labels.
 
 - <Icon icon="grid-2x2" /> **All flows** — the coverage map of every flow in the environment
-- <Icon icon="code" /> **IDE** — the file tree and code editor, for writing flows by hand — see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)
+- <Icon icon="code" /> **IDE** — the file tree and code editor, for writing flows by hand — see [Create flows in the IDE](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)
 - <Icon icon="zap" /> **Automate jobs** — every agent job, running and finished, for both outlining and creation — see [Track and review agent jobs](/qawolf/automate-jobs)
 
 <Frame>
@@ -41,10 +50,10 @@ Below **Create flow**, the left sidebar switches between the three views on the 
 
 ## Describe the flow you want
 
-From the **Flows** tab, open the AI chat panel on the right side of the screen.
+Either **Create flow** button opens the AI chat panel in flow mode, offering **Create a flow** and **What should I test?** to start from.
 
 <Frame>
-  ![AI chat panel on the Flows tab](/images/flows-ai-chat.png)
+  ![The AI chat panel in flow mode](/images/chat-new-flow.png)
 </Frame>
 
 ### Type a description
