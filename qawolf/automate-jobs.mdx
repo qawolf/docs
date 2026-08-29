@@ -41,10 +41,15 @@ Select **Sort** to order the list by newest or oldest first.
     </Frame>
   </Step>
   <Step>
-    Select a flow in the left panel. Each flow is marked with whether it passed or needs attention.
+    Select a flow in the left panel.
   </Step>
   <Step>
-    Inspect the flow with the tabs above it: **Outline** for what the flow covers, **Video** for a recording of the run, **Code** for the test code the agent wrote, and **Details** for the run's metadata.
+    Inspect the flow with the tabs above it:
+
+    a. **Outline** — what the flow covers<br />
+    b. **Video** — a recording of the run<br />
+    c. **Code** — the test code the agent wrote, whether it passed, and a control to run it again<br />
+    d. **Details** — the run's metadata
   </Step>
 </Steps>
 
@@ -52,6 +57,15 @@ The agent chat for the job stays open on the right, so you can ask about a decis
 
 ## Retry a failure
 
-Click **Retry flow** to run a single failing flow again, or **Retry failing** at the bottom of the flow list to retry all of them at once.
+Open the flow's **Code** tab to see whether it passed and run it again. To retry everything that failed in the job at once, click **Retry failing** at the bottom of the flow list.
 
 For prompting practices that cut down on failures in the first place, see [Get the most out of AI flow creation](/qawolf/getting-the-most-out-of-automate).
+
+## Work with your published flows
+
+Once published, your flows appear in <Icon icon="grid-2x2" /> **All flows**, the coverage map for the environment. From there, you can:
+
+- Review run status across all flows — see [Reviewing run results](/qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318)
+- Run flows manually — see [How runs work](/qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel)
+- Apply tags and manage readiness — see [Use tags effectively](/qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb)
+- Open a flow in the editor to write or edit code — see [Create flows in the IDE](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)
