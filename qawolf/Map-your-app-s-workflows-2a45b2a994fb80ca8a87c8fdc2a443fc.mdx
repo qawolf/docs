@@ -1,44 +1,47 @@
 ---
-title: "Create a product map"
-description: "Use the AI mapping agent to build and maintain a structured coverage map of your application's user journeys."
-sidebarTitle: "Create a product map with AI"
+title: "Create a coverage outline"
+description: "Use the outlining agent to build and maintain a coverage outline of your application's user journeys."
 icon: "map-plus"
 ---
 
-A coverage map defines the scope required to test an application end-to-end. Without visibility into an application's surface area — key user paths, important states, and system boundaries — it's difficult to know whether coverage is complete or where it isn't.
+A coverage outline defines the scope required to test an application end-to-end. Without visibility into an application's surface area — key user paths, important states, and system boundaries — it's difficult to know whether coverage is complete or where it isn't.
 
-The AI mapping agent creates and maintains a structured view of coverage by exploring your application and generating flow stubs that represent the main areas and user journeys. As features change or new ones are added, you can run the agent again to update the map.
+The outlining agent builds that outline by exploring your application and generating the groups and flow stubs that represent its main areas and user journeys. The result is rendered as a coverage map, the visual view of what you cover. As features change or new ones are added, you can run the agent again to extend the outline.
 
 <Frame>
   <iframe src="https://fast.wistia.net/embed/iframe/9zdx3ui806" title="Wistia video player" allowFullScreen style={{ width: "100%", aspectRatio: "16/9", border: "none" }} />
 </Frame>
 
-## Start a mapping session
+## Start an outlining session
 
 <Steps>
   <Step>
-    From the **Map** tab, click **New Flows** on the right side of the screen, or click the <Icon icon="plus" /> icon in the left sidebar and select **Mapping session**.
+    From the **Flows** tab, hover over the left side bar to open the drawer, then click the <Icon icon="chevron-down" /> icon next to **Create flow** and click **Outline flows**.
 
     <Frame>
-      ![Map tab home](/images/map-home-page.png)
+      ![The Outline flows drawer next to the Create flow button](/images/create-flow-drawer.png)
     </Frame>
+
+    <Note>
+      **Outline flows** is the supported way to start outlining. The other ways of creating a flow can be steered into outlining as well, but only this one starts the agent in outlining mode.
+    </Note>
   </Step>
   <Step>
-    A new mapping session opens with a live browser panel in the center. The agent will ask you to confirm the URL you want to explore, or you can type your own instructions into the chat box.
+    The agent chat opens with three starting prompts: **Outline a test plan**, **Identify key flows**, and **Start exploring**. Click one, or type your own instructions — for example, _"Outline a test plan for `https://yourapp.com`"_. You can specify a base URL, describe a specific journey, or ask the agent to focus on a particular feature area.
 
     <Frame>
-      ![Mapping Session](/images/mapping-session.png)
+      ![The agent chat with its outlining prompts](/images/flows-ai-chat.png)
     </Frame>
-  </Step>
-  <Step>
-    Type a description of what you want to map. For example: _"Create a test plan for `https://yourapp.com`"_. You can specify a base URL, describe a specific journey, or ask the agent to focus on a particular feature area.
   </Step>
   <Step>
     Provide real-time guidance as the agent works. If the agent encounters a login prompt or needs clarification, it will ask you directly in the chat. You can respond at any time to redirect or refine the exploration.
   </Step>
+  <Step>
+    To cover more of an area the agent has already been through, type instructions into the chat or click **Find more flows** at the bottom of the chat panel.
+  </Step>
 </Steps>
 
-## Map from a file
+## Outline from a file
 
 Click <Icon icon="plus" /> in the chat input to attach a file, then use one of the following prompts depending on what you want.
 
@@ -48,11 +51,11 @@ Click <Icon icon="plus" /> in the chat input to attach a file, then use one of t
 
 ### Generate flows from a file
 
-Parses the file and creates the folder structure and flow stubs immediately, without exploring the app. Supports most file and image types.
+Parses the file and creates the group structure and flow stubs immediately, without exploring the app. Supports most file and image types.
 
 Prompt: _"Upload the flows from this file."_
 
-### Map your app using a file as a guide
+### Outline your app using a file as a guide
 
 Uses the file as a reference while the agent actively explores your app.
 
@@ -61,44 +64,65 @@ Uses the file as a reference while the agent actively explores your app.
     Navigate to your app in the browser panel, or include the URL and login credentials in your message.
   </Step>
   <Step>
-    Prompt: _"Map all the flows in this file."_
+    Prompt: _"Outline all the flows in this file."_
   </Step>
 </Steps>
 
 When the session ends, the agent produces a CSV with each test case's coverage status, the flow that covers it, and the reason for any rejections.
 
-## Review and publish mapped flows
+## View the coverage map
 
-As the agent maps your application, newly discovered flows appear in the right panel. Review them before publishing.
+Select <Icon icon="grid-2x2" /> **All flows** in the left sidebar for the coverage map of every flow in the environment. The sidebar sits collapsed to a strip of icons — hover over it to expand it.
 
-<Steps>
-  <Step>
-    Review the flows in the **New** tab on the right panel. These are the flow stubs the agent has created.
+<Frame>
+  ![The coverage map on the All flows view, with each group's flows and their status](/images/coverage-map.png)
+</Frame>
 
-    <Frame>
-      ![Map New Flows Discovered](/images/map-new-flows-discovered.png)
-    </Frame>
-  </Step>
-  <Step>
-    When satisfied, click **Publish** to add the flows to your coverage map. This creates the folder structure and empty flow files in the Automate tab.
+## Get better results
 
-    <Note>
-      Publishing during mapping creates folder structure and empty flow stubs automatically. You don't need to review and publish manually — this happens as part of the mapping process.
-    </Note>
-  </Step>
-</Steps>
+Outlining works best when you give the agent clear context upfront and steer it away from areas where it's likely to struggle.
 
-## Continue or revisit a mapping session
+### Write a strong opening prompt
 
-Previous mapping sessions are saved and accessible from the left sidebar. Click any session to reopen it and continue the conversation or review what was mapped.
+The agent needs enough context to navigate your app and generate meaningful flows. A good opening prompt includes:
 
-To find more flows in an area that's already been mapped, type instructions into the chat or click **Find more flows** at the bottom of the chat panel.
+- The URL to explore
+- Login credentials
+- The application name (used to name the group the agent creates)
+- Any specific task or scope
 
-## After mapping
+If every session needs the same background about your app, put it in a [SKILL.md](/qawolf/reusable-ai-knowledge) rather than repeating it in the prompt.
 
-Once published, your flows appear in the **Flows view** on the **Map** tab. From there, you can:
+### Set a flow target
 
-- Review run status across all flows — see [Reviewing run results](/qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318)
-- Run flows manually — see [How runs work](/qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel)
-- Apply tags and manage readiness — see [Use tags effectively](/qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb)
-- Open a flow in the editor to write or edit code — see [Create a new flow](/qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59)
+Outlining defaults to around 200 flows. If you want more coverage, specify a number explicitly — telling it to find "as many as possible" tends to stop at the default anyway.
+
+```text
+Outline up to 500 flows for this application.
+```
+
+### Skip auth flows when they cause problems
+
+If your app uses MFA or has a complex login flow, the agent can get stuck trying to test authentication before it can explore anything else. Tell it to bypass this:
+
+```text
+Just log in first — don't test auth flows.
+```
+
+### Use manual browsing to supplement AI exploration
+
+You don't have to rely entirely on the agent to find flows on its own. You can click through your app manually while outlining, and it will suggest flows based on what it observes. This is useful for:
+
+- Apps where automated exploration struggles (complex forms, file uploads, role-based access)
+- Specific flows you want to make sure are captured
+- Verifying that the agent understood a flow correctly
+
+To use this: stop the AI, click through the flow yourself, and look for the **Save as flows** button that appears.
+
+### Hand off flows that need more control
+
+Outlining is designed for breadth — capturing an app's testable surface quickly. For flows that need individual attention, use [AI flow creation](/qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358) to turn them into tests one at a time with more targeted prompts.
+
+<Tip>
+  A common pattern: outline the app to get broad coverage, then use AI flow creation to build out the flows that need more precision.
+</Tip>
