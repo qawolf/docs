@@ -10,8 +10,8 @@ the same way a type error does.
 
 A set of base rules always runs — the ones that catch real mistakes, such as an
 unhandled promise, an unreachable branch, or a duplicate object key. On top of
-those you can turn on QA Wolf's own rules for flows and page objects, and set
-the severity of any rule yourself.
+those you can turn on QA Wolf's page object model rules, and set the severity
+of any rule yourself.
 
 ## Configure rules
 
@@ -24,9 +24,9 @@ the base rules run.
 }
 ```
 
-That turns on [QA Wolf's rules](#qa-wolfs-rules), each at the severity it ships
-with. A rule ships at `error` when the code it reports breaks at runtime, and at
-`warn` when it marks a convention.
+That turns on QA Wolf's [page object model rules](#page-object-model-rules),
+each at the severity it ships with. A rule ships at `error` when the code it
+reports breaks at runtime, and at `warn` when it marks a convention.
 
 ## Set a rule's severity
 
@@ -46,9 +46,9 @@ List a rule under `rules` with the severity you want: `"off"`, `"warn"` or
 
 Rules you do not list keep their shipped severity.
 
-A QA Wolf rule only takes effect once the plugin is enabled. If you set a
-severity on one without listing `@qawolf/eslint-plugin-pom` in `extends` or
-`plugins`, the rule stays off and the editor says so.
+A page object model rule only takes effect once the plugin is enabled. If you
+set a severity on one without listing `@qawolf/eslint-plugin-pom` in `extends`
+or `plugins`, the rule stays off and the editor says so.
 
 ## Turn on any other ESLint rule
 
@@ -76,7 +76,7 @@ Playwright methods that have been superseded — `page.type()`, for example.
   are not resolved, so a rule of this kind reports less there.
 </Note>
 
-## QA Wolf's rules
+## Page object model rules
 
 These come from
 [`@qawolf/eslint-plugin-pom`](https://github.com/qawolf/eslint-plugin-pom),
@@ -166,6 +166,6 @@ alike.
 ## When the file cannot be read
 
 If `.eslintrc.json` is not valid JSON, is not a JSON object, or is longer than
-131,072 characters, QA Wolf ignores the whole file and enables none of its own
-rules. The base rules still run, and the editor explains why the file was
-skipped.
+131,072 characters, QA Wolf ignores the whole file and enables none of the page
+object model rules. The base rules still run, and the editor explains why the
+file was skipped.
