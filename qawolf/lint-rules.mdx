@@ -10,8 +10,8 @@ the same way a type error does.
 
 A set of base rules always runs — the ones that catch real mistakes, such as an
 unhandled promise, an unreachable branch, or a duplicate object key. On top of
-those you can turn on QA Wolf's page object rules and set the severity of any
-rule yourself.
+those you can turn on QA Wolf's own rules for flows and page objects, and set
+the severity of any rule yourself.
 
 ## Configure rules
 
@@ -24,13 +24,9 @@ the base rules run.
 }
 ```
 
-That turns on the [page object rules](#page-object-rules), each at the severity
-it ships with. All twelve ship at `warn`.
-
-<Note>
-  Page object rules only read files under `src/pages/`. A page object kept
-  somewhere else is not linted.
-</Note>
+That turns on [QA Wolf's rules](#qa-wolfs-rules), each at the severity it ships
+with. A rule ships at `error` when the code it reports breaks at runtime, and at
+`warn` when it marks a convention.
 
 ## Set a rule's severity
 
@@ -50,7 +46,7 @@ List a rule under `rules` with the severity you want: `"off"`, `"warn"` or
 
 Rules you do not list keep their shipped severity.
 
-A page object rule only takes effect once its package is enabled. If you set a
+A QA Wolf rule only takes effect once the plugin is enabled. If you set a
 severity on one without listing `@qawolf/eslint-plugin-pom` in `extends` or
 `plugins`, the rule stays off and the editor says so.
 
@@ -80,32 +76,71 @@ Playwright methods that have been superseded — `page.type()`, for example.
   are not resolved, so a rule of this kind reports less there.
 </Note>
 
-## Page object rules
+## QA Wolf's rules
 
 These come from
 [`@qawolf/eslint-plugin-pom`](https://github.com/qawolf/eslint-plugin-pom),
-which is bundled into QA Wolf — you do not install anything. Every rule ships
-at `warn`.
-
-| Rule | What it asks for |
-| --- | --- |
-| `assert-expect-pairing` | Only `assert*` methods hold assertions |
-| `correct-base-class` | A class that reads `this.page` extends a page object base |
-| `entry-point-factory` | A class extending `EntryPointPageObject` needs a `static create()` |
-| `no-direct-pom-construction` | Sibling page objects come from the registry, not from `new` |
-| `no-inline-locator-in-page-object` | A page object keeps its locators in a named getter |
-| `no-legacy-selectors` | No XPath, deprecated engine prefixes, or `>>` engine chains |
-| `no-mutable-state-in-pom` | Page objects describe a page; they do not remember things about it |
-| `no-public-constructor` | A redeclared constructor keeps the base's `protected` visibility |
-| `no-wait-for-timeout-in-poms` | Wait for the thing, not for a duration |
-| `selector-getter-shape` | The locator holder is a private getter returning `as const` |
-| `typed-create-return` | A method handing back another page object says which one |
-| `web-first-assertions` | Assert on the locator, not on a value read out of it |
+which is bundled into QA Wolf — you do not install anything.
 
 Each rule id is prefixed with `@qawolf/pom-lint/` when you name it under
-`rules`, which is also the prefix you see in the editor. The
-[plugin's README](https://github.com/qawolf/eslint-plugin-pom#rules) explains
-each rule with examples.
+`rules`, which is also the prefix you see in the editor.
+
+### How a rule finds its subject
+
+A rule checks either a directory or a kind of file, and the **Where** column
+below says which:
+
+- **`src/pages/`** — the rule reads `.ts` files under your page-object
+  directory and ignores everything else.
+- **flow** — the rule recognizes a flow from its code: a module that imports
+  `flow` from `@qawolf/flows` (any subpath) or default-exports a `flow(...)`
+  call. The `.flow.ts` filename is not the signal, so a flow kept elsewhere is
+  still checked.
+- **page object** — the rule recognizes a class extending `BasePageObject`,
+  `SubPageObject` or `EntryPointPageObject`, wherever the file lives.
+- **anywhere** — the rule checks every file.
+
+### Rules
+
+| Rule | Level | Where | Reports |
+| --- | --- | --- | --- |
+| `no-raw-page-in-flows` | error | flow | `page.goto()`, `page.click()`, … in a flow |
+| `no-selectors-in-flows` | error | flow | `locator()` / `getBy*()` / `frameLocator()` in a flow |
+| `no-expect-in-flows` | warn | flow | `expect()` in a flow, rather than an `assert*()` page-object method |
+| `no-fetch-axios-in-flows` | error | flow | `fetch()` or an `axios` import in a flow |
+| `no-any-shared-state` | error | flow | a `let` in the flow callback typed `any`, or not typed at all |
+| `flow-export-structure` | error | flow | a flow module without `export default flow(name, target, callback)` |
+| `no-code-between-steps` | error | flow | a statement after the first `await test(...)` that is not itself one |
+| `test-aaa-comments` | warn | flow | a step with no Arrange / Act / Assert comment |
+| `aaa-banner-format` | warn | flow | an Arrange / Act / Assert marker that is not the three-line banner |
+| `assert-expect-pairing` | warn | `src/pages/` | `expect()` in a page-object method not named `assert*` |
+| `correct-base-class` | warn | `src/pages/` | a class that reads `this.page` but extends no page-object base |
+| `entry-point-factory` | warn | `src/pages/` | an `EntryPointPageObject` subclass with no `static create()` |
+| `no-direct-pom-construction` | warn | `src/pages/` | `new OtherPage(this.page)` instead of `this.create("OtherPage")` |
+| `no-inline-locator-in-page-object` | warn | `src/pages/` | a locator built from `this.page` outside the `locators` getter |
+| `no-legacy-selectors` | warn | `src/pages/` | XPath, a `css=` / `text=` / `id=` prefix, or a `>>` chain in a `locator()` string |
+| `no-mutable-state-in-pom` | warn | `src/pages/` | an instance field that is not `readonly` |
+| `no-public-constructor` | warn | `src/pages/` | a redeclared constructor that is not `protected` |
+| `no-wait-for-timeout-in-poms` | warn | `src/pages/` | `waitForTimeout()` / `waitForSelector()` in a page object |
+| `selector-getter-shape` | warn | `src/pages/` | a `locators` holder that is public, a field, a method, or missing `as const` |
+| `typed-create-return` | warn | `src/pages/` | a method returning `this.create("Name")` with no return type naming `Name` |
+| `web-first-assertions` | warn | `src/pages/` | `expect(await locator.isVisible()).toBe(true)` and its siblings |
+| `require-locator-jsdoc` | warn | page object | an entry in the `locators` map with no `/** … */` above it |
+| `require-env-pattern` | error | flow or page object | `process.env.X` instead of the workspace's `requireEnv()` |
+| `require-value-import-for-created-page` | error | anywhere | `this.create("Name")` where `Name` is bound by a type-only import |
+| `file-naming-convention` | warn | anywhere | a file under `src/` whose name is not kebab-case |
+| `no-non-null-assertion` | error | anywhere | a postfix `!` |
+| `no-parameter-properties` | error | anywhere | `constructor(private x: T)` |
+
+The [plugin's README](https://github.com/qawolf/eslint-plugin-pom#rules)
+explains each rule with examples of what it reports and what it expects
+instead.
+
+<Note>
+  `warn` marks a convention rather than a defect. If your workspace is not ready
+  for one, set that rule to `"off"` in `.eslintrc.json` rather than disabling it
+  at each site.
+</Note>
 
 ## What QA Wolf reads
 
@@ -118,17 +153,19 @@ Two more limits worth knowing:
 
 - **Options are not supported.** In `"no-redeclare": ["error", { … }]` the
   severity applies and the options after it are dropped.
-- **`@qawolf/eslint-plugin-pom` is the only package you can enable.** Naming any
-  other plugin has no effect.
+- **`@qawolf/eslint-plugin-pom` is the only plugin supported at this time.**
+  Naming any other plugin in `extends` or `plugins` has no effect, and the
+  editor tells you it was skipped. QA Wolf can support additional plugins —
+  ask, and we will look at adding the one you need.
 
-Four spellings all enable the page object package, so use whichever reads best
-to you: `@qawolf/eslint-plugin-pom`, `@qawolf/pom`, `@qawolf/pom-lint`, or
+Four spellings all enable the plugin, so use whichever reads best to you:
+`@qawolf/eslint-plugin-pom`, `@qawolf/pom`, `@qawolf/pom-lint`, or
 `plugin:@qawolf/pom/recommended`. They work in `extends` and in `plugins`
 alike.
 
 ## When the file cannot be read
 
 If `.eslintrc.json` is not valid JSON, is not a JSON object, or is longer than
-131,072 characters, QA Wolf ignores the whole file and enables no page object
+131,072 characters, QA Wolf ignores the whole file and enables none of its own
 rules. The base rules still run, and the editor explains why the file was
 skipped.
