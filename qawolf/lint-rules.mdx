@@ -1,0 +1,171 @@
+---
+title: "Lint rules"
+description: "Configure the lint rules QA Wolf runs on your flows and page objects with an .eslintrc.json file at the root of your repository."
+icon: "spell-check"
+---
+
+QA Wolf lints every JavaScript and TypeScript file in your workspace as you edit
+it, and again while an AI job writes code. Findings appear inline in the editor,
+the same way a type error does.
+
+A set of base rules always runs — the ones that catch real mistakes, such as an
+unhandled promise, an unreachable branch, or a duplicate object key. On top of
+those you can turn on QA Wolf's page object model rules, and set the severity
+of any rule yourself.
+
+## Configure rules
+
+Add an `.eslintrc.json` file at the root of your repository. Without one, only
+the base rules run.
+
+```json .eslintrc.json
+{
+  "extends": ["@qawolf/eslint-plugin-pom"]
+}
+```
+
+That turns on QA Wolf's [page object model rules](#page-object-model-rules),
+each at the severity it ships with. A rule ships at `error` when the code it
+reports breaks at runtime, and at `warn` when it marks a convention.
+
+## Set a rule's severity
+
+List a rule under `rules` with the severity you want: `"off"`, `"warn"` or
+`"error"` — or the matching number `0`, `1` or `2`.
+
+```json
+{
+  "extends": ["@qawolf/eslint-plugin-pom"],
+  "rules": {
+    "@qawolf/pom-lint/no-wait-for-timeout-in-poms": "error",
+    "@qawolf/pom-lint/assert-expect-pairing": "off",
+    "no-debugger": "error"
+  }
+}
+```
+
+Rules you do not list keep their shipped severity.
+
+A page object model rule only takes effect once the plugin is enabled. If you
+set a severity on one without listing `@qawolf/eslint-plugin-pom` in `extends`
+or `plugins`, the rule stays off and the editor says so.
+
+## Turn on any other ESLint rule
+
+You are not limited to the rules QA Wolf enables by default. Name any core
+ESLint or [typescript-eslint](https://typescript-eslint.io/rules/) rule and it
+runs.
+
+```json
+{
+  "rules": {
+    "@typescript-eslint/no-deprecated": "warn",
+    "eqeqeq": "error"
+  }
+}
+```
+
+`@typescript-eslint/no-deprecated` is a useful one to know about: it flags calls
+to any API whose documentation marks it `@deprecated`, which includes the
+Playwright methods that have been superseded — `page.type()`, for example.
+
+<Note>
+  Rules that need type information — `no-deprecated` among them — report where
+  the types they need are loaded. In the editor that includes the types of the
+  packages your code imports. While an AI job runs, imports from npm packages
+  are not resolved, so a rule of this kind reports less there.
+</Note>
+
+## Page object model rules
+
+These come from
+[`@qawolf/eslint-plugin-pom`](https://github.com/qawolf/eslint-plugin-pom),
+which is bundled into QA Wolf — you do not install anything.
+
+Each rule id is prefixed with `@qawolf/pom-lint/` when you name it under
+`rules`, which is also the prefix you see in the editor.
+
+### How a rule finds its subject
+
+A rule checks either a directory or a kind of file, and the **Where** column
+below says which:
+
+- **`src/pages/`** — the rule reads `.ts` files under your page-object
+  directory and ignores everything else.
+- **flow** — the rule recognizes a flow from its code: a module that imports
+  `flow` from `@qawolf/flows` (any subpath) or default-exports a `flow(...)`
+  call. The `.flow.ts` filename is not the signal, so a flow kept elsewhere is
+  still checked.
+- **page object** — the rule recognizes a class extending `BasePageObject`,
+  `SubPageObject` or `EntryPointPageObject`, wherever the file lives.
+- **anywhere** — the rule checks every file.
+
+### Rules
+
+| Rule | Level | Where | Reports |
+| --- | --- | --- | --- |
+| `no-raw-page-in-flows` | error | flow | `page.goto()`, `page.click()`, … in a flow |
+| `no-selectors-in-flows` | error | flow | `locator()` / `getBy*()` / `frameLocator()` in a flow |
+| `no-expect-in-flows` | warn | flow | `expect()` in a flow, rather than an `assert*()` page-object method |
+| `no-fetch-axios-in-flows` | error | flow | `fetch()` or an `axios` import in a flow |
+| `no-any-shared-state` | error | flow | a `let` in the flow callback typed `any`, or not typed at all |
+| `flow-export-structure` | error | flow | a flow module without `export default flow(name, target, callback)` |
+| `no-code-between-steps` | error | flow | a statement after the first `await test(...)` that is not itself one |
+| `test-aaa-comments` | warn | flow | a step with no Arrange / Act / Assert comment |
+| `aaa-banner-format` | warn | flow | an Arrange / Act / Assert marker that is not the three-line banner |
+| `assert-expect-pairing` | warn | `src/pages/` | `expect()` in a page-object method not named `assert*` |
+| `correct-base-class` | warn | `src/pages/` | a class that reads `this.page` but extends no page-object base |
+| `entry-point-factory` | warn | `src/pages/` | an `EntryPointPageObject` subclass with no `static create()` |
+| `no-direct-pom-construction` | warn | `src/pages/` | `new OtherPage(this.page)` instead of `this.create("OtherPage")` |
+| `no-inline-locator-in-page-object` | warn | `src/pages/` | a locator built from `this.page` outside the `locators` getter |
+| `no-legacy-selectors` | warn | `src/pages/` | XPath, a `css=` / `text=` / `id=` prefix, or a `>>` chain in a `locator()` string |
+| `no-mutable-state-in-pom` | warn | `src/pages/` | an instance field that is not `readonly` |
+| `no-public-constructor` | warn | `src/pages/` | a redeclared constructor that is not `protected` |
+| `no-wait-for-timeout-in-poms` | warn | `src/pages/` | `waitForTimeout()` / `waitForSelector()` in a page object |
+| `selector-getter-shape` | warn | `src/pages/` | a `locators` holder that is public, a field, a method, or missing `as const` |
+| `typed-create-return` | warn | `src/pages/` | a method returning `this.create("Name")` with no return type naming `Name` |
+| `web-first-assertions` | warn | `src/pages/` | `expect(await locator.isVisible()).toBe(true)` and its siblings |
+| `require-locator-jsdoc` | warn | page object | an entry in the `locators` map with no `/** … */` above it |
+| `require-env-pattern` | error | flow or page object | `process.env.X` instead of the workspace's `requireEnv()` |
+| `require-value-import-for-created-page` | error | anywhere | `this.create("Name")` where `Name` is bound by a type-only import |
+| `file-naming-convention` | warn | anywhere | a file under `src/` whose name is not kebab-case |
+| `no-non-null-assertion` | error | anywhere | a postfix `!` |
+| `no-parameter-properties` | error | anywhere | `constructor(private x: T)` |
+
+The [plugin's README](https://github.com/qawolf/eslint-plugin-pom#rules)
+explains each rule with examples of what it reports and what it expects
+instead.
+
+<Note>
+  `warn` marks a convention rather than a defect. If your workspace is not ready
+  for one, set that rule to `"off"` in `.eslintrc.json` rather than disabling it
+  at each site.
+</Note>
+
+## What QA Wolf reads
+
+QA Wolf reads three keys from `.eslintrc.json`: `extends`, `plugins` and
+`rules`. Anything else — `settings`, `parserOptions`, `overrides`, `env` — has
+no effect, and the editor flags it so the file does not quietly lie about what
+is running.
+
+Two more limits worth knowing:
+
+- **Options are not supported.** In `"no-redeclare": ["error", { … }]` the
+  severity applies and the options after it are dropped.
+- **`@qawolf/eslint-plugin-pom` is the only plugin supported at this time.**
+  Naming any other plugin in `extends` or `plugins` has no effect, and the
+  editor tells you it was skipped. QA Wolf can support additional plugins —
+  ask, and we will look at adding the one you need.
+
+Four spellings all enable the plugin, so use whichever reads best to you:
+`@qawolf/eslint-plugin-pom`, `@qawolf/pom`, `@qawolf/pom-lint`, or
+`plugin:@qawolf/pom/recommended`. They work in `extends` and in `plugins`
+alike.
+
+## When the file cannot be read
+
+If `.eslintrc.json` is not valid JSON, is not a JSON object, or is longer than
+131,072 characters, QA Wolf ignores the whole file and enables none of the page
+object model rules. The base rules still run, and the editor explains why the
+file was skipped.
