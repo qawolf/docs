@@ -1,0 +1,134 @@
+---
+title: "Lint rules"
+description: "Configure the lint rules QA Wolf runs on your flows and page objects with an .eslintrc.json file at the root of your repository."
+icon: "spell-check"
+---
+
+QA Wolf lints every JavaScript and TypeScript file in your workspace as you edit
+it, and again while an AI job writes code. Findings appear inline in the editor,
+the same way a type error does.
+
+A set of base rules always runs — the ones that catch real mistakes, such as an
+unhandled promise, an unreachable branch, or a duplicate object key. On top of
+those you can turn on QA Wolf's page object rules and set the severity of any
+rule yourself.
+
+## Configure rules
+
+Add an `.eslintrc.json` file at the root of your repository. Without one, only
+the base rules run.
+
+```json .eslintrc.json
+{
+  "extends": ["@qawolf/eslint-plugin-pom"]
+}
+```
+
+That turns on the [page object rules](#page-object-rules), each at the severity
+it ships with. All twelve ship at `warn`.
+
+<Note>
+  Page object rules only read files under `src/pages/`. A page object kept
+  somewhere else is not linted.
+</Note>
+
+## Set a rule's severity
+
+List a rule under `rules` with the severity you want: `"off"`, `"warn"` or
+`"error"` — or the matching number `0`, `1` or `2`.
+
+```json
+{
+  "extends": ["@qawolf/eslint-plugin-pom"],
+  "rules": {
+    "@qawolf/pom-lint/no-wait-for-timeout-in-poms": "error",
+    "@qawolf/pom-lint/assert-expect-pairing": "off",
+    "no-debugger": "error"
+  }
+}
+```
+
+Rules you do not list keep their shipped severity.
+
+A page object rule only takes effect once its package is enabled. If you set a
+severity on one without listing `@qawolf/eslint-plugin-pom` in `extends` or
+`plugins`, the rule stays off and the editor says so.
+
+## Turn on any other ESLint rule
+
+You are not limited to the rules QA Wolf enables by default. Name any core
+ESLint or [typescript-eslint](https://typescript-eslint.io/rules/) rule and it
+runs.
+
+```json
+{
+  "rules": {
+    "@typescript-eslint/no-deprecated": "warn",
+    "eqeqeq": "error"
+  }
+}
+```
+
+`@typescript-eslint/no-deprecated` is a useful one to know about: it flags calls
+to any API whose documentation marks it `@deprecated`, which includes the
+Playwright methods that have been superseded — `page.type()`, for example.
+
+<Note>
+  Rules that need type information — `no-deprecated` among them — report where
+  the types they need are loaded. In the editor that includes the types of the
+  packages your code imports. While an AI job runs, imports from npm packages
+  are not resolved, so a rule of this kind reports less there.
+</Note>
+
+## Page object rules
+
+These come from
+[`@qawolf/eslint-plugin-pom`](https://github.com/qawolf/eslint-plugin-pom),
+which is bundled into QA Wolf — you do not install anything. Every rule ships
+at `warn`.
+
+| Rule | What it asks for |
+| --- | --- |
+| `assert-expect-pairing` | Only `assert*` methods hold assertions |
+| `correct-base-class` | A class that reads `this.page` extends a page object base |
+| `entry-point-factory` | A class extending `EntryPointPageObject` needs a `static create()` |
+| `no-direct-pom-construction` | Sibling page objects come from the registry, not from `new` |
+| `no-inline-locator-in-page-object` | A page object keeps its locators in a named getter |
+| `no-legacy-selectors` | No XPath, deprecated engine prefixes, or `>>` engine chains |
+| `no-mutable-state-in-pom` | Page objects describe a page; they do not remember things about it |
+| `no-public-constructor` | A redeclared constructor keeps the base's `protected` visibility |
+| `no-wait-for-timeout-in-poms` | Wait for the thing, not for a duration |
+| `selector-getter-shape` | The locator holder is a private getter returning `as const` |
+| `typed-create-return` | A method handing back another page object says which one |
+| `web-first-assertions` | Assert on the locator, not on a value read out of it |
+
+Each rule id is prefixed with `@qawolf/pom-lint/` when you name it under
+`rules`, which is also the prefix you see in the editor. The
+[plugin's README](https://github.com/qawolf/eslint-plugin-pom#rules) explains
+each rule with examples.
+
+## What QA Wolf reads
+
+QA Wolf reads three keys from `.eslintrc.json`: `extends`, `plugins` and
+`rules`. Anything else — `settings`, `parserOptions`, `overrides`, `env` — has
+no effect, and the editor flags it so the file does not quietly lie about what
+is running.
+
+Two more limits worth knowing:
+
+- **Options are not supported.** In `"no-redeclare": ["error", { … }]` the
+  severity applies and the options after it are dropped.
+- **`@qawolf/eslint-plugin-pom` is the only package you can enable.** Naming any
+  other plugin has no effect.
+
+Four spellings all enable the page object package, so use whichever reads best
+to you: `@qawolf/eslint-plugin-pom`, `@qawolf/pom`, `@qawolf/pom-lint`, or
+`plugin:@qawolf/pom/recommended`. They work in `extends` and in `plugins`
+alike.
+
+## When the file cannot be read
+
+If `.eslintrc.json` is not valid JSON, is not a JSON object, or is longer than
+131,072 characters, QA Wolf ignores the whole file and enables no page object
+rules. The base rules still run, and the editor explains why the file was
+skipped.
