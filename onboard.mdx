@@ -1,0 +1,141 @@
+---
+title: "Onboard with the QA Wolf CLI"
+sidebarTitle: "Onboard"
+description: "Install the QA Wolf CLI, connect it to your workspace, and run your first flows. Written for developers and for coding agents."
+icon: "rocket"
+---
+
+This page is a short procedure for a developer or a coding agent. A coding agent can read this page as plain Markdown at `https://docs.qawolf.com/onboard.md`. The full documentation index is at `https://docs.qawolf.com/llms.txt`.
+
+## Before you begin
+
+<Check>
+  Make sure that you have these items:
+
+  - A QA Wolf workspace. Your team administrator must invite you.
+  - An API key. Create one in the workspace under **Workspace settings → API keys**.
+  - Node.js 22.12 or later, if you install the CLI with npm.
+</Check>
+
+## Step 1: Install the CLI
+
+Install the CLI with npm:
+
+```bash
+npm install -g @qawolf/cli
+```
+
+If you do not want Node.js, download a standalone binary from [GitHub Releases](https://github.com/qawolf/cli/releases). Builds exist for Linux (x64 and arm64), macOS (Apple Silicon and Intel), and Windows x64.
+
+Make sure that the CLI is on your `PATH`:
+
+```bash
+qawolf --version
+```
+
+## Step 2: Connect the CLI to your workspace
+
+If you work on a local machine, log in with your API key:
+
+```bash
+qawolf auth login
+```
+
+The CLI asks for the API key and stores it in the system keychain.
+
+If you work in CI or in an agent sandbox, set the `QAWOLF_API_KEY` environment variable instead:
+
+```bash
+export QAWOLF_API_KEY=<your-api-key>
+```
+
+Make sure that the connection works:
+
+```bash
+qawolf auth whoami
+```
+
+The output shows the team name and the team ID.
+
+Read more: [Authenticate the QA Wolf CLI →](/qawolf/local-execution/authenticate)
+
+## Step 3: Find your environment ID
+
+Each environment has an ID. You can find it in the QA Wolf dashboard under **Settings → Environments**. The commands below use `<env_id>` for this value.
+
+Read more: [Pull an environment →](/qawolf/local-execution/pull-flows#pull-an-environment)
+
+## Step 4: Pull your flows and install the runtime
+
+Pull the flows of the environment to the local cache:
+
+```bash
+qawolf flows pull --env <env_id>
+```
+
+The CLI stores the flows in `.qawolf/<env_id>/`. Then install the browsers and the other runtime dependencies that these flows need:
+
+```bash
+qawolf install
+```
+
+Read more: [Install runtime dependencies →](/qawolf/local-execution/install-dependencies)
+
+## Step 5: Run your flows locally
+
+List the flows in the local cache, then run them:
+
+```bash
+qawolf flows list
+qawolf flows run --env <env_id>
+```
+
+The exit code is `0` when all flows pass and `1` when one or more flows fail.
+
+Read more: [Run flows locally →](/qawolf/local-execution/run-flows-locally)
+
+## Step 6: Start a run on the platform
+
+To run the environment on QA Wolf infrastructure instead of your machine:
+
+```bash
+qawolf run create --environment-id <env_id>
+```
+
+This command requires authentication from Step 2. The flows do not run on your machine.
+
+Read more: [CLI command reference →](/qawolf/libraries/cli/api-reference/commands)
+
+## Step 7: Install the agent skill (optional)
+
+The CLI repository ships a `qawolf-cli` skill that obeys the [Agent Skills specification](https://agentskills.io/specification). Coding agents such as Claude Code, Codex, Cursor, and Gemini CLI can use it.
+
+```bash
+npx skills add qawolf/cli --skill qawolf-cli --global
+```
+
+## If a step fails
+
+Run the diagnostic command. It reports the CLI version, the Node.js version, the API key, the connectivity to QA Wolf, and the installed browsers.
+
+```bash
+qawolf doctor
+```
+
+Read more: [Diagnose problems →](/qawolf/local-execution/diagnose-problems)
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Quick start" href="/qawolf/quick-start">
+    Map your application and generate your first flow with AI.
+  </Card>
+
+  <Card title="Key concepts" href="/qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc">
+    Learn how workspaces, environments, flows, and runs are organized.
+  </Card>
+
+  <Card title="CLI reference" href="/qawolf/libraries/cli/api-reference/index">
+    Every command, flag, environment variable, and exit code.
+  </Card>
+</CardGroup>
