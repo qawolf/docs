@@ -97,7 +97,7 @@
       },
       {
         "tab": "Features",
-        "groups": [
+        "pages": [
           {
             "group": "Flows",
             "pages": [
@@ -127,21 +127,11 @@
               "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd"
             ]
           },
-          {
-            "group": "Bugs",
-            "pages": [
-              "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
-            ]
-          },
+          "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f",
           {
             "group": "Mobile",
             "pages": [
-              {
-                "group": "Android",
-                "pages": [
-                  "qawolf/mobile/android-devices"
-                ]
-              },
+              "qawolf/mobile/android-devices",
               {
                 "group": "iOS",
                 "pages": [
@@ -166,12 +156,7 @@
         "tab": "Solutions",
         "pages": [
           "qawolf/solutions",
-          {
-            "group": "Email & SMS",
-            "pages": [
-              "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
-            ]
-          },
+          "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e",
           {
             "group": "Authentication",
             "pages": [
@@ -189,18 +174,8 @@
                   "qawolf/connect-with-vpn-web"
                 ]
               },
-              {
-                "group": "Network simulation",
-                "pages": [
-                  "qawolf/network-simulation"
-                ]
-              },
-              {
-                "group": "Beacon injection",
-                "pages": [
-                  "qawolf/i-beacon-injection"
-                ]
-              }
+              "qawolf/network-simulation",
+              "qawolf/i-beacon-injection"
             ]
           },
           {
@@ -241,18 +216,8 @@
           {
             "group": "Camera",
             "pages": [
-              {
-                "group": "Photo library management",
-                "pages": [
-                  "qawolf/photo-library-management"
-                ]
-              },
-              {
-                "group": "Camera injection",
-                "pages": [
-                  "qawolf/camera-and-audio-injection"
-                ]
-              },
+              "qawolf/photo-library-management",
+              "qawolf/camera-and-audio-injection",
               {
                 "group": "Barcode injection",
                 "pages": [
@@ -260,12 +225,7 @@
                   "qawolf/barcode-qrcode-scanning"
                 ]
               },
-              {
-                "group": "Video Injection",
-                "pages": [
-                  "qawolf/video-injection"
-                ]
-              }
+              "qawolf/video-injection"
             ]
           },
           {
@@ -289,12 +249,7 @@
               "qawolf/visual-diffing"
             ]
           },
-          {
-            "group": "AI & LLMs",
-            "pages": [
-              "qawolf/non-deterministic-ai-testing"
-            ]
-          },
+          "qawolf/non-deterministic-ai-testing",
           {
             "group": "Desktop",
             "pages": [
@@ -305,18 +260,8 @@
           {
             "group": "Sensors",
             "pages": [
-              {
-                "group": "Location Mocking",
-                "pages": [
-                  "qawolf/android-location-mocking"
-                ]
-              },
-              {
-                "group": "Sensor Mocking",
-                "pages": [
-                  "qawolf/android-sensor-mocking"
-                ]
-              }
+              "qawolf/android-location-mocking",
+              "qawolf/android-sensor-mocking"
             ]
           }
         ]
@@ -340,29 +285,14 @@
                   "qawolf/libraries/flows/api-reference/ios-device-reference"
                 ]
               },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/flows/troubleshooting"
-                ]
-              }
+              "qawolf/libraries/flows/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/pom",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/pom/api-reference/index"
-                ]
-              },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/pom/troubleshooting"
-                ]
-              }
+              "qawolf/libraries/pom/api-reference/index",
+              "qawolf/libraries/pom/troubleshooting"
             ]
           },
           {
@@ -378,12 +308,7 @@
                   "qawolf/libraries/testkit/api-reference/client"
                 ]
               },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/testkit/troubleshooting"
-                ]
-              }
+              "qawolf/libraries/testkit/troubleshooting"
             ]
           },
           {
@@ -397,29 +322,14 @@
                   "qawolf/libraries/emails/api-reference/client"
                 ]
               },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/emails/troubleshooting"
-                ]
-              }
+              "qawolf/libraries/emails/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/ci-sdk",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/ci-sdk/api-reference"
-                ]
-              },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/ci-sdk/troubleshooting"
-                ]
-              }
+              "qawolf/libraries/ci-sdk/api-reference",
+              "qawolf/libraries/ci-sdk/troubleshooting"
             ]
           },
           {
@@ -433,12 +343,7 @@
                   "qawolf/libraries/cli/api-reference/environment-variables"
                 ]
               },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "qawolf/libraries/cli/troubleshooting"
-                ]
-              }
+              "qawolf/libraries/cli/troubleshooting"
             ]
           },
           {
@@ -511,10 +416,7 @@
               "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
             ]
           },
-          {
-            "group": "Coding agents",
-            "pages": ["qawolf/coding-agents/get-started"]
-          },
+          "qawolf/coding-agents/get-started",
           {
             "group": "Local execution",
             "pages": [
