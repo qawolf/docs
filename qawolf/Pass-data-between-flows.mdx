@@ -78,6 +78,6 @@ await page.goto("https://app.example.com/activity");
 
 **Conflicts** — If two different flows publish the same key and a third flow depends on both, the run fails with `Workflow run failed due to conflicting dependency outputs`.
 
-**Execution order** — A consumer will not run until its producer has published. Use [Run Rules](/qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1) to enforce producer-before-consumer ordering.
+**Execution order** — A consumer will not run until its producer has published. Use [Run Rules](/qawolf/Ordering-flows) to enforce producer-before-consumer ordering.
 
-**Scheduling** — Producers and consumers must be included in the same scheduled run. Target all flows or use a shared tag. See [Scheduling flows](/qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92).
+**Scheduling** — Producers and consumers must be included in the same scheduled run. Target all flows or use a shared tag. See [Scheduling flows](/qawolf/Scheduling-flows).
