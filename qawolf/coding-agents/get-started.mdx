@@ -1,0 +1,162 @@
+---
+title: "Use QA Wolf from your coding agent"
+sidebarTitle: "Get started"
+description: "Install the QA Wolf plugin, connect your workspace, and create your first flow from Claude Code, Codex, or another coding agent."
+icon: "bot"
+---
+
+The QA Wolf plugin lets your coding agent explore an application, propose test coverage, and ask QA Wolf to implement it. You can also run existing flows and investigate failures without leaving your coding agent.
+
+This integration is separate from [QA Wolf's in-app AI](/qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358) and from [using the QA Wolf CLI directly](/qawolf/local-execution/authenticate).
+
+<Note>
+  The plugin is in preview and is not listed in the providers' official directories. Check the [public plugin repository](https://github.com/qawolf/agent-plugins) for release status and supported clients.
+</Note>
+
+## Before you begin
+
+You need:
+
+- Access to a QA Wolf workspace.
+- A supported coding agent, such as Claude Code or Codex.
+- A staging application and dedicated test access that QA Wolf's cloud browser can use.
+
+If the application is on a private network, configure [network access](/qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d) first. An application reachable from your laptop is not necessarily reachable from QA Wolf.
+
+For definitions of workspaces, environments, flows, and runs, see the [glossary](/qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc).
+
+## Install and sign in
+
+<Tabs>
+  <Tab title="Claude Code">
+    Run these commands inside Claude Code:
+
+    ```text
+    /plugin marketplace add qawolf/agent-plugins
+    /plugin install qawolf@qawolf
+    ```
+
+    Start a new session. If sign-in is required, open `/mcp`, select the QA Wolf plugin server, and choose **Authenticate**. Complete the browser sign-in and return to Claude Code.
+
+    For terminal-based sign-in, use the plugin-scoped server name:
+
+    ```bash
+    claude mcp login plugin:qawolf:qawolf
+    ```
+  </Tab>
+  <Tab title="Codex">
+    Run these commands in your terminal:
+
+    ```bash
+    codex plugin marketplace add qawolf/agent-plugins
+    codex plugin add qawolf@qawolf
+    ```
+
+    Start a new Codex session and complete its browser sign-in if requested. To sign in explicitly:
+
+    ```bash
+    codex mcp login qawolf
+    ```
+  </Tab>
+  <Tab title="Other coding agents">
+    Follow the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md). It covers native plugins, portable skills, and clients that need separate MCP configuration.
+
+    For a skill-only installation, install `qawolf`, `qawolf-flow-outline`, and `qawolf-onboarding` together. Loading their instructions does not necessarily connect the QA Wolf tools. Complete the MCP setup for your client too.
+  </Tab>
+</Tabs>
+
+OAuth is the default. Reuse an existing connection rather than signing in again. For a client without OAuth, follow the API-key fallback in the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md).
+
+<Warning>
+  Complete authentication through your client's dedicated controls. Never paste callback URLs, authorization codes, API keys, or passwords into ordinary chat. Do not add a static Authorization header to an OAuth connection.
+</Warning>
+
+## Verify the connection
+
+Ask your coding agent:
+
+```text
+Call whoami and confirm my QA Wolf account and workspace. Then list the available environments. Do not create anything yet.
+```
+
+Browser tools require a connection bound to the intended workspace. If the connection only lists workspace candidates, resolve the binding before exploration. Passing a workspace ID to another tool does not bind the browser connection.
+
+Choose the QA Wolf environment where the new flow belongs. This is separate from the staging URL of the application you want to test.
+
+## Choose the right skill
+
+| Skill | Use it to |
+| --- | --- |
+| `qawolf-onboarding` | Choose a useful first flow, then hand it to Flow Outline. |
+| `qawolf-flow-outline` | Explore a new journey, present an Arrange, Act, Assert outline for approval, and monitor implementation through publication. |
+| `qawolf` | Connect to QA Wolf, run existing flows, and investigate results. |
+
+You can ask in plain language. A request that already names the new flow goes directly to Flow Outline.
+
+## Create your first flow
+
+<Steps>
+  <Step title="Give the agent a target">
+    Start with your application URL and the selected QA Wolf environment. For example:
+
+    ```text
+    Onboard the app at https://staging.example.com to QA Wolf in My Environment. Find a useful first flow and show me the outline before creating it.
+    ```
+
+    If you already know the journey, ask for it directly, such as "Create a QA Wolf flow for signing up with an email verification code."
+  </Step>
+  <Step title="Let the coding agent explore">
+    Your coding agent uses QA Wolf's cloud browser to inspect the application and gather test context. It asks about gaps it cannot resolve, such as missing access or unclear requirements. It does not write the test code locally.
+
+    A new-flow request covers routine staging exploration, including disposable test-account creation and cleanup. Production actions, purchases, changes to existing data, and contact with real users need explicit approval. Your client's tool permission controls still apply.
+
+    Cloud browsers bill while their runners exist. The agent terminates its exploration runner before waiting for outline approval.
+  </Step>
+  <Step title="Review the outline">
+    Before asking you to approve creation, the agent displays the full outline:
+
+    - **Arrange:** The target, test account or role, data, and starting state.
+    - **Act:** The user actions to perform.
+    - **Assert:** The visible outcomes that establish success.
+    - **Cleanup and constraints:** What to remove or reset, and which actions are out of scope.
+
+    Review any assumptions or unverified steps. Choose which outlines to create and whether the finished flows should be published as drafts or made active. Active flows can run in triggered suites. Approve any required sharing of test access through a secure channel.
+
+    If the outline is missing or needs changes, ask to see the revised outline before approving it.
+  </Step>
+  <Step title="Follow implementation">
+    After approval, the coding agent sends the outline to QA Wolf for implementation and validation. It shares the live session link before monitoring the work.
+
+    The coding agent keeps monitoring and reports new progress, questions, blockers, and the outcome. Unchanged status does not need another update. Answer any blocking questions in the same conversation so work continues in the same session.
+  </Step>
+  <Step title="Verify the finished flow">
+    Use the returned session and flow links to review the result. The coding agent checks three things separately:
+
+    - The finished flow has a validation result, not just a passing starter step.
+    - The flow is published in the selected environment.
+    - Its readiness matches your choice of draft or active.
+
+    Publishing code does not make a draft flow active. If you approved activation, the agent completes that step and verifies the result. If a result is still missing, it reports the remaining work instead of claiming completion.
+
+    See [Review run results](/qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318) for interpreting test outcomes.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="The agent cannot find QA Wolf tools">
+    Confirm that the plugin is enabled and start a fresh client session. Skill-only clients also need MCP configuration. Follow your client's section in the [setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md); missing tools alone do not mean authentication failed.
+  </Accordion>
+  <Accordion title="Sign-in fails or the session expires">
+    Use the client's authentication controls and check `whoami` again. A manually configured Authorization header can prevent OAuth sign-in. Follow the [authentication troubleshooting guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/README.md#troubleshooting) without sharing credentials in chat.
+  </Accordion>
+  <Accordion title="Browser tools report an authorization error">
+    Ask the agent to check `whoami` and confirm that the connection is bound to the intended workspace. Follow the client setup guide to resolve workspace binding; selecting an environment alone does not fix it.
+  </Accordion>
+  <Accordion title="Creation is waiting or the flow is still a draft">
+    Open the session link and check for a question or blocker. Answer in the existing conversation rather than starting another creation request. A completed implementation, published code, and active readiness are separate states; ask the agent which step remains.
+  </Accordion>
+</AccordionGroup>
+
+For other plugin problems, [report an issue](https://github.com/qawolf/agent-plugins/issues) without credentials or customer test data. Skills installed in your coding agent are separate from [reusable skills stored in your QA Wolf workspace](/qawolf/reusable-ai-knowledge).

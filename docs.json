@@ -561,6 +561,11 @@
             ]
           },
           {
+            "group": "Coding agents",
+            "icon": "bot",
+            "pages": ["qawolf/coding-agents/get-started"]
+          },
+          {
             "group": "Local execution",
             "icon": "terminal",
             "pages": [
