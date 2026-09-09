@@ -2,7 +2,6 @@
 title: "Run flows locally"
 description: "Run your team's flows on your own machine — the CLI pulls, installs, and runs in one command."
 sidebarTitle: "Run flows locally"
-icon: "play"
 ---
 
 `qawolf flows run --env <env_id>` is the recommended path. It runs your team's flows from the local `.qawolf/<env_id>/` cache, pulling them first only if they are not already cached locally, then installs the npm dependencies and Playwright browsers they need and runs them. Android flows require installing the Android tooling first with `qawolf install android`. See [Install dependencies](/qawolf/local-execution/install-dependencies).
