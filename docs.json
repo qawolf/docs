@@ -89,7 +89,6 @@
     "tabs": [
       {
         "tab": "Introduction",
-        "icon": "house",
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
           "qawolf/quick-start",
@@ -98,11 +97,9 @@
       },
       {
         "tab": "Features",
-        "icon": "bot",
         "groups": [
           {
             "group": "Flows",
-            "icon": "route",
             "pages": [
               "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc",
               "qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
@@ -120,7 +117,6 @@
           },
           {
             "group": "Runs",
-            "icon": "play",
             "pages": [
               "qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel",
               "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
@@ -133,25 +129,21 @@
           },
           {
             "group": "Bugs",
-            "icon": "bug",
             "pages": [
               "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
             ]
           },
           {
             "group": "Mobile",
-            "icon": "smartphone",
             "pages": [
               {
                 "group": "Android",
-                "icon": "bot",
                 "pages": [
                   "qawolf/mobile/android-devices"
                 ]
               },
               {
                 "group": "iOS",
-                "icon": "apple",
                 "pages": [
                   "qawolf/mobile/ios-devices",
                   "qawolf/mobile/ios-allowlisted-devices",
@@ -162,7 +154,6 @@
           },
           {
             "group": "Setup",
-            "icon": "sliders-horizontal",
             "pages": [
               "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
               "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
@@ -173,19 +164,16 @@
       },
       {
         "tab": "Solutions",
-        "icon": "book",
         "pages": [
           "qawolf/solutions",
           {
             "group": "Email & SMS",
-            "icon": "voicemail",
             "pages": [
               "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
             ]
           },
           {
             "group": "Authentication",
-            "icon": "lock-keyhole",
             "pages": [
               "qawolf/qrcode",
               "qawolf/test-mfa"
@@ -193,11 +181,9 @@
           },
           {
             "group": "Networking",
-            "icon": "network",
             "pages": [
               {
                 "group": "Connect to VPN",
-                "icon": "globe-lock",
                 "pages": [
                   "qawolf/network-connectivity",
                   "qawolf/connect-with-vpn-web"
@@ -205,14 +191,12 @@
               },
               {
                 "group": "Network simulation",
-                "icon": "signal",
                 "pages": [
                   "qawolf/network-simulation"
                 ]
               },
               {
                 "group": "Beacon injection",
-                "icon": "bluetooth",
                 "pages": [
                   "qawolf/i-beacon-injection"
                 ]
@@ -221,7 +205,6 @@
           },
           {
             "group": "Data sharing",
-            "icon": "arrow-right-left",
             "pages": [
               "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
               "qawolf/reuse-state-between-runs",
@@ -230,11 +213,9 @@
           },
           {
             "group": "Audio",
-            "icon": "ear",
             "pages": [
               {
                 "group": "Microphone injection",
-                "icon": "mic",
                 "pages": [
                   "qawolf/android-audio-injection",
                   "qawolf/ios-audio-injection",
@@ -243,7 +224,6 @@
               },
               {
                 "group": "Speaker capture",
-                "icon": "speaker",
                 "pages": [
                   "qawolf/audio-capture",
                   "qawolf/web-speaker-capture"
@@ -251,7 +231,6 @@
               },
               {
                 "group": "Audio analysis",
-                "icon": "audio-waveform",
                 "pages": [
                   "qawolf/i-os-audio-analysis",
                   "qawolf/web-audio-analysis"
@@ -261,25 +240,21 @@
           },
           {
             "group": "Camera",
-            "icon": "camera",
             "pages": [
               {
                 "group": "Photo library management",
-                "icon": "image",
                 "pages": [
                   "qawolf/photo-library-management"
                 ]
               },
               {
                 "group": "Camera injection",
-                "icon": "switch-camera",
                 "pages": [
                   "qawolf/camera-and-audio-injection"
                 ]
               },
               {
                 "group": "Barcode injection",
-                "icon": "scan-qr-code",
                 "pages": [
                   "qawolf/android-barcode",
                   "qawolf/barcode-qrcode-scanning"
@@ -287,7 +262,6 @@
               },
               {
                 "group": "Video Injection",
-                "icon": "video",
                 "pages": [
                   "qawolf/video-injection"
                 ]
@@ -296,7 +270,6 @@
           },
           {
             "group": "Accessibility",
-            "icon": "eye",
             "pages": [
               "qawolf/a11y-native",
               "qawolf/a11y-web"
@@ -304,7 +277,6 @@
           },
           {
             "group": "Performance",
-            "icon": "gauge",
             "pages": [
               "qawolf/android-performance",
               "qawolf/web-performance"
@@ -312,7 +284,6 @@
           },
           {
             "group": "Visual diffing",
-            "icon": "scan",
             "pages": [
               "qawolf/visual-diffing-native-app",
               "qawolf/visual-diffing"
@@ -320,14 +291,12 @@
           },
           {
             "group": "AI & LLMs",
-            "icon": "sparkles",
             "pages": [
               "qawolf/non-deterministic-ai-testing"
             ]
           },
           {
             "group": "Desktop",
-            "icon": "monitor",
             "pages": [
               "qawolf/electron",
               "qawolf/browser-extensions"
@@ -335,18 +304,15 @@
           },
           {
             "group": "Sensors",
-            "icon": "circle-gauge",
             "pages": [
               {
                 "group": "Location Mocking",
-                "icon": "locate",
                 "pages": [
                   "qawolf/android-location-mocking"
                 ]
               },
               {
                 "group": "Sensor Mocking",
-                "icon": "waves",
                 "pages": [
                   "qawolf/android-sensor-mocking"
                 ]
@@ -357,11 +323,9 @@
       },
       {
         "tab": "References",
-        "icon": "braces",
         "pages": [
           {
             "group": "@qawolf/flows",
-            "icon": "route",
             "pages": [
               {
                 "group": "API Reference",
@@ -386,7 +350,6 @@
           },
           {
             "group": "@qawolf/pom",
-            "icon": "folder-tree",
             "pages": [
               {
                 "group": "API Reference",
@@ -404,7 +367,6 @@
           },
           {
             "group": "@qawolf/testkit",
-            "icon": "wrench",
             "pages": [
               {
                 "group": "API Reference",
@@ -426,7 +388,6 @@
           },
           {
             "group": "@qawolf/emails",
-            "icon": "mail",
             "pages": [
               {
                 "group": "API Reference",
@@ -446,7 +407,6 @@
           },
           {
             "group": "@qawolf/ci-sdk",
-            "icon": "arrow-left-right",
             "pages": [
               {
                 "group": "API Reference",
@@ -464,7 +424,6 @@
           },
           {
             "group": "@qawolf/cli",
-            "icon": "terminal",
             "pages": [
               {
                 "group": "API Reference",
@@ -484,7 +443,6 @@
           },
           {
             "group": "REST",
-            "icon": "code",
             "pages": [
               "qawolf/rest-overview",
               "qawolf/deploy-success",
@@ -497,16 +455,13 @@
       },
       {
         "tab": "Integrations",
-        "icon": "plug",
         "pages": [
           {
             "group": "CI/CD",
-            "icon": "git-compare",
             "pages": [
               "qawolf/CI-CD-Overview",
               {
                 "group": "Deployment testing ",
-                "icon": "server",
                 "pages": [
                   "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
                   "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
@@ -517,7 +472,6 @@
               },
               {
                 "group": "Mobile build testing",
-                "icon": "smartphone",
                 "pages": [
                   "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
                   "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f",
@@ -529,7 +483,6 @@
           },
           {
             "group": "VPN",
-            "icon": "lock",
             "pages": [
               "qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
               "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
@@ -540,7 +493,6 @@
           },
           {
             "group": "Test Management Systems",
-            "icon": "list-check",
             "pages": [
               "qawolf/Testmo-29c5b2a994fb810bb096c46ec45512fb",
               "qawolf/TestRail-29c5b2a994fb8158897afc10c5d66782",
@@ -551,7 +503,6 @@
           },
           {
             "group": "Issue Trackers",
-            "icon": "search-code",
             "pages": [
               "qawolf/Jira-29c5b2a994fb81d18a87f23808479de0",
               "qawolf/Linear-29c5b2a994fb81ce85ded6d005d5e7ab",
@@ -562,12 +513,10 @@
           },
           {
             "group": "Coding agents",
-            "icon": "bot",
             "pages": ["qawolf/coding-agents/get-started"]
           },
           {
             "group": "Local execution",
-            "icon": "terminal",
             "pages": [
               "qawolf/local-execution/authenticate",
               "qawolf/local-execution/run-flows-locally",
@@ -581,11 +530,9 @@
       },
       {
         "tab": "Full Service",
-        "icon": "shield",
         "groups": [
           {
             "group": "Introduction",
-            "icon": "book-open",
             "pages": [
               "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
               "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
@@ -594,7 +541,6 @@
           },
           {
             "group": "Working with Wolves",
-            "icon": "handshake",
             "pages": [
               "qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47",
               "qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa"
@@ -602,14 +548,12 @@
           },
           {
             "group": "Integrating Systems",
-            "icon": "plug",
             "pages": [
               "qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a",
               "qawolf/Integrating-with-microsoft-teams",
               "qawolf/sso",
               {
                 "group": "PR Testing",
-                "icon": "git-merge",
                 "pages": [
                   "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
                   "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c"
