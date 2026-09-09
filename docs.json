@@ -27,10 +27,6 @@
   "navbar": {
     "links": [
       {
-        "href": "https://www.qawolf.com/blog",
-        "label": "Blog"
-      },
-      {
         "href": "mailto:hello@qawolf.com",
         "label": "Support"
       },
