@@ -97,7 +97,7 @@
       },
       {
         "tab": "Features",
-        "pages": [
+        "groups": [
           {
             "group": "Flows",
             "pages": [
@@ -127,11 +127,21 @@
               "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd"
             ]
           },
-          "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f",
+          {
+            "group": "Bugs",
+            "pages": [
+              "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
+            ]
+          },
           {
             "group": "Mobile",
             "pages": [
-              "qawolf/mobile/android-devices",
+              {
+                "group": "Android",
+                "pages": [
+                  "qawolf/mobile/android-devices"
+                ]
+              },
               {
                 "group": "iOS",
                 "pages": [
@@ -156,7 +166,12 @@
         "tab": "Solutions",
         "pages": [
           "qawolf/solutions",
-          "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e",
+          {
+            "group": "Email & SMS",
+            "pages": [
+              "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
+            ]
+          },
           {
             "group": "Authentication",
             "pages": [
@@ -174,8 +189,18 @@
                   "qawolf/connect-with-vpn-web"
                 ]
               },
-              "qawolf/network-simulation",
-              "qawolf/i-beacon-injection"
+              {
+                "group": "Network simulation",
+                "pages": [
+                  "qawolf/network-simulation"
+                ]
+              },
+              {
+                "group": "Beacon injection",
+                "pages": [
+                  "qawolf/i-beacon-injection"
+                ]
+              }
             ]
           },
           {
@@ -216,8 +241,18 @@
           {
             "group": "Camera",
             "pages": [
-              "qawolf/photo-library-management",
-              "qawolf/camera-and-audio-injection",
+              {
+                "group": "Photo library management",
+                "pages": [
+                  "qawolf/photo-library-management"
+                ]
+              },
+              {
+                "group": "Camera injection",
+                "pages": [
+                  "qawolf/camera-and-audio-injection"
+                ]
+              },
               {
                 "group": "Barcode injection",
                 "pages": [
@@ -225,7 +260,12 @@
                   "qawolf/barcode-qrcode-scanning"
                 ]
               },
-              "qawolf/video-injection"
+              {
+                "group": "Video Injection",
+                "pages": [
+                  "qawolf/video-injection"
+                ]
+              }
             ]
           },
           {
@@ -249,7 +289,12 @@
               "qawolf/visual-diffing"
             ]
           },
-          "qawolf/non-deterministic-ai-testing",
+          {
+            "group": "AI & LLMs",
+            "pages": [
+              "qawolf/non-deterministic-ai-testing"
+            ]
+          },
           {
             "group": "Desktop",
             "pages": [
@@ -260,8 +305,18 @@
           {
             "group": "Sensors",
             "pages": [
-              "qawolf/android-location-mocking",
-              "qawolf/android-sensor-mocking"
+              {
+                "group": "Location Mocking",
+                "pages": [
+                  "qawolf/android-location-mocking"
+                ]
+              },
+              {
+                "group": "Sensor Mocking",
+                "pages": [
+                  "qawolf/android-sensor-mocking"
+                ]
+              }
             ]
           }
         ]
@@ -416,7 +471,12 @@
               "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
             ]
           },
-          "qawolf/coding-agents/get-started",
+          {
+            "group": "Coding agents",
+            "pages": [
+              "qawolf/coding-agents/get-started"
+            ]
+          },
           {
             "group": "Local execution",
             "pages": [
