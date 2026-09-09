@@ -169,7 +169,7 @@ setOutput("USER_ID", userId, "EMAIL", email);
 ```
 
 <Info>
-  A consumer flow will not run until its producer has called `setOutput`. See [Passing data between flows](/qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931) for how producers and consumers work together.
+  A consumer flow will not run until its producer has called `setOutput`. See [Passing data between flows](/qawolf/Pass-data-between-flows) for how producers and consumers work together.
 </Info>
 
 **`test(...)`** — wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
@@ -211,7 +211,7 @@ Reference environment variables with `process.env.VAR_NAME`. They are typically 
 await page.goto(process.env.BASE_URL);
 ```
 
-To set environment variables for your flows, see [Environment setup](/qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f#create-and-manage-environment-variables).
+To set environment variables for your flows, see [Environment setup](/qawolf/Environment-settings#create-and-manage-environment-variables).
 
 ## The AAA framework
 

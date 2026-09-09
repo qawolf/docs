@@ -92,7 +92,7 @@
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
           "qawolf/quick-start",
-          "qawolf/Glossary-29c5b2a994fb806d93f2ce4554a2fcfc"
+          "qawolf/Glossary"
         ]
       },
       {
@@ -101,15 +101,15 @@
           {
             "group": "Flows",
             "pages": [
-              "qawolf/Map-your-app-s-workflows-2a45b2a994fb80ca8a87c8fdc2a443fc",
-              "qawolf/Automate-flows-using-AI-2d35b2a994fb8084b524cfc9aca7c358",
+              "qawolf/Map-your-app-s-workflows",
+              "qawolf/Automate-flows-using-AI",
               "qawolf/getting-the-most-out-of-automate",
               "qawolf/automate-jobs",
               "qawolf/reusable-ai-knowledge",
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/Create-a-new-flow-2c15b2a994fb802193a5c05e0219eb59",
-              "qawolf/Use-the-Elements-picker-2c35b2a994fb80a681baca4f6acf3179",
-              "qawolf/Debug-tests-and-flows-2c15b2a994fb805c9e92eec7a4a3e83e",
+              "qawolf/Create-a-new-flow",
+              "qawolf/Use-the-Elements-picker",
+              "qawolf/Debug-tests-and-flows",
               "qawolf/Uploading-manually",
               "qawolf/sharing-code-across-flows",
               "qawolf/lint-rules"
@@ -118,19 +118,19 @@
           {
             "group": "Runs",
             "pages": [
-              "qawolf/Run-a-flow-or-suite-2a25b2a994fb8014b164d7ad2efd5ddel",
-              "qawolf/Use-tags-effectively-2c35b2a994fb809abbd7ea9402738bdb",
-              "qawolf/Scheduling-flows-29c5b2a994fb80789f3fea32feae8f92",
-              "qawolf/Ordering-flows-29c5b2a994fb80789f3fea32feae8f92-copied-1",
-              "qawolf/Interpret-run-results-2d55b2a994fb80199754e4b2d3ce0318",
-              "qawolf/Diagnose-the-cause-of-a-failing-flow-2c65b2a994fb8034ae2bd0def1f8dfe5",
-              "qawolf/Clear-a-release-2c55b2a994fb808fa5ddfa157a89adcd"
+              "qawolf/Run-a-flow-or-suite",
+              "qawolf/Use-tags-effectively",
+              "qawolf/Scheduling-flows",
+              "qawolf/Ordering-flows",
+              "qawolf/Interpret-run-results",
+              "qawolf/Diagnose-the-cause-of-a-failing-flow",
+              "qawolf/Clear-a-release"
             ]
           },
           {
             "group": "Bugs",
             "pages": [
-              "qawolf/Manage-bug-reports-2c75b2a994fb80308ddcc7cc60703c2f"
+              "qawolf/Manage-bug-reports"
             ]
           },
           {
@@ -155,9 +155,9 @@
           {
             "group": "Setup",
             "pages": [
-              "qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
-              "qawolf/Environment-settings-2cd5b2a994fb8014ba8bd7aa25f3ed0f",
-              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests-29c5b2a994fb8031a3ddc1355eb4e7be"
+              "qawolf/Workspace-settings",
+              "qawolf/Environment-settings",
+              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests"
             ]
           }
         ]
@@ -169,7 +169,7 @@
           {
             "group": "Email & SMS",
             "pages": [
-              "qawolf/Use-emails-in-tests-29c5b2a994fb81cf8a03de3eb25ed68e"
+              "qawolf/Use-emails-in-tests"
             ]
           },
           {
@@ -206,7 +206,7 @@
           {
             "group": "Data sharing",
             "pages": [
-              "qawolf/Pass-data-between-flows-29d5b2a994fb801080bce743ab552931",
+              "qawolf/Pass-data-between-flows",
               "qawolf/reuse-state-between-runs",
               "qawolf/mount-a-file-share"
             ]
@@ -423,8 +423,8 @@
               {
                 "group": "Deployment testing ",
                 "pages": [
-                  "qawolf/GitHub-GitHub-Actions-2a15b2a994fb800699f6dc99584915d0",
-                  "qawolf/GitLab-2a15b2a994fb805d9d14ff27726065ae",
+                  "qawolf/GitHub-GitHub-Actions",
+                  "qawolf/GitLab",
                   "qawolf/circle-ci",
                   "qawolf/other-ci-node",
                   "qawolf/other-ci-webhook"
@@ -433,9 +433,9 @@
               {
                 "group": "Mobile build testing",
                 "pages": [
-                  "qawolf/Fastlane-2db5b2a994fb802186a3d88573899c78",
-                  "qawolf/Integrate-a-mobile-build-with-GitHub-Actions-2db5b2a994fb8027a901d4238b02fb8f",
-                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK-2db5b2a994fb80cdbd1ec31513f2cc15",
+                  "qawolf/Fastlane",
+                  "qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
+                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK",
                   "qawolf/other-web-hook-for-mobile"
                 ]
               }
@@ -444,31 +444,31 @@
           {
             "group": "VPN",
             "pages": [
-              "qawolf/QA-Wolf-s-static-IPv4-29c5b2a994fb81bf8487d085abf9dc4d",
-              "qawolf/OpenVPN-integration-29f5b2a994fb80e8b2e4cea94fa15bf2",
-              "qawolf/Site-to-Site-IPSec-Tunnel-29f5b2a994fb80d7a45dd62f9b8a272a",
-              "qawolf/Twingate-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-1",
-              "qawolf/Tailscale-Client-based-VPN-29f5b2a994fb8021a88af5e1c5b21313-copied-2"
+              "qawolf/QA-Wolf-s-static-IPv4",
+              "qawolf/OpenVPN-integration",
+              "qawolf/Site-to-Site-IPSec-Tunnel",
+              "qawolf/Twingate-Client-based-VPN",
+              "qawolf/Tailscale-Client-based-VPN"
             ]
           },
           {
             "group": "Test Management Systems",
             "pages": [
-              "qawolf/Testmo-29c5b2a994fb810bb096c46ec45512fb",
-              "qawolf/TestRail-29c5b2a994fb8158897afc10c5d66782",
-              "qawolf/Xray-29c5b2a994fb8196a5eddfc6ce4a9e40",
-              "qawolf/Zephyr-29c5b2a994fb81ed97d9e214c8b177c6",
-              "qawolf/Qase-io-29c5b2a994fb812fb3bfcf8ee3f33a16"
+              "qawolf/Testmo",
+              "qawolf/TestRail",
+              "qawolf/Xray",
+              "qawolf/Zephyr",
+              "qawolf/Qase-io"
             ]
           },
           {
             "group": "Issue Trackers",
             "pages": [
-              "qawolf/Jira-29c5b2a994fb81d18a87f23808479de0",
-              "qawolf/Linear-29c5b2a994fb81ce85ded6d005d5e7ab",
-              "qawolf/Asana-2a15b2a994fb805287acdba6373e6758",
-              "qawolf/Azure-DevOps-Boards-29c5b2a994fb81b09697f2f1e4f9fdf1",
-              "qawolf/Integrate-with-webhooks-29c5b2a994fb818d9682eb32ff11feff"
+              "qawolf/Jira",
+              "qawolf/Linear",
+              "qawolf/Asana",
+              "qawolf/Azure-DevOps-Boards",
+              "qawolf/Integrate-with-webhooks"
             ]
           },
           {
@@ -496,29 +496,29 @@
           {
             "group": "Introduction",
             "pages": [
-              "qawolf/Full-Service-The-First-Three-Months-29c5b2a994fb81bb9e10e4182639f294",
-              "qawolf/Full-Service-FAQs-29c5b2a994fb8000b442fa8aed05c9e5",
-              "qawolf/Recommended-reading-for-QA-engineers-and-developers-2cd5b2a994fb80768272e9f973188fe8"
+              "qawolf/Full-Service-The-First-Three-Months",
+              "qawolf/Full-Service-FAQs",
+              "qawolf/Recommended-reading-for-QA-engineers-and-developers"
             ]
           },
           {
             "group": "Working with Wolves",
             "pages": [
-              "qawolf/Request-new-coverage-29c5b2a994fb81c79523f8ff2eefde47",
-              "qawolf/Manage-maintenance-reports-2d55b2a994fb80728909f48b1023f7fa"
+              "qawolf/Request-new-coverage",
+              "qawolf/Manage-maintenance-reports"
             ]
           },
           {
             "group": "Integrating Systems",
             "pages": [
-              "qawolf/Test-environments-2dc5b2a994fb800e8ce4fe36ee34764a",
+              "qawolf/Test-environments",
               "qawolf/Integrating-with-microsoft-teams",
               "qawolf/sso",
               {
                 "group": "PR Testing",
                 "pages": [
-                  "qawolf/PR-testing-for-GitHub-Integrations-2db5b2a994fb80a0aa94f3297d1f60c3",
-                  "qawolf/PR-testing-for-GitLab-Integrations-2db5b2a994fb8075b13dd9d5c2e6be8c"
+                  "qawolf/PR-testing-for-GitHub-Integrations",
+                  "qawolf/PR-testing-for-GitLab-Integrations"
                 ]
               }
             ]
