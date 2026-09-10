@@ -332,13 +332,6 @@
             ]
           },
           {
-            "group": "@qawolf/ci-sdk",
-            "pages": [
-              "qawolf/libraries/ci-sdk/api-reference",
-              "qawolf/libraries/ci-sdk/troubleshooting"
-            ]
-          },
-          {
             "group": "@qawolf/cli",
             "pages": [
               "qawolf/libraries/cli/api-reference/index",
@@ -356,6 +349,13 @@
               "qawolf/local-execution/install-dependencies",
               "qawolf/local-execution/set-up-a-project",
               "qawolf/local-execution/diagnose-problems"
+            ]
+          },
+          {
+            "group": "@qawolf/ci-sdk",
+            "pages": [
+              "qawolf/libraries/ci-sdk/api-reference",
+              "qawolf/libraries/ci-sdk/troubleshooting"
             ]
           },
           {

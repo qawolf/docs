@@ -1,7 +1,7 @@
 ---
-title: "Core Reference"
+title: "Core"
 description: "Reference notes for the top-level @qawolf/testkit entry point."
-sidebarTitle: "Core Reference"
+sidebarTitle: "Core"
 ---
 
 The top-level package currently exposes:
@@ -16,7 +16,7 @@ The top-level package currently exposes:
 - `saveEnvironmentVariable(...)`
 - `reloadEnvironmentVariables(...)`
 
-`mountCifsShare(...)`, `startOpenVpn(...)`, and `saveBaselineScreenshot(...)` all require a client configured with `configureTestkitClient(...)` first — see [Client Reference](/qawolf/libraries/testkit/api-reference/client) for how to create one.
+`mountCifsShare(...)`, `startOpenVpn(...)`, and `saveBaselineScreenshot(...)` all require a client configured with `configureTestkitClient(...)` first — see [Client](/qawolf/libraries/testkit/api-reference/client) for how to create one.
 
 Example:
 
@@ -88,4 +88,4 @@ await mountCifsShare(/* same options as the example above */); // throws: no cli
 
 Environment variable helpers throw when the QA Wolf API configuration is missing or when the API request fails.
 
-`saveBaselineScreenshot(...)` also throws when the configured client does not provide screenshot support — see [Client Reference](/qawolf/libraries/testkit/api-reference/client#input-ports) for the `saveSnapshot` port that enables it.
+`saveBaselineScreenshot(...)` also throws when the configured client does not provide screenshot support — see [Client](/qawolf/libraries/testkit/api-reference/client#input-ports) for the `saveSnapshot` port that enables it.

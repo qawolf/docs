@@ -1,12 +1,12 @@
 ---
-title: "CLI Reference"
+title: "Node Reference"
 description: "Reference for @qawolf/flows/cli, the Node-based entry point for headless flows that handle setup, teardown, notifications, and file work."
-sidebarTitle: "CLI Reference"
+sidebarTitle: "Node"
 ---
 
-`@qawolf/flows/cli` is the smallest platform entry point in `@qawolf/flows`. CLI flows run in Node and have no browser or mobile driver. Use them for work that needs to coordinate with other flows in a run but doesn't require UI interaction — data setup, teardown, sending notifications, or processing files.
+`@qawolf/flows/cli` is the smallest platform entry point in `@qawolf/flows`. Node flows run in Node and have no browser or mobile driver. Use them for work that needs to coordinate with other flows in a run but doesn't require UI interaction — data setup, teardown, sending notifications, or processing files.
 
-Because CLI flows run in Node, you can use the Node standard library directly for file, process, and network work:
+Because Node flows run in Node, you can use the Node standard library directly for file, process, and network work:
 
 ```ts
 import { flow } from "@qawolf/flows/cli";
@@ -26,7 +26,7 @@ export default flow("Read build metadata", "Basic", async ({ test }) => {
 - `expect`
 - `testContextDependencies`
 
-It also exports CLI-specific target, callback context, and flow definition types.
+It also exports Node-specific target, callback context, and flow definition types.
 
 Example:
 
@@ -78,7 +78,7 @@ export const objectTargetFlow = flow(
 
 ## Flow Callback Context
 
-The callback receives the CLI flow context.
+The callback receives the Node flow context.
 
 Public callback parameters:
 
@@ -86,7 +86,7 @@ Public callback parameters:
 - `setOutput(...)` — publishes values for downstream flows to read
 - `test(...)` — wraps named sub-steps that appear in your results
 
-CLI flows do not receive `page`, `driver`, or any other launch object.
+Node flows do not receive `page`, `driver`, or any other launch object.
 
 <Note>
   `test(...)` can be omitted for simple flows where grouping steps into named sub-steps doesn't add value. For most flows, wrapping steps in `test(...)` is recommended — the label appears in your results and makes failures easier to locate.

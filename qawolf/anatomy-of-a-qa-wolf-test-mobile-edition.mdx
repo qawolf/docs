@@ -25,7 +25,7 @@ import { flow, expect } from "@qawolf/flows/ios";
 import { flow, expect } from "@qawolf/flows/android";
 ```
 
-```typescript CLI
+```typescript Node
 import { flow } from "@qawolf/flows/cli";
 ```
 
@@ -43,7 +43,7 @@ import { flow } from "@qawolf/flows/cli";
 </Warning>
 
 <Note>
-  For iOS, Android, and CLI flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright.
+  For iOS, Android, and Node flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright.
 </Note>
 
 ## The flow wrapper
@@ -150,7 +150,7 @@ The callback receives a different object depending on the platform:
 | Web (Electron) | `page` |
 | iOS | `driver` — the Appium/WebdriverIO session for the device |
 | Android | `driver` — the Appium/WebdriverIO session for the device |
-| CLI | nothing additional — only `inputs`, `setOutput`, and `test` |
+| Node | nothing additional — only `inputs`, `setOutput`, and `test` |
 
 ### Explicit launch — advanced flows only
 
