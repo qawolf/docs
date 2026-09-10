@@ -1,6 +1,6 @@
 # QA Wolf docs style guide
 
-Rules for the References tab, derived from a full-text style audit of all ~40 pages. Apply these when writing new pages or editing existing ones. Each rule names the actual problem found, not a generic writing-advice bullet.
+Rules for the References tab, derived from a full-text style audit of all ~40 pages (rules 1-10) and a later page-by-page ordering pass (rule 11). Apply these when writing new pages or editing existing ones. Each rule names the actual problem found, not a generic writing-advice bullet.
 
 ## 1. Terminology — one word per concept
 
@@ -85,6 +85,18 @@ State what a function returns as its own clause, not folded into a sentence that
 
 - Avoid: "`launch()` starts Android automation for the active flow and returns:"
 - Prefer: "Starts Android automation for the active flow. Returns:"
+
+## 11. Section order — resolve forward references, don't separate a promise from its payoff
+
+A prose-level style pass doesn't catch a page whose *sections* are out of order. A later ordering pass over the Flow conventions group (Anatomy of a flow, Share logic across flows, Upload files, Lint rules, Add skills) found five real cases of a page using a term, example, or reference before the section that explains it, or splitting content that explicitly points at itself. Apply these when structuring a page, not just editing sentences within one:
+
+- **Never reference a concept before the section that defines it.** `anatomy-of-a-qa-wolf-test-mobile-edition.mdx`'s Environment variables section said "you typically use them in the Arrange section" while Arrange/Act/Assert was still three sections away; `lint-rules.mdx`'s "Set a rule's severity" example used the rule id `@qawolf/pom-lint/no-wait-for-timeout-in-poms` before the rules table that defines rule ids. Move the definition earlier, or the reference later — never leave the reference first.
+- **Keep an explicitly cross-referenced alternative next to what it responds to.** `sharing-code-across-flows.mdx` told readers "if you find yourself branching on `platform.target` frequently, consider splitting into platform-specific flows instead," but the `platform.target` section sat three sections after "Use platform-specific entry points," the pattern it names.
+- **Deliver a promise where you make it.** `lint-rules.mdx`'s "Configure rules" section said enabling the plugin "turns on QA Wolf's page object model rules" and linked straight to that table — but the table itself was three sections later. Put the promised content immediately after the section that promises it.
+- **Put foundational constraints before the how-to, never hidden in a collapsed accordion.** `Uploading-manually.mdx` buried supported file types in a collapsed `AccordionGroup` at the bottom of the page; readers need to know what they can upload before or while uploading it, not after. Surface load-bearing content as plain text near the top instead of behind a click.
+- **When the page's whole point is a shape or mental model, lead with the shape, not the syntax that implements it.** `anatomy-of-a-qa-wolf-test-mobile-edition.mdx` explained imports, the flow wrapper, launch styles, and callback parameters before ever mentioning the Arrange/Act/Assert pattern every flow follows. Move the concept first; the mechanics that build it follow.
+- **Order sections by relevance to the page's own topic, not convenience.** In "Share logic across flows," Pass data between flows (literal flow-to-flow data sharing) is more central to a "share ... across flows" page than Use environment variables (single-flow parameterization) — put the more on-topic section first.
+- **A page's title is a promise — make sure some section actually keeps it.** `Uploading-manually.mdx` was titled "Upload files" but only ever showed how to *use* an already-uploaded file; the upload step itself was a single link-out sentence. If the title names an action, show that action somewhere on the page, not just a pointer to where it's shown.
 
 ---
 
