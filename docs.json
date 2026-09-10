@@ -88,7 +88,8 @@
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
           "qawolf/quick-start",
-          "qawolf/Glossary"
+          "qawolf/Glossary",
+          "qawolf/coding-agents/get-started"
         ]
       },
       {
@@ -363,12 +364,6 @@
               "qawolf/environment_terminated",
               "qawolf/v0-ci-greenlight",
               "qawolf/run-inputs-executables-signed-urls"
-            ]
-          },
-          {
-            "group": "Coding agents",
-            "pages": [
-              "qawolf/coding-agents/get-started"
             ]
           }
         ]
