@@ -281,7 +281,7 @@
         "tab": "References",
         "pages": [
           {
-            "group": "Flow authoring",
+            "group": "Flow conventions",
             "pages": [
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
               "qawolf/sharing-code-across-flows",
