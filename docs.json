@@ -314,7 +314,6 @@
           {
             "group": "@qawolf/testkit",
             "pages": [
-              "qawolf/libraries/testkit/api-reference/index",
               "qawolf/libraries/testkit/api-reference/core",
               "qawolf/libraries/testkit/api-reference/types",
               "qawolf/libraries/testkit/api-reference/web",
@@ -325,7 +324,6 @@
           {
             "group": "@qawolf/emails",
             "pages": [
-              "qawolf/libraries/emails/api-reference/index",
               "qawolf/libraries/emails/api-reference/mail",
               "qawolf/libraries/emails/api-reference/client",
               "qawolf/libraries/emails/troubleshooting"
