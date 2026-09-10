@@ -60,6 +60,20 @@ const cleanup = await device.simulateNetworkCondition(device.NETWORK_OFFLINE);
 await cleanup();
 ```
 
+**Check the currently applied condition:**
+
+```js
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.simulateNetworkCondition(device.NETWORK_3G);
+
+const status = await device.getNetworkCondition();
+// status.enabled === true
+// status.config reflects NETWORK_3G's bandwidthKbps, latencyMs, jitterMs, packetLossPercent
+
+await cleanup();
+```
+
 ## When to use
 
 - Testing how your app behaves when loading is slow — spinners, timeouts, retry logic.

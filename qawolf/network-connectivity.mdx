@@ -64,6 +64,24 @@ const cleanup = await device.routeTraffic({
 await cleanup();
 ```
 
+**Check the current routing status:**
+
+```js
+import { device } from "@qawolf/flows/ios";
+
+const cleanup = await device.routeTraffic({
+  apps: ["com.example.myapp"],
+  tunnel: { type: "wireguard", configPath: "/configs/us-west.conf" },
+});
+
+const status = await device.getNetworkStatus();
+// status.route === "wireguard"
+// status.tunnels[...].status === "up" once the tunnel is connected
+// status.routedApps includes "com.example.myapp"
+
+await cleanup();
+```
+
 ## When to use
 
 - Your app connects to internal or staging services that aren't publicly accessible.
