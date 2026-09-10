@@ -3,7 +3,7 @@ title: "Anatomy of a flow"
 description: "Learn the structure of every QA Wolf flow — imports, the flow wrapper, launch styles, callback parameters, and the AAA framework."
 ---
 
-If the agent generated a flow for you and you want to understand what it produced, this page explains each part. If your team has written Playwright or Appium tests before, QA Wolf flows will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
+If the agent generated a flow for you and you want to understand what it produced, here's what each part does. If your team has written Playwright or Appium tests before, QA Wolf flows will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
 
 Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells the runner what to run, where to run it, and which runtime objects to inject into the callback.
 
@@ -62,7 +62,7 @@ export default flow(
 
 **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
 
-**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target Literals](/qawolf/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the current list of values.
+**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target literals](/qawolf/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the list of values.
 
 **Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
 
@@ -198,14 +198,14 @@ Launch-enabled flows also receive the platform object (`page`, `context`, `brows
 For the full callback context shape, see the API Reference for [Web](/qawolf/libraries/flows/api-reference/web#flow-callback-context), [Android](/qawolf/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/qawolf/libraries/flows/api-reference/ios#flow-callback-context).
 
 <Note>
-  `launch()`, `device`, and `platform.target` are stubs in the package code, and they are replaced by the runner at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
+  `launch()`, `device`, and `platform.target` are stubs in the package code, and the runner replaces them at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
   \
   Module-level code should be limited to imports, constants, and pure helper functions.
 </Note>
 
 ## Environment variables
 
-Reference environment variables with `process.env.VAR_NAME`. They are typically used in the Arrange section before any interactions begin.
+Reference environment variables with `process.env.VAR_NAME`. You typically use them in the Arrange section before any interactions begin.
 
 ```typescript
 await page.goto(process.env.BASE_URL);

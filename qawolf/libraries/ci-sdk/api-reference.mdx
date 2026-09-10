@@ -12,9 +12,9 @@ sidebarTitle: "SDK Reference"
 npm install @qawolf/ci-sdk
 ```
 
-<Note>
+<Check>
   Requires Node.js 18 or later.
-</Note>
+</Check>
 
 ```javascript
 import { fetch } from "undici";
@@ -46,7 +46,7 @@ const {
 
 ## attemptNotifyDeploy
 
-Notifies QA Wolf of a successful deployment, which starts a test run if one is configured. See [webhooks/deploy\_success](/qawolf/deploy-success) for the underlying endpoint.
+Notifies QA Wolf of a successful deployment, which starts a run if one is configured. See [webhooks/deploy\_success](/qawolf/deploy-success) for the underlying endpoint.
 
 ```javascript
 import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
@@ -112,7 +112,7 @@ const runId = result.runId;
 
 ## pollCiGreenlightStatus
 
-Polls the [CI greenlight endpoint](/qawolf/v0-ci-greenlight) until the run completes and returns whether it is safe to release.
+Polls the [CI greenlight endpoint](/qawolf/v0-ci-greenlight) until the run completes. Returns whether it is safe to release.
 
 ```javascript
 import { makeQaWolfSdk } from "@qawolf/ci-sdk";
@@ -246,7 +246,7 @@ Pass one of the following to identify the environment:
 | --- | --- | --- |
 | `environmentId` | string | ID of the ephemeral environment. |
 | `environmentAlias` | string | Alias of the ephemeral environment. |
-| `deploymentUrl` | string | Preview URL used when the environment was created. This should be the same `deploymentUrl` you passed to `attemptNotifyDeploy` along with `ephemeralEnvironment`: true when originally notifying us. |
+| `deploymentUrl` | string | Preview URL used when the environment was created — must match the `deploymentUrl` passed to `attemptNotifyDeploy` along with `ephemeralEnvironment: true` when originally notifying QA Wolf. |
 
 You may also pass `workspaceId`:
 
@@ -306,7 +306,7 @@ await fetch(signedUrlResponse.uploadUrl, {
 | --- | --- |
 | `success` | `true` if the signed URL was generated successfully. |
 | `uploadUrl` | Pre-signed URL for uploading the file via `PUT`. |
-| `playgroundFileLocation` | File path without team ID. Use as a `variables` value in `attemptNotifyDeploy`. |
+| `playgroundFileLocation` | File path without workspace ID. Use as a `variables` value in `attemptNotifyDeploy`. |
 
 ## Versioning
 

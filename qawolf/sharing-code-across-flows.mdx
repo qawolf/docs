@@ -27,7 +27,7 @@ export async function getConsoleLogs(driver: WebdriverIO.Browser) {
 
 ## Use platform-specific entry points
 
-Rather than writing one flow that handles multiple platforms, write separate flows using the entry point for each platform. The `device` API surface is consistent across platforms, so the flows look similar even though they run on different infrastructure.
+Rather than writing one flow that handles multiple platforms, write separate flows using the entry point for each platform. The `device` API surface is consistent across platforms. As a result, the flows look similar even though they run on different infrastructure.
 
 ```typescript
 // /src/flows/set-location-android.ts

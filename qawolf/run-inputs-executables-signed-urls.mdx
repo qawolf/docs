@@ -6,7 +6,7 @@ description: "Generate a signed URL and upload an executable file to QA Wolf."
 `GET https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls`
 
 <Warning>
-  Only the following file types are accepted: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`, `.csv`, `.pdf`
+  QA Wolf only accepts the following file types: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`, `.csv`, `.pdf`
 </Warning>
 
 ## Generate a signed URL
@@ -42,7 +42,7 @@ curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DES
 
 `PUT {signedUrl}`
 
-The signed URL is returned by the previous request. It is not a fixed `/api/` endpoint — it points directly to Google Cloud Storage.
+The previous request returns the signed URL. It is not a fixed `/api/` endpoint — it points directly to Google Cloud Storage.
 
 ```bash
 curl -X PUT \
@@ -57,7 +57,7 @@ curl -X PUT \
 | --- | --- |
 | `200` | Success. |
 | `401` | Missing or invalid API key. |
-| `403` | Forbidden. Usually indicates a disabled team. |
+| `403` | Forbidden. Usually indicates a disabled workspace. |
 | `500` | Internal server error. Contact support if the issue persists. |
 
 ## Related

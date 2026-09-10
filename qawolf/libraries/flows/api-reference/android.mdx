@@ -6,9 +6,9 @@ sidebarTitle: "Android"
 
 `@qawolf/flows/android` defines Android flows and advanced device controls.
 
-QA Wolf runs Android flows on ephemeral emulators — a fresh emulator is provisioned for each run and discarded when it finishes, so every run starts from a clean, predictable state with nothing carried over from a previous one. Because emulators are created on demand, you don't reserve or configure devices yourself: choose a target and QA Wolf allocates an emulator for it.
+QA Wolf runs Android flows on ephemeral emulators. A fresh one is provisioned for each run and discarded when it finishes, so nothing carries over from a previous run. Because emulators are created on demand, you don't reserve or configure devices yourself: choose a target and QA Wolf allocates an emulator for it.
 
-## Primary Exports
+## Primary exports
 
 - `flow(...)`
 - `launch(...)`
@@ -34,7 +34,7 @@ export default flow(
 );
 ```
 
-## Flow Callback Context
+## Flow callback context
 
 All Android flow callbacks receive:
 
@@ -52,9 +52,9 @@ Launch-enabled Android flows also receive `driver`.
 
 `testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.
 
-## Target Model
+## Target model
 
-The current target input model is:
+The target input model is:
 
 ```ts
 type AndroidFlowTargetInput =
@@ -69,7 +69,7 @@ type AndroidFlowTargetInput =
     };
 ```
 
-The implementation accepts either:
+Pass either:
 
 - a target directly for the common path
 - `{ target, launch }` when startup behavior should be part of the flow
@@ -102,8 +102,6 @@ export const launchedFlow = flow(
 
 Use `flow(...)` for Android authoring.
 
-Behavior from the implementation:
-
 - without launch, the callback receives `inputs`, `setOutput(...)`, and `test(...)`
 - with `launch: true`, the flow calls `launch()` with default Android startup
 - with `launch: <options>`, the flow calls `launch(options)`
@@ -127,7 +125,7 @@ export default flow(
 
 ## `launch(...)`
 
-`launch()` starts Android automation for the active flow and returns:
+Starts Android automation for the active flow. Returns:
 
 ```ts
 type LaunchResult = {
@@ -148,7 +146,7 @@ export default flow("Launch explicitly", "Android - Pixel", async () => {
 });
 ```
 
-### Launch Shape
+### Launch shape
 
 ```ts
 type LaunchOptions = {
@@ -184,9 +182,9 @@ export default flow("Launch apk", "Android - Pixel", async () => {
 });
 ```
 
-### Launch Defaults
+### Launch defaults
 
-The current implementation applies these defaults:
+The implementation applies these defaults:
 
 - when `app` is omitted, launch falls back to the runner-provided executable input path and then to installed-app startup through `appPackage`
 - `autoGrantPermissions` defaults to `true`
@@ -206,11 +204,11 @@ export default flow("Use Android defaults", "Android - Pixel", async () => {
 });
 ```
 
-### App Resolution
+### App resolution
 
 When your CI pipeline uploads an Android build, QA Wolf sets `RUN_INPUT_PATH` to the uploaded file before the flow runs. Omit `app` in your launch call and QA Wolf will use that path automatically — you only need to provide the `appPackage`.
 
-When `app` is provided, the current resolution order is:
+When `app` is provided, the resolution order is:
 
 1. `app.path`
 2. `app.env`
@@ -218,7 +216,7 @@ When `app` is provided, the current resolution order is:
 
 When `app` is omitted, launch falls back to `RUN_INPUT_PATH`.
 
-Relative paths are resolved against `RUN_INPUTS_EXECUTABLES_DIR` when that environment variable is present.
+QA Wolf resolves relative paths against `RUN_INPUTS_EXECUTABLES_DIR` when that environment variable is present.
 
 Explicit app source examples:
 
@@ -260,7 +258,7 @@ await launch({ app: { url: "https://builds.example.com/app.apk?token=abc" } });
 
 QA Wolf writes the version of the installed build to the run log, so you can confirm which build a run tested against.
 
-A URL is only fetched by QA Wolf when its path ends in `.apk` or `.aab`. A query string does not change that, so a signed or expiring download link works as long as the path keeps the extension. Anything else, such as a share page or a download endpoint that names the file elsewhere, is passed to the driver untouched.
+QA Wolf only fetches a URL when its path ends in `.apk` or `.aab`. A query string does not change that, so a signed or expiring download link works as long as the path keeps the extension. QA Wolf passes anything else, such as a share page or a download endpoint that names the file elsewhere, to the driver untouched.
 
 You can also install an app yourself over adb, which skips everything above:
 
@@ -271,7 +269,7 @@ await launch({ appPackage: "com.example.app", appActivity: ".MainActivity" });
 ```
 
 <Note>
-  Prefer handing us the `.apk` or `.aab`. Installing over adb means you own everything that comes with it: choosing the right split APKs for the device, reading the manifest for the launcher activity, and sizing the transfer. Passing `app` gets all of that handled for you.
+  Prefer handing QA Wolf the `.apk` or `.aab`. Installing over adb means you own everything that comes with it: choosing the right split APKs for the device, reading the manifest for the launcher activity, and sizing the transfer. Passing `app` gets all of that handled for you.
 </Note>
 
 ### Advanced Appium capabilities

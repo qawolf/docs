@@ -6,7 +6,7 @@ sidebarTitle: "Web"
 
 `@qawolf/flows/web` defines web flows and optional explicit launch behavior.
 
-## Primary Exports
+## Primary exports
 
 - `flow(...)`
 - `launch(...)`
@@ -35,7 +35,7 @@ export default flow(
 );
 ```
 
-## Target Model
+## Target model
 
 Web flows accept web targets only. Use the CLI entry point for `Basic`.
 
@@ -84,7 +84,7 @@ export const launchedFlow = flow(
 );
 ```
 
-## Launch Shapes
+## Launch shapes
 
 Browser launch accepts the generated Playwright browser and context launch options, excluding Playwright's raw `persistentContext` and `userDataDir` fields. QA Wolf adds `browserContext`, reintroduces `userDataDir` for persistent launches, and maps those options back to the underlying Playwright shape.
 
@@ -127,7 +127,7 @@ type LaunchResult =
   | ElectronLaunchResult;
 ```
 
-QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context mode. Pass `userDataDir` with `browserContext: "persistent"` when a profile directory should be reused.
+QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context mode. Pass `userDataDir` with `browserContext: "persistent"` when you want to reuse a profile directory.
 
 Browser example:
 
@@ -193,7 +193,7 @@ Static launch options infer a narrow return type when they determine the result 
 
 Use `isAnonymous(...)`, `isPersistent(...)`, and `isElectron(...)` to narrow dynamic results before reading shape-specific fields.
 
-## Flow Callback Context
+## Flow callback context
 
 All web flow callbacks receive:
 

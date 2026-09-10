@@ -65,14 +65,14 @@ runs.
 ```
 
 `@typescript-eslint/no-deprecated` is a useful one to know about: it flags calls
-to any API whose documentation marks it `@deprecated`, which includes the
+to any API whose documentation marks it `@deprecated`. That includes the
 Playwright methods that have been superseded — `page.type()`, for example.
 
 <Note>
   Rules that need type information — `no-deprecated` among them — report where
   the types they need are loaded. In the editor that includes the types of the
-  packages your code imports. While an AI job runs, imports from npm packages
-  are not resolved, so a rule of this kind reports less there.
+  packages your code imports. While an AI job runs, it does not resolve
+  imports from npm packages, so a rule of this kind reports less there.
 </Note>
 
 ## Page object model rules
@@ -151,11 +151,11 @@ is running.
 Two more limits worth knowing:
 
 - **Options are not supported.** In `"no-redeclare": ["error", { … }]` the
-  severity applies and the options after it are dropped.
-- **`@qawolf/eslint-plugin-pom` is the only plugin supported at this time.**
+  severity applies, and QA Wolf drops the options after it.
+- **`@qawolf/eslint-plugin-pom` is the only plugin supported.**
   Naming any other plugin in `extends` or `plugins` has no effect, and the
-  editor tells you it was skipped. QA Wolf can support additional plugins —
-  ask, and we will look at adding the one you need.
+  editor tells you QA Wolf skipped it. QA Wolf can support additional plugins —
+  ask, and QA Wolf will look at adding the one you need.
 
 Four spellings all enable the plugin, so use whichever reads best to you:
 `@qawolf/eslint-plugin-pom`, `@qawolf/pom`, `@qawolf/pom-lint`, or
@@ -166,5 +166,5 @@ alike.
 
 If `.eslintrc.json` is not valid JSON, is not a JSON object, or is longer than
 131,072 characters, QA Wolf ignores the whole file and enables none of the page
-object model rules. The base rules still run, and the editor explains why the
-file was skipped.
+object model rules. The base rules still run, and the editor explains why QA
+Wolf skipped the file.

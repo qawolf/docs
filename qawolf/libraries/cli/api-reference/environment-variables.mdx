@@ -12,17 +12,17 @@ API key for the QA Wolf platform. Used by `flows pull`, `flows list --remote`, a
 
 ## `QAWOLF_API_URL`
 
-Base URL for the QA Wolf platform API. Defaults to `https://app.qawolf.com`. Trailing slashes are stripped.
+Base URL for the QA Wolf platform API. Defaults to `https://app.qawolf.com`. The CLI strips trailing slashes.
 
 ## `ANDROID_HOME`
 
-Path to the Android SDK root. Required by `qawolf install android` and by Android flow execution. `ANDROID_SDK_ROOT` is accepted as a fallback.
+Path to the Android SDK root. Required by `qawolf install android` and by Android flow execution. The CLI accepts `ANDROID_SDK_ROOT` as a fallback.
 
 ## `ANDROID_SDK_ROOT`
 
 Fallback path to the Android SDK root, used when `ANDROID_HOME` is not set.
 
-## CI Detection
+## CI detection
 
 The CLI treats the following variables as a signal that it is running in CI and switches the default output format to JSON:
 
@@ -33,7 +33,7 @@ The CLI treats the following variables as a signal that it is running in CI and 
 - `JENKINS_URL`
 - `BUILDKITE`
 
-## Agent Detection
+## Agent detection
 
 The CLI treats the following variables as a signal that it is running inside an agent and switches the default output format to agent mode:
 

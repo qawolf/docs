@@ -126,7 +126,7 @@ export default flow(
 ```
 
 <Note>
-  Available built-in macros are determined by the Android emulator. `Walk_to_image_room` is the macro used to animate the virtual camera toward a placed image. See [Android Emulator camera support](https://developer.android.com/studio/run/emulator-use-camera#arcore) for more detail on virtual scene automation.
+  The Android emulator determines the available built-in macros. `Walk_to_image_room` is the macro used to animate the virtual camera toward a placed image. See [Android Emulator camera support](https://developer.android.com/studio/run/emulator-use-camera#arcore) for more detail on virtual scene automation.
 </Note>
 
 ## `setProxy`
@@ -194,7 +194,7 @@ type PassAudioAsMicrophoneInputOptions = {
 ```
 
 <Warning>
-  Playback is synchronous: the promise resolves only once the audio has finished playing. Your app has to be recording **before** you call this, otherwise the file plays into a microphone nobody is listening to and the recording that follows captures silence. `delaySeconds` does not work around this, since it is awaited inline as well.
+  Playback is synchronous: the promise resolves only once the audio has finished playing. Your app has to be recording **before** you call this. Otherwise, the file plays into a microphone nobody is listening to, and the recording that follows captures silence. `delaySeconds` does not work around this, since it is awaited inline as well.
 </Warning>
 
 Example:
@@ -235,7 +235,7 @@ await playback;
 ```
 
 <Note>
-  Playback is bounded by the command timeout (1 minute by default). For audio longer than a minute, pass `durationSeconds`. See [Microphone injection](/qawolf/android-audio-injection) for a full walkthrough.
+  The command timeout (1 minute by default) bounds playback. For audio longer than a minute, pass `durationSeconds`. See [Microphone injection](/qawolf/android-audio-injection) for a full walkthrough.
 </Note>
 
 ## `adb`
@@ -271,7 +271,7 @@ export default flow(
 );
 ```
 
-Real-world example — jump the device clock to test time-gated features (disable auto time, move the clock, then restore):
+Example — jump the device clock to test time-gated features (disable auto time, move the clock, then restore):
 
 ```typescript
 import { device, flow } from "@qawolf/flows/android";

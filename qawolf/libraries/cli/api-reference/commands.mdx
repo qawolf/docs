@@ -4,11 +4,11 @@ description: "Reference notes for every qawolf CLI command and flag."
 sidebarTitle: "Commands"
 ---
 
-The qawolf CLI exposes six top-level commands. Each section below documents the command's purpose, accepted arguments, and flags.
+The qawolf CLI exposes six top-level commands.
 
 ## `auth`
 
-Manages authentication with the QA Wolf platform. Credentials are read from the `QAWOLF_API_KEY` environment variable first, then from the system keychain, then from a config file fallback.
+Manages authentication with the QA Wolf platform. The CLI reads credentials from the `QAWOLF_API_KEY` environment variable first, then the system keychain, then a config file fallback.
 
 ### `auth login`
 
@@ -20,7 +20,7 @@ qawolf auth login
 
 ### `auth logout`
 
-Removes stored credentials. Credentials set via the `QAWOLF_API_KEY` environment variable cannot be removed by this command.
+Removes stored credentials. This command cannot remove credentials set via the `QAWOLF_API_KEY` environment variable.
 
 ```bash
 qawolf auth logout
@@ -28,7 +28,7 @@ qawolf auth logout
 
 ### `auth whoami`
 
-Displays the authenticated team name, ID, optional slug, and the credential source.
+Displays the authenticated workspace name, ID, optional slug, and the credential source.
 
 ```bash
 qawolf auth whoami
@@ -61,7 +61,7 @@ Options:
 - `--har-content <mode>` — `omit` or `full`. `full` includes response bodies and uses more memory. Default: `omit`.
 - `--output-dir <path>` — directory for artifacts. Default: `qawolf-output`.
 - `--headed` — show the browser window instead of running headless. Default: `false`.
-- `--env <env_id>` — environment ID. When set, missing flows are pulled before the run. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
+- `--env <env_id>` — environment ID. When set, the CLI pulls missing flows before the run. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
 
 Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments or an unrecognized flow target. See [Exit codes](/qawolf/libraries/cli/api-reference/index#exit-codes).
 
@@ -97,7 +97,7 @@ Options:
 
 ## `install`
 
-Installs every runtime dependency the project's flows need. With a `[pattern]` argument, only the dependencies for the matching flows are installed.
+Installs every runtime dependency the project's flows need. With a `[pattern]` argument, it installs only the dependencies for the matching flows.
 
 ```bash
 qawolf install
@@ -124,7 +124,7 @@ qawolf install android "flows/mobile/**"
 
 ## `init`
 
-Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. When no `package.json` exists, creates one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script; when one already exists, only adds the `test:e2e` script (after a prompt).
+Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. When no `package.json` exists, creates one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script. When one already exists, only adds the `test:e2e` script, after a prompt.
 
 ```bash
 qawolf init

@@ -4,7 +4,7 @@ description: "Troubleshoot common @qawolf/testkit problems, including missing cl
 sidebarTitle: "Troubleshooting"
 ---
 
-## Helper Throws Because No Client Is Configured
+## Helper throws because no client is configured
 
 Cause: The flow called a client-dependent helper before the runner configured the testkit client.
 
@@ -13,7 +13,7 @@ Check:
 - the runner calls `configureTestkitClient(...)` before flow execution
 - tests call `resetTestkitClient()` between cases
 
-## `saveBaselineScreenshot()` Throws
+## `saveBaselineScreenshot()` throws
 
 Cause: The configured client was created without `saveSnapshot`.
 
@@ -21,7 +21,7 @@ Check:
 
 - the runtime passed snapshot support into `createTestkitClient(...)`
 
-## QR Code Helper Returns `undefined`
+## QR code helper returns `undefined`
 
 Check:
 

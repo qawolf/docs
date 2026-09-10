@@ -4,7 +4,7 @@ description: "Install the Playwright browsers, Android system images, and driver
 sidebarTitle: "Install dependencies"
 ---
 
-[`qawolf flows run --env <env_id>`](/qawolf/local-execution/run-flows-locally) installs npm dependencies and Playwright browsers automatically before its first run, so web-only users rarely invoke `qawolf install` directly. Android dependencies are not installed during a run; run `qawolf install android` before running Android flows. Also reach for `qawolf install` to install ahead of time (for example, to warm a CI cache between the checkout step and the run step) or when running flows from a [local-only project](/qawolf/local-execution/set-up-a-project).
+[`qawolf flows run --env <env_id>`](/qawolf/local-execution/run-flows-locally) installs npm dependencies and Playwright browsers automatically before its first run, so web-only users rarely invoke `qawolf install` directly. A run doesn't install Android dependencies; run `qawolf install android` before running Android flows. Use `qawolf install` to install ahead of time (for example, to warm a CI cache between the checkout step and the run step) or when running flows from a [local-only project](/qawolf/local-execution/set-up-a-project).
 
 ## Install everything the project needs
 
@@ -54,4 +54,4 @@ The command installs the Appium uiautomator2 driver, downloads the Android syste
 
 ## iOS support
 
-iOS flows are not yet executable by the CLI. `qawolf install` skips them with a warning. iOS support requires macOS with Xcode when it ships.
+The CLI cannot yet execute iOS flows. `qawolf install` skips them with a warning. iOS support requires macOS with Xcode when it ships.

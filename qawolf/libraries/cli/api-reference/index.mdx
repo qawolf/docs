@@ -25,7 +25,7 @@ qawolf flows run
 
 Find the environment ID in the app URL — see [Pull flows](/qawolf/local-execution/pull-flows#pull-an-environment).
 
-## Global Options
+## Global options
 
 The following flags apply to every command:
 
@@ -34,11 +34,11 @@ The following flags apply to every command:
 - `--agent` — formats output for agent consumption.
 - `-V, --version` — prints the CLI version.
 
-When a recognized CI environment is detected (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `JENKINS_URL`, `BUILDKITE`), output defaults to JSON. When a recognized agent environment is detected (`CLAUDE_CODE`, `CURSOR_SESSION_ID`), output defaults to agent mode.
+When the CLI detects a recognized CI environment (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `JENKINS_URL`, `BUILDKITE`), output defaults to JSON. When it detects a recognized agent environment (`CLAUDE_CODE`, `CURSOR_SESSION_ID`), output defaults to agent mode.
 
-With `--json` or `--agent`, the structured result is written to stdout and diagnostic text to stderr, so scripts can parse stdout directly.
+With `--json` or `--agent`, the CLI writes the structured result to stdout and diagnostic text to stderr, so scripts can parse stdout directly.
 
-## Exit Codes
+## Exit codes
 
 Every qawolf CLI command exits with one of the codes below.
 

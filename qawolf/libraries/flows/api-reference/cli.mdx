@@ -20,7 +20,7 @@ export default flow("Read build metadata", "Basic", async ({ test }) => {
 });
 ```
 
-## Primary Exports
+## Primary exports
 
 - `flow(...)`
 - `expect`
@@ -48,9 +48,9 @@ export default flow(
 );
 ```
 
-## Target Model
+## Target model
 
-The current target type is:
+The target type is:
 
 ```ts
 type CliFlowTarget = "Basic";
@@ -76,7 +76,7 @@ export const objectTargetFlow = flow(
 );
 ```
 
-## Flow Callback Context
+## Flow callback context
 
 The callback receives the Node flow context.
 
@@ -92,7 +92,7 @@ Node flows do not receive `page`, `driver`, or any other launch object.
   `test(...)` can be omitted for simple flows where grouping steps into named sub-steps doesn't add value. For most flows, wrapping steps in `test(...)` is recommended — the label appears in your results and makes failures easier to locate.
 </Note>
 
-`inputs` and `setOutput(...)` are demonstrated in the [Primary Exports example above](#primary-exports). See [Passing data between flows](/qawolf/Pass-data-between-flows) for how to use them to coordinate with other flows in a run.
+`inputs` and `setOutput(...)` are demonstrated in the [Primary exports example above](#primary-exports). See [Passing data between flows](/qawolf/Pass-data-between-flows) for how to use them to coordinate with other flows in a run.
 
 ## `testContextDependencies`
 

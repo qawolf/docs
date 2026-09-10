@@ -6,7 +6,7 @@ sidebarTitle: "Top-Level"
 
 The top-level `@qawolf/flows` entry point exposes cross-platform helpers and types.
 
-## Primary Exports
+## Primary exports
 
 - `platform.target`
 - `configureTarget(...)`
@@ -19,7 +19,7 @@ It also re-exports:
 - `type Target`
 - `type TargetScope`
 
-## Target Literals
+## Target literals
 
 The target string must exactly match one of the supported values or your flow will fail to initialize.
 
@@ -107,10 +107,7 @@ configureTarget({ target });
 console.log(platform.target);
 ```
 
-Current behavior from the implementation:
-
-- it throws if no target has been configured
-- it always reflects the latest value set through `configureTarget(...)`
+It throws if no target has been configured. It always reflects the latest value set through `configureTarget(...)`.
 
 ## `configureTarget(...)`
 

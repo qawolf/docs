@@ -15,7 +15,7 @@ QA Wolf accepts file uploads via a two-step signed URL process. See [v0/run-inpu
 
 ### Mobile apps
 
-An uploaded build is resolved automatically through `RUN_INPUT_PATH` — omit `app` in your launch call and provide only the package/bundle ID:
+QA Wolf resolves an uploaded build automatically through `RUN_INPUT_PATH` — omit `app` in your launch call and provide only the package/bundle ID:
 
 ```typescript
 import { flow, launch } from "@qawolf/flows/android";
@@ -27,7 +27,7 @@ export default flow("Open uploaded build", "Android - Pixel", async () => {
 });
 ```
 
-See [App Resolution](/qawolf/libraries/flows/api-reference/android#app-resolution) (or the [iOS equivalent](/qawolf/libraries/flows/api-reference/ios#app-resolution)) for the full resolution order and how to reference a specific path or URL instead.
+See [App resolution](/qawolf/libraries/flows/api-reference/android#app-resolution) (or the [iOS equivalent](/qawolf/libraries/flows/api-reference/ios#app-resolution)) for the full resolution order and how to reference a specific path or URL instead.
 
 ### Web file upload
 
@@ -44,9 +44,9 @@ page.once(
 await page.getByText("Upload file").click();
 ```
 
-<Note>
+<Warning>
   Use `page.once` rather than `page.on`. `page.once` registers a one-time event listener that automatically unregisters after the first use. Using `page.on` adds a persistent listener that may interfere with subsequent file uploads in the same flow.
-</Note>
+</Warning>
 
 ### PDF viewing
 
@@ -79,14 +79,14 @@ await pdfPage.click("#openFile");
   </Accordion>
 
   <Accordion title="ZIP archives (.zip)">
-    ZIP files can be used to bundle multiple assets for a single upload. Ensure the contents follow any structure expected by the tests that will consume them.
+    Use ZIP files to bundle multiple assets for a single upload. Make sure the contents match the structure your tests expect.
   </Accordion>
 
   <Accordion title="CSV files (.csv)">
-    CSV files are typically used as test data inputs. Use a consistent filename so flows always pick up the latest version.
+    Use CSV files as test data inputs. Use a consistent filename so flows always pick up the latest version.
   </Accordion>
 
   <Accordion title="PDF files (.pdf)">
-    PDF files can be uploaded for use in test flows that involve document handling or validation.
+    Upload PDF files for use in test flows that involve document handling or validation.
   </Accordion>
 </AccordionGroup>

@@ -19,7 +19,7 @@ const inbox = await mail.inbox({ new: true });
 console.log(inbox.emailAddress);
 ```
 
-## Inbox Handle
+## Inbox handle
 
 The returned inbox handle exposes:
 
@@ -28,7 +28,7 @@ The returned inbox handle exposes:
 - `waitForMessage(...)`
 - `waitForMessages(...)`
 
-The current exported wait type is shared by both wait methods. The sections below describe which fields each method actually uses. Pass `{}` when you want default wait behavior.
+The exported wait type is shared by both wait methods. Each method uses only some of its fields. Pass `{}` when you want default wait behavior.
 
 Example:
 
@@ -54,7 +54,7 @@ type GetInboxOptions = {
 };
 ```
 
-Current validation and behavior:
+Validation and behavior:
 
 - `new: true` derives a unique address based on the current default
 - `delimiter` customizes the separator used for derived addresses
@@ -73,7 +73,7 @@ const derivedInbox = await mail.inbox({ new: true, delimiter: "-" });
 
 ## `sendMessage(...)`
 
-Current input shape:
+Input shape:
 
 ```ts
 type SendMessage = {
@@ -99,7 +99,7 @@ Behavior:
 
 - `to` is always an array of strings
 - at least one of `html` or `text` is required
-- attachments are base64-encoded before the request is sent to the email service
+- QA Wolf base64-encodes attachments before sending the request to the email service
 
 Return shape:
 
@@ -130,7 +130,7 @@ console.log(result.id);
 
 ## `waitForMessage(...)`
 
-Current method options:
+Method options:
 
 ```ts
 type WaitForMessageOptions = {
@@ -139,7 +139,7 @@ type WaitForMessageOptions = {
 };
 ```
 
-For `waitForMessage(...)`, the implementation uses:
+`waitForMessage(...)` uses:
 
 - `after` when it is provided
 - otherwise the time when `mail.inbox(...)` was called
@@ -160,7 +160,7 @@ console.log(message.subject);
 
 ## `waitForMessages(...)`
 
-Current method options:
+Method options:
 
 ```ts
 type WaitForMessagesOptions = {
@@ -190,7 +190,7 @@ const messages = await inbox.waitForMessages({
 console.log(messages.map((message) => message.subject));
 ```
 
-## Parsed Email Shape
+## Parsed email shape
 
 The parsed email shape is:
 
@@ -215,7 +215,7 @@ type ParsedEmail = {
 };
 ```
 
-`urls` is derived by parsing links from the HTML body.
+QA Wolf derives `urls` by parsing links from the HTML body.
 
 Example:
 
