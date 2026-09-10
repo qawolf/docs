@@ -99,10 +99,6 @@
             "pages": [
               "qawolf/Map-your-app-s-workflows",
               "qawolf/getting-the-most-out-of-automate",
-              "qawolf/reusable-ai-knowledge",
-              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/Uploading-manually",
-              "qawolf/sharing-code-across-flows",
               "qawolf/lint-rules"
             ]
           },
@@ -320,6 +316,15 @@
                 ]
               },
               "qawolf/libraries/flows/troubleshooting"
+            ]
+          },
+          {
+            "group": "Flow authoring",
+            "pages": [
+              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
+              "qawolf/sharing-code-across-flows",
+              "qawolf/Uploading-manually",
+              "qawolf/reusable-ai-knowledge"
             ]
           },
           {
