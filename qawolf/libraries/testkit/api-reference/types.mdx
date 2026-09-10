@@ -144,20 +144,7 @@ type TestkitPorts = {
 };
 ```
 
-These are the environment-specific ports that runners pass to `createTestkitClient(...)`.
-
-Example:
-
-```ts
-const ports: TestkitPorts = {
-  mountCifsShare: async ({ mountPoint }) => mountPoint,
-  saveSnapshot: async (name, bytes) => {
-    console.log(name, bytes.length);
-  },
-  startOpenVpn: async ({ configPath }) => configPath,
-  startWireGuard: async ({ configPath }) => configPath,
-};
-```
+These are the environment-specific ports that runners pass to `createTestkitClient(...)`. See [Client](/qawolf/libraries/testkit/api-reference/client#input-ports) for a full working set of ports.
 
 ## `TestkitClient`
 
@@ -168,16 +155,12 @@ const ports: TestkitPorts = {
 
 If `saveSnapshot` is provided, the created client exposes `saveBaselineScreenshot(...)`. Otherwise that method is absent.
 
-Example:
+Example — a client built without the `saveSnapshot` port (see [Client](/qawolf/libraries/testkit/api-reference/client#input-ports) for a full set of ports):
 
 ```ts
 import { createTestkitClient } from "@qawolf/testkit/client";
 
-const client = createTestkitClient({
-  mountCifsShare: async ({ mountPoint }) => mountPoint,
-  startOpenVpn: async ({ configPath }) => configPath,
-  startWireGuard: async ({ configPath }) => configPath,
-});
+const client = createTestkitClient(portsWithoutSaveSnapshot);
 
 console.log(client.saveBaselineScreenshot); // undefined without saveSnapshot
 ```

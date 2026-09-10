@@ -31,13 +31,8 @@ import {
 } from "@qawolf/testkit";
 import { createTestkitClient } from "@qawolf/testkit/client";
 
-configureTestkitClient(
-  createTestkitClient({
-    mountCifsShare: async () => "/Volumes/shared",
-    startOpenVpn: async () => "vpn-started",
-    startWireGuard: async () => "wireguard-started",
-  }),
-);
+// see Client for how to build this
+configureTestkitClient(createTestkitClient(runnerPorts));
 
 const code = otp.fromUri("otpauth://totp/QA%20Wolf?secret=JBSWY3DPEHPK3PXP");
 

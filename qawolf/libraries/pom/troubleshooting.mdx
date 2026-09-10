@@ -42,9 +42,7 @@ Check:
 
 ## A Page Object's Popup Or Route Hook Never Runs
 
-Cause: The page object is not registered, or page hooks are collected by an
-own-property check on the **registered** class's prototype and the override is
-inherited from a base class.
+Cause: The page object is not registered, or its hook override isn't detected — see [Entry points and page hooks](/qawolf/libraries/pom/api-reference/index#entry-points-and-page-hooks) for how hook collection actually works.
 
 Check:
 

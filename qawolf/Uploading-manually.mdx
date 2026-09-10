@@ -15,15 +15,19 @@ QA Wolf accepts file uploads via a two-step signed URL process. See [v0/run-inpu
 
 ### Mobile apps
 
-Reference the uploaded file using the `RUN_INPUT_PATH` environment variable, which is set automatically when a file is uploaded via the API.
+An uploaded build is resolved automatically through `RUN_INPUT_PATH` — omit `app` in your launch call and provide only the package/bundle ID:
 
-```javascript
-const APK_PATH = `/home/wolf/run-inputs-executables/${process.env.RUN_INPUT_PATH || "default-file.apk"}`;
+```typescript
+import { flow, launch } from "@qawolf/flows/android";
 
-const driver = await wdio.startAndroid({
-  "appium:app": APK_PATH,
+export default flow("Open uploaded build", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    appPackage: "com.example.android",
+  });
 });
 ```
+
+See [App Resolution](/qawolf/libraries/flows/api-reference/android#app-resolution) (or the [iOS equivalent](/qawolf/libraries/flows/api-reference/ios#app-resolution)) for the full resolution order and how to reference a specific path or URL instead.
 
 ### Web file upload
 
@@ -68,6 +72,10 @@ await pdfPage.click("#openFile");
 <AccordionGroup>
   <Accordion title="Mobile apps (.apk, .aab, .ipa)">
     Use a static filename based on the environment (e.g., `app-staging.ipa`) so tests always reference the latest build. See [Mobile build testing](/qawolf/Fastlane) for how to automate this as part of your build process.
+  </Accordion>
+
+  <Accordion title="Linux desktop apps (.deb)">
+    Use a static filename based on the environment so tests always reference the latest build, the same convention as mobile app builds.
   </Accordion>
 
   <Accordion title="ZIP archives (.zip)">

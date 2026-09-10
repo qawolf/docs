@@ -50,7 +50,7 @@ You may also pass `workspaceId`.
 }
 ```
 
-`warning` is present when the request needed a workspace and did not name one, in which case it reports the workspace QA Wolf used. It never changes the outcome. `@qawolf/ci-sdk` prints it for you.
+A `warning` field behaves the same way here as on [webhooks/deploy_success](/qawolf/deploy-success#response) — present when the request needed a workspace and didn't name one, never changing the outcome.
 
 ## Response codes
 

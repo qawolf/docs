@@ -22,7 +22,7 @@ export async function getConsoleLogs(driver: WebdriverIO.Browser) {
 ```
 
 <Note>
-  Module-level code should be limited to imports, constants, and pure helper functions. Runtime APIs like `launch()`, `expect`, `device`, and `platform.target` only work inside the flow callback — calling them at the module level will throw.
+  Keep helper functions like this one pure — see [Anatomy of a flow](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#callback-parameters) for why runtime APIs only work inside the flow callback, not at module level.
 </Note>
 
 ## Use platform-specific entry points
