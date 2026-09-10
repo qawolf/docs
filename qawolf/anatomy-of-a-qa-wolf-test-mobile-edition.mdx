@@ -1,11 +1,113 @@
 ---
 title: "Anatomy of a flow"
-description: "Learn the structure of every QA Wolf flow — imports, the flow wrapper, launch styles, callback parameters, and the AAA framework."
+description: "Learn the structure of every QA Wolf flow — the AAA framework, imports, the flow wrapper, launch styles, and callback parameters."
 ---
 
 If the agent generated a flow for you and you want to understand what it produced, here's what each part does. If your team has written Playwright or Appium tests before, QA Wolf flows will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
 
 Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells the runner what to run, where to run it, and which runtime objects to inject into the callback.
+
+## The AAA framework
+
+QA Wolf flows follow the Arrange, Act, Assert (AAA) format.
+
+**Arrange** sets up state before the interaction.\
+**Act** performs the interaction being tested.\
+**Assert** verifies the expected outcome.
+
+<CodeGroup>
+
+```typescript Web
+export default flow(
+  "Complete checkout",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
+    await test("arrange", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      await page.goto(process.env.BASE_URL);
+    });
+
+    await test("act", async () => {
+      //--------------------------------
+      // Act:
+      //--------------------------------
+      await page.fill("[data-testid='email']", "test@example.com");
+      await page.click("[data-testid='submit']");
+    });
+
+    await test("assert", async () => {
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      await expect(page).toHaveURL(`${process.env.BASE_URL}/confirmation`);
+    });
+  },
+);
+```
+
+```typescript iOS
+export default flow(
+  "Complete checkout",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("arrange", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).waitForDisplayed();
+    });
+
+    await test("act", async () => {
+      //--------------------------------
+      // Act:
+      //--------------------------------
+      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).setValue("test@example.com");
+      await driver.$(`-ios predicate string:name == 'Sign in' AND type == 'XCUIElementTypeButton'`).click();
+    });
+
+    await test("assert", async () => {
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      await driver.$(`-ios predicate string:name == 'Welcome' AND type == 'XCUIElementTypeStaticText'`).waitForDisplayed({ timeout: 5000 });
+    });
+  },
+);
+```
+
+```typescript Android
+export default flow(
+  "Complete checkout",
+  { target: "Android - Pixel 9", launch: true },
+  async ({ driver, test }) => {
+    await test("arrange", async () => {
+      //--------------------------------
+      // Arrange:
+      //--------------------------------
+      await driver.$(`~Email`).waitForDisplayed();
+    });
+
+    await test("act", async () => {
+      //--------------------------------
+      // Act:
+      //--------------------------------
+      await driver.$(`~Email`).setValue("test@example.com");
+      await driver.$(`~Sign in`).click();
+    });
+
+    await test("assert", async () => {
+      //--------------------------------
+      // Assert:
+      //--------------------------------
+      await driver.$(`~Welcome`).waitForDisplayed({ timeout: 5000 });
+    });
+  },
+);
+```
+
+</CodeGroup>
 
 ## The import statement
 
@@ -212,105 +314,3 @@ await page.goto(process.env.BASE_URL);
 ```
 
 To set environment variables for your flows, see [Environment setup](/qawolf/Environment-settings#create-and-manage-environment-variables).
-
-## The AAA framework
-
-QA Wolf flows follow the Arrange, Act, Assert (AAA) format.
-
-**Arrange** sets up state before the interaction.\
-**Act** performs the interaction being tested.\
-**Assert** verifies the expected outcome.
-
-<CodeGroup>
-
-```typescript Web
-export default flow(
-  "Complete checkout",
-  { target: "Web - Chrome", launch: true },
-  async ({ page, test }) => {
-    await test("arrange", async () => {
-      //--------------------------------
-      // Arrange:
-      //--------------------------------
-      await page.goto(process.env.BASE_URL);
-    });
-
-    await test("act", async () => {
-      //--------------------------------
-      // Act:
-      //--------------------------------
-      await page.fill("[data-testid='email']", "test@example.com");
-      await page.click("[data-testid='submit']");
-    });
-
-    await test("assert", async () => {
-      //--------------------------------
-      // Assert:
-      //--------------------------------
-      await expect(page).toHaveURL(`${process.env.BASE_URL}/confirmation`);
-    });
-  },
-);
-```
-
-```typescript iOS
-export default flow(
-  "Complete checkout",
-  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
-  async ({ driver, test }) => {
-    await test("arrange", async () => {
-      //--------------------------------
-      // Arrange:
-      //--------------------------------
-      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).waitForDisplayed();
-    });
-
-    await test("act", async () => {
-      //--------------------------------
-      // Act:
-      //--------------------------------
-      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).setValue("test@example.com");
-      await driver.$(`-ios predicate string:name == 'Sign in' AND type == 'XCUIElementTypeButton'`).click();
-    });
-
-    await test("assert", async () => {
-      //--------------------------------
-      // Assert:
-      //--------------------------------
-      await driver.$(`-ios predicate string:name == 'Welcome' AND type == 'XCUIElementTypeStaticText'`).waitForDisplayed({ timeout: 5000 });
-    });
-  },
-);
-```
-
-```typescript Android
-export default flow(
-  "Complete checkout",
-  { target: "Android - Pixel 9", launch: true },
-  async ({ driver, test }) => {
-    await test("arrange", async () => {
-      //--------------------------------
-      // Arrange:
-      //--------------------------------
-      await driver.$(`~Email`).waitForDisplayed();
-    });
-
-    await test("act", async () => {
-      //--------------------------------
-      // Act:
-      //--------------------------------
-      await driver.$(`~Email`).setValue("test@example.com");
-      await driver.$(`~Sign in`).click();
-    });
-
-    await test("assert", async () => {
-      //--------------------------------
-      // Assert:
-      //--------------------------------
-      await driver.$(`~Welcome`).waitForDisplayed({ timeout: 5000 });
-    });
-  },
-);
-```
-
-</CodeGroup>
