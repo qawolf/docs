@@ -98,8 +98,7 @@
             "group": "Flows",
             "pages": [
               "qawolf/Map-your-app-s-workflows",
-              "qawolf/getting-the-most-out-of-automate",
-              "qawolf/lint-rules"
+              "qawolf/getting-the-most-out-of-automate"
             ]
           },
           {
@@ -107,25 +106,6 @@
             "pages": [
               "qawolf/Use-tags-effectively",
               "qawolf/Ordering-flows"
-            ]
-          },
-          {
-            "group": "Mobile",
-            "pages": [
-              {
-                "group": "Android",
-                "pages": [
-                  "qawolf/mobile/android-devices"
-                ]
-              },
-              {
-                "group": "iOS",
-                "pages": [
-                  "qawolf/mobile/ios-devices",
-                  "qawolf/mobile/ios-allowlisted-devices",
-                  "qawolf/mobile/ios-private-devices"
-                ]
-              }
             ]
           },
           {
@@ -324,7 +304,27 @@
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
               "qawolf/sharing-code-across-flows",
               "qawolf/Uploading-manually",
-              "qawolf/reusable-ai-knowledge"
+              "qawolf/reusable-ai-knowledge",
+              "qawolf/lint-rules"
+            ]
+          },
+          {
+            "group": "Mobile",
+            "pages": [
+              {
+                "group": "Android",
+                "pages": [
+                  "qawolf/mobile/android-devices"
+                ]
+              },
+              {
+                "group": "iOS",
+                "pages": [
+                  "qawolf/mobile/ios-devices",
+                  "qawolf/mobile/ios-allowlisted-devices",
+                  "qawolf/mobile/ios-private-devices"
+                ]
+              }
             ]
           },
           {
