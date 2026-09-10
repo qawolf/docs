@@ -62,7 +62,7 @@ export default flow(
 
 **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
 
-**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously. The target string must exactly match one of the supported values, or your flow will fail to initialize — see [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals) for the current list.
+**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target Literals](/qawolf/libraries/flows/api-reference/index#target-literals) for the exact matching rule and the current list of values.
 
 **Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
 
