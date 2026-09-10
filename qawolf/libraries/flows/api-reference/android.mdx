@@ -6,6 +6,8 @@ sidebarTitle: "Android Reference"
 
 `@qawolf/flows/android` defines Android flows and advanced device controls.
 
+QA Wolf runs Android flows on ephemeral emulators — a fresh emulator is provisioned for each run and discarded when it finishes, so every run starts from a clean, predictable state with nothing carried over from a previous one. Because emulators are created on demand, you don't reserve or configure devices yourself: choose a target and QA Wolf allocates an emulator for it.
+
 ## Primary Exports
 
 - `flow(...)`
