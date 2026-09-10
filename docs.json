@@ -98,14 +98,9 @@
             "group": "Flows",
             "pages": [
               "qawolf/Map-your-app-s-workflows",
-              "qawolf/Automate-flows-using-AI",
               "qawolf/getting-the-most-out-of-automate",
-              "qawolf/automate-jobs",
               "qawolf/reusable-ai-knowledge",
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/Create-a-new-flow",
-              "qawolf/Use-the-Elements-picker",
-              "qawolf/Debug-tests-and-flows",
               "qawolf/Uploading-manually",
               "qawolf/sharing-code-across-flows",
               "qawolf/lint-rules"
@@ -114,19 +109,8 @@
           {
             "group": "Runs",
             "pages": [
-              "qawolf/Run-a-flow-or-suite",
               "qawolf/Use-tags-effectively",
-              "qawolf/Scheduling-flows",
-              "qawolf/Ordering-flows",
-              "qawolf/Interpret-run-results",
-              "qawolf/Diagnose-the-cause-of-a-failing-flow",
-              "qawolf/Clear-a-release"
-            ]
-          },
-          {
-            "group": "Bugs",
-            "pages": [
-              "qawolf/Manage-bug-reports"
+              "qawolf/Ordering-flows"
             ]
           },
           {
@@ -152,8 +136,7 @@
             "group": "Setup",
             "pages": [
               "qawolf/Workspace-settings",
-              "qawolf/Environment-settings",
-              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests"
+              "qawolf/Environment-settings"
             ]
           }
         ]

@@ -15,71 +15,19 @@ The outlining agent builds that outline by exploring your application and genera
   To explore from an external coding agent instead, use the [QA Wolf plugin](/qawolf/coding-agents/get-started). It presents an Arrange, Act, Assert outline for approval before asking QA Wolf to implement a flow.
 </Tip>
 
-## Start an outlining session
+## How outlining works
 
-<Steps>
-  <Step>
-    From the **Flows** tab, hover over the left sidebar to open the drawer, then click the <Icon icon="chevron-down" /> icon next to **Create flow** and click **Outline flows**.
+Start an outlining session from the **Outline flows** entry point on the Flows tab, or drive it from the [QA Wolf plugin](/qawolf/coding-agents/get-started) in your coding agent. Give the agent a URL or describe a journey — three starter prompts are offered (**Outline a test plan**, **Identify key flows**, **Start exploring**), or type your own, e.g. _"Outline a test plan for `https://yourapp.com`"_.
 
-    <Frame>
-      ![The Outline flows drawer next to the Create flow button](/images/create-flow-drawer.png)
-    </Frame>
-
-    <Note>
-      **Outline flows** is the supported way to start outlining. The other ways of creating a flow can be steered into outlining as well, but only this one starts the agent in outlining mode.
-    </Note>
-  </Step>
-  <Step>
-    The agent chat opens with three starting prompts: **Outline a test plan**, **Identify key flows**, and **Start exploring**. Click one, or type your own instructions — for example, _"Outline a test plan for `https://yourapp.com`"_. You can specify a base URL, describe a specific journey, or ask the agent to focus on a particular feature area.
-
-    <Frame>
-      ![The agent chat with its outlining prompts](/images/flows-ai-chat.png)
-    </Frame>
-  </Step>
-  <Step>
-    Provide real-time guidance as the agent works. If the agent encounters a login prompt or needs clarification, it will ask you directly in the chat. You can respond at any time to redirect or refine the exploration.
-  </Step>
-  <Step>
-    To cover more of an area the agent has already been through, type instructions into the chat or click **Find more flows** at the bottom of the chat panel.
-  </Step>
-</Steps>
+The agent asks for guidance directly in the chat when it hits a login prompt or needs clarification, and you can redirect or refine the exploration at any point. To extend an outline later, prompt for more coverage of an area the agent has already explored.
 
 ## Outline from a file
 
-Click <Icon icon="plus" /> in the chat input to attach a file, then use one of the following prompts depending on what you want.
+Attaching a file (CSV, JSON, Markdown, plain text, or YAML) supports two different behaviors, depending on the prompt:
 
-<Note>
-  Supported file types: CSV, JSON, Markdown, plain text, and YAML.
-</Note>
+**Generate flows from a file** — parses the file and creates the group structure and flow stubs immediately, without exploring the app. Prompt: _"Upload the flows from this file."_
 
-### Generate flows from a file
-
-Parses the file and creates the group structure and flow stubs immediately, without exploring the app. Supports most file and image types.
-
-Prompt: _"Upload the flows from this file."_
-
-### Outline your app using a file as a guide
-
-Uses the file as a reference while the agent actively explores your app.
-
-<Steps>
-  <Step>
-    Navigate to your app in the browser panel, or include the URL and login credentials in your message.
-  </Step>
-  <Step>
-    Prompt: _"Outline all the flows in this file."_
-  </Step>
-</Steps>
-
-When the session ends, the agent produces a CSV with each test case's coverage status, the flow that covers it, and the reason for any rejections.
-
-## View the coverage map
-
-Select <Icon icon="grid-2x2" /> **All flows** in the left sidebar for the coverage map of every flow in the environment. The sidebar sits collapsed to a strip of icons — hover over it to expand it.
-
-<Frame>
-  ![The coverage map on the All flows view, with each group's flows and their status](/images/coverage-map.png)
-</Frame>
+**Outline your app using a file as a guide** — uses the file as a reference while the agent actively explores your app. Prompt: _"Outline all the flows in this file."_ When the session ends, the agent produces a CSV with each test case's coverage status, the flow that covers it, and the reason for any rejections.
 
 ## Get better results
 
@@ -124,7 +72,7 @@ To use this: stop the AI, click through the flow yourself, and look for the **Sa
 
 ### Hand off flows that need more control
 
-Outlining is designed for breadth — capturing an app's testable surface quickly. For flows that need individual attention, use [AI flow creation](/qawolf/Automate-flows-using-AI) to turn them into tests one at a time with more targeted prompts.
+Outlining is designed for breadth — capturing an app's testable surface quickly. For flows that need individual attention, use [AI flow creation](/qawolf/getting-the-most-out-of-automate) to turn them into tests one at a time with more targeted prompts.
 
 <Tip>
   A common pattern: outline the app to get broad coverage, then use AI flow creation to build out the flows that need more precision.
