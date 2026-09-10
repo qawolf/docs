@@ -311,12 +311,7 @@
           {
             "group": "Mobile",
             "pages": [
-              {
-                "group": "Android",
-                "pages": [
-                  "qawolf/mobile/android-devices"
-                ]
-              },
+              "qawolf/mobile/android-devices",
               {
                 "group": "iOS",
                 "pages": [
