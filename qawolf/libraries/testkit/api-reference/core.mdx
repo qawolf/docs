@@ -16,6 +16,8 @@ The top-level package currently exposes:
 - `saveEnvironmentVariable(...)`
 - `reloadEnvironmentVariables(...)`
 
+`mountCifsShare(...)`, `startOpenVpn(...)`, and `saveBaselineScreenshot(...)` all require a client configured with `configureTestkitClient(...)` first — see [Client Reference](/qawolf/libraries/testkit/api-reference/client) for how to create one.
+
 Example:
 
 ```ts
@@ -74,46 +76,16 @@ These helpers are intended for QA Wolf runner environments. They require the run
 
 ## Error Behavior
 
-Client-dependent helpers throw when no client has been configured.
-
-Environment variable helpers throw when the QA Wolf API configuration is missing or when the API request fails.
-
-`saveBaselineScreenshot(...)` also throws when the configured client does not provide screenshot support.
-
-Examples:
+Client-dependent helpers — `mountCifsShare(...)`, `startOpenVpn(...)`, `saveBaselineScreenshot(...)` — throw when no client has been configured:
 
 ```ts
 import { mountCifsShare, resetTestkitClient } from "@qawolf/testkit";
 
 resetTestkitClient();
 
-await mountCifsShare({
-  mountPoint: "/Volumes/shared",
-  password: "secret",
-  share: "//server/share",
-  username: "wolf",
-});
+await mountCifsShare(/* same options as the example above */); // throws: no client configured
 ```
 
-```ts
-import {
-  configureTestkitClient,
-  saveBaselineScreenshot,
-} from "@qawolf/testkit";
-import { createTestkitClient } from "@qawolf/testkit/client";
+Environment variable helpers throw when the QA Wolf API configuration is missing or when the API request fails.
 
-configureTestkitClient(
-  createTestkitClient({
-    mountCifsShare: async () => "/Volumes/shared",
-    startOpenVpn: async () => "vpn-started",
-    startWireGuard: async () => "wireguard-started",
-  }),
-);
-
-await saveBaselineScreenshot(
-  {
-    screenshot: async () => Buffer.from("image"),
-  },
-  "login-page",
-);
-```
+`saveBaselineScreenshot(...)` also throws when the configured client does not provide screenshot support — see [Client Reference](/qawolf/libraries/testkit/api-reference/client#input-ports) for the `saveSnapshot` port that enables it.

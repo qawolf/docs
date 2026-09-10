@@ -61,13 +61,7 @@ export default flow(
 
 ## Use environment variables to parameterize flows
 
-Environment variables let the same flow run against different environments without code changes. Reference them with `process.env.VAR_NAME`.
-
-```typescript
-await page.goto(process.env.BASE_URL);
-```
-
-See [Environment setup](/qawolf/Environment-settings#create-and-manage-environment-variables) for how to configure environment variables in QA Wolf.
+Environment variables let the same flow run against different environments without code changes — see [Anatomy of a flow](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#environment-variables) for how to reference and configure them.
 
 ## Pass data between flows
 

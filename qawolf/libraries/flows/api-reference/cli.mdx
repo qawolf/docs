@@ -92,27 +92,7 @@ CLI flows do not receive `page`, `driver`, or any other launch object.
   `test(...)` can be omitted for simple flows where grouping steps into named sub-steps doesn't add value. For most flows, wrapping steps in `test(...)` is recommended — the label appears in your results and makes failures easier to locate.
 </Note>
 
-Example:
-
-```ts
-import { flow } from "@qawolf/flows/cli";
-
-export default flow(
-  "Prepare release metadata",
-  "Basic",
-  async ({ inputs, setOutput, test }) => {
-    await test("create release payload", async () => {
-      setOutput("RELEASE", {
-        generatedAt: new Date().toISOString(),
-        inputs,
-        status: "ready",
-      });
-    });
-  },
-);
-```
-
-See [Passing data between flows](/qawolf/Pass-data-between-flows) for how to use `inputs` and `setOutput` to coordinate with other flows in a run.
+`inputs` and `setOutput(...)` are demonstrated in the [Primary Exports example above](#primary-exports). See [Passing data between flows](/qawolf/Pass-data-between-flows) for how to use them to coordinate with other flows in a run.
 
 ## `testContextDependencies`
 

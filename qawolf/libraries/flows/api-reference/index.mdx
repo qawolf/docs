@@ -26,27 +26,7 @@ import { flow } from "@qawolf/flows/cli";
 
 ## Cross-Platform Surface
 
-The top-level `@qawolf/flows` entry point exposes:
-
-- `platform.target`
-- target configuration helpers for tests and local execution
-- shared target types
-- shared error and scope types
-
-Example:
-
-```ts
-import { configureTarget, platform, resetTarget } from "@qawolf/flows";
-import type { Target } from "@qawolf/flows";
-
-declare const target: Target;
-
-configureTarget({ target });
-
-const activeTarget = platform.target;
-
-resetTarget();
-```
+The top-level `@qawolf/flows` entry point exposes `platform.target`, target configuration helpers, and shared target/error/scope types — see [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level) for the full API and examples.
 
 ## Target Literals
 

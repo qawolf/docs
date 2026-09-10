@@ -16,16 +16,9 @@ import { mail } from "@qawolf/emails";
 import { configureEmailsClient, createEmailsClient } from "@qawolf/emails";
 ```
 
-The mail reference covers:
+The [Mail Reference](/qawolf/libraries/emails/api-reference/mail) covers:
 
 - inbox creation options
 - inbox handle methods
 - send and wait option shapes
 - parsed email fields
-
-Example:
-
-```ts
-const inbox = await mail.inbox({ new: true });
-const message = await inbox.waitForMessage({});
-```
