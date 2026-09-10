@@ -21,20 +21,14 @@ It also exports iOS-specific target, launch, device, callback context, and flow 
 Example:
 
 ```ts
-import { device, flow } from "@qawolf/flows/ios";
-
-const profile = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict></dict></plist>`;
+import { flow } from "@qawolf/flows/ios";
 
 export default flow(
   "Open iOS app",
   { target: "iOS - iPhone 15 (iOS 26)", launch: true },
   async ({ driver, test }) => {
-    await test("install profile", async () => {
+    await test("app launches", async () => {
       await driver.pause(1000);
-      await device.installConfigurationProfile(driver, profile);
     });
   },
 );
@@ -348,23 +342,7 @@ export default flow(
 
 ## `device`
 
-`device` is a runtime proxy over the iOS simulator or device API. Use it for device-level operations — such as installing configuration profiles, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
-
-Example:
-
-```ts
-import { device, flow, launch } from "@qawolf/flows/ios";
-
-const profile = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict></dict></plist>`;
-
-export default flow("Install profile", "iOS - iPhone 15 (iOS 26)", async () => {
-  const { driver } = await launch();
-  await device.installConfigurationProfile(driver, profile);
-});
-```
+`device` is a runtime proxy over the iOS simulator or device API. Use it for device-level operations — such as installing configuration profiles, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself. See [iOS Device Controls](/qawolf/libraries/flows/api-reference/ios-device-reference) for the full method list.
 
 ## `expect`
 

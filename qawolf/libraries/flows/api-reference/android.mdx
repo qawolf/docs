@@ -21,18 +21,14 @@ It also exports Android-specific target, launch, device, callback context, and f
 Example:
 
 ```ts
-import { device, flow } from "@qawolf/flows/android";
+import { flow } from "@qawolf/flows/android";
 
 export default flow(
   "Open Android app",
   { target: "Android - Pixel", launch: true },
   async ({ driver, test }) => {
-    await test("set location", async () => {
+    await test("app launches", async () => {
       await driver.pause(1000);
-      await device.setGeoLocation({
-        latitude: 37.7749,
-        longitude: -122.4194,
-      });
     });
   },
 );
@@ -359,20 +355,7 @@ export default flow(
 
 ## `device`
 
-`device` is a runtime proxy over the Android emulator API. Use it for device-level operations — such as setting location, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
-
-Example:
-
-```ts
-import { device, flow } from "@qawolf/flows/android";
-
-export default flow("Set device location", "Android - Pixel", async () => {
-  await device.setGeoLocation({
-    latitude: 37.7749,
-    longitude: -122.4194,
-  });
-});
-```
+`device` is a runtime proxy over the Android emulator API. Use it for device-level operations — such as setting location, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself. See [Android Device Controls](/qawolf/libraries/flows/api-reference/android-device-reference) for the full method list.
 
 ## `expect`
 
