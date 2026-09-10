@@ -281,6 +281,16 @@
         "tab": "References",
         "pages": [
           {
+            "group": "Flow authoring",
+            "pages": [
+              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
+              "qawolf/sharing-code-across-flows",
+              "qawolf/Uploading-manually",
+              "qawolf/reusable-ai-knowledge",
+              "qawolf/lint-rules"
+            ]
+          },
+          {
             "group": "@qawolf/flows",
             "pages": [
               "qawolf/libraries/flows/api-reference/top-level",
@@ -292,16 +302,6 @@
               "qawolf/libraries/flows/api-reference/ios-device-reference",
               "qawolf/libraries/flows/api-reference/ios-device-pools",
               "qawolf/libraries/flows/troubleshooting"
-            ]
-          },
-          {
-            "group": "Flow authoring",
-            "pages": [
-              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/sharing-code-across-flows",
-              "qawolf/Uploading-manually",
-              "qawolf/reusable-ai-knowledge",
-              "qawolf/lint-rules"
             ]
           },
           {
