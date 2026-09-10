@@ -59,14 +59,6 @@ export default flow(
 );
 ```
 
-## Use environment variables to parameterize flows
-
-Environment variables let the same flow run against different environments without code changes — see [Anatomy of a flow](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#environment-variables) for how to reference and configure them.
-
-## Pass data between flows
-
-Use `inputs` and `setOutput` to share data between flows in the same run — for example, passing a user ID created in one flow to another flow that needs to log in as that user. See [Passing data between flows](/qawolf/Pass-data-between-flows) for the full model.
-
 ## `platform.target` for edge cases
 
 For rare cases where a single flow genuinely needs to branch on the active platform at runtime, use `platform.target` from the top-level `@qawolf/flows` package.
@@ -80,3 +72,11 @@ if (platform.target.startsWith("iOS - ")) {
 ```
 
 Use this sparingly. If you find yourself branching on `platform.target` frequently, consider splitting into platform-specific flows instead. See the [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level) for the full `platform` API.
+
+## Pass data between flows
+
+Use `inputs` and `setOutput` to share data between flows in the same run — for example, passing a user ID created in one flow to another flow that needs to log in as that user. See [Passing data between flows](/qawolf/Pass-data-between-flows) for the full model.
+
+## Use environment variables to parameterize flows
+
+Environment variables let the same flow run against different environments without code changes — see [Anatomy of a flow](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#environment-variables) for how to reference and configure them.
