@@ -381,6 +381,17 @@
             ]
           },
           {
+            "group": "Local execution",
+            "pages": [
+              "qawolf/local-execution/authenticate",
+              "qawolf/local-execution/run-flows-locally",
+              "qawolf/local-execution/pull-flows",
+              "qawolf/local-execution/install-dependencies",
+              "qawolf/local-execution/set-up-a-project",
+              "qawolf/local-execution/diagnose-problems"
+            ]
+          },
+          {
             "group": "REST",
             "pages": [
               "qawolf/rest-overview",
@@ -389,12 +400,7 @@
               "qawolf/v0-ci-greenlight",
               "qawolf/run-inputs-executables-signed-urls"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Integrations",
-        "pages": [
+          },
           {
             "group": "CI/CD",
             "pages": [
@@ -420,6 +426,17 @@
               }
             ]
           },
+          {
+            "group": "Coding agents",
+            "pages": [
+              "qawolf/coding-agents/get-started"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Integrations",
+        "pages": [
           {
             "group": "VPN",
             "pages": [
@@ -448,23 +465,6 @@
               "qawolf/Asana",
               "qawolf/Azure-DevOps-Boards",
               "qawolf/Integrate-with-webhooks"
-            ]
-          },
-          {
-            "group": "Coding agents",
-            "pages": [
-              "qawolf/coding-agents/get-started"
-            ]
-          },
-          {
-            "group": "Local execution",
-            "pages": [
-              "qawolf/local-execution/authenticate",
-              "qawolf/local-execution/run-flows-locally",
-              "qawolf/local-execution/pull-flows",
-              "qawolf/local-execution/install-dependencies",
-              "qawolf/local-execution/set-up-a-project",
-              "qawolf/local-execution/diagnose-problems"
             ]
           }
         ]
