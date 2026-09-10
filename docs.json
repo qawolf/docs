@@ -369,21 +369,6 @@
             ]
           },
           {
-            "group": "CI/CD",
-            "pages": [
-              "qawolf/CI-CD-Overview",
-              "qawolf/GitHub-GitHub-Actions",
-              "qawolf/GitLab",
-              "qawolf/circle-ci",
-              "qawolf/other-ci-node",
-              "qawolf/other-ci-webhook",
-              "qawolf/Fastlane",
-              "qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
-              "qawolf/Mobile-build-with-the-QA-Wolf-SDK",
-              "qawolf/other-web-hook-for-mobile"
-            ]
-          },
-          {
             "group": "Coding agents",
             "pages": [
               "qawolf/coding-agents/get-started"
@@ -394,6 +379,31 @@
       {
         "tab": "Integrations",
         "pages": [
+          {
+            "group": "CI/CD",
+            "pages": [
+              "qawolf/CI-CD-Overview",
+              {
+                "group": "Deployment testing ",
+                "pages": [
+                  "qawolf/GitHub-GitHub-Actions",
+                  "qawolf/GitLab",
+                  "qawolf/circle-ci",
+                  "qawolf/other-ci-node",
+                  "qawolf/other-ci-webhook"
+                ]
+              },
+              {
+                "group": "Mobile build testing",
+                "pages": [
+                  "qawolf/Fastlane",
+                  "qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
+                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK",
+                  "qawolf/other-web-hook-for-mobile"
+                ]
+              }
+            ]
+          },
           {
             "group": "VPN",
             "pages": [
