@@ -282,20 +282,15 @@
           {
             "group": "@qawolf/flows",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/flows/api-reference/index",
-                  "qawolf/libraries/flows/api-reference/top-level",
-                  "qawolf/libraries/flows/api-reference/web",
-                  "qawolf/libraries/flows/api-reference/cli",
-                  "qawolf/libraries/flows/api-reference/android",
-                  "qawolf/libraries/flows/api-reference/android-device-reference",
-                  "qawolf/libraries/flows/api-reference/ios",
-                  "qawolf/libraries/flows/api-reference/ios-device-reference",
-                  "qawolf/libraries/flows/api-reference/ios-device-pools"
-                ]
-              },
+              "qawolf/libraries/flows/api-reference/index",
+              "qawolf/libraries/flows/api-reference/top-level",
+              "qawolf/libraries/flows/api-reference/web",
+              "qawolf/libraries/flows/api-reference/cli",
+              "qawolf/libraries/flows/api-reference/android",
+              "qawolf/libraries/flows/api-reference/android-device-reference",
+              "qawolf/libraries/flows/api-reference/ios",
+              "qawolf/libraries/flows/api-reference/ios-device-reference",
+              "qawolf/libraries/flows/api-reference/ios-device-pools",
               "qawolf/libraries/flows/troubleshooting"
             ]
           },
@@ -319,30 +314,20 @@
           {
             "group": "@qawolf/testkit",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/testkit/api-reference/index",
-                  "qawolf/libraries/testkit/api-reference/core",
-                  "qawolf/libraries/testkit/api-reference/types",
-                  "qawolf/libraries/testkit/api-reference/web",
-                  "qawolf/libraries/testkit/api-reference/client"
-                ]
-              },
+              "qawolf/libraries/testkit/api-reference/index",
+              "qawolf/libraries/testkit/api-reference/core",
+              "qawolf/libraries/testkit/api-reference/types",
+              "qawolf/libraries/testkit/api-reference/web",
+              "qawolf/libraries/testkit/api-reference/client",
               "qawolf/libraries/testkit/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/emails",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/emails/api-reference/index",
-                  "qawolf/libraries/emails/api-reference/mail",
-                  "qawolf/libraries/emails/api-reference/client"
-                ]
-              },
+              "qawolf/libraries/emails/api-reference/index",
+              "qawolf/libraries/emails/api-reference/mail",
+              "qawolf/libraries/emails/api-reference/client",
               "qawolf/libraries/emails/troubleshooting"
             ]
           },
@@ -356,14 +341,9 @@
           {
             "group": "@qawolf/cli",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/cli/api-reference/index",
-                  "qawolf/libraries/cli/api-reference/commands",
-                  "qawolf/libraries/cli/api-reference/environment-variables"
-                ]
-              },
+              "qawolf/libraries/cli/api-reference/index",
+              "qawolf/libraries/cli/api-reference/commands",
+              "qawolf/libraries/cli/api-reference/environment-variables",
               "qawolf/libraries/cli/troubleshooting"
             ]
           },
@@ -392,25 +372,15 @@
             "group": "CI/CD",
             "pages": [
               "qawolf/CI-CD-Overview",
-              {
-                "group": "Deployment testing ",
-                "pages": [
-                  "qawolf/GitHub-GitHub-Actions",
-                  "qawolf/GitLab",
-                  "qawolf/circle-ci",
-                  "qawolf/other-ci-node",
-                  "qawolf/other-ci-webhook"
-                ]
-              },
-              {
-                "group": "Mobile build testing",
-                "pages": [
-                  "qawolf/Fastlane",
-                  "qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
-                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK",
-                  "qawolf/other-web-hook-for-mobile"
-                ]
-              }
+              "qawolf/GitHub-GitHub-Actions",
+              "qawolf/GitLab",
+              "qawolf/circle-ci",
+              "qawolf/other-ci-node",
+              "qawolf/other-ci-webhook",
+              "qawolf/Fastlane",
+              "qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
+              "qawolf/Mobile-build-with-the-QA-Wolf-SDK",
+              "qawolf/other-web-hook-for-mobile"
             ]
           },
           {
