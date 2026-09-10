@@ -95,7 +95,7 @@ qawolf flows run --env <env_id> --bail
 qawolf flows run --env <env_id> --workers 4
 ```
 
-`--workers` controls how many web flows run concurrently. Android flows must run with `--workers 1` — the CLI errors out if Android flows are selected with a higher value.
+`--workers` controls how many web flows run concurrently. Android flows only run one at a time — see [`--workers`](/qawolf/libraries/cli/api-reference/commands#flows-run-pattern) for the exact rule.
 
 ## Write a JUnit XML report
 

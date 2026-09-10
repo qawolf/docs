@@ -93,7 +93,7 @@ const runId = result.runId;
 | `ephemeralEnvironment` | boolean | Pass with `deploymentUrl` for ephemeral environments without a code-hosting integration. |
 | `deduplicationKey` | string | Custom key controlling run cancellation behavior. |
 | `variables` | object | Key/value pairs that override environment variables for triggered runs. |
-| `workspaceId` | string | Workspace to create runs in. Ignored by a workspace API key, which already implies its workspace. Pass it with an organization or user API key. See [which workspace a request acts on](/qawolf/rest-overview#which-workspace-a-request-acts-on). |
+| `workspaceId` | string | Workspace to create runs in — same semantics as the [`deploy_success` webhook's `workspaceId`](/qawolf/deploy-success#request-body). |
 
 ### Result fields
 
@@ -251,7 +251,7 @@ You may also pass `workspaceId`:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `workspaceId` | string | Workspace that owns the environment. Only used alongside `environmentAlias` or `deploymentUrl`, since `environmentId` identifies its own workspace. Ignored by a workspace API key. Pass it with an organization or user API key. |
+| `workspaceId` | string | Workspace that owns the environment — same semantics as the [`environment_terminated` webhook's `workspaceId`](/qawolf/environment_terminated#request-body). |
 
 ### Result fields
 
