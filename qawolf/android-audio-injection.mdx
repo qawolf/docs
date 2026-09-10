@@ -65,7 +65,7 @@ await device.adb([
 
 ## Options
 
-`passAudioAsMicrophoneInput` accepts `delaySeconds` (wait before playback starts) and `durationSeconds` (cap playback length; omit to play the whole file). See the [Android Device Reference](/qawolf/libraries/flows/api-reference/android-device-reference) for the full signature.
+`passAudioAsMicrophoneInput` accepts `delaySeconds` (wait before playback starts) and `durationSeconds` (cap playback length; omit to play the whole file). See the [Android Device Controls](/qawolf/libraries/flows/api-reference/android-device-reference) for the full signature.
 
 `delaySeconds` delays playback, but the call still resolves only once playback has finished. Use it to line playback up with something your app does after it starts listening, not to start the recording after the call.
 
