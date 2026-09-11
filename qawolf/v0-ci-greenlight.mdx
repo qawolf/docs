@@ -22,12 +22,6 @@ curl https://app.qawolf.com/api/v0/ci-greenlight/<root-run-id> \
 | --- | --- |
 | `Authorization` | `Bearer <your-api-key>` |
 
-## Query parameters
-
-| Parameter | Values | Description |
-| --- | --- | --- |
-| `outcomeWhenBlockingBugsInOtherWorkflows` | `green` \| `red` | Defaults to `green`. When set to `red`, `greenlight` will be `false` if workflows not executed in this run have blocking bugs. Experimental. |
-
 ## Response
 
 | Field | Description |
@@ -73,6 +67,12 @@ A bug is blocking if its priority is `"high"` or unset. Newly found bugs are uns
 | `underReview` | Run is in progress and under review. |
 | `completed` | Run has finished. |
 | `canceled` | Run was canceled. Polling should stop — a canceled run cannot be recovered. |
+
+## Query parameters
+
+| Parameter | Values | Description |
+| --- | --- | --- |
+| `outcomeWhenBlockingBugsInOtherWorkflows` | `green` \| `red` | Defaults to `green`. When set to `red`, `greenlight` will be `false` if workflows not executed in this run have blocking bugs. Experimental. |
 
 ## Superseding logic
 

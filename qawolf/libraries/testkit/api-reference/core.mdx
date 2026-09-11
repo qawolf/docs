@@ -51,6 +51,8 @@ console.log(code);
 
 ## Environment variables
 
+These helpers are intended for QA Wolf runner environments. They require the runner-provided `QAWOLF_API_URL`, `QAWOLF_ENVIRONMENT_ID`, and `QAWOLF_TEAM_API_KEY` environment variables.
+
 Use `saveEnvironmentVariable(name, value)` to save a string value to the current QA Wolf environment and update `process.env[name]` for the running flow.
 
 Use `reloadEnvironmentVariables()` to fetch the latest environment variables for the current QA Wolf environment and copy string values into `process.env`.
@@ -66,8 +68,6 @@ await reloadEnvironmentVariables();
 
 console.log(process.env["LOGIN_TOKEN"]);
 ```
-
-These helpers are intended for QA Wolf runner environments. They require the runner-provided `QAWOLF_API_URL`, `QAWOLF_ENVIRONMENT_ID`, and `QAWOLF_TEAM_API_KEY` environment variables.
 
 ## Error behavior
 

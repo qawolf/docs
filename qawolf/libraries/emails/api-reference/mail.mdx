@@ -128,6 +128,43 @@ const result = await inbox.sendMessage({
 console.log(result.id);
 ```
 
+## Parsed email shape
+
+Both wait methods below return this shape:
+
+```ts
+type ParsedEmail = {
+  attachments?: {
+    content: Buffer;
+    fileName: string;
+    type?: string;
+  }[];
+  bcc?: string[];
+  cc?: string[];
+  from: string;
+  html: string;
+  id: string;
+  replyTo?: string[];
+  subject: string;
+  teamId: string;
+  text: string;
+  to: string[];
+  urls: string[];
+};
+```
+
+QA Wolf derives `urls` by parsing links from the HTML body.
+
+Example:
+
+```ts
+declare const message: ParsedEmail;
+
+console.log(message.from);
+console.log(message.subject);
+console.log(message.urls);
+```
+
 ## `waitForMessage(...)`
 
 Method options:
@@ -188,41 +225,4 @@ const messages = await inbox.waitForMessages({
 });
 
 console.log(messages.map((message) => message.subject));
-```
-
-## Parsed email shape
-
-The parsed email shape is:
-
-```ts
-type ParsedEmail = {
-  attachments?: {
-    content: Buffer;
-    fileName: string;
-    type?: string;
-  }[];
-  bcc?: string[];
-  cc?: string[];
-  from: string;
-  html: string;
-  id: string;
-  replyTo?: string[];
-  subject: string;
-  teamId: string;
-  text: string;
-  to: string[];
-  urls: string[];
-};
-```
-
-QA Wolf derives `urls` by parsing links from the HTML body.
-
-Example:
-
-```ts
-const message = await inbox.waitForMessage({});
-
-console.log(message.from);
-console.log(message.subject);
-console.log(message.urls);
 ```

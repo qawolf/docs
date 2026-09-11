@@ -193,6 +193,37 @@ Static launch options infer a narrow return type when they determine the result 
 
 Use `isAnonymous(...)`, `isPersistent(...)`, and `isElectron(...)` to narrow dynamic results before reading shape-specific fields.
 
+## Defaults
+
+- default `kind` is browser launch
+- default `browserContext` is `"incognito"`
+- default `browser` comes from the flow target
+- GPU launch behavior is derived from the flow target
+- Electron declarative launch requires `target: "Electron"` and `executablePath`
+
+Example:
+
+```ts
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
+
+export default flow(
+  "Use target browser defaults",
+  "Web - Firefox",
+  async () => {
+    const launchResult = await launch();
+    if (isElectron(launchResult))
+      throw new Error("Expected browser launch");
+
+    const page =
+      isPersistent(launchResult)
+        ? launchResult.page
+        : await launchResult.context.newPage();
+
+    await page.goto("https://example.com");
+  },
+);
+```
+
 ## Flow callback context
 
 All web flow callbacks receive:
@@ -241,34 +272,3 @@ export default flow(
 ```
 
 For visual regression assertions with `expect(page).toHaveScreenshot(...)`, see [Web & Mobile web screenshots](/qawolf/visual-diffing).
-
-## Defaults
-
-- default `kind` is browser launch
-- default `browserContext` is `"incognito"`
-- default `browser` comes from the flow target
-- GPU launch behavior is derived from the flow target
-- Electron declarative launch requires `target: "Electron"` and `executablePath`
-
-Example:
-
-```ts
-import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
-
-export default flow(
-  "Use target browser defaults",
-  "Web - Firefox",
-  async () => {
-    const launchResult = await launch();
-    if (isElectron(launchResult))
-      throw new Error("Expected browser launch");
-
-    const page =
-      isPersistent(launchResult)
-        ? launchResult.page
-        : await launchResult.context.newPage();
-
-    await page.goto("https://example.com");
-  },
-);
-```
