@@ -64,7 +64,7 @@ Concrete fix needed: the "use `@qawolf/ci-sdk` instead of calling this endpoint 
 
 API reference pages mostly use Title Case ("Primary Exports," "Target Model") while guide pages use sentence case ("The import statement," "What QA Wolf reads") — and a few reference pages break their own Title Case convention mid-file (`android.mdx`'s "Advanced Appium capabilities" sitting under otherwise-Title-Case siblings). Standardize on **sentence case for every heading, in every file** — it's the simpler rule to remember and the one already dominant in the guide-shaped pages.
 
-Troubleshooting headings are the one place content should stay maximally precise: name the exact symptom, in backticks if it's a literal error message or command (`` `outcome` is `"failed"` or `"aborted"` ``), otherwise a short sentence-case phrase. Don't title-case an error message ("Unknown Page: <name> When Calling Create") — quote it exactly as it appears, then describe it in sentence case if paraphrasing.
+Troubleshooting headings are the one place content should stay maximally precise: name the exact symptom, in backticks if it's a literal error message or command (`` `outcome` is `"failed"` or `"aborted"` ``), otherwise a short sentence-case phrase. Don't title-case an error message ("Unknown Page: `<name>` When Calling Create") — quote it exactly as it appears, then describe it in sentence case if paraphrasing.
 
 ## 8. Examples: always labeled "Example:"
 
