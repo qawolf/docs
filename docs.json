@@ -117,8 +117,7 @@
           {
             "group": "Setup",
             "pages": [
-              "qawolf/Workspace-settings",
-              "qawolf/Environment-settings"
+              "qawolf/sso"
             ]
           }
         ]
@@ -456,7 +455,6 @@
             "pages": [
               "qawolf/Test-environments",
               "qawolf/Integrating-with-microsoft-teams",
-              "qawolf/sso",
               {
                 "group": "PR Testing",
                 "pages": [
