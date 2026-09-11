@@ -87,14 +87,18 @@
         "tab": "Introduction",
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
-          "qawolf/quick-start",
-          "qawolf/Glossary",
-          "qawolf/coding-agents/get-started"
+          "qawolf/Glossary"
         ]
       },
       {
         "tab": "Features",
         "groups": [
+          {
+            "group": "Coding agents",
+            "pages": [
+              "qawolf/coding-agents/get-started"
+            ]
+          },
           {
             "group": "Flows",
             "pages": [
