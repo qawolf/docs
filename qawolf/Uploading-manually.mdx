@@ -30,23 +30,24 @@ Used inside a test flow, not the app itself.
 
 QA Wolf accepts file uploads via a two-step signed URL process.
 
-### 1. Generate a signed URL
+<Steps>
+  <Step title="Generate a signed URL">
+    ```bash
+    curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH" \
+      -H "Authorization: Bearer $QAWOLF_API_KEY"
+    ```
 
-```bash
-curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH" \
-  -H "Authorization: Bearer $QAWOLF_API_KEY"
-```
-
-Returns a `signedUrl` for the next step, plus `fileLocation` and `playgroundFileLocation` — the paths you'll use to reference the file afterward.
-
-### 2. Upload the file
-
-```bash
-curl -X PUT \
-  --header "Content-Type: application/octet-stream" \
-  --data-binary @some_file.zip \
-  $SIGNED_URL
-```
+    Returns a `signedUrl` for the next step, plus `fileLocation` and `playgroundFileLocation` — the paths you'll use to reference the file afterward.
+  </Step>
+  <Step title="Upload the file">
+    ```bash
+    curl -X PUT \
+      --header "Content-Type: application/octet-stream" \
+      --data-binary @some_file.zip \
+      $SIGNED_URL
+    ```
+  </Step>
+</Steps>
 
 See [v0/run-inputs-executables-signed-urls](/qawolf/run-inputs-executables-signed-urls) for the full request/response reference, including error codes.
 

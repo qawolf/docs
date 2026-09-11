@@ -1,6 +1,6 @@
 # QA Wolf docs style guide
 
-Rules for the References tab, derived from a full-text style audit of all ~40 pages (rules 1-10) and a later page-by-page ordering pass (rule 11). Apply these when writing new pages or editing existing ones. Each rule names the actual problem found, not a generic writing-advice bullet.
+Rules for the References tab, derived from a full-text style audit of all ~40 pages (rules 1-10), a later page-by-page ordering pass (rule 11), and a site-wide audit of step-by-step instruction formatting (rule 12, which applies beyond the References tab). Apply these when writing new pages or editing existing ones. Each rule names the actual problem found, not a generic writing-advice bullet.
 
 ## 1. Terminology — one word per concept
 
@@ -97,6 +97,17 @@ A prose-level style pass doesn't catch a page whose *sections* are out of order.
 - **When the page's whole point is a shape or mental model, lead with the shape, not the syntax that implements it.** `anatomy-of-a-qa-wolf-test-mobile-edition.mdx` explained imports, the flow wrapper, launch styles, and callback parameters before ever mentioning the Arrange/Act/Assert pattern every flow follows. Move the concept first; the mechanics that build it follow.
 - **Order sections by relevance to the page's own topic, not convenience.** In "Share logic across flows," Pass data between flows (literal flow-to-flow data sharing) is more central to a "share ... across flows" page than Use environment variables (single-flow parameterization) — put the more on-topic section first.
 - **A page's title is a promise — make sure some section actually keeps it.** `Uploading-manually.mdx` was titled "Upload files" but only ever showed how to *use* an already-uploaded file; the upload step itself was a single link-out sentence. If the title names an action, show that action somewhere on the page, not just a pointer to where it's shown.
+
+## 12. `<Steps>` vs headings/lists — the reader-action test
+
+Mintlify's `<Steps>`/`<Step>` component renders as a numbered visual sequence, but a `<Step>` gets no heading anchor and never appears in the page's "On this page" table of contents — only `##`/`###` headings do (verified by inspecting rendered output). That fact is what should decide which one a piece of content gets:
+
+- Use `<Steps>` when the reader performs an ordered sequence of actions and doing them out of order breaks the outcome (click X, then Y, then paste Z). A page's `##`/`###` headings still organize its topics as usual — a `<Steps>` block can and should sit nested inside one heading's section for that section's own procedure, e.g. `local-execution/set-up-a-project.mdx`: `## Scaffold a new project` contains a `<Steps>` block.
+- Never dress up a real procedure as numbered headings ("## Step 1: ...", "### 1. Generate a signed URL") or a bare numbered markdown list, and never chain it as prose ("Enable X, then install Y") — convert it to `<Steps>` instead. Two sequential REST calls where the second consumes the first's output (generate a signed URL, then `PUT` to it) count as a genuine procedure, not a single-request reference.
+- Never wrap `<Steps>` around content that isn't actually ordered: independent checklist items, an either/or choice, or a single item with nothing to sequence. If skipping an item or doing them in a different order doesn't change the outcome, use a plain bulleted list (or prose) instead of `<Steps>`.
+- A numbered list describing the system's own precedence/fallback order — not a reader action — stays a plain numbered list (e.g. "resolution order: 1. `app.path`, 2. `app.env`, 3. `app.url`" in `android.mdx`). It is not a `<Steps>` candidate.
+
+A `<Step>` may carry a `title` when a short label helps a skimming reader, or stay bare when its first sentence already carries the action — both exist in the docs today; just stay consistent within one file's `<Steps>` blocks.
 
 ---
 

@@ -9,20 +9,36 @@ description: "Generate a signed URL and upload an executable file to QA Wolf."
   QA Wolf only accepts the following file types: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`, `.csv`, `.pdf`
 </Warning>
 
-## Generate a signed URL
+<Steps>
+  <Step title="Generate a signed URL">
+    ```bash
+    curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH" \
+      -H "Authorization: Bearer $QAWOLF_API_KEY"
+    ```
 
-```bash
-curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH" \
-  -H "Authorization: Bearer $QAWOLF_API_KEY"
-```
+    Returns a `signedUrl` for the next step, plus `fileLocation` and `playgroundFileLocation` — see below for the full parameter and response reference.
+  </Step>
+  <Step title="Upload the file">
+    `PUT {signedUrl}`
 
-### Query parameters
+    The previous request returns the signed URL. It is not a fixed `/api/` endpoint — it points directly to Google Cloud Storage.
+
+    ```bash
+    curl -X PUT \
+      --header "Content-Type: application/octet-stream" \
+      --data-binary @some_file.zip \
+      $SIGNED_URL
+    ```
+  </Step>
+</Steps>
+
+## Query parameters
 
 | Parameter | Description |
 | --- | --- |
 | `file` | Destination file path. At minimum the filename and extension. May include directories. |
 
-### Response
+## Response
 
 ```json
 {
@@ -37,19 +53,6 @@ curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DES
 | `fileLocation` | Full path including team ID. Use this to reference the file in run configurations. |
 | `playgroundFileLocation` | Path without team ID. Use this to reference the file in the playground. |
 | `signedUrl` | Pre-signed URL for uploading the file. Use in the next step. |
-
-## Upload the file
-
-`PUT {signedUrl}`
-
-The previous request returns the signed URL. It is not a fixed `/api/` endpoint — it points directly to Google Cloud Storage.
-
-```bash
-curl -X PUT \
-  --header "Content-Type: application/octet-stream" \
-  --data-binary @some_file.zip \
-  $SIGNED_URL
-```
 
 ## Response codes
 

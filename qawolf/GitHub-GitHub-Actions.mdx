@@ -19,13 +19,27 @@ If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this i
 
 ## Connect QA Wolf to GitHub
 
-Enable the GitHub integration from **Workspace Settings → Integrations** in QA Wolf, then install the QA Wolf GitHub App on the repositories you want connected.
+<Steps>
+  <Step title="Enable the GitHub integration">
+    Enable the GitHub integration from **Workspace Settings → Integrations** in QA Wolf.
+  </Step>
+  <Step title="Install the QA Wolf GitHub App">
+    Install the QA Wolf GitHub App on the repositories you want connected.
+  </Step>
+</Steps>
 
 <Danger>
   Your user cannot be a member of multiple GitHub orgs.
 </Danger>
 
-Generate a `QAWOLF_API_KEY` from **Workspace Settings → Integrations → API Access**, then add it as a `QAWOLF_API_KEY` secret in your repository's **Settings → Secrets and variables → Actions**.
+<Steps>
+  <Step title="Generate a QAWOLF_API_KEY">
+    Generate a `QAWOLF_API_KEY` from **Workspace Settings → Integrations → API Access**.
+  </Step>
+  <Step title="Add it as a repository secret">
+    Add it as a `QAWOLF_API_KEY` secret in your repository's **Settings → Secrets and variables → Actions**.
+  </Step>
+</Steps>
 
 ## Add the GitHub Actions workflow
 
@@ -48,4 +62,11 @@ Add a workflow file (e.g. `.github/workflows/deploy.yml`) with the following, re
 
 ## Verify the integration
 
-Push a commit to trigger a deployment, then confirm a new run appears in QA Wolf under the expected environment.
+<Steps>
+  <Step title="Push a commit">
+    Push a commit to trigger a deployment.
+  </Step>
+  <Step title="Confirm the run appears">
+    Confirm a new run appears in QA Wolf under the expected environment.
+  </Step>
+</Steps>

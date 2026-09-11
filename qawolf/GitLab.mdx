@@ -29,7 +29,14 @@ Enable the GitLab integration from **Workspace Settings → Integrations** in QA
 
 Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
 
-Generate a `QAWOLF_API_KEY` from **Workspace Settings → Integrations → API Access**, then add it as a `QAWOLF_API_KEY` CI/CD variable in your GitLab project under **Settings → CI/CD → Variables**. You can also define additional variables, such as a deployment URL, if your pipeline uses them.
+<Steps>
+  <Step title="Generate a QAWOLF_API_KEY">
+    Generate a `QAWOLF_API_KEY` from **Workspace Settings → Integrations → API Access**.
+  </Step>
+  <Step title="Add it as a CI/CD variable">
+    Add it as a `QAWOLF_API_KEY` CI/CD variable in your GitLab project under **Settings → CI/CD → Variables**. You can also define additional variables, such as a deployment URL, if your pipeline uses them.
+  </Step>
+</Steps>
 
 ## Add the deploy notification to GitLab CI/CD
 
@@ -70,7 +77,14 @@ This job tells QA Wolf that a new deployment is ready for testing.
 
 ## Verify the integration
 
-Push a commit to trigger a deployment, then confirm a new run appears in QA Wolf under the expected environment.
+<Steps>
+  <Step title="Push a commit">
+    Push a commit to trigger a deployment.
+  </Step>
+  <Step title="Confirm the run appears">
+    Confirm a new run appears in QA Wolf under the expected environment.
+  </Step>
+</Steps>
 
 ## Related
 
