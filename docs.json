@@ -117,6 +117,7 @@
               "qawolf/Run-a-flow-or-suite",
               "qawolf/Use-tags-effectively",
               "qawolf/Scheduling-flows",
+              "qawolf/smart-smoke-suites",
               "qawolf/Ordering-flows",
               "qawolf/Interpret-run-results",
               "qawolf/Diagnose-the-cause-of-a-failing-flow",
