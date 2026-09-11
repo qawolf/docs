@@ -1,0 +1,40 @@
+---
+title: "Smart Smoke Suites"
+description: "Let QA Wolf automatically select the flows affected by your PR. "
+---
+
+A Smart Smoke Suite is a targeted selection of flows identified by the QA Wolf agent based on the description of your PR, giving engineers a faster release signal in the review cycle. 
+
+Smart Smoke Suites are designed to layer onto your existing coverage strategies. Combined with tags and branch rules, Smart Smoke Suites provide another way to customize your runs in a way that balances speed and coverage. 
+
+<Note>
+  Smart Smoke Suites is currently in alpha and not available to all customers. Early customers running it in production work closely with QA Wolf to validate the experience and tune selection quality.
+</Note>
+
+## How it works
+
+1. QA Wolf reads the PR title and description from GitHub.
+2. The agent determines which of your flows to run based on the features affected. 
+3. Selected flows are run in a preview environment.
+4. Results post back through the platform, CLI, Slack, etc. 
+
+## Requirements
+
+- **QA Wolf GitHub App** installed in the target repository.
+- **Stable preview environments** for PRs, with deployments registered as GitHub Deployments or notified to QA Wolf via the deployment notification action.
+
+Once configured, every new preview deployment automatically starts a targeted test run. Enabling and disabling is a single toggle on the trigger, so you can turn it off instantly to revert to standard PR testing.
+
+## FAQ
+
+### How does QA Wolf decide which flows to run?
+
+The QA Wolf agent builds Smart Smoke Suites based on the PR title and description.
+
+### Can we add specific tests to always run on PRs?
+
+Yes. If you've configured your run settings to include specific flows whenever a PR is merged, those will run concurrently alongside any others selected by the agent as part of your Smart Smoke Suite. 
+
+### Do we have to write new flows specifically for Smart Smoke Suites?
+
+No. The agent will select from the flows you already have. 

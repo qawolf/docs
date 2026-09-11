@@ -106,6 +106,7 @@
             "group": "Runs",
             "pages": [
               "qawolf/Use-tags-effectively",
+              "qawolf/smart-smoke-suites",
               "qawolf/Ordering-flows"
             ]
           },
