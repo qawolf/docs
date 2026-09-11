@@ -22,12 +22,12 @@ export async function getConsoleLogs(driver: WebdriverIO.Browser) {
 ```
 
 <Note>
-  Module-level code should be limited to imports, constants, and pure helper functions. Runtime APIs like `launch()`, `expect`, `device`, and `platform.target` only work inside the flow callback — calling them at the module level will throw.
+  Keep helper functions like this one pure — see [Anatomy of a flow](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#callback-parameters) for why runtime APIs only work inside the flow callback, not at module level.
 </Note>
 
 ## Use platform-specific entry points
 
-Rather than writing one flow that handles multiple platforms, write separate flows using the entry point for each platform. The `device` API surface is consistent across platforms, so the flows look similar even though they run on different infrastructure.
+Rather than writing one flow that handles multiple platforms, write separate flows using the entry point for each platform. The `device` API surface is consistent across platforms. As a result, the flows look similar even though they run on different infrastructure.
 
 ```typescript
 // /src/flows/set-location-android.ts
@@ -59,20 +59,6 @@ export default flow(
 );
 ```
 
-## Use environment variables to parameterize flows
-
-Environment variables let the same flow run against different environments without code changes. Reference them with `process.env.VAR_NAME`.
-
-```typescript
-await page.goto(process.env.BASE_URL);
-```
-
-See [Environment setup](/qawolf/Environment-settings#create-and-manage-environment-variables) for how to configure environment variables in QA Wolf.
-
-## Pass data between flows
-
-Use `inputs` and `setOutput` to share data between flows in the same run — for example, passing a user ID created in one flow to another flow that needs to log in as that user. See [Passing data between flows](/qawolf/Pass-data-between-flows) for the full model.
-
 ## `platform.target` for edge cases
 
 For rare cases where a single flow genuinely needs to branch on the active platform at runtime, use `platform.target` from the top-level `@qawolf/flows` package.
@@ -86,3 +72,11 @@ if (platform.target.startsWith("iOS - ")) {
 ```
 
 Use this sparingly. If you find yourself branching on `platform.target` frequently, consider splitting into platform-specific flows instead. See the [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level) for the full `platform` API.
+
+## Pass data between flows
+
+Use `inputs` and `setOutput` to share data between flows in the same run — for example, passing a user ID created in one flow to another flow that needs to log in as that user. See [Passing data between flows](/qawolf/Pass-data-between-flows) for the full model.
+
+## Use environment variables to parameterize flows
+
+Environment variables let the same flow run against different environments without code changes — see [Anatomy of a flow](/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition#environment-variables) for how to reference and configure them.

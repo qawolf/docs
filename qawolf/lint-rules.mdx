@@ -27,54 +27,6 @@ That turns on QA Wolf's [page object model rules](#page-object-model-rules),
 each at the severity it ships with. A rule ships at `error` when the code it
 reports breaks at runtime, and at `warn` when it marks a convention.
 
-## Set a rule's severity
-
-List a rule under `rules` with the severity you want: `"off"`, `"warn"` or
-`"error"` — or the matching number `0`, `1` or `2`.
-
-```json
-{
-  "extends": ["@qawolf/eslint-plugin-pom"],
-  "rules": {
-    "@qawolf/pom-lint/no-wait-for-timeout-in-poms": "error",
-    "@qawolf/pom-lint/assert-expect-pairing": "off",
-    "no-debugger": "error"
-  }
-}
-```
-
-Rules you do not list keep their shipped severity.
-
-A page object model rule only takes effect once the plugin is enabled. If you
-set a severity on one without listing `@qawolf/eslint-plugin-pom` in `extends`
-or `plugins`, the rule stays off and the editor says so.
-
-## Turn on any other ESLint rule
-
-You are not limited to the rules QA Wolf enables by default. Name any core
-ESLint or [typescript-eslint](https://typescript-eslint.io/rules/) rule and it
-runs.
-
-```json
-{
-  "rules": {
-    "@typescript-eslint/no-deprecated": "warn",
-    "eqeqeq": "error"
-  }
-}
-```
-
-`@typescript-eslint/no-deprecated` is a useful one to know about: it flags calls
-to any API whose documentation marks it `@deprecated`, which includes the
-Playwright methods that have been superseded — `page.type()`, for example.
-
-<Note>
-  Rules that need type information — `no-deprecated` among them — report where
-  the types they need are loaded. In the editor that includes the types of the
-  packages your code imports. While an AI job runs, imports from npm packages
-  are not resolved, so a rule of this kind reports less there.
-</Note>
-
 ## Page object model rules
 
 These come from
@@ -141,6 +93,54 @@ instead.
   at each site.
 </Note>
 
+## Set a rule's severity
+
+List a rule under `rules` with the severity you want: `"off"`, `"warn"` or
+`"error"` — or the matching number `0`, `1` or `2`.
+
+```json
+{
+  "extends": ["@qawolf/eslint-plugin-pom"],
+  "rules": {
+    "@qawolf/pom-lint/no-wait-for-timeout-in-poms": "error",
+    "@qawolf/pom-lint/assert-expect-pairing": "off",
+    "no-debugger": "error"
+  }
+}
+```
+
+Rules you do not list keep their shipped severity.
+
+A page object model rule only takes effect once the plugin is enabled. If you
+set a severity on one without listing `@qawolf/eslint-plugin-pom` in `extends`
+or `plugins`, the rule stays off and the editor says so.
+
+## Turn on any other ESLint rule
+
+You are not limited to the rules QA Wolf enables by default. Name any core
+ESLint or [typescript-eslint](https://typescript-eslint.io/rules/) rule and it
+runs.
+
+```json
+{
+  "rules": {
+    "@typescript-eslint/no-deprecated": "warn",
+    "eqeqeq": "error"
+  }
+}
+```
+
+`@typescript-eslint/no-deprecated` is a useful one to know about: it flags calls
+to any API whose documentation marks it `@deprecated`. That includes the
+Playwright methods that have been superseded — `page.type()`, for example.
+
+<Note>
+  Rules that need type information — `no-deprecated` among them — report where
+  the types they need are loaded. In the editor that includes the types of the
+  packages your code imports. While an AI job runs, it does not resolve
+  imports from npm packages, so a rule of this kind reports less there.
+</Note>
+
 ## What QA Wolf reads
 
 QA Wolf reads three keys from `.eslintrc.json`: `extends`, `plugins` and
@@ -151,11 +151,11 @@ is running.
 Two more limits worth knowing:
 
 - **Options are not supported.** In `"no-redeclare": ["error", { … }]` the
-  severity applies and the options after it are dropped.
-- **`@qawolf/eslint-plugin-pom` is the only plugin supported at this time.**
+  severity applies, and QA Wolf drops the options after it.
+- **`@qawolf/eslint-plugin-pom` is the only plugin supported.**
   Naming any other plugin in `extends` or `plugins` has no effect, and the
-  editor tells you it was skipped. QA Wolf can support additional plugins —
-  ask, and we will look at adding the one you need.
+  editor tells you QA Wolf skipped it. QA Wolf can support additional plugins —
+  ask, and QA Wolf will look at adding the one you need.
 
 Four spellings all enable the plugin, so use whichever reads best to you:
 `@qawolf/eslint-plugin-pom`, `@qawolf/pom`, `@qawolf/pom-lint`, or
@@ -166,5 +166,5 @@ alike.
 
 If `.eslintrc.json` is not valid JSON, is not a JSON object, or is longer than
 131,072 characters, QA Wolf ignores the whole file and enables none of the page
-object model rules. The base rules still run, and the editor explains why the
-file was skipped.
+object model rules. The base rules still run, and the editor explains why QA
+Wolf skipped the file.

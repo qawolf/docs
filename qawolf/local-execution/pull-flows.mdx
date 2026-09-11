@@ -4,7 +4,7 @@ description: "Download an environment's flows into a local cache without running
 sidebarTitle: "Pull flows"
 ---
 
-For most workflows, [`qawolf flows run --env <env_id>`](/qawolf/local-execution/run-flows-locally) is enough — it pulls the environment's flows for you when they are not already cached locally. Reach for `qawolf flows pull` when you want to download the flow files without running them: to inspect them, commit them to a repository, or refresh a stale cache.
+In most cases, [`qawolf flows run --env <env_id>`](/qawolf/local-execution/run-flows-locally) is enough — it pulls the environment's flows for you when they are not already cached locally. Use `qawolf flows pull` when you want to download the flow files without running them: to inspect them, commit them to a repository, or refresh a stale cache.
 
 <Check>
   Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/qawolf/local-execution/authenticate).
@@ -49,7 +49,7 @@ Inside `.qawolf/<env_id>/`, the CLI stores:
 
 ## Refresh a pulled environment
 
-Run `qawolf flows pull --env <env_id>` again. The CLI prompts before overwriting any file that has been modified locally. To skip the prompt and overwrite, pass `--yes`:
+Run `qawolf flows pull --env <env_id>` again. The CLI prompts before overwriting any file you've modified locally. To skip the prompt and overwrite, pass `--yes`:
 
 ```bash
 qawolf flows pull --env <env_id> --yes
@@ -66,4 +66,4 @@ qawolf flows list "checkout/**" --remote
 
 ## What's not pulled
 
-Mobile app binaries are not downloaded. Mobile flows reference the APK or IPA build through an environment variable, so make sure that path points to a build available on the machine before running. Flows that read paths from runner-only `QAWOLF_*_DIR` environment variables also cannot resolve those paths locally; `qawolf doctor` flags both cases.
+QA Wolf doesn't download mobile app binaries. Mobile flows reference the APK or IPA build through an environment variable, so make sure that path points to a build available on the machine before running. Flows that read paths from runner-only `QAWOLF_*_DIR` environment variables also cannot resolve those paths locally; `qawolf doctor` flags both cases.

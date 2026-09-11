@@ -77,33 +77,34 @@ app-myorg-myrepo-pr123
 
 ## Upload the build artifact
 
-### Generate a signed URL
+<Steps>
+  <Step title="Generate a signed URL">
+    ```bash
+    curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=app-staging" \
+      -H "Authorization: Bearer $QAWOLF_API_KEY"
+    ```
 
-```bash
-curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=app-staging" \
-  -H "Authorization: Bearer $QAWOLF_API_KEY"
-```
+    On success, you'll receive:
 
-On success, you'll receive:
+    ```json
+    {
+      "fileLocation": "$TEAM_ID/app-staging",
+      "playgroundFileLocation": "app-staging",
+      "signedUrl": "https://..."
+    }
+    ```
 
-```json
-{
-  "fileLocation": "$TEAM_ID/app-staging",
-  "playgroundFileLocation": "app-staging",
-  "signedUrl": "https://..."
-}
-```
-
-Copy the `playgroundFileLocation` value — you'll use it in the notify step.
-
-### Upload the file
-
-```bash
-curl -X PUT \
-  --header "Content-Type: application/octet-stream" \
-  --data-binary @./path/to/build.apk \
-  "$SIGNED_URL"
-```
+    Copy the `playgroundFileLocation` value — you'll use it in the notify step.
+  </Step>
+  <Step title="Upload the file">
+    ```bash
+    curl -X PUT \
+      --header "Content-Type: application/octet-stream" \
+      --data-binary @./path/to/build.apk \
+      "$SIGNED_URL"
+    ```
+  </Step>
+</Steps>
 
 ## Trigger a test run
 

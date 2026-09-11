@@ -48,13 +48,39 @@ The **coverage map** is the visual representation of a coverage outline. It show
 
 ## Run
 
-A [run](/qawolf/Run-a-flow-or-suite) is an execution of one or more flows. Each flow is attempted up to three times per run if it fails. Runs can be started manually or invoked automatically by a schedule. The status and results of every flow in a run are recorded and reported back.
+A **run** is an execution of one or more flows. Each flow is attempted up to three times per run if it fails. Runs can be started manually, invoked automatically by a schedule, or triggered by a deployment. The status and results of every flow in a run are recorded and reported back.
+
+## Run status
+
+A run ends in one of three states:
+
+- **Completed** — all flows in the run have passed or been marked as not needing investigation
+- **Needs investigation** — one or more flows failed and have not been marked as resolved
+- **Canceled** — the run was canceled mid-execution by a subsequent run matching the same branch and environment
+
+A failed flow is considered resolved once it passes on a subsequent attempt, the flow itself is fixed and republished, the underlying application issue is fixed, or a maintenance report is filed against it (which excludes the flow from runs until it's fixed).
+
+## Environment status
+
+An environment's status reflects the health of its most recent runs, and is driven by bug priority:
+
+- **Ready** — all flows passing
+- **Needs investigation** — one or more flows failed, or a medium/low priority bug has been reported against a flow
+- **Failed** — a high or urgent priority bug has been reported against a flow
 
 ## Attempt
 
 Within a run, a flow may be attempted multiple times. As a tester, you will occasionally have flows that flake — attempting to run a failed flow multiple times ensures that the failure is not a temporary fluke.
 
-QA Wolf will attempt to run a flow up to three times. Each attempt has its own video, logs, and results, allowing you to isolate issues precisely.
+QA Wolf will attempt to run a flow up to three times: the first attempt runs all flows concurrently, the second retries failures in batches of five, and the final attempt runs remaining failures serially (reducing concurrency further isolates whether an environment issue is at fault). Each attempt has its own video, logs, and results.
+
+## Tag
+
+A **tag** groups flows for scheduled runs and controls execution order in run rules. Tags are intended to express **run intent** (test type, expected duration) rather than application structure — QA Wolf runs with full concurrency by default, so organizing flows by feature area rarely adds value.
+
+## Run Rule
+
+A **Run Rule** controls the order flows run in by defining a **before** set and an **after** set of flows, selected by name, group, or tag. By default, if a flow in the before set fails, flows in the after set are skipped rather than run, to keep the failure list focused on the root cause.
 
 ## Schedule
 
@@ -63,3 +89,7 @@ A schedule defines when and how often runs occur automatically. Scheduling is li
 <Note>
   Use schedules to execute flows at specific times (midnight) or at recurring intervals (every hour), or when a build is deployed.
 </Note>
+
+## Trigger
+
+A run can be started four ways: manually, on a **schedule**, from a deployment webhook, or from a CI pull-request button. Of these, only schedule-based triggers are self-serve — deployment and PR-based triggers require setup from QA Wolf.

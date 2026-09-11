@@ -73,7 +73,7 @@ The CLI prefers `QAWOLF_API_KEY` over any credential stored by `qawolf auth logi
 qawolf auth logout
 ```
 
-`qawolf auth logout` only removes credentials stored by `qawolf auth login`. Credentials set through `QAWOLF_API_KEY` cannot be removed by this command — unset the variable in your shell instead.
+`qawolf auth logout` only removes credentials stored by `qawolf auth login` — see [`auth logout`](/qawolf/libraries/cli/api-reference/commands#auth-logout) for exact behavior. To remove a `QAWOLF_API_KEY` credential, unset the variable in your shell instead.
 
 ## Switch the API URL
 

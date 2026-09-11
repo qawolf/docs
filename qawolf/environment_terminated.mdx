@@ -5,9 +5,9 @@ description: 'Stops all runs targeting the environment and requests flow promoti
 
 `POST https://app.qawolf.com/api/webhooks/environment_terminated`
 
-<Warning>
+<Tip>
   If your build server supports `node`, use [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) instead of calling this endpoint directly. This gives you type safety and clearer errors and output.
-</Warning>
+</Tip>
 
 ## Request
 
@@ -50,7 +50,7 @@ You may also pass `workspaceId`.
 }
 ```
 
-`warning` is present when the request needed a workspace and did not name one, in which case it reports the workspace QA Wolf used. It never changes the outcome. `@qawolf/ci-sdk` prints it for you.
+A `warning` field behaves the same way here as on [webhooks/deploy_success](/qawolf/deploy-success#response) — present when the request needed a workspace and didn't name one, never changing the outcome.
 
 ## Response codes
 
@@ -58,7 +58,7 @@ You may also pass `workspaceId`.
 | --- | --- |
 | `200` | Environment terminated successfully. |
 | `401` | Missing or invalid API key. |
-| `403` | Forbidden. Usually indicates a disabled team. |
+| `403` | Forbidden. Usually indicates a disabled workspace. |
 | `404` | Environment not found. |
 | `409` | Conflict. Environment is already terminated. |
 | `500` | Internal server error. Contact support if the issue persists. |

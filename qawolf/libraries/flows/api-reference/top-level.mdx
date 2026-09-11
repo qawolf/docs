@@ -1,12 +1,12 @@
 ---
-title: "Top-Level Reference"
+title: "Top-Level"
 description: "Reference notes for the top-level @qawolf/flows entry point."
-sidebarTitle: "Top-Level Reference"
+sidebarTitle: "Top-Level"
 ---
 
 The top-level `@qawolf/flows` entry point exposes cross-platform helpers and types.
 
-## Primary Exports
+## Primary exports
 
 - `platform.target`
 - `configureTarget(...)`
@@ -18,6 +18,45 @@ It also re-exports:
 
 - `type Target`
 - `type TargetScope`
+
+## Target literals
+
+The target string must exactly match one of the supported values or your flow will fail to initialize.
+
+```ts
+type Target =
+  | "Basic"
+  | "Web - Chrome"
+  | "Web - Chrome (GPU)"
+  | "Web - Firefox"
+  | "Web - Firefox (GPU)"
+  | "Web - Safari"
+  | "Web - Safari (GPU)"
+  | "Android - Pixel"
+  | "Android - Pixel 2 (Android 14)"
+  | "Android - Pixel 9"
+  | "Android - Pixel 9 (Android 14)"
+  | "Android - Pixel 9 (Android 15)"
+  | "Android - Pixel 9 (Android 16)"
+  | "Android - Pixel Tablet (Android 14)"
+  | "Android - Tablet"
+  | "iOS - Allowlisted iPhone"
+  | "iOS - iPad"
+  | "iOS - iPad 11 (iOS 18)"
+  | "iOS - iPad 11 (iOS 26)"
+  | "iOS - iPhone 15 (iOS 17)"
+  | "iOS - iPhone 15 (iOS 18)"
+  | "iOS - iPhone 15 (iOS 26)"
+  | "iOS - iPhone 15 (iOS 26) (allowlisted)"
+  | "iOS - iPhone 15 (iOS 26) (private)"
+  | "iOS - iPhone 17 (iOS 26)"
+  | "iOS 26 - Any iPad"
+  | "iOS 26 - Any iPhone"
+  | "Latest iOS (iPad)"
+  | "Latest iOS (iPhone)";
+```
+
+See [iOS Device Pools](/qawolf/libraries/flows/api-reference/ios-device-pools) for when to use the iOS allowlisted/private targets above and how to set them up — Android has no equivalent.
 
 Example:
 
@@ -68,10 +107,7 @@ configureTarget({ target });
 console.log(platform.target);
 ```
 
-Current behavior from the implementation:
-
-- it throws if no target has been configured
-- it always reflects the latest value set through `configureTarget(...)`
+It throws if no target has been configured. It always reflects the latest value set through `configureTarget(...)`.
 
 ## `configureTarget(...)`
 

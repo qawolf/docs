@@ -1,7 +1,7 @@
 ---
-title: "API Reference"
+title: "POM Reference"
 description: "API reference for @qawolf/pom: page object base classes, the page registry, typed construction, and page hooks."
-sidebarTitle: "API Reference"
+sidebarTitle: "POM Reference"
 ---
 
 `@qawolf/pom` provides Page Object Model (POM) infrastructure for
@@ -201,10 +201,10 @@ export class CookieBannerPage extends BasePageObject {
 `installPageHooks()` collects these across **every** registered page object, not
 just the entry point — so register a page object that owns popups or routes even
 when your code only ever constructs it from a direct import. Its hooks never
-install otherwise. Overrides are detected by an own-property check on the
-registered class's prototype, so declare `popupHandlers()` /
-`routeInterceptors()` directly on the class you register — an override inherited
-from a base class is not picked up.
+install otherwise. The registry detects overrides with an own-property check on
+the registered class's prototype, so declare `popupHandlers()` /
+`routeInterceptors()` directly on the class you register — it does not pick up
+an override inherited from a base class.
 
 When registering lazily, pass `{ providesPageHooks: false }` for page objects
 you know declare no hooks, so hook installation can skip loading their modules:

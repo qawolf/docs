@@ -63,12 +63,7 @@ Cause: The SDK requires `fetch`, which is only available natively in Node.js 18 
 Check:
 
 - Node.js 18 or later is available in your CI environment
-
-```javascript
-import { fetch } from "undici";
-
-const sdk = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY }, { fetch });
-```
+- If you can't upgrade, pass the `undici` polyfill shown in [Installation](/qawolf/libraries/ci-sdk/api-reference#installation)
 
 ## Mobile triggers are enabled but runs are not starting
 

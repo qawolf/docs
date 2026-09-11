@@ -1,12 +1,11 @@
 ---
-title: "Use QA Wolf from your coding agent"
-sidebarTitle: "Get started"
+title: "QA Wolf plugin"
 description: "Install the QA Wolf plugin, connect your workspace, and create your first flow from Claude Code, Codex, or another coding agent."
 ---
 
 The QA Wolf plugin lets your coding agent explore an application, propose test coverage, and ask QA Wolf to implement it. You can also run existing flows and investigate failures without leaving your coding agent.
 
-This integration is separate from [QA Wolf's in-app AI](/qawolf/Automate-flows-using-AI) and from [using the QA Wolf CLI directly](/qawolf/local-execution/authenticate).
+This is a different way to work with QA Wolf than [QA Wolf's in-app AI](/qawolf/getting-the-most-out-of-automate), which runs inside the QA Wolf platform itself, or [the QA Wolf CLI](/qawolf/local-execution/authenticate), a separate command-line tool for authenticating and running flows — no AI involved.
 
 <Note>
   The plugin is in preview and is not listed in the providers' official directories. Check the [public plugin repository](https://github.com/qawolf/agent-plugins) for release status and supported clients.
@@ -139,7 +138,7 @@ You can ask in plain language. A request that already names the new flow goes di
 
     Publishing code does not make a draft flow active. If you approved activation, the agent completes that step and verifies the result. If a result is still missing, it reports the remaining work instead of claiming completion.
 
-    See [Review run results](/qawolf/Interpret-run-results) for interpreting test outcomes.
+    See [Run status](/qawolf/Glossary#run-status) for the possible outcomes.
   </Step>
 </Steps>
 

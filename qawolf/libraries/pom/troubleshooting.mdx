@@ -1,10 +1,10 @@
 ---
-title: "POM Troubleshooting"
+title: "Troubleshooting"
 description: "Troubleshoot common issues when using @qawolf/pom, including unregistered pages, duplicate registrations, and stale page-hook flags."
 sidebarTitle: "Troubleshooting"
 ---
 
-## `Unknown page: <name>` When Calling `create`
+## `Unknown page: <name>` when calling `create`
 
 Cause: The module that calls `registerPage` for that name has not been imported,
 so the registry is empty for it.
@@ -40,11 +40,9 @@ Check:
   binding — using it inside a method body is fine, since both files have
   finished loading by then
 
-## A Page Object's Popup Or Route Hook Never Runs
+## A page object's popup or route hook never runs
 
-Cause: The page object is not registered, or page hooks are collected by an
-own-property check on the **registered** class's prototype and the override is
-inherited from a base class.
+Cause: The page object is not registered, or its hook override isn't detected — see [Entry points and page hooks](/qawolf/libraries/pom/api-reference/index#entry-points-and-page-hooks) for how hook collection actually works.
 
 Check:
 
@@ -55,7 +53,7 @@ Check:
   passed to `registerPage`, not only on a base class it extends
 - the entry point calls `installPageHooks()` before navigating
 
-## `providesPageHooks: false` Contradicts The Class
+## `providesPageHooks: false` contradicts the class
 
 Cause: A page object registered with `{ providesPageHooks: false }` declares a
 `popupHandlers()` / `routeInterceptors()` override. The registry throws so the
@@ -68,7 +66,7 @@ Check:
 - drop `{ providesPageHooks: false }` from that registration so its hooks are
   installed
 
-## `this.create("X")` Is Typed As `any`
+## `this.create("X")` is typed as `any`
 
 Cause: The name is not present in the `RegisteredPages` map.
 
@@ -78,7 +76,7 @@ Check:
   with an `X: X` entry
 - the augmentation module is included in the TypeScript program
 
-## Two Registries / Pages Invisible To Each Other
+## Two registries / pages invisible to each other
 
 Cause: More than one copy of `@qawolf/pom` resolved at runtime. The registry is
 module-level state, so each copy has its own — a page registered through one is

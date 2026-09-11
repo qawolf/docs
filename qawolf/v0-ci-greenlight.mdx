@@ -5,9 +5,9 @@ description: "Returns the outcome of a run for use as a pipeline gate."
 
 `GET https://app.qawolf.com/api/v0/ci-greenlight/{root-run-id}`
 
-<Warning>
+<Tip>
   If your build server supports `node`, use [`@qawolf/ci-sdk`](/qawolf/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.
-</Warning>
+</Tip>
 
 ## Request
 
@@ -22,17 +22,11 @@ curl https://app.qawolf.com/api/v0/ci-greenlight/<root-run-id> \
 | --- | --- |
 | `Authorization` | `Bearer <your-api-key>` |
 
-## Query parameters
-
-| Parameter | Values | Description |
-| --- | --- | --- |
-| `outcomeWhenBlockingBugsInOtherWorkflows` | `green` \| `red` | Defaults to `green`. When set to `red`, `greenlight` will be `false` if blocking bugs were found in workflows not executed in this run. Experimental. |
-
 ## Response
 
 | Field | Description |
 | --- | --- |
-| `greenlight` | `true` when `runStage` is `"completed"` and zero blocking bugs were found. |
+| `greenlight` | `true` when `runStage` is `"completed"` and there are zero blocking bugs. |
 | `relevantRunId` | ID of the most recent superseding run, if one exists. Otherwise matches `rootRunId`. |
 | `relevantRunUrl` | URL to the relevant run in QA Wolf. |
 | `relevantRunWithBugsUrl` | URL to the relevant run filtered to workflows diagnosed as bugs. |
@@ -61,7 +55,7 @@ Present when `runStage` is `"underReview"` or `"completed"`, except where noted.
 `greenlight` is `true` only when:
 
 - `runStage` is `"completed"`, and
-- Zero blocking bugs were found.
+- There are zero blocking bugs.
 
 A bug is blocking if its priority is `"high"` or unset. Newly found bugs are unset by default and count as blocking. You can lower a bug's priority in the QA Wolf UI to make it non-blocking, then retry the greenlight poll.
 
@@ -73,6 +67,12 @@ A bug is blocking if its priority is `"high"` or unset. Newly found bugs are uns
 | `underReview` | Run is in progress and under review. |
 | `completed` | Run has finished. |
 | `canceled` | Run was canceled. Polling should stop — a canceled run cannot be recovered. |
+
+## Query parameters
+
+| Parameter | Values | Description |
+| --- | --- | --- |
+| `outcomeWhenBlockingBugsInOtherWorkflows` | `green` \| `red` | Defaults to `green`. When set to `red`, `greenlight` will be `false` if workflows not executed in this run have blocking bugs. Experimental. |
 
 ## Superseding logic
 
@@ -86,7 +86,7 @@ When polling, use `relevantRunId` rather than `rootRunId` for faster queries.
 | --- | --- |
 | `200` | Success. |
 | `401` | Missing or invalid API key. |
-| `403` | Forbidden. Usually indicates a disabled team. |
+| `403` | Forbidden. Usually indicates a disabled workspace. |
 | `404` | Run not found. |
 | `405` | Method not allowed. Use `GET`. |
 | `410` | Gone. Returned for old or legacy runs. |

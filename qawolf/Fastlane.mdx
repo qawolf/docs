@@ -136,11 +136,7 @@ Including the organization, repository, and pull request number ensures each bui
 
 Once your Fastlane lane produces a build artifact, you can upload it to QA Wolf.
 
-<Steps>
-  <Step>
-    Add the `upload_to_qawolf` action to your lane and provide the artifact basename that matches your naming conventions. If this step completes successfully, the artifact has been uploaded and is available for use in test runs.
-  </Step>
-</Steps>
+Add the `upload_to_qawolf` action to your lane and provide the artifact basename that matches your naming conventions. If this step completes successfully, the artifact has been uploaded and is available for use in test runs.
 
 ```ruby
 lane :qawolf do
@@ -161,11 +157,7 @@ end
 
 After uploading a build artifact, you can notify QA Wolf that a new deployment is ready for testing.
 
-<Steps>
-  <Step>
-    Add the `notify_deploy_qawolf` action to your lane. This step is optional and is required only if you want a test run to start automatically.
-  </Step>
-</Steps>
+Add the `notify_deploy_qawolf` action to your lane. This step is optional and is required only if you want a test run to start automatically.
 
 <Tip>
   The environment key must match the value configured by QA Wolf for your workspace.

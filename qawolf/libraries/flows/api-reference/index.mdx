@@ -1,7 +1,8 @@
 ---
-title: "API Reference"
+title: "Overview"
 description: "API landing page for @qawolf/flows and its platform entry points."
-sidebarTitle: "API Reference"
+sidebarTitle: "Overview"
+hidden: true
 ---
 
 Use this section for stable API descriptions, defaults, and runtime behaviors.
@@ -12,7 +13,7 @@ Use this section for stable API descriptions, defaults, and runtime behaviors.
 - [Web](/qawolf/libraries/flows/api-reference/web)
 - [Android](/qawolf/libraries/flows/api-reference/android)
 - [iOS](/qawolf/libraries/flows/api-reference/ios)
-- [CLI](/qawolf/libraries/flows/api-reference/cli)
+- [Node](/qawolf/libraries/flows/api-reference/cli)
 
 Example imports:
 
@@ -26,27 +27,7 @@ import { flow } from "@qawolf/flows/cli";
 
 ## Cross-Platform Surface
 
-The top-level `@qawolf/flows` entry point exposes:
-
-- `platform.target`
-- target configuration helpers for tests and local execution
-- shared target types
-- shared error and scope types
-
-Example:
-
-```ts
-import { configureTarget, platform, resetTarget } from "@qawolf/flows";
-import type { Target } from "@qawolf/flows";
-
-declare const target: Target;
-
-configureTarget({ target });
-
-const activeTarget = platform.target;
-
-resetTarget();
-```
+The top-level `@qawolf/flows` entry point exposes `platform.target`, target configuration helpers, and shared target/error/scope types — see [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level) for the full API and examples.
 
 ## Target Literals
 
@@ -85,4 +66,4 @@ type Target =
   | "Latest iOS (iPhone)";
 ```
 
-See [Allowlisted devices](/qawolf/mobile/ios-allowlisted-devices) and [Private devices](/qawolf/mobile/ios-private-devices) for when to use these targets and how to set them up.
+See [iOS Device Pools](/qawolf/libraries/flows/api-reference/ios-device-pools) for when to use these targets and how to set them up.

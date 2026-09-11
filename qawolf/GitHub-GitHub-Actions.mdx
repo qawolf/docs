@@ -17,72 +17,27 @@ If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this i
   - Admin access to your GitHub repository.
 </Check>
 
-## Enable the GitHub integration in QA Wolf
+## Connect QA Wolf to GitHub
 
 <Steps>
-  <Step>
-    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
+  <Step title="Enable the GitHub integration">
+    Enable the GitHub integration from **Workspace Settings → Integrations** in QA Wolf.
   </Step>
-  <Step>
-    Choose **Integrations** and then click **Enable** next to **GitHub**. This opens GitHub, where you'll be prompted to sign in if you have not already done so.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-2.png)
-    </Frame>
-
-    <Danger>
-      Your user cannot be a member of multiple GitHub orgs.
-    </Danger>
-  </Step>
-  <Step>
-    Choose the repositories QA Wolf should access.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-3.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **Install**. Once installed, QA Wolf can create PR comments.
+  <Step title="Install the QA Wolf GitHub App">
+    Install the QA Wolf GitHub App on the repositories you want connected.
   </Step>
 </Steps>
 
-### Find the QAWOLF\_API\_KEY
+<Danger>
+  Your user cannot be a member of multiple GitHub orgs.
+</Danger>
 
 <Steps>
-  <Step>
-    Open the `Workspace name` dropdown in QA Wolf and click **Workspace Settings**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-4.png)
-    </Frame>
+  <Step title="Generate a QAWOLF_API_KEY">
+    Generate a `QAWOLF_API_KEY` from **Workspace Settings → Integrations → API Access**.
   </Step>
-  <Step>
-    Choose **Integrations**.
-  </Step>
-  <Step>
-    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
-  </Step>
-</Steps>
-
-### Add the QAWOLF\_API\_KEY secret
-
-<Steps>
-  <Step>
-    Return to GitHub, go to your repository's **Settings** tab, click **Secrets and variables**, and then **Actions**.
-  </Step>
-  <Step>
-    Type `QAWOLF_API_KEY` in **Name** and paste your API key into **Secret**.
-  </Step>
-  <Step>
-    Click **Add secret** to save.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-5.png)
-    </Frame>
-
-    <Note>
-      This key allows your workflow to authenticate with QA Wolf when the Action runs.
-    </Note>
+  <Step title="Add it as a repository secret">
+    Add it as a `QAWOLF_API_KEY` secret in your repository's **Settings → Secrets and variables → Actions**.
   </Step>
 </Steps>
 
@@ -94,51 +49,24 @@ QA Wolf's official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/
   This must be done for every repository you want connected to CI/CD.
 </Danger>
 
-<Steps>
-  <Step>
-    Open your repository on GitHub. Click the **Actions** tab.
+Add a workflow file (e.g. `.github/workflows/deploy.yml`) with the following, replacing `deployment-type` and `deployment-url` with your actual values. To get the value for `deployment-type`, reach out to QA Wolf.
 
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-6.png)
-    </Frame>
-  </Step>
-  <Step>
-    If you already have actions, click **New workflow**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-7.png)
-    </Frame>
-  </Step>
-  <Step>
-    Choose **Set up a workflow yourself**.
-
-    <Frame>
-      ![](/images/integrating-with-CI-CD/image-8.png)
-    </Frame>
-  </Step>
-  <Step>
-    Copy the example below into your workflow file (usually `.github/workflows/deploy.yml`). Replace the values in `deployment-type` and `deployment-url` with your actual values.
-
-    To get the value for `deployment-type`, reach out to QA Wolf and we will provide this value for you.
-
-    ```yaml
-    - name: Notify QA Wolf
-      uses: qawolf/notify-qawolf-on-deploy-action@v1
-      with:
-        qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
-        deployment-type: "staging"
-        deployment-url: "https://staging.example.com"
-    ```
-  </Step>
-</Steps>
+```yaml
+- name: Notify QA Wolf
+  uses: qawolf/notify-qawolf-on-deploy-action@v1
+  with:
+    qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+    deployment-type: "staging"
+    deployment-url: "https://staging.example.com"
+```
 
 ## Verify the integration
 
 <Steps>
-  <Step>
-    Push a new commit to your main branch and wait for your deployment to complete.
+  <Step title="Push a commit">
+    Push a commit to trigger a deployment.
   </Step>
-  <Step>
-    Open QA Wolf and confirm a new run appears under the expected environment.
+  <Step title="Confirm the run appears">
+    Confirm a new run appears in QA Wolf under the expected environment.
   </Step>
 </Steps>

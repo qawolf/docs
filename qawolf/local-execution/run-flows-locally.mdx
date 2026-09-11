@@ -14,7 +14,7 @@ sidebarTitle: "Run flows locally"
 
 <Steps>
   <Step>
-    Find the environment's ID in the QA Wolf app. Open **Workspace settings → Environments** and select the environment. Copy the `id` query parameter from the page URL: `https://app.qawolf.com/<team_slug>/settings/environments?id=<env_id>`. Use that value, not the environment's display name.
+    Find the environment's ID — see [Pull an environment](/qawolf/local-execution/pull-flows#pull-an-environment).
   </Step>
   <Step>
     From any directory, run:
@@ -43,7 +43,7 @@ qawolf flows run --env <env_id> "checkout/**"
 qawolf flows run --env <env_id> "src/flows/login.flow.ts"
 ```
 
-With `--env`, patterns are matched against the pulled cache under `.qawolf/<env_id>/`. Without `--env`, patterns are matched against both the current directory and the pulled cache.
+With `--env`, the CLI matches patterns against the pulled cache under `.qawolf/<env_id>/`. Without `--env`, it matches patterns against both the current directory and the pulled cache.
 
 ## Watch the browser
 
@@ -57,7 +57,7 @@ qawolf flows run --env <env_id> --headed
 
 ## Capture artifacts on failure
 
-By default, no video or trace is recorded. To keep artifacts only when a flow fails, set the mode to `retain-on-failure`:
+By default, the CLI records no video or trace. To keep artifacts only when a flow fails, set the mode to `retain-on-failure`:
 
 ```bash
 qawolf flows run --env <env_id> --video retain-on-failure --trace retain-on-failure
@@ -79,7 +79,7 @@ By default the HAR captures headers and timing only. To include response bodies,
 qawolf flows run --env <env_id> --retries 2
 ```
 
-The CLI retries each failing flow up to the given number of times. A flow that passes on retry is counted as a pass for exit-code purposes.
+The CLI retries each failing flow up to the given number of times. It counts a flow that passes on retry as a pass for exit-code purposes.
 
 ## Stop after the first failure
 
@@ -95,7 +95,7 @@ qawolf flows run --env <env_id> --bail
 qawolf flows run --env <env_id> --workers 4
 ```
 
-`--workers` controls how many web flows run concurrently. Android flows must run with `--workers 1` — the CLI errors out if Android flows are selected with a higher value.
+`--workers` controls how many web flows run concurrently. Android flows only run one at a time — see [`--workers`](/qawolf/libraries/cli/api-reference/commands#flows-run-pattern) for the exact rule.
 
 ## Write a JUnit XML report
 
@@ -109,7 +109,7 @@ The CLI writes a JUnit XML report to `qawolf-output/junit-report.xml` (or under 
 qawolf flows run --env <env_id> --junit ./reports/results.xml
 ```
 
-The XML report is written alongside the console output and is independent of `--json` and `--agent`.
+The CLI writes the XML report alongside the console output, independent of `--json` and `--agent`.
 
 ## Run flows you authored locally
 
@@ -125,9 +125,9 @@ The CLI discovers flows matching `**/*.flow.{ts,js}` in the current directory an
 
 `qawolf flows run` exits with `0` when every flow passes and `1` when one or more fail. See [Exit codes](/qawolf/libraries/cli/api-reference/index#exit-codes) for the full list.
 
-## Current limitations
+## Limitations
 
-- Android flows must run with `--workers 1`. Parallel execution is supported for web flows only.
-- iOS flows are not executed. The CLI skips them with a warning.
-- Flows that target the legacy `"Basic"` platform pull successfully but cannot be executed by the CLI.
-- Flows where `target` is a computed value rather than a string literal are skipped because the CLI cannot determine the platform ahead of time.
+- Android flows must run with `--workers 1`. Only web flows run in parallel.
+- The CLI does not execute iOS flows. It skips them with a warning.
+- Flows that target the legacy `"Basic"` platform pull successfully, but the CLI cannot execute them.
+- The CLI skips flows where `target` is a computed value rather than a string literal, because it cannot determine the platform ahead of time.

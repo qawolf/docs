@@ -3,27 +3,71 @@ title: "Upload files"
 description: "Upload files to QA Wolf and use them in your test flows."
 ---
 
-QA Wolf accepts file uploads via a two-step signed URL process. See [v0/run-inputs-executables-signed-urls](/qawolf/run-inputs-executables-signed-urls).
-
 <Check>
   Make sure you have:
 
   - Your `QAWOLF_API_KEY` — available under **Workspace Name → Workspace Settings → Integrations → API Access**
 </Check>
 
+## Supported file types
+
+### App executables
+
+The build under test.
+
+- **Mobile apps** (`.apk`, `.aab`, `.ipa`) — use a static filename based on the environment (e.g., `app-staging.ipa`) so tests always reference the latest build. See [Mobile build testing](/qawolf/Fastlane) for how to automate this as part of your build process.
+- **Linux desktop apps** (`.deb`) — use a static filename based on the environment, the same convention as mobile app builds.
+
+### Data files
+
+Used inside a test flow, not the app itself.
+
+- **ZIP archives** (`.zip`) — bundle multiple assets for a single upload. Make sure the contents match the structure your tests expect.
+- **CSV files** (`.csv`) — test data inputs. Use a consistent filename so flows always pick up the latest version.
+- **PDF files** (`.pdf`) — for test flows that involve document handling or validation.
+
+## Upload a file
+
+QA Wolf accepts file uploads via a two-step signed URL process.
+
+<Steps>
+  <Step title="Generate a signed URL">
+    ```bash
+    curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH" \
+      -H "Authorization: Bearer $QAWOLF_API_KEY"
+    ```
+
+    Returns a `signedUrl` for the next step, plus `fileLocation` and `playgroundFileLocation` — the paths you'll use to reference the file afterward.
+  </Step>
+  <Step title="Upload the file">
+    ```bash
+    curl -X PUT \
+      --header "Content-Type: application/octet-stream" \
+      --data-binary @some_file.zip \
+      $SIGNED_URL
+    ```
+  </Step>
+</Steps>
+
+See [v0/run-inputs-executables-signed-urls](/qawolf/run-inputs-executables-signed-urls) for the full request/response reference, including error codes.
+
 ## Use an uploaded file in a flow
 
 ### Mobile apps
 
-Reference the uploaded file using the `RUN_INPUT_PATH` environment variable, which is set automatically when a file is uploaded via the API.
+QA Wolf resolves an uploaded build automatically through `RUN_INPUT_PATH` — omit `app` in your launch call and provide only the package/bundle ID:
 
-```javascript
-const APK_PATH = `/home/wolf/run-inputs-executables/${process.env.RUN_INPUT_PATH || "default-file.apk"}`;
+```typescript
+import { flow, launch } from "@qawolf/flows/android";
 
-const driver = await wdio.startAndroid({
-  "appium:app": APK_PATH,
+export default flow("Open uploaded build", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    appPackage: "com.example.android",
+  });
 });
 ```
+
+See [App resolution](/qawolf/libraries/flows/api-reference/android#app-resolution) (or the [iOS equivalent](/qawolf/libraries/flows/api-reference/ios#app-resolution)) for the full resolution order and how to reference a specific path or URL instead.
 
 ### Web file upload
 
@@ -40,9 +84,9 @@ page.once(
 await page.getByText("Upload file").click();
 ```
 
-<Note>
+<Warning>
   Use `page.once` rather than `page.on`. `page.once` registers a one-time event listener that automatically unregisters after the first use. Using `page.on` adds a persistent listener that may interfere with subsequent file uploads in the same flow.
-</Note>
+</Warning>
 
 ### PDF viewing
 
@@ -62,23 +106,3 @@ pdfPage.once(
 await pdfPage.waitForTimeout(4000);
 await pdfPage.click("#openFile");
 ```
-
-## Supported file types
-
-<AccordionGroup>
-  <Accordion title="Mobile apps (.apk, .aab, .ipa)">
-    Use a static filename based on the environment (e.g., `app-staging.ipa`) so tests always reference the latest build. See [Mobile build testing](/qawolf/Fastlane) for how to automate this as part of your build process.
-  </Accordion>
-
-  <Accordion title="ZIP archives (.zip)">
-    ZIP files can be used to bundle multiple assets for a single upload. Ensure the contents follow any structure expected by the tests that will consume them.
-  </Accordion>
-
-  <Accordion title="CSV files (.csv)">
-    CSV files are typically used as test data inputs. Use a consistent filename so flows always pick up the latest version.
-  </Accordion>
-
-  <Accordion title="PDF files (.pdf)">
-    PDF files can be uploaded for use in test flows that involve document handling or validation.
-  </Accordion>
-</AccordionGroup>

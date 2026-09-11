@@ -87,7 +87,6 @@
         "tab": "Introduction",
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
-          "qawolf/quick-start",
           "qawolf/Glossary"
         ]
       },
@@ -95,66 +94,25 @@
         "tab": "Features",
         "groups": [
           {
-            "group": "Flows",
+            "group": "Agentic QA",
             "pages": [
               "qawolf/Map-your-app-s-workflows",
-              "qawolf/Automate-flows-using-AI",
               "qawolf/getting-the-most-out-of-automate",
-              "qawolf/automate-jobs",
-              "qawolf/reusable-ai-knowledge",
-              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/Create-a-new-flow",
-              "qawolf/Use-the-Elements-picker",
-              "qawolf/Debug-tests-and-flows",
-              "qawolf/Uploading-manually",
-              "qawolf/sharing-code-across-flows",
-              "qawolf/lint-rules"
+              "qawolf/coding-agents/get-started"
             ]
           },
           {
-            "group": "Runs",
+            "group": "Run Orchestration",
             "pages": [
-              "qawolf/Run-a-flow-or-suite",
               "qawolf/Use-tags-effectively",
-              "qawolf/Scheduling-flows",
               "qawolf/smart-smoke-suites",
-              "qawolf/Ordering-flows",
-              "qawolf/Interpret-run-results",
-              "qawolf/Diagnose-the-cause-of-a-failing-flow",
-              "qawolf/Clear-a-release"
+              "qawolf/Ordering-flows"
             ]
           },
           {
-            "group": "Bugs",
+            "group": "Authentication",
             "pages": [
-              "qawolf/Manage-bug-reports"
-            ]
-          },
-          {
-            "group": "Mobile",
-            "pages": [
-              {
-                "group": "Android",
-                "pages": [
-                  "qawolf/mobile/android-devices"
-                ]
-              },
-              {
-                "group": "iOS",
-                "pages": [
-                  "qawolf/mobile/ios-devices",
-                  "qawolf/mobile/ios-allowlisted-devices",
-                  "qawolf/mobile/ios-private-devices"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Setup",
-            "pages": [
-              "qawolf/Workspace-settings",
-              "qawolf/Environment-settings",
-              "qawolf/Choose-the-right-CI-environment-to-execute-your-tests"
+              "qawolf/sso"
             ]
           }
         ]
@@ -322,21 +280,26 @@
         "tab": "References",
         "pages": [
           {
+            "group": "Flow conventions",
+            "pages": [
+              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
+              "qawolf/sharing-code-across-flows",
+              "qawolf/Uploading-manually",
+              "qawolf/lint-rules",
+              "qawolf/reusable-ai-knowledge"
+            ]
+          },
+          {
             "group": "@qawolf/flows",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/flows/api-reference/index",
-                  "qawolf/libraries/flows/api-reference/top-level",
-                  "qawolf/libraries/flows/api-reference/web",
-                  "qawolf/libraries/flows/api-reference/cli",
-                  "qawolf/libraries/flows/api-reference/android",
-                  "qawolf/libraries/flows/api-reference/android-device-reference",
-                  "qawolf/libraries/flows/api-reference/ios",
-                  "qawolf/libraries/flows/api-reference/ios-device-reference"
-                ]
-              },
+              "qawolf/libraries/flows/api-reference/top-level",
+              "qawolf/libraries/flows/api-reference/web",
+              "qawolf/libraries/flows/api-reference/cli",
+              "qawolf/libraries/flows/api-reference/android",
+              "qawolf/libraries/flows/api-reference/android-device-reference",
+              "qawolf/libraries/flows/api-reference/ios",
+              "qawolf/libraries/flows/api-reference/ios-device-reference",
+              "qawolf/libraries/flows/api-reference/ios-device-pools",
               "qawolf/libraries/flows/troubleshooting"
             ]
           },
@@ -350,31 +313,39 @@
           {
             "group": "@qawolf/testkit",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/testkit/api-reference/index",
-                  "qawolf/libraries/testkit/api-reference/core",
-                  "qawolf/libraries/testkit/api-reference/types",
-                  "qawolf/libraries/testkit/api-reference/web",
-                  "qawolf/libraries/testkit/api-reference/client"
-                ]
-              },
+              "qawolf/libraries/testkit/api-reference/core",
+              "qawolf/libraries/testkit/api-reference/types",
+              "qawolf/libraries/testkit/api-reference/web",
+              "qawolf/libraries/testkit/api-reference/client",
               "qawolf/libraries/testkit/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/emails",
             "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/emails/api-reference/index",
-                  "qawolf/libraries/emails/api-reference/mail",
-                  "qawolf/libraries/emails/api-reference/client"
-                ]
-              },
+              "qawolf/libraries/emails/api-reference/mail",
+              "qawolf/libraries/emails/api-reference/client",
               "qawolf/libraries/emails/troubleshooting"
+            ]
+          },
+          {
+            "group": "@qawolf/cli",
+            "pages": [
+              "qawolf/libraries/cli/api-reference/index",
+              "qawolf/libraries/cli/api-reference/commands",
+              "qawolf/libraries/cli/api-reference/environment-variables",
+              "qawolf/libraries/cli/troubleshooting"
+            ]
+          },
+          {
+            "group": "Local execution",
+            "pages": [
+              "qawolf/local-execution/authenticate",
+              "qawolf/local-execution/run-flows-locally",
+              "qawolf/local-execution/pull-flows",
+              "qawolf/local-execution/install-dependencies",
+              "qawolf/local-execution/set-up-a-project",
+              "qawolf/local-execution/diagnose-problems"
             ]
           },
           {
@@ -382,20 +353,6 @@
             "pages": [
               "qawolf/libraries/ci-sdk/api-reference",
               "qawolf/libraries/ci-sdk/troubleshooting"
-            ]
-          },
-          {
-            "group": "@qawolf/cli",
-            "pages": [
-              {
-                "group": "API Reference",
-                "pages": [
-                  "qawolf/libraries/cli/api-reference/index",
-                  "qawolf/libraries/cli/api-reference/commands",
-                  "qawolf/libraries/cli/api-reference/environment-variables"
-                ]
-              },
-              "qawolf/libraries/cli/troubleshooting"
             ]
           },
           {
@@ -467,23 +424,6 @@
               "qawolf/Azure-DevOps-Boards",
               "qawolf/Integrate-with-webhooks"
             ]
-          },
-          {
-            "group": "Coding agents",
-            "pages": [
-              "qawolf/coding-agents/get-started"
-            ]
-          },
-          {
-            "group": "Local execution",
-            "pages": [
-              "qawolf/local-execution/authenticate",
-              "qawolf/local-execution/run-flows-locally",
-              "qawolf/local-execution/pull-flows",
-              "qawolf/local-execution/install-dependencies",
-              "qawolf/local-execution/set-up-a-project",
-              "qawolf/local-execution/diagnose-problems"
-            ]
           }
         ]
       },
@@ -510,7 +450,6 @@
             "pages": [
               "qawolf/Test-environments",
               "qawolf/Integrating-with-microsoft-teams",
-              "qawolf/sso",
               {
                 "group": "PR Testing",
                 "pages": [

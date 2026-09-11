@@ -1,7 +1,7 @@
 ---
-title: "Client Reference"
+title: "Client"
 description: "Reference notes for runtime-facing client creation and configuration."
-sidebarTitle: "Client Reference"
+sidebarTitle: "Client"
 ---
 
 Runtime-facing APIs include:
@@ -80,10 +80,10 @@ type EmailsClientOptions =
     };
 ```
 
-## Role Of `createEmailsClient(...)`
+## Role of `createEmailsClient(...)`
 
-This creates a service-backed client that can be used directly by local
-harnesses, tooling, or other runtime environments.
+This creates a service-backed client that local harnesses, tooling, or other
+runtime environments can use directly.
 
 Example:
 
@@ -104,7 +104,7 @@ const client = await createEmailsClient({
 const inbox = await client.getInbox({ new: true });
 ```
 
-## Compatibility Note
+## Compatibility note
 
 `buildGetInboxFn(...)` remains useful for compatibility with runtimes that still
 inject `getInbox` directly, but new runtime code should prefer

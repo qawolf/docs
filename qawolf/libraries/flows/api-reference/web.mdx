@@ -1,12 +1,12 @@
 ---
-title: "Web Reference"
+title: "Web"
 description: "Reference for @qawolf/flows/web, the entry point for defining web flows with launch behavior, page assertions, and browser context helpers."
-sidebarTitle: "Web Reference"
+sidebarTitle: "Web"
 ---
 
 `@qawolf/flows/web` defines web flows and optional explicit launch behavior.
 
-## Primary Exports
+## Primary exports
 
 - `flow(...)`
 - `launch(...)`
@@ -35,7 +35,7 @@ export default flow(
 );
 ```
 
-## Target Model
+## Target model
 
 Web flows accept web targets only. Use the CLI entry point for `Basic`.
 
@@ -84,7 +84,7 @@ export const launchedFlow = flow(
 );
 ```
 
-## Launch Shapes
+## Launch shapes
 
 Browser launch accepts the generated Playwright browser and context launch options, excluding Playwright's raw `persistentContext` and `userDataDir` fields. QA Wolf adds `browserContext`, reintroduces `userDataDir` for persistent launches, and maps those options back to the underlying Playwright shape.
 
@@ -127,7 +127,7 @@ type LaunchResult =
   | ElectronLaunchResult;
 ```
 
-QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context mode. Pass `userDataDir` with `browserContext: "persistent"` when a profile directory should be reused.
+QA Wolf maps `browserContext: "persistent"` to Playwright's persistent context mode. Pass `userDataDir` with `browserContext: "persistent"` when you want to reuse a profile directory.
 
 Browser example:
 
@@ -193,7 +193,38 @@ Static launch options infer a narrow return type when they determine the result 
 
 Use `isAnonymous(...)`, `isPersistent(...)`, and `isElectron(...)` to narrow dynamic results before reading shape-specific fields.
 
-## Flow Callback Context
+## Defaults
+
+- default `kind` is browser launch
+- default `browserContext` is `"incognito"`
+- default `browser` comes from the flow target
+- GPU launch behavior is derived from the flow target
+- Electron declarative launch requires `target: "Electron"` and `executablePath`
+
+Example:
+
+```ts
+import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
+
+export default flow(
+  "Use target browser defaults",
+  "Web - Firefox",
+  async () => {
+    const launchResult = await launch();
+    if (isElectron(launchResult))
+      throw new Error("Expected browser launch");
+
+    const page =
+      isPersistent(launchResult)
+        ? launchResult.page
+        : await launchResult.context.newPage();
+
+    await page.goto("https://example.com");
+  },
+);
+```
+
+## Flow callback context
 
 All web flow callbacks receive:
 
@@ -241,34 +272,3 @@ export default flow(
 ```
 
 For visual regression assertions with `expect(page).toHaveScreenshot(...)`, see [Web & Mobile web screenshots](/qawolf/visual-diffing).
-
-## Defaults
-
-- default `kind` is browser launch
-- default `browserContext` is `"incognito"`
-- default `browser` comes from the flow target
-- GPU launch behavior is derived from the flow target
-- Electron declarative launch requires `target: "Electron"` and `executablePath`
-
-Example:
-
-```ts
-import { flow, isElectron, isPersistent, launch } from "@qawolf/flows/web";
-
-export default flow(
-  "Use target browser defaults",
-  "Web - Firefox",
-  async () => {
-    const launchResult = await launch();
-    if (isElectron(launchResult))
-      throw new Error("Expected browser launch");
-
-    const page =
-      isPersistent(launchResult)
-        ? launchResult.page
-        : await launchResult.context.newPage();
-
-    await page.goto("https://example.com");
-  },
-);
-```
