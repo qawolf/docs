@@ -94,16 +94,11 @@
         "tab": "Features",
         "groups": [
           {
-            "group": "Coding agents",
-            "pages": [
-              "qawolf/coding-agents/get-started"
-            ]
-          },
-          {
             "group": "Agentic QA",
             "pages": [
               "qawolf/Map-your-app-s-workflows",
-              "qawolf/getting-the-most-out-of-automate"
+              "qawolf/getting-the-most-out-of-automate",
+              "qawolf/coding-agents/get-started"
             ]
           },
           {
