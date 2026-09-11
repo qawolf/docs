@@ -102,7 +102,7 @@
             ]
           },
           {
-            "group": "Runs",
+            "group": "Run Orchestration",
             "pages": [
               "qawolf/Use-tags-effectively",
               "qawolf/smart-smoke-suites",
