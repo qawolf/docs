@@ -1,0 +1,88 @@
+---
+title: "Product Mapping (copy)"
+description: "As the QA Wolf agent autonomously explores your application, it identifies and outlines end-to-end workflows that you should test before each release. "
+hidden: true
+---
+
+# What is product mapping
+
+# How it works
+
+## Autonomous exploration
+
+## sdf
+
+A coverage outline defines the scope required to test an application end-to-end. Without visibility into an application's surface area — key user paths, important states, and system boundaries — it's difficult to know whether coverage is complete or where it isn't.
+
+The outlining agent builds that outline by exploring your application and generating the groups and flow stubs that represent its main areas and user journeys. The result is rendered as a coverage map, the visual view of what you cover. As features change or new ones are added, you can run the agent again to extend the outline.
+
+<Frame>
+  <iframe src="https://fast.wistia.net/embed/iframe/9zdx3ui806" title="Wistia video player" allowFullScreen style={{ width: "100%", aspectRatio: "16/9", border: "none" }} />
+</Frame>
+
+<Tip>
+  To explore from an external coding agent instead, use the [QA Wolf plugin](/qawolf/coding-agents/get-started). It presents an Arrange, Act, Assert outline for approval before asking QA Wolf to implement a flow.
+</Tip>
+
+## How outlining works
+
+Start an outlining session from the **Outline flows** entry point on the Flows tab, or drive it from the [QA Wolf plugin](/qawolf/coding-agents/get-started) in your coding agent. Give the agent a URL or describe a journey — three starter prompts are offered (**Outline a test plan**, **Identify key flows**, **Start exploring**), or type your own, e.g. _"Outline a test plan for `https://yourapp.com`"_.
+
+The agent asks for guidance directly in the chat when it hits a login prompt or needs clarification, and you can redirect or refine the exploration at any point. To extend an outline later, prompt for more coverage of an area the agent has already explored.
+
+## Outline from a file
+
+Attaching a file (CSV, JSON, Markdown, plain text, or YAML) supports two different behaviors, depending on the prompt:
+
+**Generate flows from a file** — parses the file and creates the group structure and flow stubs immediately, without exploring the app. Prompt: _"Upload the flows from this file."_
+
+**Outline your app using a file as a guide** — uses the file as a reference while the agent actively explores your app. Prompt: _"Outline all the flows in this file."_ When the session ends, the agent produces a CSV with each test case's coverage status, the flow that covers it, and the reason for any rejections.
+
+## Get better results
+
+Outlining works best when you give the agent clear context upfront and steer it away from areas where it's likely to struggle.
+
+### Write a strong opening prompt
+
+The agent needs enough context to navigate your app and generate meaningful flows. A good opening prompt includes:
+
+- The URL to explore
+- Login credentials
+- The application name (used to name the group the agent creates)
+- Any specific task or scope
+
+If every session needs the same background about your app, put it in a [SKILL.md](/qawolf/reusable-ai-knowledge) rather than repeating it in the prompt.
+
+### Set a flow target
+
+Outlining defaults to around 200 flows. If you want more coverage, specify a number explicitly — telling it to find "as many as possible" tends to stop at the default anyway.
+
+```text
+Outline up to 500 flows for this application.
+```
+
+### Skip auth flows when they cause problems
+
+If your app uses MFA or has a complex login flow, the agent can get stuck trying to test authentication before it can explore anything else. Tell it to bypass this:
+
+```text
+Just log in first — don't test auth flows.
+```
+
+### Use manual browsing to supplement AI exploration
+
+You don't have to rely entirely on the agent to find flows on its own. You can click through your app manually while outlining, and it will suggest flows based on what it observes. This is useful for:
+
+- Apps where automated exploration struggles (complex forms, file uploads, role-based access)
+- Specific flows you want to make sure are captured
+- Verifying that the agent understood a flow correctly
+
+To use this: stop the AI, click through the flow yourself, and look for the **Save as flows** button that appears.
+
+### Hand off flows that need more control
+
+Outlining is designed for breadth — capturing an app's testable surface quickly. For flows that need individual attention, use [AI flow creation](/qawolf/getting-the-most-out-of-automate) to turn them into tests one at a time with more targeted prompts.
+
+<Tip>
+  A common pattern: outline the app to get broad coverage, then use AI flow creation to build out the flows that need more precision.
+</Tip>
