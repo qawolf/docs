@@ -3,27 +3,20 @@ title: "Smart Smoke Suites"
 description: "Automatically run the most relevant subset of your test suite against every PR preview deployment, powered by QA Wolf's AI."
 ---
 
-Smart Smoke Suites (also called Adaptive Flow Selection) automatically runs the most relevant subset of your test suite against every PR preview deployment, instead of running the full suite on every change. Tester, QA Wolf's in-platform AI, reads each PR's title and description, infers the area of risk, and runs a targeted set of flows against your preview environment.
+Smart Smoke Suites automatically runs the most relevant subset of your test suite against every PR preview deployment, instead of running the full suite on every change. QA Wolf reads each PR's title and description, infers the area of risk, and runs a targeted set of flows against your preview environment — so engineers get faster signal in the review cycle, without having to decide which tests to trigger.
 
-The goal: keep PR testing lightweight and fast by default, while still surfacing deeper signal on higher-risk changes, without engineers having to think about which tests to trigger.
+Because selection draws from the flows already in your suite, it requires no new test authoring. PRs that wouldn't have triggered a manual run now get automatic, change-specific coverage — fewer flows run per PR than a full run, while still catching change-specific risk early.
 
 <Note>
   Smart Smoke Suites is currently in alpha. Early customers running it in production work closely with QA Wolf to validate the experience and tune selection quality.
 </Note>
 
-## Why it matters
-
-- **Faster signal on every deploy.** Targeted runs finish faster than full-suite runs, so engineers see results sooner in the review cycle.
-- **Coverage on changes that previously had none.** PRs that wouldn't have triggered a manual test now get automatic, change-specific coverage.
-- **No new test authoring required.** Selection works against the flows already in your suite.
-- **Lower cost-to-coverage ratio.** Fewer flows run per PR, but change-specific risk is still caught early.
-
 ## How it works
 
 When a PR preview environment deploys to a configured trigger:
 
-1. Tester reads the PR title and description from GitHub.
-2. It maps the described change against your existing flow library, weighting by feature area, surface, and historical relevance.
+1. QA Wolf reads the PR title and description from GitHub.
+2. The agent maps the described change against your existing flow library, weighting by feature area, surface, and historical relevance.
 3. A targeted run starts against the preview environment using only the selected flows.
 4. Results post back through your normal QA Wolf notifications.
 
@@ -37,7 +30,7 @@ Selection draws from your existing tests — no new flows are written, and nothi
 
 Smart Smoke Suites is designed to layer onto your existing setup rather than replace it. A few common patterns:
 
-- **Adaptive selection only.** Tester picks the flow set for every PR. Simplest setup.
+- **Adaptive selection only.** QA Wolf picks the flow set for every PR. Simplest setup.
 - **Fixed baseline + adaptive layer.** Define a core set of flows that always runs on every PR, with adaptive selection adding relevant flows on top.
 - **Tag-based split.** Run adaptive selection on one tag (e.g., front-end PRs) while keeping another tag on a fixed list — useful when different surfaces need different behavior.
 - **Branch rules for high-risk merges.** Use branch-name rules to keep specific branches (e.g., `release-candidate-*`) on the full smoke suite, while everything else runs adaptive selection.
@@ -49,7 +42,7 @@ To enable Smart Smoke Suites, the following need to be in place:
 
 - The **QA Wolf GitHub App** installed in the target repository.
 - **Stable preview environments** for PRs, with deployments registered as GitHub Deployments or notified to QA Wolf via the deployment notification action.
-- A **pool of stable flows** in your existing suite for Tester to select from.
+- A **pool of stable flows** in your existing suite for QA Wolf to select from.
 
 These are the same prerequisites as standard PR testing — no additional infrastructure required.
 
@@ -72,16 +65,11 @@ These are the same prerequisites as standard PR testing — no additional infras
 
 Once configured, every new preview deployment automatically starts a targeted test run. Enabling and disabling is a single toggle on the trigger, so you can turn it off instantly to revert to standard PR testing.
 
-## Things to know
-
-- **Alpha feature.** See the note above — early customers work closely with QA Wolf to tune selection quality.
-- **Investigation on request.** Adaptive PR runs are not actively investigated by the QA Wolf team by default. If you'd like a specific PR run investigated, flag it through your usual support channel.
-
 ## FAQ
 
-### How does Tester decide which flows to run?
+### How does QA Wolf decide which flows to run?
 
-Selection is driven by Tester's read of the PR title and description, mapped against your existing flow library. The clearer the PR context, the sharper the selection.
+Selection is driven by QA Wolf's read of the PR title and description, mapped against your existing flow library. The clearer the PR context, the sharper the selection.
 
 ### Can we add specific tests to always run on PRs?
 
