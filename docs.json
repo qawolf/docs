@@ -100,7 +100,7 @@
             ]
           },
           {
-            "group": "Flows",
+            "group": "Agentic QA",
             "pages": [
               "qawolf/Map-your-app-s-workflows",
               "qawolf/getting-the-most-out-of-automate"
@@ -115,7 +115,7 @@
             ]
           },
           {
-            "group": "Setup",
+            "group": "Authentication",
             "pages": [
               "qawolf/sso"
             ]
