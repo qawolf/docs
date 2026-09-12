@@ -1,0 +1,16 @@
+---
+title: "Tags"
+description: "Use tags to create custom suites for nightly runs, smoke suites, etc."
+---
+
+# How tags work
+
+The primary purpose of tags is to create custom suites — subsets of flows that run according to [Run Rules](/qawolf/Run-Rules) or schedules that you define. 
+
+Tags exist at the Workspace level, can be applied to any flow, and are available to all users in your workspace. 
+
+# FAQ
+
+## What tags should I create?
+
+Common tags include test type (e.g., _sanity_ or _smoke_) and expected duration (e.g., _long-running_). Since QA Wolf runs all tests in parallel by default, you do not need to use tags to shard your flows.  

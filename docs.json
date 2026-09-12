@@ -97,6 +97,7 @@
             "group": "Agentic QA",
             "pages": [
               "qawolf/product-mapping",
+              "qawolf/Map-your-app-s-workflows-2",
               "qawolf/getting-the-most-out-of-automate",
               "qawolf/coding-agents/get-started"
             ]
@@ -104,9 +105,9 @@
           {
             "group": "Run Orchestration",
             "pages": [
-              "qawolf/Use-tags-effectively",
+              "qawolf/tags",
               "qawolf/smart-smoke-suites",
-              "qawolf/Ordering-flows"
+              "qawolf/Run-Rules"
             ]
           },
           {
