@@ -73,12 +73,9 @@ import { flow } from "@qawolf/flows/cli";
 
 </CodeGroup>
 
-| Package | Use when |
-| --- | --- |
-| `@qawolf/flows/web` | Testing a website, web app, or Electron desktop app |
-| `@qawolf/flows/ios` | Testing a native iOS app |
-| `@qawolf/flows/android` | Testing a native Android app |
-| `@qawolf/flows/cli` | [Running setup, teardown, tasks that don't need browsers/devices](/qawolf/libraries/flows/api-reference/cli) |
+<Note>
+  `@qawolf/flows/web` also covers Electron desktop apps. Use `@qawolf/flows/cli` for [setup, teardown, and other tasks that don't need a browser or device](/qawolf/libraries/flows/api-reference/cli).
+</Note>
 
 <Warning>
   For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`. Importing from `@playwright/test` will cause assertions to bypass QA Wolf's reporting.
