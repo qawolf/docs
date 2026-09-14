@@ -1,173 +1,49 @@
 ---
 title: "Configure Single Sign-On (SSO)"
-description: "Set up SSO to authenticate with QA Wolf using your identity provider, such as Okta, OneLogin, or Entra ID."
+description: "Set up SSO via SAML 2.0 and OpenID Connect"
 sidebarTitle: "SSO"
 ---
 
-QA Wolf supports SSO via SAML 2.0 and OpenID Connect, which covers most enterprise identity providers, including Okta, Azure AD, Google, OneLogin, JumpCloud, Auth0, ADFS, and Shibboleth.
+# Requirements
 
-## Set up SSO
-
-The person configuring SSO must have the following:
-
-### QA Wolf permissions
-
-- **SSO Admin** role. Someone at your organization with the **Membership Manager** role will need to:
-
-<Steps>
-  <Step title="Go to Workspace Settings → Organization">
-    Go to **Workspace Settings → Organization**.
-  </Step>
-  <Step title="Grant the SSO Admin role">
-    Grant the **SSO Admin** role to the user who is going to follow these instructions.
-  </Step>
-  <Step title="Sign out and back in">
-    Sign out and back in after their role is updated.
-  </Step>
-</Steps>
-
-### Identity provider permissions
-
-The administrator must be able to:
+The administrator configuring SSO must be able to:
 
 - Verify your organization domain, such as by adding a TXT record.
 - Create applications in the identity provider.
 - Configure SAML or OIDC authentication settings.
 - Assign users or groups to applications.
 
----
+# Set up
 
 ### Verify your email domain
 
-You can only set up SSO for verified email domains. In other words, you need to prove you own the domain name.
-
-As the **SSO Admin**:
-
 <Steps>
-  <Step title="Sign in to QA Wolf">
-    Sign in to QA Wolf.
+  <Step title="Log in as SSO Admin">
+    SSO Admin permissions are granted by Membership Managers. 
   </Step>
-  <Step title="Navigate to Workspace Settings → Organization">
-    Navigate to **Workspace Settings → Organization**.
+  <Step title="Verify your email domain">
+    Add domains under **Workspace Settings.**
   </Step>
-  <Step title="Click Add domain">
-    In the Domain Verification section, click **Add domain**.
+  <Step title="Create an application in your identity provider.">
+    Configuration values are listed in the **SSO settings page**.
+  </Step>
+  <Step title="Enter identity provider details in QA Wolf">
+  </Step>
+  <Step title="Assign users or groups to the QA Wolf application in your identity provider.">
+    /
   </Step>
 </Steps>
 
-Follow the instructions to add and verify as many domains as needed for your organization.
+# Troubleshooting
 
-### Open the SSO settings page
-
-From the same **Workspace Settings → Organization** page, click **Set up SSO**. This page contains the configuration values required for your identity provider.
-
-### Create an application in your identity provider
-
-In your identity provider:
-
-<Steps>
-  <Step title="Create a new application">
-    Create a **new application** for QA Wolf.
-  </Step>
-  <Step title="Select an authentication method">
-    Select **SAML** or **OIDC** authentication.
-  </Step>
-  <Step title="Enter the configuration values">
-    Enter the configuration values provided in the QA Wolf SSO settings page.
-  </Step>
-</Steps>
-
-Typical configuration fields include:
-
-| Setting | Description |
-| --- | --- |
-| ACS URL | Endpoint that receives authentication responses |
-| Audience / Entity ID | Identifier used to verify the QA Wolf application |
-| Redirect / Callback URL | URL users return to after authentication |
-
----
-
-### Enter identity provider details in QA Wolf
-
-After creating the application in your identity provider, return to the QA Wolf SSO settings page and enter the details provided by your identity provider.
-
-Typical configuration fields include:
-
-| Setting | Description |
-| --- | --- |
-| Issuer URL | Unique identifier for your identity provider |
-| Metadata URL | URL where QA Wolf retrieves your identity provider's configuration |
-| X.509 Certificate | Certificate used to verify tokens from your identity provider |
-| Login URL | Endpoint where QA Wolf sends authentication requests |
-
-After saving, assign users or groups to the QA Wolf application in your identity provider.
-
----
-
-### Test login
-
-Before enabling access for your entire organization, test SSO with a single admin user.
-
-<Steps>
-  <Step>
-    Assign the admin user to the QA Wolf application in your identity provider.
-  </Step>
-  <Step>
-    Start a login attempt from the QA Wolf sign-in page.
-  </Step>
-  <Step>
-    Complete authentication in your identity provider.
-  </Step>
-  <Step>
-    Verify the user is redirected back to QA Wolf successfully.
-  </Step>
-</Steps>
-
-Testing with one admin helps catch configuration issues before enabling access for additional users.
-
----
-
-### Account matching
-
-When a user signs in with SSO, QA Wolf matches the user to an existing account using their **email address**.
-
-The email provided by your identity provider must **exactly match** the email associated with the user's QA Wolf account.
-
-If the email addresses do not match, the user may not be able to access the workspace. Before enabling SSO broadly, confirm that user email addresses match between your identity provider and QA Wolf.
-
----
-
-## Sign in with SSO
-
-<Steps>
-  <Step title="Open the QA Wolf login page">
-    Users open the QA Wolf login page.
-  </Step>
-  <Step title="Enter your email address and click Continue">
-    Based on the domain name of the email they enter, users automatically begin the SSO flow for their identity provider.
-  </Step>
-  <Step title="Authenticate with the identity provider">
-    Users authenticate using their organization's identity provider.
-  </Step>
-  <Step title="Return to QA Wolf">
-    After authentication, users are redirected back to QA Wolf.
-  </Step>
-</Steps>
-
-Authentication is handled by the identity provider.
-
----
-
-## Troubleshooting
-
-### I do not see the SSO setup page
+## I do not see the SSO setup page
 
 Confirm that:
 
 - You have been granted the **SSO Admin** role by a user with the **Membership Manager** role.
 - You signed out of QA Wolf and signed back in after your role was updated.
 
-### A user cannot sign in
+## A user cannot sign in
 
 Check that:
 
@@ -175,7 +51,7 @@ Check that:
 - The user is signing in with the correct email address.
 - The SSO configuration has been saved.
 
-### Authentication fails
+## Authentication fails
 
 Verify that the following values match between QA Wolf and your identity provider:
 
@@ -185,6 +61,6 @@ Verify that the following values match between QA Wolf and your identity provide
 - Login URL
 - Certificate
 
-### Users are not redirected back to QA Wolf
+## Users are not redirected back to QA Wolf
 
 Ensure the redirect or callback URL configured in your identity provider matches the value shown in the QA Wolf SSO settings page.
