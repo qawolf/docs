@@ -1,6 +1,6 @@
 ---
-title: "QA Wolf MCP"
-description: "Install the QA Wolf MCP, connect your workspace, and create your first flow from Claude Code, Codex, or another coding agent."
+title: "QA Wolf plugin (Archive)"
+description: "Install the QA Wolf plugin, connect your workspace, and create your first flow from Claude Code, Codex, or another coding agent."
 ---
 
 The QA Wolf plugin lets your coding agent explore an application, propose test coverage, and ask QA Wolf to implement it. You can also run existing flows and investigate failures without leaving your coding agent.
@@ -138,12 +138,15 @@ Choose the QA Wolf environment where the new flow belongs. This is separate from
   <Accordion title="The agent cannot find QA Wolf tools">
     Confirm that the plugin is enabled and start a fresh client session. Skill-only clients also need MCP configuration. Follow your client's section in the [setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md); missing tools alone do not mean authentication failed.
   </Accordion>
+
   <Accordion title="Sign-in fails or the session expires">
     Use the client's authentication controls and check `whoami` again. A manually configured Authorization header can prevent OAuth sign-in. Follow the [authentication troubleshooting guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/README.md#troubleshooting) without sharing credentials in chat.
   </Accordion>
+
   <Accordion title="Browser tools report an authorization error">
     Ask the agent to check `whoami` and confirm that the connection is bound to the intended workspace. Follow the client setup guide to resolve workspace binding; selecting an environment alone does not fix it.
   </Accordion>
+
   <Accordion title="Creation is waiting or the flow is still a draft">
     Open the session link and check for a question or blocker. Answer in the existing conversation rather than starting another creation request. A completed implementation, published code, and active readiness are separate states; ask the agent which step remains.
   </Accordion>
