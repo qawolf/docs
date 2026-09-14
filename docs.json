@@ -374,7 +374,6 @@
           {
             "group": "CI/CD",
             "pages": [
-              "qawolf/CI-CD-Overview",
               {
                 "group": "Deployment testing ",
                 "pages": [

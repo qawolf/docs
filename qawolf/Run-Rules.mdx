@@ -1,22 +1,24 @@
 ---
 title: "Run Rules"
-description: "Use Run Rules to control the order that dependent flows run in."
+description: "Run Rules let you sequence the order of flows in your suite. "
 ---
 
-Run Rules let you control the sequence flows run in. Each rule defines one **before** set and one **after** set of flows. You can select flows by name, group, or tag.
+By default all flows run in parallel on the QA Wolf run infrastructure, but there are times when you want to sequence some flows to run before others. 
 
-The order flows run in doesn't always matter, but when it does — for example, when you want quick sanity checks to complete before longer or more complex flows — Run Rules give you that control.
+- Quick sanity checks before longer, or more complex flows
+- Multi-user flows where state is shared between flows. 
+- When the environment can't handle the load of an entire test suite. 
 
-<Note>
-  Only **active** flows execute in a run. Drafts are ignored even if they're part of a rule.
-</Note>
+# How Run Rules work
 
-<Tip>
-  To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
-</Tip>
+## Configuring groups
 
-<Tip>
-  Double-check your before and after sets for circular setups.
-</Tip>
+Run Rules execute one group of flows before another group of flows. Groups can be constructed by flow name or by tag. 
 
-By default, if a flow in the before set fails, flows in the after set are automatically skipped rather than run — this reduces noise, shortens run time, and keeps the failure list focused on the root cause. This behavior can be turned off per rule.
+Only **active** flows execute in a run. Drafts are ignored even if they're part of a rule.
+
+## Ordering
+
+To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
+
+For each rule, indicate whether flows in the second group should be allowed to run if any flows in the first group fail. 
