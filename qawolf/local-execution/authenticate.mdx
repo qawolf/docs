@@ -4,7 +4,7 @@ description: "Install the qawolf CLI and connect it to your workspace so it can 
 sidebarTitle: "Authenticate"
 ---
 
-Before the CLI can pull flows from your workspace or run flows that depend on environment variables, it needs an API key. You can log in interactively for local development, or pass the key through an environment variable for CI.
+Before the CLI can pull flows from your workspace or run flows that depend on environment variables, it needs a credential. Sign in through your browser for local development, or pass an API key through an environment variable for CI.
 
 ## Install the CLI
 
@@ -34,16 +34,17 @@ qawolf --version
 
 <Steps>
   <Step>
-    Generate an API key in your QA Wolf workspace under **Workspace settings → API keys**.
-  </Step>
-  <Step>
     Run the login command:
 
     ```bash
     qawolf auth login
     ```
-
-    The CLI prompts for your API key, validates it against the platform, and stores it in your system keychain. When a keychain is not available, the CLI falls back to a local config file in your user profile directory.
+  </Step>
+  <Step>
+    Choose **Browser**. The CLI shows a short code and opens the verification page. Confirm the code in your browser. If the CLI cannot open a browser, it prints the URL for you to open.
+  </Step>
+  <Step>
+    If your account can access more than one organization or workspace, choose the one to work in. The CLI asks only when there is more than one.
   </Step>
   <Step>
     Confirm the connection:
@@ -52,9 +53,27 @@ qawolf --version
     qawolf auth whoami
     ```
 
-    The output shows the team name, ID, and where the credential was loaded from.
+    The output shows your email, your organization, the active workspace, and where the credential was loaded from.
   </Step>
 </Steps>
+
+The CLI stores the session in your system keychain and refreshes it before it expires. When a keychain is not available, the CLI falls back to a local config file in your user profile directory.
+
+### Log in with an API key
+
+To use an API key instead, choose **API key** at the prompt and paste a key generated in your QA Wolf workspace under **Workspace settings → API keys**. The CLI validates the key against the platform and stores it the same way. Use this path if your QA Wolf deployment does not offer browser sign-in.
+
+An API key and a browser session don't grant the same access: an API key carries workspace scope that a browser session does not. When both are stored, the CLI uses the API key.
+
+## Switch workspaces
+
+A browser session can access several workspaces. To change the one the CLI works in without signing in again:
+
+```bash
+qawolf auth switch
+```
+
+To choose without a prompt, set `QAWOLF_WORKSPACE` to a workspace name, slug, or ID. When the same workspace name exists in more than one organization, also set `QAWOLF_ORGANIZATION`. This applies to browser sessions only; an API key already carries its workspace.
 
 ## Authenticate in CI
 
@@ -65,7 +84,7 @@ export QAWOLF_API_KEY=<your-api-key>
 qawolf flows pull --env <env_id>
 ```
 
-The CLI prefers `QAWOLF_API_KEY` over any credential stored by `qawolf auth login`, so the same machine can switch between accounts by setting or unsetting the variable.
+The CLI reads credentials in this order: `QAWOLF_API_KEY`, then an API key stored by `qawolf auth login`, then a browser session. The same machine can switch between accounts by setting or unsetting the variable.
 
 ## Log out
 
@@ -73,14 +92,14 @@ The CLI prefers `QAWOLF_API_KEY` over any credential stored by `qawolf auth logi
 qawolf auth logout
 ```
 
-`qawolf auth logout` only removes credentials stored by `qawolf auth login` — see [`auth logout`](/qawolf/libraries/cli/api-reference/commands#auth-logout) for exact behavior. To remove a `QAWOLF_API_KEY` credential, unset the variable in your shell instead.
+`qawolf auth logout` removes the browser session and any API key stored by `qawolf auth login` — see [`auth logout`](/qawolf/libraries/cli/api-reference/commands#auth-logout) for exact behavior. To remove a `QAWOLF_API_KEY` credential, unset the variable in your shell instead.
 
-## Switch the API URL
+## Switch the deployment host
 
-By default the CLI talks to `https://app.qawolf.com`. Override this with `QAWOLF_API_URL` if your workspace uses a different host:
+By default the CLI talks to `https://app.qawolf.com`. Override this with `QAWOLF_HOST_URL` if your workspace uses a different host:
 
 ```bash
-export QAWOLF_API_URL=https://qawolf.example.com
+export QAWOLF_HOST_URL=https://qawolf.example.com
 ```
 
 See the [Environment variables reference](/qawolf/libraries/cli/api-reference/environment-variables) for the full list of variables the CLI reads.

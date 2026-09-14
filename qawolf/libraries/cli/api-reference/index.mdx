@@ -46,7 +46,9 @@ Every qawolf CLI command exits with one of the codes below.
 | --- | --- | --- |
 | `0` | `success` | The command completed successfully. |
 | `1` | `testFailure` | One or more flows failed. |
-| `2` | `invalidArgs` | A Commander parse error, an unknown subcommand, or a bad flag value. |
+| `2` | `invalidArgs` | A Commander parse error, an unknown subcommand, a bad flag value, or a `flows run` selection that matched no runnable flow — pass `--allow-no-match` to exit `0` instead. |
 | `3` | `auth` | `QAWOLF_API_KEY` is missing or invalid. |
 | `4` | `network` | The QA Wolf API was unreachable, a download from storage failed, or a registry was unreachable. |
 | `5` | `config` | `qawolf.config.ts` is invalid, or a file collision occurred during `qawolf init`. |
+| `6` | `timeout` | A `--follow` reached its `--timeout` before the work it was following settled. |
+| `7` | `payment` | The QA Wolf API refused the request with HTTP 402. Billing prevented it — the organization is over its monthly spend limit, or has no valid payment method. |

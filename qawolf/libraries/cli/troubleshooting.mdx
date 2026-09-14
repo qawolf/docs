@@ -6,7 +6,7 @@ sidebarTitle: "Troubleshooting"
 
 ## `QAWOLF_API_KEY` is not set
 
-Cause: The CLI could not find an API key in the environment, the system keychain, or the local config file.
+Cause: The CLI could not find a credential: no API key in the environment, the system keychain, or the local config file, and no browser session.
 
 Check:
 
@@ -35,12 +35,12 @@ Check:
 
 ## Could not reach the QA Wolf API
 
-Cause: The CLI could not connect to the platform at `QAWOLF_API_URL`.
+Cause: The CLI could not connect to the platform at `QAWOLF_HOST_URL`.
 
 Check:
 
-- the network can reach `https://app.qawolf.com` (or the URL configured in `QAWOLF_API_URL`)
-- `QAWOLF_API_URL` does not contain a typo or unexpected trailing path
+- the network can reach `https://app.qawolf.com` (or the URL configured in `QAWOLF_HOST_URL`)
+- `QAWOLF_HOST_URL` does not contain a typo or unexpected trailing path
 - corporate proxy and VPN settings allow outbound HTTPS
 
 ## Flow bundle download link has expired

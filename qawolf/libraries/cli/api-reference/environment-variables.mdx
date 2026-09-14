@@ -1,6 +1,6 @@
 ---
 title: "Environment Variables"
-description: "Environment variables the qawolf CLI reads for API access, Android and iOS SDK paths, and other runtime configuration."
+description: "Environment variables the qawolf CLI reads for API access, Android SDK paths, and other runtime configuration."
 sidebarTitle: "Environment Variables"
 ---
 
@@ -10,9 +10,21 @@ The qawolf CLI reads the following environment variables.
 
 API key for the QA Wolf platform. Used by `flows pull`, `flows list --remote`, and `flows run --env`. Required for any command that talks to the platform. Takes precedence over credentials stored via `qawolf auth login`.
 
-## `QAWOLF_API_URL`
+## `QAWOLF_HOST_URL`
 
-Base URL for the QA Wolf platform API. Defaults to `https://app.qawolf.com`. The CLI strips trailing slashes.
+Base URL of the QA Wolf deployment the CLI talks to. Defaults to `https://app.qawolf.com`. The CLI strips trailing slashes. `QAWOLF_API_URL` is a separate variable the QA Wolf runner supplies to flows; it does not select the host the CLI uses.
+
+## `QAWOLF_ENVIRONMENT`
+
+Default environment, as a UUID or a kebab-case slug. Fills `--env` on `flows pull` and `flows run`, and `--environment-id` on `run create`. An explicit flag outranks it.
+
+## `QAWOLF_WORKSPACE`
+
+Workspace for a browser session to work in, as a name, slug, or ID. Chooses the workspace without a prompt, so `qawolf auth switch` can run in a non-interactive terminal.
+
+## `QAWOLF_ORGANIZATION`
+
+Organization to look in when choosing a workspace, as a name or ID. Needed with `QAWOLF_WORKSPACE` when the same workspace name exists in more than one organization.
 
 ## `ANDROID_HOME`
 

@@ -63,7 +63,7 @@ By default, the CLI records no video or trace. To keep artifacts only when a flo
 qawolf flows run --env <env_id> --video retain-on-failure --trace retain-on-failure
 ```
 
-Artifacts land in `qawolf-output/` (or the directory set by `--output-dir`).
+Artifacts land in `.qawolf/output/` (or the directory set by `--output-dir`).
 
 To record HAR files of network traffic:
 
@@ -103,7 +103,7 @@ qawolf flows run --env <env_id> --workers 4
 qawolf flows run --env <env_id> --junit
 ```
 
-The CLI writes a JUnit XML report to `qawolf-output/junit-report.xml` (or under the directory set by `--output-dir`). Pass an explicit path to override the default:
+The CLI writes a JUnit XML report to `.qawolf/output/junit-report.xml` (or under the directory set by `--output-dir`). Pass an explicit path to override the default:
 
 ```bash
 qawolf flows run --env <env_id> --junit ./reports/results.xml
@@ -123,7 +123,7 @@ The CLI discovers flows matching `**/*.flow.{ts,js}` in the current directory an
 
 ## Exit codes
 
-`qawolf flows run` exits with `0` when every flow passes and `1` when one or more fail. See [Exit codes](/qawolf/libraries/cli/api-reference/index#exit-codes) for the full list.
+`qawolf flows run` exits with `0` when every flow passes, `1` when one or more fail, and `2` when the pattern selects no runnable flow. Pass `--allow-no-match` to exit `0` for an empty selection instead. See [Exit codes](/qawolf/libraries/cli/api-reference/index#exit-codes) for the full list.
 
 ## Limitations
 

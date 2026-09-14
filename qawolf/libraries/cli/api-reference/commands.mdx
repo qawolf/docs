@@ -1,18 +1,20 @@
 ---
 title: "Commands Reference"
-description: "Reference notes for every qawolf CLI command and flag."
+description: "Reference notes for qawolf CLI commands and flags."
 sidebarTitle: "Commands"
 ---
 
-The qawolf CLI exposes six top-level commands.
+This page documents the commands that set up a project, authenticate, and run flows locally, plus `run create`. Run `qawolf --help` for the full list, including the commands that act on the QA Wolf platform.
 
 ## `auth`
 
-Manages authentication with the QA Wolf platform. The CLI reads credentials from the `QAWOLF_API_KEY` environment variable first, then the system keychain, then a config file fallback.
+Manages authentication with the QA Wolf platform. The CLI reads credentials from the `QAWOLF_API_KEY` environment variable first, then the system keychain, then a config file fallback, then a browser session.
 
 ### `auth login`
 
-Prompts for an API key, validates it against the platform, and stores it locally. Requires an interactive terminal — in non-interactive contexts, set `QAWOLF_API_KEY` directly.
+Signs in interactively. The CLI offers two methods: a browser sign-in, or pasting an API key. It validates either credential against the platform and stores it locally. After a browser sign-in, the CLI asks which organization and workspace to work in when there is more than one. Requires an interactive terminal — in non-interactive contexts, set `QAWOLF_API_KEY` directly.
+
+An API key and a browser session don't grant the same access: an API key carries workspace scope that a user token does not. When an API key is already present, the CLI warns that it takes precedence over the browser session you are about to create.
 
 ```bash
 qawolf auth login
@@ -20,15 +22,25 @@ qawolf auth login
 
 ### `auth logout`
 
-Removes stored credentials. This command cannot remove credentials set via the `QAWOLF_API_KEY` environment variable.
+Removes stored credentials: the browser session and any API key stored by `qawolf auth login`. This command cannot remove credentials set via the `QAWOLF_API_KEY` environment variable.
 
 ```bash
 qawolf auth logout
 ```
 
+### `auth switch`
+
+Chooses which workspace to work in, and takes effect on the next command. This applies to a browser session, which can hold access to several workspaces; an API key already carries its workspace.
+
+To choose without a prompt, set `QAWOLF_WORKSPACE` to a workspace name, slug, or ID. Add `QAWOLF_ORGANIZATION` when the same workspace name exists in more than one organization.
+
+```bash
+qawolf auth switch
+```
+
 ### `auth whoami`
 
-Displays the authenticated workspace name, ID, optional slug, and the credential source.
+Displays who the CLI is authenticated as and the credential source. For a browser session, it shows your email, your organization, the active workspace, and the workspaces each of your organizations contains. For an API key, it shows the workspace name, ID, and optional slug.
 
 ```bash
 qawolf auth whoami
@@ -46,6 +58,7 @@ Runs flows matching `[pattern]`, or every flow when omitted. The default pattern
 qawolf flows run
 qawolf flows run "flows/checkout/**"
 qawolf flows run checkout --env <env_id> --headed
+qawolf flows run --tag smoke
 ```
 
 Options:
@@ -53,17 +66,20 @@ Options:
 - `--retries <n>` — number of retries for each failing flow. Default: `0`.
 - `--bail` — stop after the first failure. Default: `false`.
 - `--workers <n>` — parallel worker count for web flows. Default: `1`. Android flows must run with `--workers 1`; the CLI errors out if Android flows are selected with a higher value.
-- `--timeout <ms>` — per-flow timeout in milliseconds. Default: `30000`.
+- `--timeout <ms>` — default timeout for actions and assertions, in milliseconds. It is not a wall-clock limit on a whole flow. Default: `30000`.
 - `--junit [path]` — write a JUnit XML report. With no value, writes to `<output-dir>/junit-report.xml`. Pass an explicit path to override.
 - `--video <mode>` — `on`, `off`, or `retain-on-failure`. Default: `off`.
 - `--trace <mode>` — Playwright trace mode. `on`, `off`, or `retain-on-failure`. Default: `off`.
 - `--har <mode>` — HAR capture mode. `on`, `off`, or `retain-on-failure`. Default: `off`.
 - `--har-content <mode>` — `omit` or `full`. `full` includes response bodies and uses more memory. Default: `omit`.
-- `--output-dir <path>` — directory for artifacts. Default: `qawolf-output`.
+- `--output-dir <path>` — directory for artifacts. Default: `.qawolf/output`.
 - `--headed` — show the browser window instead of running headless. Default: `false`.
-- `--env <env_id>` — environment ID. When set, the CLI pulls missing flows before the run. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
+- `--env <env>` — the environment to run, as a UUID or a kebab-case slug. Defaults to `QAWOLF_ENVIRONMENT`. When set, the CLI pulls missing flows before the run. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
+- `--tag <name>` — only run flows carrying this tag. Repeat for several. Without `--env`, matches against the tags cached by the last pull.
+- `--allow-no-match` — exit `0` instead of `2` when the pattern selects no runnable flow. Default: `false`.
+- `--no-browser-deps` — skip installing OS-level browser dependencies, the Linux `--with-deps` step that needs root. The system libraries must already be present.
 
-Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments or an unrecognized flow target. See [Exit codes](/qawolf/libraries/cli/api-reference/index#exit-codes).
+Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments, an unrecognized flow target, or a pattern that selects no runnable flow. See [Exit codes](/qawolf/libraries/cli/api-reference/index#exit-codes).
 
 ### `flows list [pattern]`
 
@@ -73,17 +89,23 @@ Lists flows matching `[pattern]`. By default, lists local flows; with `--remote`
 qawolf flows list
 qawolf flows list "flows/checkout/**"
 qawolf flows list --remote
+qawolf flows list --remote --env <env_id> --include-drafts
 ```
 
 Options:
 
 - `--remote` — list flows from the QA Wolf platform instead of the local project. Default: `false`.
+- `--env <env>` — the environment to list. With `--remote`, a QA Wolf environment, as a UUID or a kebab-case slug. Without it, a pulled environment, by slug or ID.
+- `--include-drafts` — include draft flows. Requires `--remote`. Default: `false`.
+- `--tag <name>` — only list flows carrying this tag. Repeat for several. Without `--remote`, matches against the tags cached by the last pull.
+- `--ai-task-id <id>` — list the flows on this AI task's branch, drafts included, instead of the ones in the environment. Requires `--remote`. Defaults to `QAWOLF_AI_TASK_ID`.
 
 ### `flows pull`
 
 Downloads an environment's flows into the local `.qawolf/<env_id>/` cache.
 
 ```bash
+qawolf flows pull
 qawolf flows pull --env <env_id>
 qawolf flows pull --env <env_id> --out ./snapshot
 qawolf flows pull --env <env_id> --yes
@@ -91,7 +113,7 @@ qawolf flows pull --env <env_id> --yes
 
 Options:
 
-- `--env <env_id>` — required. The environment ID to pull from. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
+- `--env <env>` — the environment to pull from, as a UUID or a kebab-case slug. Defaults to `QAWOLF_ENVIRONMENT`, then to an interactive picker. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
 - `--out <path>` — destination directory. Defaults to `.qawolf/<env_id>/`.
 - `--yes` — overwrite locally-modified files without prompting. Default: `false`.
 
@@ -104,6 +126,10 @@ qawolf install
 qawolf install "flows/checkout/**"
 ```
 
+Options:
+
+- `--no-browser-deps` — skip installing OS-level browser dependencies, the Linux `--with-deps` step that needs root. The system libraries must already be present.
+
 ### `install browsers [pattern]`
 
 Installs the Playwright browsers used by the project's web flows.
@@ -113,6 +139,10 @@ qawolf install browsers
 qawolf install browsers "flows/web/**"
 ```
 
+Options:
+
+- `--no-browser-deps` — skip installing OS-level browser dependencies, the Linux `--with-deps` step that needs root. The system libraries must already be present.
+
 ### `install android [pattern]`
 
 Installs Android system images, AVDs, and the Appium driver used by the project's Android flows. Requires `ANDROID_HOME` or `ANDROID_SDK_ROOT`.
@@ -121,6 +151,19 @@ Installs Android system images, AVDs, and the Appium driver used by the project'
 qawolf install android
 qawolf install android "flows/mobile/**"
 ```
+
+### `install clear`
+
+Removes the managed runtime cache, meaning every installed runtime version.
+
+```bash
+qawolf install clear
+qawolf install clear --yes
+```
+
+Options:
+
+- `--yes` — skip the confirmation prompt. Default: `false`.
 
 ## `init`
 
@@ -137,7 +180,7 @@ Options:
 
 ## `doctor`
 
-Diagnoses problems running flows locally. Checks your environment (CLI and Node.js versions, API key, connectivity) and the dependencies your flows need, such as Playwright browsers and the Android SDK.
+Diagnoses problems running flows locally. Checks your environment (CLI and Node.js versions, credentials, connectivity) and the dependencies your flows need, such as Playwright browsers and the Android SDK.
 
 ```bash
 qawolf doctor
@@ -163,7 +206,7 @@ qawolf run create --environment-id <env_id> --flow-ids <flow_id>... --environmen
 
 Options:
 
-- `--environment-id <env_id>` — the ID of the environment to run. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
+- `--environment-id <env_id>` — the ID or alias of the environment to run. Aliases require a workspace API key. Defaults to `QAWOLF_ENVIRONMENT`. See [where to find it](/qawolf/local-execution/pull-flows#pull-an-environment).
 - `--environment-variables <KEY=VALUE...>` — environment variables to set for the run.
 - `--flow-ids <flow_id>...` — limit the run to specific flow IDs.
-- `--ignore-rules` — ignore the environment's run rules.
+- `--ignore-rules` — ignore the workspace's sequencing rules for this run. By default QA Wolf honors them: it adds the flows your selection depends on to the run, and runs flows in the order the rules require. With this flag, the run contains exactly what you selected, in any order.

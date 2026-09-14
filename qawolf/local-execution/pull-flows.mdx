@@ -23,6 +23,8 @@ In most cases, [`qawolf flows run --env <env_id>`](/qawolf/local-execution/run-f
     qawolf flows pull --env <env_id>
     ```
 
+    Without `--env`, the CLI uses `QAWOLF_ENVIRONMENT`, or asks you to choose an environment from a list.
+
     The CLI writes flows to `.qawolf/<env_id>/` by default. To use a different destination, pass `--out`:
 
     ```bash

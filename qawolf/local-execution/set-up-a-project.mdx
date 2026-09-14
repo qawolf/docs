@@ -31,7 +31,7 @@ The command creates the following files:
 
 - `qawolf.config.ts` — a project configuration file generated for future use; the CLI does not read it yet.
 - `src/flows/example.flow.ts` — a minimal web flow you can edit or delete.
-- `.qawolf/.gitignore` — ignores the contents of `.qawolf/`, such as flows pulled from the platform. It doesn't cover run artifacts in `qawolf-output/`.
+- `.qawolf/.gitignore` — ignores the contents of `.qawolf/`, such as flows pulled from the platform. It also covers run artifacts written to the default `.qawolf/output/`.
 
 If your directory has no `package.json`, the CLI creates one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script that runs `qawolf flows run`. If a `package.json` already exists, the CLI only adds the `test:e2e` script.
 
