@@ -167,27 +167,27 @@ export default flow(
 );
 ```
 
-The callback receives a different object depending on the platform:
-
-| Platform | Callback receives |
-| --- | --- |
-| Web browser | `page`, `context`, optional `browser` |
-| Web (Electron) | `page` |
-| iOS | `driver` — the Appium/WebdriverIO session for the device |
-| Android | `driver` — the Appium/WebdriverIO session for the device |
-| Node | nothing additional — only `inputs`, `setOutput`, and `test` |
-
 ### Explicit launch — advanced flows only
 
 For advanced cases where the startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/qawolf/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/qawolf/electron).
 
 ## Callback parameters
 
-Every flow callback receives three parameters regardless of platform:
+For the full callback context shape, see the API Reference for [Web](/qawolf/libraries/flows/api-reference/web#flow-callback-context), [Android](/qawolf/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/qawolf/libraries/flows/api-reference/ios#flow-callback-context).
 
-**`inputs`** — values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+<Note>
+  `launch()`, `device`, and `platform.target` are stubs in the package code, and the runner replaces them at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
+  \
+  Module-level code should be limited to imports, constants, and pure helper functions.
+</Note>
 
-**`setOutput(...)`** — publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
+### `inputs`
+
+Values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+
+### `setOutput(...)`
+
+Publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
 
 ```typescript
 setOutput("USER_ID", userId, "EMAIL", email);
@@ -197,7 +197,9 @@ setOutput("USER_ID", userId, "EMAIL", email);
   A consumer flow will not run until its producer has called `setOutput`. See [Passing data between flows](/qawolf/Pass-data-between-flows) for how producers and consumers work together.
 </Info>
 
-**`test(...)`** — wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
+### `test(...)`
+
+Wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
 
 ```typescript
 export default flow(
@@ -218,17 +220,21 @@ export default flow(
 );
 ```
 
-Launch-enabled flows also receive the platform object (`page`, `context`, `browser`, or `driver`) as shown in the launch styles section above.
+### Platform object
 
-For the full callback context shape, see the API Reference for [Web](/qawolf/libraries/flows/api-reference/web#flow-callback-context), [Android](/qawolf/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/qawolf/libraries/flows/api-reference/ios#flow-callback-context).
+Launch-enabled flows also receive a platform object, which differs by target:
 
-<Note>
-  `launch()`, `device`, and `platform.target` are stubs in the package code, and the runner replaces them at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
-  \
-  Module-level code should be limited to imports, constants, and pure helper functions. \
-  \
+| Platform | Callback receives |
+| --- | --- |
+| Web browser | `page`, `context`, optional `browser` |
+| Web (Electron) | `page` |
+| iOS | `driver` — the Appium/WebdriverIO session for the device |
+| Android | `driver` — the Appium/WebdriverIO session for the device |
+| Node | nothing additional — only `inputs`, `setOutput`, and `test` |
+
+<Tip>
   `platform.target` (full API in the [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer [separate platform-specific flows](#import-statement) if you find yourself branching often.
-</Note>
+</Tip>
 
 ### Pure helper functions for platform differences
 
