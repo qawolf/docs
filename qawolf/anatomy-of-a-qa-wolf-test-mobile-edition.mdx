@@ -9,7 +9,7 @@ If your team has written Playwright or Appium tests before, QA Wolf flows will l
 
 Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells the runner what to run, where to run it, and which runtime objects to inject into the callback.
 
-## The AAA framework
+## AAA framework
 
 QA Wolf flows follow the Arrange, Act, Assert (AAA) format.
 
@@ -49,7 +49,7 @@ export default flow(
 
 This structure is identical on iOS and Android — only the interactions inside each step change (`driver.$(...)` calls instead of `page` calls).
 
-## The import statement
+## Import statement
 
 <CodeGroup>
 
@@ -75,7 +75,7 @@ import { flow } from "@qawolf/flows/cli";
   For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`, which causes assertions to bypass QA Wolf's reporting. iOS, Android, and Node flows don't have this pitfall: `expect` is wired to the QA Wolf runner automatically.
 </Warning>
 
-## The flow wrapper
+## Flow wrapper
 
 ```typescript
 export default flow(
@@ -227,7 +227,7 @@ For the full callback context shape, see the API Reference for [Web](/qawolf/lib
   \
   Module-level code should be limited to imports, constants, and pure helper functions. \
   \
-  `platform.target` (full API in the [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer [separate platform-specific flows](#the-import-statement) if you find yourself branching often.
+  `platform.target` (full API in the [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer [separate platform-specific flows](#import-statement) if you find yourself branching often.
 </Note>
 
 ### Pure helper functions for platform differences
