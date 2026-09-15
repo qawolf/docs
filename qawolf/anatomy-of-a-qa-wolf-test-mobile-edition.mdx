@@ -47,7 +47,9 @@ export default flow(
 );
 ```
 
-This structure is identical on iOS and Android — only the interactions inside each step change (`driver.$(...)` calls instead of `page` calls).
+<Note>
+  iOS and Android use `driver.$(...)` calls instead of `page` calls.
+</Note>
 
 ## The import statement
 
