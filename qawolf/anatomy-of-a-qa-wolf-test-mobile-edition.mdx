@@ -51,8 +51,6 @@ This structure is identical on iOS and Android — only the interactions inside 
 
 ## The import statement
 
-Every flow file starts with an import. Which package you import from depends on what you're testing.
-
 <CodeGroup>
 
 ```typescript Web
@@ -80,6 +78,8 @@ import { flow } from "@qawolf/flows/cli";
 <Note>
   For iOS, Android, and Node flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright.
 </Note>
+
+### Write one flow per platform, not one that branches
 
 If the same behavior needs to run on more than one platform, write a separate flow per platform using its own import, rather than one flow that branches internally. The `device` API surface is consistent across platforms, so the flows end up looking almost identical:
 
