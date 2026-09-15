@@ -97,7 +97,6 @@
             "group": "Agentic QA",
             "pages": [
               "qawolf/product-mapping",
-              "qawolf/Map-your-app-s-workflows-2",
               "qawolf/getting-the-most-out-of-automate",
               "qawolf/coding-agents/get-started"
             ]
@@ -284,7 +283,6 @@
             "group": "Flow conventions",
             "pages": [
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/sharing-code-across-flows",
               "qawolf/Uploading-manually",
               "qawolf/lint-rules",
               "qawolf/reusable-ai-knowledge"

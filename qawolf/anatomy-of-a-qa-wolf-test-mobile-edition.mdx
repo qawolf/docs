@@ -1,9 +1,11 @@
 ---
 title: "Anatomy of a flow"
-description: "Learn the structure of every QA Wolf flow — the AAA framework, imports, the flow wrapper, launch styles, and callback parameters."
+description: "Learn the structure of every QA Wolf flow — the AAA framework, imports, the flow wrapper, launch styles, and callback parameters — and how that structure extends across web, iOS, and Android."
 ---
 
-If the agent generated a flow for you and you want to understand what it produced, here's what each part does. If your team has written Playwright or Appium tests before, QA Wolf flows will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
+If the agent generated a flow for you and you want to understand what it produced, here's what each part does — and how those same parts extend once you're testing the same behavior on more than one platform.
+
+If your team has written Playwright or Appium tests before, QA Wolf flows will look familiar. The selectors, interactions, and assertions work the same way. What's different is the wrapper around them.
 
 Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells the runner what to run, where to run it, and which runtime objects to inject into the callback.
 
@@ -11,13 +13,11 @@ Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells 
 
 QA Wolf flows follow the Arrange, Act, Assert (AAA) format.
 
-**Arrange** sets up state before the interaction.\
-**Act** performs the interaction being tested.\
-**Assert** verifies the expected outcome.
+- **Arrange** — sets up state before the interaction.
+- **Act** — performs the interaction being tested.
+- **Assert** — verifies the expected outcome.
 
-<CodeGroup>
-
-```typescript Web
+```typescript
 export default flow(
   "Complete checkout",
   { target: "Web - Chrome", launch: true },
@@ -47,71 +47,9 @@ export default flow(
 );
 ```
 
-```typescript iOS
-export default flow(
-  "Complete checkout",
-  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
-  async ({ driver, test }) => {
-    await test("arrange", async () => {
-      //--------------------------------
-      // Arrange:
-      //--------------------------------
-      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).waitForDisplayed();
-    });
-
-    await test("act", async () => {
-      //--------------------------------
-      // Act:
-      //--------------------------------
-      await driver.$(`-ios predicate string:name == 'Email' AND type == 'XCUIElementTypeTextField'`).setValue("test@example.com");
-      await driver.$(`-ios predicate string:name == 'Sign in' AND type == 'XCUIElementTypeButton'`).click();
-    });
-
-    await test("assert", async () => {
-      //--------------------------------
-      // Assert:
-      //--------------------------------
-      await driver.$(`-ios predicate string:name == 'Welcome' AND type == 'XCUIElementTypeStaticText'`).waitForDisplayed({ timeout: 5000 });
-    });
-  },
-);
-```
-
-```typescript Android
-export default flow(
-  "Complete checkout",
-  { target: "Android - Pixel 9", launch: true },
-  async ({ driver, test }) => {
-    await test("arrange", async () => {
-      //--------------------------------
-      // Arrange:
-      //--------------------------------
-      await driver.$(`~Email`).waitForDisplayed();
-    });
-
-    await test("act", async () => {
-      //--------------------------------
-      // Act:
-      //--------------------------------
-      await driver.$(`~Email`).setValue("test@example.com");
-      await driver.$(`~Sign in`).click();
-    });
-
-    await test("assert", async () => {
-      //--------------------------------
-      // Assert:
-      //--------------------------------
-      await driver.$(`~Welcome`).waitForDisplayed({ timeout: 5000 });
-    });
-  },
-);
-```
-
-</CodeGroup>
+This structure is identical on iOS and Android — only the interactions inside each step change (`driver.$(...)` calls instead of `page` calls).
 
 ## The import statement
-
-Every flow file starts with an import. Which package you import from depends on what you're testing.
 
 <CodeGroup>
 
@@ -133,24 +71,11 @@ import { flow } from "@qawolf/flows/cli";
 
 </CodeGroup>
 
-| Package | Use when |
-| --- | --- |
-| `@qawolf/flows/web` | Testing a website, web app, or Electron desktop app |
-| `@qawolf/flows/ios` | Testing a native iOS app |
-| `@qawolf/flows/android` | Testing a native Android app |
-| `@qawolf/flows/cli` | [Running setup, teardown, tasks that don't need browsers/devices](/qawolf/libraries/flows/api-reference/cli) |
-
 <Warning>
-  For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`. Importing from `@playwright/test` will cause assertions to bypass QA Wolf's reporting.
+  For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`, which causes assertions to bypass QA Wolf's reporting. iOS, Android, and Node flows don't have this pitfall: `expect` is wired to the QA Wolf runner automatically.
 </Warning>
 
-<Note>
-  For iOS, Android, and Node flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright.
-</Note>
-
 ## The flow wrapper
-
-`flow()` takes three arguments: a name, a configuration, and an async callback containing the test logic.
 
 ```typescript
 export default flow(
@@ -162,11 +87,9 @@ export default flow(
 );
 ```
 
-**Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
-
-**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target literals](/qawolf/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the list of values.
-
-**Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
+- **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
+- **Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target literals](/qawolf/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the list of values.
+- **Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
 
 ## Launch styles
 
@@ -302,8 +225,30 @@ For the full callback context shape, see the API Reference for [Web](/qawolf/lib
 <Note>
   `launch()`, `device`, and `platform.target` are stubs in the package code, and the runner replaces them at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
   \
-  Module-level code should be limited to imports, constants, and pure helper functions.
+  Module-level code should be limited to imports, constants, and pure helper functions. \
+  \
+  `platform.target` (full API in the [Top-Level Reference](/qawolf/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer [separate platform-specific flows](#the-import-statement) if you find yourself branching often.
 </Note>
+
+### Pure helper functions for platform differences
+
+For platform-specific implementation differences that don't fit neatly into a Page Object — such as log capture, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — write a helper function that handles the difference internally. The flow calls the helper and stays linear.
+
+```typescript
+// /src/helpers/console-logs-ios.ts
+export async function getConsoleLogs(driver: WebdriverIO.Browser) {
+  const raw = await driver.getLogs("safariConsole");
+  return raw.map((entry) => JSON.parse(entry.message));
+}
+
+//helpers/console-logs-android.ts
+export async function getConsoleLogs(driver: WebdriverIO.Browser) {
+  const raw = await driver.getLogs("browser");
+  return raw.map((entry) => entry.message);
+}
+```
+
+Keep helper functions like this one pure. As noted above, runtime APIs only work inside the flow callback, not at module level.
 
 ## Environment variables
 

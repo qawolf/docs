@@ -109,6 +109,22 @@ Mintlify's `<Steps>`/`<Step>` component renders as a numbered visual sequence, b
 
 A `<Step>` may carry a `title` when a short label helps a skimming reader, or stay bare when its first sentence already carries the action — both exist in the docs today; just stay consistent within one file's `<Steps>` blocks.
 
+## 13. Terminology lists — one format: bulleted, bolded term, em-dash
+
+Any run of "term, then its definition" outside a table uses exactly one shape:
+
+```markdown
+- **Term** — definition.
+```
+
+A survey of the live nav pages found three competing shapes for the same content: bulleted em-dash (Glossary's run statuses, `lint-rules.mdx`'s rule scopes, `ios-device-pools.mdx`, `pom/api-reference/index.mdx`), non-bulleted em-dash paragraphs separated by blank lines (`Pass-data-between-flows.mdx`'s Notes), and the bolded term used as the sentence's own subject with no separator at all (`**Arrange** sets up state before the interaction.` — one list, one page, found nowhere else). Bulleted em-dash won on both usage and legibility, so it's the only one going forward.
+
+- **Never use the bare-subject form.** `**Arrange** sets up state before the interaction.` reads as prose that happens to be bolded, not as a list entry, and it forces trailing-backslash line breaks to hold the items together. Write `- **Arrange** — sets up state before the interaction.`
+- **Don't fall back to blank-line-separated paragraphs for long definitions.** There's no length exception: `ios-device-pools.mdx` carries bulleted items running two full sentences with inline links and they scan fine. If an item is too long to bullet, that's a signal the content wants a table or its own subheading, not a different list format.
+- **Keep definitions parallel within one list**, per rule 9 — every item a capitalized-or-lowercase fragment in the same register, not some fragments and some full restated-subject sentences.
+
+This is the prose counterpart to rule 9: field tables get terse parallel fragments, and so do terminology lists.
+
 ---
 
 **Not a rule, but worth knowing while editing:** some "inconsistencies" found in the audit are actually correct, because the underlying behavior really does differ per package (testkit throws; ci-sdk returns outcomes; some config objects are named `Options`, others `Config` because that's the actual exported type name). Don't paper over a real difference to make the prose *sound* more consistent — rule 1 exists precisely to keep that distinction legible instead of hiding it.
