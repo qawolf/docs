@@ -79,27 +79,6 @@ import { flow } from "@qawolf/flows/cli";
   For iOS, Android, and Node flows, `expect` is wired to the QA Wolf runner automatically and is not connected to Playwright.
 </Note>
 
-### Write one flow per platform, not one that branches
-
-If the same behavior needs to run on more than one platform, write a separate flow per platform using its own import, rather than one flow that branches internally. The `device` API surface is consistent across platforms, so the flows end up looking almost identical:
-
-```typescript
-// /src/flows/set-location-android.ts
-import { device, flow } from "@qawolf/flows/android";
-
-export default flow(
-  "Set location",
-  { target: "Android - Pixel 9", launch: true },
-  async ({ driver, test }) => {
-    await test("set device location", async () => {
-      await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });
-    });
-  },
-);
-```
-
-The iOS version is the same, just importing from `@qawolf/flows/ios` and targeting an iOS device.
-
 ## The flow wrapper
 
 `flow()` takes three arguments: a name, a configuration, and an async callback containing the test logic.
