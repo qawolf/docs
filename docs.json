@@ -84,10 +84,11 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Introduction",
+        "tab": "Start",
         "pages": [
           "qawolf/Welcome-to-QA-Wolf",
-          "qawolf/Glossary"
+          "qawolf/Glossary",
+          "qawolf/Choose-the-right-CI-environment-to-execute-your-tests"
         ]
       },
       {
