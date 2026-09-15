@@ -90,6 +90,7 @@
       {
         "tab": "Start",
         "pages": [
+          "toc-test",
           "qawolf/Welcome-to-QA-Wolf",
           "quick-start",
           "qawolf/Glossary",
