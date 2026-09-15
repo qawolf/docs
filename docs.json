@@ -283,7 +283,6 @@
             "group": "Flow conventions",
             "pages": [
               "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/sharing-code-across-flows",
               "qawolf/Uploading-manually",
               "qawolf/lint-rules",
               "qawolf/reusable-ai-knowledge"

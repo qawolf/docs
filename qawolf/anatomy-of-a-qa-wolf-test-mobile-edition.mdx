@@ -13,9 +13,9 @@ Every flow is wrapped in `flow()` from the `@qawolf/flows` package — it tells 
 
 QA Wolf flows follow the Arrange, Act, Assert (AAA) format.
 
-**Arrange** sets up state before the interaction.\
-**Act** performs the interaction being tested.\
-**Assert** verifies the expected outcome.
+- **Arrange** — sets up state before the interaction.
+- **Act** — performs the interaction being tested.
+- **Assert** — verifies the expected outcome.
 
 ```typescript
 export default flow(
@@ -87,11 +87,9 @@ export default flow(
 );
 ```
 
-**Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
-
-**Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target literals](/qawolf/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the list of values.
-
-**Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
+- **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
+- **Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target literals](/qawolf/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the list of values.
+- **Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
 
 ## Launch styles
 
