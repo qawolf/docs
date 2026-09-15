@@ -86,9 +86,9 @@
       {
         "tab": "Start",
         "pages": [
-          "qawolf/Welcome-to-QA-Wolf",
+          "quick-start",
           "qawolf/Glossary",
-          "qawolf/Choose-the-right-CI-environment-to-execute-your-tests"
+          "qawolf/Workspace-settings"
         ]
       },
       {
@@ -98,7 +98,7 @@
             "group": "Agentic QA",
             "pages": [
               "qawolf/product-mapping",
-              "qawolf/getting-the-most-out-of-automate",
+              "qawolf/test-automation",
               "qawolf/coding-agents/get-started"
             ]
           },
@@ -448,7 +448,7 @@
             "group": "Integrating Systems",
             "pages": [
               "qawolf/Test-environments",
-              "qawolf/Integrating-with-microsoft-teams",
+              "qawolf/z-archive/sad",
               {
                 "group": "PR Testing",
                 "pages": [

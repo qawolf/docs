@@ -1,68 +1,19 @@
 ---
-title: "Configure workspace settings"
-description: "Invite members, manage roles, create tags, and configure workspace-level settings in QA Wolf."
+title: "Workspace setup"
+description: "Set up QA Wolf as part of your development environment."
 sidebarTitle: "Workspace setup"
-hidden: true
 ---
 
-## Inviting organization members
+# Configure VPN connections
 
-<Steps>
-  <Step>
-    Open the `Workspace name` dropdown and click **Workspace settings**.
-  </Step>
-  <Step>
-    Click **Organization** in the left navigation bar.
-  </Step>
-  <Step>
-    Click **Invite users**, type the **Email address** of the team member you want to grant access to, and specify their **Role**: _Member_ or _Admin_.
+If your application is behind a firewall or private network, a VPN or network allowlist must be configured so QA Wolf can reach it. 
 
-    <Tip>
-      Admins can set up SSO.
-    </Tip>
-  </Step>
-  <Step>
-    Click **Send Invite**. The invited user(s) will receive an email containing a login link to the site.
-  </Step>
-</Steps>
+<Card title="VPN configuration settings" horizontal href="https://docs.qawolf.com/qawolf/QA-Wolf-s-static-IPv4">
+</Card>
 
-## Tags
+# Set up deployment testing
 
-Tags are used to group flows for scheduled runs and to control execution order in run rules. See [Tags](/qawolf/tags) for guidance on how to apply them.
+Connect QA Wolf to your CI/CD pipeline to trigger test runs. 
 
-### Access tags
-
-<Steps>
-  <Step>
-    Open the `Workspace name` dropdown and click **Workspace settings**.
-  </Step>
-  <Step>
-    Select **Tags** from the left menu.
-  </Step>
-</Steps>
-
-### Create a tag
-
-<Steps>
-  <Step>
-    To create a new tag, click **Create Tag** in the lower left. A text box will appear. Enter the tag name you want to create, then click **Save**.
-  </Step>
-</Steps>
-
-## Configuring your default runner
-
-<Note>
-  Node 20 with Playwright is the default runner.
-</Note>
-
-<Steps>
-  <Step>
-    Open the `Workspace name` dropdown and click **Workspace settings**.
-  </Step>
-  <Step>
-    Click **Flows** from the left navigation bar.
-  </Step>
-  <Step>
-    Under **Defaults**, use the **Runner to be used in new flows** dropdown to choose a new default runner.
-  </Step>
-</Steps>
+<Card title="CI/CD configuration settings" horizontal href="https://docs.qawolf.com/qawolf/GitHub-GitHub-Actions">
+</Card>
