@@ -60,6 +60,10 @@
     {
       "source": "/",
       "destination": "qawolf/Welcome-to-QA-Wolf"
+    },
+    {
+      "source": "/qawolf/Workspace-settings",
+      "destination": "/workspace-setup"
     }
   ],
   "integrations": {
@@ -88,7 +92,7 @@
         "pages": [
           "quick-start",
           "qawolf/Glossary",
-          "qawolf/Workspace-settings"
+          "workspace-setup"
         ]
       },
       {
