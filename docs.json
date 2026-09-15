@@ -58,10 +58,6 @@
   },
   "redirects": [
     {
-      "source": "/",
-      "destination": "qawolf/Welcome-to-QA-Wolf"
-    },
-    {
       "source": "/qawolf/Workspace-settings",
       "destination": "/workspace-setup"
     }
@@ -86,6 +82,9 @@
     "timestamp": true
   },
   "navigation": {
+    "pages": [
+      "index"
+    ],
     "tabs": [
       {
         "tab": "Start",
