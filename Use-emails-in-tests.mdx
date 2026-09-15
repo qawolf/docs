@@ -1,0 +1,217 @@
+---
+title: "Test a feature that sends or receives emails"
+description: "Use mail.inbox() from @qawolf/emails to send, receive, and verify emails during your QA Wolf flows."
+sidebarTitle: "Use emails in tests"
+---
+
+<Info>
+  Any email address used in a flow must be on your team's [Email Allowlist](#the-email-allowlist).
+</Info>
+
+## Examples
+
+**Verify a signup confirmation or magic link**
+
+Use a fresh inbox and fill it into your app's email field. Wait for the message after the triggering action.
+
+```javascript
+const inbox = await mail.inbox({ new: true });
+
+await page.getByLabel("Email").fill(inbox.emailAddress);
+
+const after = new Date();
+await page.getByRole("button", { name: "Send magic link" }).click();
+
+const message = await inbox.waitForMessage({ after });
+await expect(message.urls[0]).toContain("/activate");
+```
+
+**Extract a login code from email**
+
+Use `after` immediately before the action that sends the code to avoid matching an older message from the same address.
+
+```javascript
+const inbox = await mail.inbox({ new: true });
+
+await page.getByLabel("Email").fill(inbox.emailAddress);
+
+const after = new Date();
+await page.getByRole("button", { name: "Send code" }).click();
+
+const message = await inbox.waitForMessage({ after });
+const match = message.text.match(/\b\d{6}\b/);
+
+if (!match) throw new Error("Login code email did not contain a 6-digit code");
+
+await page.getByLabel("Code").fill(match[0]);
+await page.getByRole("button", { name: "Verify" }).click();
+```
+
+**Wait for a batch of emails**
+
+Use `waitForMessages` when one action should trigger several emails, such as a team invite or multi-step onboarding sequence. Use `delay` if your app enqueues email work in the background.
+
+```javascript
+const inbox = await mail.inbox({ new: true });
+
+const after = new Date();
+await page.getByRole("button", { name: "Invite team" }).click();
+
+const messages = await inbox.waitForMessages({
+  after,
+  minCount: 3,
+  timeout: 120_000,
+  delay: 5_000,
+});
+
+const subjects = messages.map((m) => m.subject);
+expect(subjects).toContain("Welcome");
+expect(subjects).toContain("Your workspace is ready");
+```
+
+**Simulate an inbound email**
+
+Use `sendMessage` when your app receives or reacts to incoming email — for example, a support reply or an automated trigger.
+
+```javascript
+const inbox = await mail.inbox({ new: true });
+
+await inbox.sendMessage({
+  to: ["support@example.com"],
+  subject: "Need help",
+  text: "The test user is asking for support.",
+});
+```
+
+**Send with attachments**
+
+Pass an `attachments` array to `sendMessage`. Use `contentId` when the HTML body references an inline file.
+
+```javascript
+await inbox.sendMessage({
+  to: ["invoices@example.com"],
+  subject: "Invoice",
+  text: "Attached.",
+  attachments: [
+    {
+      fileName: "invoice.txt",
+      content: Buffer.from("invoice total: $10.00"),
+      type: "text/plain",
+    },
+  ],
+});
+```
+
+**Reply to an app email**
+
+```javascript
+const original = await inbox.waitForMessage({});
+
+await inbox.sendMessage({
+  to: [original.from],
+  subject: `Re: ${original.subject}`,
+  text: "Thanks, this worked.",
+});
+```
+
+## When to use
+
+- Your app sends a confirmation, magic link, or verification code by email.
+- Your app sends a batch of emails when a user action occurs.
+- Your app receives or reacts to inbound email.
+- You need a fresh, isolated inbox for every test run.
+- Your app processes email replies or attachments.
+
+## The Email Allowlist
+
+QA Wolf includes an **Email Allowlist** to ensure test emails are delivered only to approved addresses or domains. You must add any email address used in a flow to the allowlist before running the flow.
+
+QA Wolf provides internal email domains — **qawolf.email** and **qawolfworkflows.com** — for email testing. These are recommended over public email services because QA Wolf controls the servers, which stabilizes tests that rely on email interactions.
+
+The platform sets an automatic default address. You cannot delete the default.
+
+**To add or change the default email address:**
+
+<Steps>
+  <Step>
+    Click the <Icon icon="mail" /> icon on the upper right. A drawer opens.
+  </Step>
+  <Step>
+    Click **Addresses**.
+  </Step>
+  <Step>
+    Enter the username and domain in the appropriate fields, then click **Add**.
+
+    a. You can create as many email addresses as you like in the allowlist.
+
+    b. To change the default, hover over the address you want to set as default, click the <Icon icon="ellipsis" /> icon, and select **Make default**.
+
+    <Frame>
+      ![](/images/advanced-flows-and-tests/image-3.png)
+    </Frame>
+  </Step>
+</Steps>
+
+## Address options
+
+**Use a fresh address for each run**
+
+Pass `new: true` to generate a unique derived address. This is the right choice for most tests — it isolates each run so old emails from previous runs are never matched.
+
+```javascript
+const inbox = await mail.inbox({ new: true });
+// Example: my-team+a25sa5q@qawolf.email
+```
+
+If your app does not accept `+` addressing, use a custom delimiter:
+
+```javascript
+const inbox = await mail.inbox({ new: true, delimiter: "-" });
+```
+
+**Use the workspace default**
+
+Omit all options to use your team's default address. Use this only when a test intentionally shares a stable inbox.
+
+```javascript
+const inbox = await mail.inbox();
+```
+
+**Use a specific allowlisted address**
+
+```javascript
+const inbox = await mail.inbox({
+  address: "my-team+admin@qawolf.email",
+});
+```
+
+## Full sample test
+
+```javascript
+import { flow } from "@qawolf/flows/web";
+import { mail } from "@qawolf/emails";
+
+export default flow(
+  "Sign in with email code",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    const inbox = await mail.inbox({ new: true });
+
+    await page.goto("https://example.com/login");
+    await page.getByLabel("Email").fill(inbox.emailAddress);
+
+    const after = new Date();
+    await page.getByRole("button", { name: "Send code" }).click();
+
+    const message = await inbox.waitForMessage({ after });
+    const match = message.text.match(/\b\d{6}\b/);
+
+    if (!match) throw new Error("Login code email did not contain a 6-digit code");
+
+    await page.getByLabel("Code").fill(match[0]);
+    await page.getByRole("button", { name: "Verify" }).click();
+
+    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  },
+);
+```

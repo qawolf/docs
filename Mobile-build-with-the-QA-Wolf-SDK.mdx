@@ -1,0 +1,265 @@
+---
+title: "Integrate a mobile build with the QA Wolf SDK"
+description: "Upload mobile build artifacts and trigger test runs from any Node.js-based CI system using the QA Wolf CI SDK."
+sidebarTitle: "Other (Node.js)"
+---
+
+Use this guide if your CI system supports Node.js but is not GitHub Actions or Fastlane.
+
+<Check>
+  Make sure you have:
+
+  - A CI pipeline that produces a mobile build artifact (APK, AAB, or IPA).
+  - Node.js 18 or later available in your CI environment.
+  - Admin access to your CI system's secret or environment variable storage.
+  - A QA Wolf API key.
+</Check>
+
+Before mobile test runs can execute, QA Wolf must enable mobile triggers for your workspace. QA Wolf will handle this and may ask you for:
+
+- Which environments you want to test.
+- Whether PR testing is enabled.
+- The artifact naming conventions you are using.
+- The upload and trigger method you chose.
+
+Until this step is complete, CI jobs can upload artifacts and send deployment notifications, but mobile test runs will not start automatically.
+
+## Install the CI SDK
+
+Install the SDK in your CI job:
+
+```bash
+npm install @qawolf/ci-sdk
+```
+
+## Find the QAWOLF\_API\_KEY
+
+<Steps>
+  <Step>
+    Open the **Workspace name** dropdown in QA Wolf and click **Workspace Settings**.
+  </Step>
+  <Step>
+    Choose **Integrations**.
+  </Step>
+  <Step>
+    Generate your **QAWOLF\_API\_KEY** by clicking the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+
+    <Frame>
+      ![](/images/integrating-with-CI-CD/image-16.png)
+    </Frame>
+  </Step>
+</Steps>
+
+Make sure the job has access to the `QAWOLF_API_KEY` environment variable.
+
+## Artifact naming conventions
+
+Mobile build artifacts must follow consistent naming conventions so QA Wolf can correctly associate each build with the right environment and make failures easier to diagnose.
+
+The artifact name is used to identify:
+
+- Which environment the build belongs to.
+- Whether the build is tied to a pull request.
+- Which build was used for a given test run.
+
+### Static environments
+
+Static environments are long-lived environments such as staging or release environments.
+
+**Format**
+
+```text
+<prefix>-<environment-name>
+```
+
+**Example**
+
+```text
+app-staging
+```
+
+Use the same basename every time a build is generated for the same environment.
+
+### PR (ephemeral) environments
+
+PR environments are short-lived and tied to a specific pull request. These are only relevant if PR testing is enabled.
+
+**Format**
+
+```text
+<prefix>-<org>-<repo>-pr<number>
+```
+
+**Example**
+
+```text
+app-myorg-myrepo-pr123
+```
+
+Including the organization, repository, and pull request number ensures each build can be traced back to the correct change and environment.
+
+<Tip>
+  QA Wolf applies the file extension (.apk, .aab, or .ipa) automatically based on the uploaded artifact. You only need to provide the basename.
+</Tip>
+
+## Upload a mobile build artifact
+
+After your CI pipeline produces a mobile build artifact, upload it to QA Wolf using the SDK.
+
+**Minimal example**
+
+```js Javascript expandable
+import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+import fs from "fs/promises";
+
+const sdk = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+async function uploadBuild() {
+  const signedUrl = await sdk.generateSignedUrlForRunInputsExecutablesStorage({
+    destinationFilePath: "app-staging",
+  });
+
+  const fileBuffer = await fs.readFile("./path/to/build.apk");
+
+  await fetch(signedUrl.uploadUrl, {
+    method: "PUT",
+    body: fileBuffer,
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+  });
+
+  return `/home/wolf/run-inputs-executables/${signedUrl.playgroundFileLocation}`;
+}
+
+const executablePath = await uploadBuild();
+```
+
+If this step completes successfully, the artifact is uploaded and available for test runs.
+
+**Full implementation**
+
+The following example includes both artifact upload and deploy notification in a single script.
+
+```js Javascript expandable
+import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
+import fs from "fs/promises";
+import path from "path";
+
+const { generateSignedUrlForRunInputsExecutablesStorage, attemptNotifyDeploy } =
+  makeQaWolfSdk({
+    apiKey: process.env.QAWOLF_API_KEY,
+  });
+
+(async () => {
+  const playgroundFileLocation = await uploadRunArtifact("/FileLocation");
+
+  if (playgroundFileLocation) {
+    const deployConfig: DeployConfig = {
+      branch: undefined,
+      commitUrl: undefined,
+      deduplicationKey: undefined,
+      deploymentType: undefined,
+      deploymentUrl: undefined,
+      ephemeralEnvironment: undefined,
+      hostingService: undefined,
+      sha: undefined,
+      variables: {
+        RUN_INPUT_PATH: playgroundFileLocation,
+      },
+    };
+
+    const result = await attemptNotifyDeploy(deployConfig);
+    if (result.outcome !== "success") {
+      process.exit(1);
+    }
+    const runId = result.runId;
+  }
+})();
+
+async function uploadRunArtifact(filePath: string): Promise<string> {
+  const fileName = path.basename(filePath);
+
+  const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage({
+    destinationFilePath: fileName,
+  });
+
+  if (
+    signedUrlResponse?.success &&
+    signedUrlResponse.playgroundFileLocation &&
+    signedUrlResponse.uploadUrl
+  ) {
+    const fileBuffer = await fs.readFile(filePath);
+    const url = signedUrlResponse.uploadUrl;
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        body: fileBuffer,
+        headers: {
+          "Content-Type": "application/octet-stream",
+        },
+      });
+
+      if (!response.ok) {
+        return "";
+      }
+    } catch (error) {
+      return "";
+    }
+
+    return signedUrlResponse.playgroundFileLocation;
+  }
+  return "";
+}
+```
+
+## Trigger a test run
+
+After uploading the artifact, notify QA Wolf that a new deployment is ready for testing.
+
+```javascript
+await sdk.attemptNotifyDeploy({
+  deploymentType: "android_app",
+  variables: {
+    RUN_INPUT_PATH: executablePath,
+  },
+});
+```
+
+<Tip>
+  The deployment type and environment key must match the values configured by QA Wolf for your workspace.
+</Tip>
+
+If mobile triggers have not yet been enabled, this step will complete without starting a test run.
+
+## Verify the integration
+
+<Steps>
+  <Step>
+    Run the CI job.
+  </Step>
+  <Step>
+    Verify that the artifact upload completes successfully.
+  </Step>
+  <Step>
+    Confirm that the deployment notification step runs without errors.
+  </Step>
+  <Step>
+    Once mobile triggers are enabled, check the **Runs** tab for the test run that was triggered.
+  </Step>
+</Steps>
+
+## Troubleshooting and common issues
+
+- **If uploads succeed but no runs start:** Mobile triggers may not yet be enabled. Contact QA Wolf to complete platform configuration.
+- **If the artifact is not found during execution:** Verify that the artifact basename matches your naming conventions, and the returned path is used when triggering the run.
+- **If you see authentication errors:** Verify that **QAWOLF\_API\_KEY** is configured correctly in your CI environment.
+- **If you encounter Node.js errors:** Ensure Node.js 18 or later is available in the CI job.
+
+## Related
+
+- [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
+- [CI greenlight](/v0-ci-greenlight)

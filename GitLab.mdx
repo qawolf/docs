@@ -1,0 +1,92 @@
+---
+title: "How to integrate with GitLab"
+description: "Connect QA Wolf to GitLab CI/CD to automatically trigger test runs when you deploy code from your repository."
+sidebarTitle: "GitLab"
+---
+
+If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. The integration connects directly to your QA Wolf environments.
+
+<Tip>
+  If your GitLab instance does not allow outbound HTTPS connections (for example, an air-gapped GitLab Enterprise installation), use the QA Wolf CI SDK instead.
+</Tip>
+
+<Check>
+  Make sure you have:
+
+  - Admin or Maintainer access to the GitLab project.
+  - Access to your QA Wolf workspace.
+  - At least one QA Wolf environment already configured.
+  - A QA Wolf API key.
+</Check>
+
+## Connect QA Wolf to GitLab
+
+Enable the GitLab integration from **Workspace Settings → Integrations** in QA Wolf. You'll be asked to provide a **Group Access Token** with the **Maintainer** role and **API** scope.
+
+<Danger>
+  The Maintainer role is required because Developer tokens cannot create pipeline checks on protected branches.
+</Danger>
+
+Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
+
+<Steps>
+  <Step title="Generate a QAWOLF_API_KEY">
+    Generate a `QAWOLF_API_KEY` from **Workspace Settings → Integrations → API Access**.
+  </Step>
+  <Step title="Add it as a CI/CD variable">
+    Add it as a `QAWOLF_API_KEY` CI/CD variable in your GitLab project under **Settings → CI/CD → Variables**. You can also define additional variables, such as a deployment URL, if your pipeline uses them.
+  </Step>
+</Steps>
+
+## Add the deploy notification to GitLab CI/CD
+
+QA Wolf provides a public API endpoint that your GitLab pipeline can call upon successful deployment. Add a job to your `.gitlab-ci.yml` that runs after your deploy step completes successfully.
+
+```yml expandable
+stages:
+  - build
+  - deploy
+  - notify
+
+deploy:
+  stage: deploy
+  script:
+    - ./deploy.sh
+  environment:
+    name: staging
+
+notify_qawolf:
+  stage: notify
+  script:
+    - |
+      curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
+        -H "Authorization: Bearer $QAWOLF_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{
+          \"branch\": \"$CI_COMMIT_REF_NAME\",
+          \"deployment_type\": \"staging\",
+          \"deployment_url\": \"$QA_WOLF_DEPLOY_URL\",
+          \"sha\": \"$CI_COMMIT_SHA\",
+          \"hosting_service\": \"GitLab\"
+        }"
+  when: on_success
+  needs: ["deploy"]
+```
+
+This job tells QA Wolf that a new deployment is ready for testing.
+
+## Verify the integration
+
+<Steps>
+  <Step title="Push a commit">
+    Push a commit to trigger a deployment.
+  </Step>
+  <Step title="Confirm the run appears">
+    Confirm a new run appears in QA Wolf under the expected environment.
+  </Step>
+</Steps>
+
+## Related
+
+- [webhooks/deploy\_success](/deploy-success)
+- [REST API](/rest-overview)

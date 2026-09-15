@@ -1,0 +1,302 @@
+---
+title: "Android Device Controls"
+description: "Reference notes for the `device` object from `@qawolf/flows/android`."
+---
+
+`device` is a runtime proxy over the Android emulator API. Use it for emulator-level operations — such as setting location, placing images in the virtual camera scene, configuring network proxies, passing audio to the microphone, or running raw `adb` commands — that sit outside app UI interactions. Use `driver` for interacting with the app itself.
+
+`device` is only available while a flow is running.
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+```
+
+## `setGeoLocation`
+
+Sets the emulator's GPS location.
+
+```typescript
+function setGeoLocation(options: GeoLocationOptions): Promise<string>;
+
+type GeoLocationOptions = {
+  latitude: number;
+  longitude: number;
+  altitude?: number;
+  satellites?: number;
+  velocity?: number;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow("Set device location", "Android - Pixel", async () => {
+  await device.setGeoLocation({
+    latitude: 37.7749,
+    longitude: -122.4194,
+  });
+});
+```
+
+<Note>
+  Use this to test location-aware features without physically moving a device. See [Mock device location](/android-location-mocking) for a full walkthrough.
+</Note>
+
+## `setVirtualSceneImage`
+
+Places an image into the Android emulator's virtual camera scene. Use this to test features that require the camera to see a specific image — such as barcode or QR code scanning.
+
+```typescript
+function setVirtualSceneImage(options: VirtualSceneImageOptions): Promise<string>;
+
+type VirtualSceneImageOptions = {
+  /** Path to the image file to place in the virtual scene. Defaults to the default virtual scene image when omitted. */
+  image?: string;
+  /** Where to place the image in the virtual scene. */
+  location: "table" | "wall";
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Scan barcode",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("place barcode image", async () => {
+      await device.setVirtualSceneImage({
+        image: "/path/to/barcode.jpg",
+        location: "table",
+      });
+    });
+  },
+);
+```
+
+<Note>
+  Virtual scene is scoped to barcode/QR code scanning and augmented reality (AR) use cases. It is not a general photo or video injection mechanism. See [Android barcode and QR scanning](/android-barcode) for a full walkthrough.
+</Note>
+
+## `playAutomation`
+
+Triggers an automation macro on the Android emulator. Use this in combination with `setVirtualSceneImage` to animate the virtual camera toward a placed image.
+
+```typescript
+function playAutomation(options: PlayAutomationOptions): Promise<string>;
+
+type PlayAutomationOptions =
+  | {
+      /** Name of a built-in emulator macro. */
+      macro: "Reset_position" | "Track_horizontal_plane" | "Track_vertical_plane" | "Walk_to_image_room";
+      /** Optional path to override the macro file. */
+      overrideMacroPath?: string;
+    }
+  | {
+      /** Path to a custom macro file. */
+      file: string;
+    };
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Scan barcode",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("place barcode and animate camera", async () => {
+      await device.setVirtualSceneImage({
+        image: "/path/to/barcode.jpg",
+        location: "table",
+      });
+
+      await device.playAutomation({
+        macro: "Walk_to_image_room",
+      });
+    });
+  },
+);
+```
+
+<Note>
+  The Android emulator determines the available built-in macros. `Walk_to_image_room` is the macro used to animate the virtual camera toward a placed image. See [Android Emulator camera support](https://developer.android.com/studio/run/emulator-use-camera#arcore) for more detail on virtual scene automation.
+</Note>
+
+## `setProxy`
+
+Configures a proxy for the Android emulator's network traffic.
+
+```typescript
+function setProxy(options: ProxyOptions): Promise<string>;
+
+type ProxyOptions = {
+  /** Proxy URL. Include credentials in the URL if authentication is required (e.g. `http://username:password@proxy.example.com:8080`). */
+  url: string;
+};
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow("Set proxy", "Android - Pixel", async () => {
+  await device.setProxy({
+    url: "http://proxy.example.com:8080",
+  });
+});
+```
+
+## `clearProxy`
+
+Removes any proxy configuration from the Android emulator.
+
+```typescript
+function clearProxy(): Promise<string>;
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow("Clear proxy", "Android - Pixel", async () => {
+  await device.clearProxy();
+});
+```
+
+<Note>
+  Call `clearProxy()` at the end of any flow that sets a proxy to avoid affecting subsequent flows.
+</Note>
+
+## `passAudioAsMicrophoneInput`
+
+Plays an audio file on the runner host so the emulator receives it as microphone input. Use this to test recording, voice, or speech-recognition features with known audio.
+
+```typescript
+function passAudioAsMicrophoneInput(options: PassAudioAsMicrophoneInputOptions): Promise<string>;
+
+type PassAudioAsMicrophoneInputOptions = {
+  /** File path on the runner host, or URL, for the audio to play. */
+  data: string;
+  /** Delay in seconds before playback starts. Awaited inline, so it does not let the call return early. */
+  delaySeconds?: number;
+  /** Maximum playback duration in seconds. Omit to play the whole file. */
+  durationSeconds?: number;
+};
+```
+
+<Warning>
+  Playback is synchronous: the promise resolves only once the audio has finished playing. Your app has to be recording **before** you call this. Otherwise, the file plays into a microphone nobody is listening to, and the recording that follows captures silence. `delaySeconds` does not work around this, since it is awaited inline as well.
+</Warning>
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Inject microphone audio",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("play audio into the microphone", async () => {
+      // Start the app listening first
+      await driver.$(`//*[@text='Record']`).click();
+
+      await device.passAudioAsMicrophoneInput({
+        data: `${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
+        durationSeconds: 10,
+      });
+
+      await driver.$(`//*[@text='Done']`).click();
+    });
+  },
+);
+```
+
+If your app needs audio already flowing when it starts listening, hold the promise and await it once the app is ready:
+
+```typescript
+const playback = device.passAudioAsMicrophoneInput({
+  data: `${process.env.TEAM_STORAGE_DIR}/audio.mp3`,
+  durationSeconds: 10,
+});
+
+await driver.$(`//*[@text='Record']`).click();
+
+await playback;
+```
+
+<Note>
+  The command timeout (1 minute by default) bounds playback. For audio longer than a minute, pass `durationSeconds`. See [Microphone injection](/android-audio-injection) for a full walkthrough.
+</Note>
+
+## `adb`
+
+Runs an `adb` command against the emulator and returns its combined stdout/stderr. Use this as an escape hatch for emulator or device operations not covered by a dedicated `device` method — such as `dumpsys`, `emu sensor set`, or `pull`.
+
+Pass the arguments either as a single string (split on whitespace; quote a single value that contains spaces) or as an array (preferred when building arguments programmatically). The command does not go through a host shell, so it does not expand variables or run pipes.
+
+```typescript
+function adb(command: string | string[]): Promise<string>;
+```
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Run adb commands",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("send a keyevent and pull a file", async () => {
+      await device.adb("shell input keyevent 26");
+
+      // quote a value that contains spaces, or pass an array to avoid quoting
+      await device.adb([
+        "pull",
+        "/sdcard/Recordings/My recording 1.m4a",
+        `${process.env.TEAM_STORAGE_DIR}/recorded.m4a`,
+      ]);
+    });
+  },
+);
+```
+
+Example — jump the device clock to test time-gated features (disable auto time, move the clock, then restore):
+
+```typescript
+import { device, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Verify a time-gated feature can't be gamed",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("jump the device clock forward", async () => {
+      // Disable automatic time so the manual clock sticks
+      await device.adb("shell settings put global auto_time 0");
+
+      // Move the device clock forward 2 days
+      const targetMillis = Date.now() + 2 * 24 * 60 * 60 * 1000;
+      await device.adb(`shell cmd alarm set-time ${targetMillis}`);
+
+      // ... assert the time-gated feature (rewards/streaks) behaves correctly ...
+
+      // Restore automatic time
+      await device.adb("shell settings put global auto_time 1");
+    });
+  },
+);
+```
+
+<Note>
+  Prefer a dedicated `device` method when one exists. See [Measure performance](/android-performance) and [Mock hardware sensors](/android-sensor-mocking) for `adb` usage in context.
+</Note>

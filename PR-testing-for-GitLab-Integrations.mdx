@@ -1,0 +1,116 @@
+---
+title: "Setting up PR testing"
+description: "Run QA Wolf tests against preview environments on merge requests and report results back to GitLab."
+sidebarTitle: "GitLab"
+---
+
+<Info>
+  This guide is for QA Wolf full service customers. If you're unsure whether this applies to you, contact your QA Wolf team.
+</Info>
+
+## Configure basic PR testing
+
+<Steps>
+  <Step title="Configure GitLab integration">
+    Configure the GitLab integration in your team's settings page.
+  </Step>
+  <Step title="Notify QA Wolf of preview deployments">
+    Choose one of the following methods to tell QA Wolf when a new preview environment is ready to be tested.
+
+    **GitLab CI job**
+
+    Add a `notify_qawolf` job to your `.gitlab-ci.yml` that runs only for merge request pipelines, after the preview environment is deployed and reachable.
+
+    ```yaml expandable
+    stages:
+      - deploy
+      - test
+    
+    notify_qawolf:
+      stage: test
+      image: node:latest
+      rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      needs:
+        - deploy_preview
+      script:
+        - npm install @qawolf/ci-sdk
+        - |
+          node -e "
+          const { makeQaWolfSdk } = require('@qawolf/ci-sdk');
+          const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
+          attemptNotifyDeploy({
+            sha: process.env.CI_COMMIT_SHA,
+            branch: process.env.CI_COMMIT_REF_NAME,
+            deploymentType: 'provided-by-qawolf',
+            deploymentUrl: process.env.PREVIEW_URL,
+            hostingService: 'GitLab',
+          }).then(result => {
+            if (result.outcome !== 'success') process.exit(1);
+          });
+          "
+    ```
+
+    **curl**
+
+    If Node isn't available in your pipeline, you can notify QA Wolf using a raw HTTP call instead.
+
+    ```yaml expandable
+    notify_qawolf:
+      stage: test
+      image: curlimages/curl:latest
+      rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      needs:
+        - deploy_preview
+      script:
+        - |
+          curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
+            -H "Authorization: Bearer $QAWOLF_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"branch\": \"$CI_COMMIT_REF_NAME\",
+              \"deployment_type\": \"provided-by-qawolf\",
+              \"deployment_url\": \"$PREVIEW_URL\",
+              \"sha\": \"$CI_COMMIT_SHA\",
+              \"hosting_service\": \"GitLab\"
+            }"
+    ```
+
+    ### What this job assumes
+
+    - Your pipeline already creates a preview environment for each merge request.
+    - The preview environment URL is available as `PREVIEW_URL` when this job runs.
+    - A prior job (such as `deploy_preview`) deploys the preview environment and verifies it is reachable before notifying QA Wolf.
+  </Step>
+  <Step title="Ask your QA Wolf team to set up triggers">
+    QA Wolf will configure a trigger that matches your preview deployments. Reach out to your QA Wolf team to get this set up.
+  </Step>
+</Steps>
+
+---
+
+## Advanced: Require QA Wolf tests before merge
+
+<Info>
+  In GitLab, merge requests are typically blocked unless pipelines pass. Complete this section if you want to enforce QA Wolf results as a required check.
+</Info>
+
+If your project uses approval rules or protected branches, ensure the merge request pipeline is the one required to pass.
+
+## Verify your PR testing setup
+
+<Steps>
+  <Step title="Open a merge request in GitLab.">
+    Confirm that your merge request triggers a pipeline that deploys a preview environment.
+  </Step>
+  <Step title="Confirm the preview environment is created.">
+    In GitLab, check the merge request's environment or the Review App link, and confirm that the preview URL is reachable.
+  </Step>
+  <Step title="Confirm QA Wolf starts a test run.">
+    In the **QA Wolf app**, go to the **Runs** tab and verify that a new run starts for the preview environment associated with the merge request.
+  </Step>
+  <Step title="Confirm the merge request is blocked on failure.">
+    In GitLab, confirm the pipeline reflects the final result and that the merge request cannot be merged unless the pipeline succeeds.
+  </Step>
+</Steps>
