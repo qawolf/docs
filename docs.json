@@ -90,6 +90,7 @@
       {
         "tab": "Start",
         "pages": [
+          "qawolf/Welcome-to-QA-Wolf",
           "quick-start",
           "qawolf/Glossary",
           "workspace-setup"
