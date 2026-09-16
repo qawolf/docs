@@ -58,10 +58,6 @@
   },
   "redirects": [
     {
-      "source": "/",
-      "destination": "qawolf/Welcome-to-QA-Wolf"
-    },
-    {
       "source": "/qawolf/Workspace-settings",
       "destination": "/workspace-setup"
     }
@@ -90,9 +86,9 @@
       {
         "tab": "Start",
         "pages": [
-          "qawolf/Welcome-to-QA-Wolf",
+          "index",
           "quick-start",
-          "qawolf/Glossary",
+          "Glossary",
           "workspace-setup"
         ]
       },
@@ -102,23 +98,23 @@
           {
             "group": "Agentic QA",
             "pages": [
-              "qawolf/product-mapping",
-              "qawolf/test-automation",
-              "qawolf/coding-agents/get-started"
+              "product-mapping",
+              "test-automation",
+              "coding-agents/get-started"
             ]
           },
           {
             "group": "Run Orchestration",
             "pages": [
-              "qawolf/tags",
-              "qawolf/smart-smoke-suites",
-              "qawolf/Run-Rules"
+              "tags",
+              "smart-smoke-suites",
+              "Run-Rules"
             ]
           },
           {
             "group": "Authentication",
             "pages": [
-              "qawolf/sso"
+              "sso"
             ]
           }
         ]
@@ -126,18 +122,18 @@
       {
         "tab": "Solutions",
         "pages": [
-          "qawolf/solutions",
+          "solutions",
           {
             "group": "Email & SMS",
             "pages": [
-              "qawolf/Use-emails-in-tests"
+              "Use-emails-in-tests"
             ]
           },
           {
             "group": "Authentication",
             "pages": [
-              "qawolf/qrcode",
-              "qawolf/test-mfa"
+              "qrcode",
+              "test-mfa"
             ]
           },
           {
@@ -146,20 +142,20 @@
               {
                 "group": "Connect to VPN",
                 "pages": [
-                  "qawolf/network-connectivity",
-                  "qawolf/connect-with-vpn-web"
+                  "network-connectivity",
+                  "connect-with-vpn-web"
                 ]
               },
               {
                 "group": "Network simulation",
                 "pages": [
-                  "qawolf/network-simulation"
+                  "network-simulation"
                 ]
               },
               {
                 "group": "Beacon injection",
                 "pages": [
-                  "qawolf/i-beacon-injection"
+                  "i-beacon-injection"
                 ]
               }
             ]
@@ -167,9 +163,9 @@
           {
             "group": "Data sharing",
             "pages": [
-              "qawolf/Pass-data-between-flows",
-              "qawolf/reuse-state-between-runs",
-              "qawolf/mount-a-file-share"
+              "Pass-data-between-flows",
+              "reuse-state-between-runs",
+              "mount-a-file-share"
             ]
           },
           {
@@ -178,23 +174,23 @@
               {
                 "group": "Microphone injection",
                 "pages": [
-                  "qawolf/android-audio-injection",
-                  "qawolf/ios-audio-injection",
-                  "qawolf/web-audio-injection"
+                  "android-audio-injection",
+                  "ios-audio-injection",
+                  "web-audio-injection"
                 ]
               },
               {
                 "group": "Speaker capture",
                 "pages": [
-                  "qawolf/audio-capture",
-                  "qawolf/web-speaker-capture"
+                  "audio-capture",
+                  "web-speaker-capture"
                 ]
               },
               {
                 "group": "Audio analysis",
                 "pages": [
-                  "qawolf/i-os-audio-analysis",
-                  "qawolf/web-audio-analysis"
+                  "i-os-audio-analysis",
+                  "web-audio-analysis"
                 ]
               }
             ]
@@ -205,26 +201,26 @@
               {
                 "group": "Photo library management",
                 "pages": [
-                  "qawolf/photo-library-management"
+                  "photo-library-management"
                 ]
               },
               {
                 "group": "Camera injection",
                 "pages": [
-                  "qawolf/camera-and-audio-injection"
+                  "camera-and-audio-injection"
                 ]
               },
               {
                 "group": "Barcode injection",
                 "pages": [
-                  "qawolf/android-barcode",
-                  "qawolf/barcode-qrcode-scanning"
+                  "android-barcode",
+                  "barcode-qrcode-scanning"
                 ]
               },
               {
                 "group": "Video Injection",
                 "pages": [
-                  "qawolf/video-injection"
+                  "video-injection"
                 ]
               }
             ]
@@ -232,35 +228,35 @@
           {
             "group": "Accessibility",
             "pages": [
-              "qawolf/a11y-native",
-              "qawolf/a11y-web"
+              "a11y-native",
+              "a11y-web"
             ]
           },
           {
             "group": "Performance",
             "pages": [
-              "qawolf/android-performance",
-              "qawolf/web-performance"
+              "android-performance",
+              "web-performance"
             ]
           },
           {
             "group": "Visual diffing",
             "pages": [
-              "qawolf/visual-diffing-native-app",
-              "qawolf/visual-diffing"
+              "visual-diffing-native-app",
+              "visual-diffing"
             ]
           },
           {
             "group": "AI & LLMs",
             "pages": [
-              "qawolf/non-deterministic-ai-testing"
+              "non-deterministic-ai-testing"
             ]
           },
           {
             "group": "Desktop",
             "pages": [
-              "qawolf/electron",
-              "qawolf/browser-extensions"
+              "electron",
+              "browser-extensions"
             ]
           },
           {
@@ -269,13 +265,13 @@
               {
                 "group": "Location Mocking",
                 "pages": [
-                  "qawolf/android-location-mocking"
+                  "android-location-mocking"
                 ]
               },
               {
                 "group": "Sensor Mocking",
                 "pages": [
-                  "qawolf/android-sensor-mocking"
+                  "android-sensor-mocking"
                 ]
               }
             ]
@@ -288,86 +284,86 @@
           {
             "group": "Flow conventions",
             "pages": [
-              "qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-              "qawolf/Uploading-manually",
-              "qawolf/lint-rules",
-              "qawolf/reusable-ai-knowledge"
+              "anatomy-of-a-qa-wolf-test-mobile-edition",
+              "Uploading-manually",
+              "lint-rules",
+              "reusable-ai-knowledge"
             ]
           },
           {
             "group": "@qawolf/flows",
             "pages": [
-              "qawolf/libraries/flows/api-reference/top-level",
-              "qawolf/libraries/flows/api-reference/web",
-              "qawolf/libraries/flows/api-reference/cli",
-              "qawolf/libraries/flows/api-reference/android",
-              "qawolf/libraries/flows/api-reference/android-device-reference",
-              "qawolf/libraries/flows/api-reference/ios",
-              "qawolf/libraries/flows/api-reference/ios-device-reference",
-              "qawolf/libraries/flows/api-reference/ios-device-pools",
-              "qawolf/libraries/flows/troubleshooting"
+              "libraries/flows/api-reference/top-level",
+              "libraries/flows/api-reference/web",
+              "libraries/flows/api-reference/cli",
+              "libraries/flows/api-reference/android",
+              "libraries/flows/api-reference/android-device-reference",
+              "libraries/flows/api-reference/ios",
+              "libraries/flows/api-reference/ios-device-reference",
+              "libraries/flows/api-reference/ios-device-pools",
+              "libraries/flows/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/pom",
             "pages": [
-              "qawolf/libraries/pom/api-reference/index",
-              "qawolf/libraries/pom/troubleshooting"
+              "libraries/pom/api-reference/index",
+              "libraries/pom/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/testkit",
             "pages": [
-              "qawolf/libraries/testkit/api-reference/core",
-              "qawolf/libraries/testkit/api-reference/types",
-              "qawolf/libraries/testkit/api-reference/web",
-              "qawolf/libraries/testkit/api-reference/client",
-              "qawolf/libraries/testkit/troubleshooting"
+              "libraries/testkit/api-reference/core",
+              "libraries/testkit/api-reference/types",
+              "libraries/testkit/api-reference/web",
+              "libraries/testkit/api-reference/client",
+              "libraries/testkit/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/emails",
             "pages": [
-              "qawolf/libraries/emails/api-reference/mail",
-              "qawolf/libraries/emails/api-reference/client",
-              "qawolf/libraries/emails/troubleshooting"
+              "libraries/emails/api-reference/mail",
+              "libraries/emails/api-reference/client",
+              "libraries/emails/troubleshooting"
             ]
           },
           {
             "group": "@qawolf/cli",
             "pages": [
-              "qawolf/libraries/cli/api-reference/index",
-              "qawolf/libraries/cli/api-reference/commands",
-              "qawolf/libraries/cli/api-reference/environment-variables",
-              "qawolf/libraries/cli/troubleshooting"
+              "libraries/cli/api-reference/index",
+              "libraries/cli/api-reference/commands",
+              "libraries/cli/api-reference/environment-variables",
+              "libraries/cli/troubleshooting"
             ]
           },
           {
             "group": "Local execution",
             "pages": [
-              "qawolf/local-execution/authenticate",
-              "qawolf/local-execution/run-flows-locally",
-              "qawolf/local-execution/pull-flows",
-              "qawolf/local-execution/install-dependencies",
-              "qawolf/local-execution/set-up-a-project",
-              "qawolf/local-execution/diagnose-problems"
+              "local-execution/authenticate",
+              "local-execution/run-flows-locally",
+              "local-execution/pull-flows",
+              "local-execution/install-dependencies",
+              "local-execution/set-up-a-project",
+              "local-execution/diagnose-problems"
             ]
           },
           {
             "group": "@qawolf/ci-sdk",
             "pages": [
-              "qawolf/libraries/ci-sdk/api-reference",
-              "qawolf/libraries/ci-sdk/troubleshooting"
+              "libraries/ci-sdk/api-reference",
+              "libraries/ci-sdk/troubleshooting"
             ]
           },
           {
             "group": "REST",
             "pages": [
-              "qawolf/rest-overview",
-              "qawolf/deploy-success",
-              "qawolf/environment_terminated",
-              "qawolf/v0-ci-greenlight",
-              "qawolf/run-inputs-executables-signed-urls"
+              "rest-overview",
+              "deploy-success",
+              "environment_terminated",
+              "v0-ci-greenlight",
+              "run-inputs-executables-signed-urls"
             ]
           }
         ]
@@ -381,20 +377,20 @@
               {
                 "group": "Deployment testing ",
                 "pages": [
-                  "qawolf/GitHub-GitHub-Actions",
-                  "qawolf/GitLab",
-                  "qawolf/circle-ci",
-                  "qawolf/other-ci-node",
-                  "qawolf/other-ci-webhook"
+                  "GitHub-GitHub-Actions",
+                  "GitLab",
+                  "circle-ci",
+                  "other-ci-node",
+                  "other-ci-webhook"
                 ]
               },
               {
                 "group": "Mobile build testing",
                 "pages": [
-                  "qawolf/Fastlane",
-                  "qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
-                  "qawolf/Mobile-build-with-the-QA-Wolf-SDK",
-                  "qawolf/other-web-hook-for-mobile"
+                  "Fastlane",
+                  "Integrate-a-mobile-build-with-GitHub-Actions",
+                  "Mobile-build-with-the-QA-Wolf-SDK",
+                  "other-web-hook-for-mobile"
                 ]
               }
             ]
@@ -402,31 +398,31 @@
           {
             "group": "VPN",
             "pages": [
-              "qawolf/QA-Wolf-s-static-IPv4",
-              "qawolf/OpenVPN-integration",
-              "qawolf/Site-to-Site-IPSec-Tunnel",
-              "qawolf/Twingate-Client-based-VPN",
-              "qawolf/Tailscale-Client-based-VPN"
+              "QA-Wolf-s-static-IPv4",
+              "OpenVPN-integration",
+              "Site-to-Site-IPSec-Tunnel",
+              "Twingate-Client-based-VPN",
+              "Tailscale-Client-based-VPN"
             ]
           },
           {
             "group": "Test Management Systems",
             "pages": [
-              "qawolf/Testmo",
-              "qawolf/TestRail",
-              "qawolf/Xray",
-              "qawolf/Zephyr",
-              "qawolf/Qase-io"
+              "Testmo",
+              "TestRail",
+              "Xray",
+              "Zephyr",
+              "Qase-io"
             ]
           },
           {
             "group": "Issue Trackers",
             "pages": [
-              "qawolf/Jira",
-              "qawolf/Linear",
-              "qawolf/Asana",
-              "qawolf/Azure-DevOps-Boards",
-              "qawolf/Integrate-with-webhooks"
+              "Jira",
+              "Linear",
+              "Asana",
+              "Azure-DevOps-Boards",
+              "Integrate-with-webhooks"
             ]
           }
         ]
@@ -437,28 +433,28 @@
           {
             "group": "Introduction",
             "pages": [
-              "qawolf/Full-Service-The-First-Three-Months",
-              "qawolf/Full-Service-FAQs",
-              "qawolf/Recommended-reading-for-QA-engineers-and-developers"
+              "Full-Service-The-First-Three-Months",
+              "Full-Service-FAQs",
+              "Recommended-reading-for-QA-engineers-and-developers"
             ]
           },
           {
             "group": "Working with Wolves",
             "pages": [
-              "qawolf/Request-new-coverage",
-              "qawolf/Manage-maintenance-reports"
+              "Request-new-coverage",
+              "Manage-maintenance-reports"
             ]
           },
           {
             "group": "Integrating Systems",
             "pages": [
-              "qawolf/Test-environments",
-              "qawolf/Integrating-with-microsoft-teams",
+              "Test-environments",
+              "Integrating-with-microsoft-teams",
               {
                 "group": "PR Testing",
                 "pages": [
-                  "qawolf/PR-testing-for-GitHub-Integrations",
-                  "qawolf/PR-testing-for-GitLab-Integrations"
+                  "PR-testing-for-GitHub-Integrations",
+                  "PR-testing-for-GitLab-Integrations"
                 ]
               }
             ]

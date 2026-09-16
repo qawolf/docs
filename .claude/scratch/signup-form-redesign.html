@@ -1,0 +1,124 @@
+<title>Get started guide mockup</title>
+<style>
+  :root{
+    --page-bg:#0b0b2f;
+    --card-bg: rgba(18,64,55,0.38);
+    --card-border: rgba(8,237,203,0.22);
+    --mint:#08edcb;
+    --indigo:#3b3cef;
+    --text-primary:#e9edf5;
+    --text-secondary:#93a0b8;
+    --text-muted:#6b7690;
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--page-bg);}
+  .wrap{
+    font-family:-apple-system,"Inter",Segoe UI,Helvetica,Arial,sans-serif;
+    background:var(--page-bg);
+    color:var(--text-primary);
+    padding:2rem 1.5rem 3rem;
+    max-width:760px;
+    margin:0 auto;
+  }
+  h1{font-size:20px;font-weight:600;margin:0 0 4px;letter-spacing:-0.01em;}
+  .sub{font-size:14px;color:var(--text-secondary);margin:0 0 32px;line-height:1.5;}
+  .sub code{color:var(--text-primary);}
+
+  .steps{position:relative;margin-bottom:36px;}
+  .step{position:relative;padding-left:38px;padding-bottom:28px;}
+  .step:last-child{padding-bottom:0;}
+  .step::before{
+    /* connecting line */
+    content:"";position:absolute;left:11px;top:26px;bottom:0;width:1px;
+    background:rgba(255,255,255,0.12);
+  }
+  .step:last-child::before{display:none;}
+  .badge{
+    position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;
+  }
+  .step.active .badge{background:var(--mint);color:#04302a;}
+  .step.ghost .badge{background:transparent;border:1px dashed rgba(255,255,255,0.28);color:var(--text-muted);}
+
+  .step-title{font-size:15px;font-weight:600;margin:1px 0 4px;color:var(--text-primary);}
+  .step.ghost .step-title{color:var(--text-secondary);}
+  .step-body{font-size:13.5px;line-height:1.55;color:var(--text-secondary);}
+  .step-body .signin{color:var(--mint);text-decoration:underline;text-underline-offset:2px;}
+
+  .new-btn{
+    height:38px;padding:0 18px;border-radius:8px;border:none;
+    background:var(--indigo);color:#fff;
+    font-size:13.5px;font-weight:600;font-family:inherit;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:5px;cursor:pointer;
+    text-decoration:none;margin-top:12px;
+  }
+  .ghost-callout{
+    border:1px dashed rgba(255,255,255,0.16);
+    border-radius:12px;
+    padding:14px 18px;
+    margin-top:12px;
+    font-size:12.5px;
+    color:var(--text-muted);
+  }
+  .ghost-callout b{color:var(--text-secondary);}
+
+  .tag{
+    display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+    padding:2px 7px;border-radius:5px;margin-left:8px;vertical-align:middle;
+    background:rgba(255,255,255,0.08);color:var(--text-muted);
+  }
+
+  .notes{margin-top:8px;}
+  .notes h2{font-size:14px;font-weight:600;margin:0 0 10px;color:var(--text-primary);}
+  .notes ul{margin:0;padding-left:18px;}
+  .notes li{font-size:13px;line-height:1.7;color:var(--text-secondary);margin-bottom:6px;}
+  .notes li b{color:var(--text-primary);font-weight:600;}
+</style>
+
+<div class="wrap">
+  <h1>Get started — draft guide structure</h1>
+  <p class="sub">Reframing the signup embed as <b>step 1</b> of a real <code>&lt;Steps&gt;</code> sequence, so the page can grow into a full account → CLI walkthrough.</p>
+
+  <div class="steps">
+    <div class="step active">
+      <div class="badge">1</div>
+      <div class="step-title">Sign up to get started</div>
+      <div class="step-body">
+        Create your QA Wolf account — it's free to start. Already have one? <span class="signin">Sign in</span> instead.
+      </div>
+      <a class="new-btn" href="https://app.qawolf.com/sign-up">Try for free →</a>
+    </div>
+
+    <div class="step ghost">
+      <div class="badge">2</div>
+      <div class="step-title">Install CLI<span class="tag">preview</span></div>
+      <div class="step-body">Install and authenticate the QA Wolf CLI on your machine.</div>
+      <div class="ghost-callout">
+        <b>Not designed yet</b> — content and exact scope still open; see note below on where the rest of the CLI install instructions might live.
+      </div>
+    </div>
+
+    <div class="step ghost">
+      <div class="badge">3</div>
+      <div class="step-title">Automate your first test<span class="tag">preview</span></div>
+      <div class="step-body">Pull a flow or generate one, then run it locally.</div>
+      <div class="ghost-callout">
+        <b>Not designed yet</b> — likely draws from Map your app's workflows / Get the most out of Automate.
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>What changed this round</h2>
+    <ul>
+      <li><b>Copy:</b> "You have access to a QA Wolf workspace" (a prerequisite check) → "Sign up to get started" (an actual call to action) — the sentence now asks for the action instead of describing a precondition.</li>
+      <li><b>Framing:</b> moved out of the <code>&lt;Check&gt;</code> prerequisite callout entirely. A Check block says "verify this before you proceed" — wrong shape for something you do first. It's now step 1 of a <code>&lt;Steps&gt;</code> sequence, matching the site's own convention for genuine ordered procedures.</li>
+      <li><b>Form → link:</b> dropped the embedded email-capture form entirely. Step 1 is now a plain link/button to <code>app.qawolf.com/sign-up</code> — simpler, and it sidesteps the two unresolved production blockers noted in the original snippet (CORS not configured for the docs domain, an unguarded <code>window.qawAttribution</code> dependency). The real signup flow already lives on that page; no reason to reimplement it in an iframe-less embed here.</li>
+      <li><b>Three steps now:</b> Sign up → Install CLI → Automate your first test — a complete zero-to-first-test path in one guide.</li>
+      <li><b>Open question (yours, still unresolved):</b> where do the rest of the CLI install instructions live? They might belong next to the other setup guides currently on the Features tab (Workspace settings, Environment settings) rather than only inside this linear guide — worth deciding before step 2 gets real content.</li>
+      <li><b>Also still open:</b> the old second Check bullet ("QA Wolf can access the application you want to test," the VPN/firewall note) isn't part of signing up — probably becomes its own step or a <code>&lt;Note&gt;</code> later.</li>
+      <li><b>Steps 2 and 3</b> are placeholders only — shown to confirm the shape before pulling in real content.</li>
+    </ul>
+  </div>
+</div>

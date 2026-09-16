@@ -1,0 +1,382 @@
+---
+title: "Android"
+description: "Reference for @qawolf/flows/android, the entry point for defining Android flows with device controls, launch options, and assertions."
+sidebarTitle: "Android"
+---
+
+`@qawolf/flows/android` defines Android flows and advanced device controls.
+
+QA Wolf runs Android flows on ephemeral emulators. A fresh one is provisioned for each run and discarded when it finishes, so nothing carries over from a previous run. Because emulators are created on demand, you don't reserve or configure devices yourself: choose a target and QA Wolf allocates an emulator for it.
+
+## Primary exports
+
+- `flow(...)`
+- `launch(...)`
+- `device`
+- `expect`
+- `testContextDependencies`
+
+It also exports Android-specific target, launch, device, callback context, and flow definition types.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open Android app",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("app launches", async () => {
+      await driver.pause(1000);
+    });
+  },
+);
+```
+
+## Flow callback context
+
+All Android flow callbacks receive:
+
+- `inputs`
+- `setOutput(...)`
+- `test(...)`
+
+Launch-enabled Android flows also receive `driver`.
+
+<Note>
+  `test(...)` can be omitted for simple flows where grouping steps into named sub-steps doesn't add value. For most flows, wrapping steps in `test(...)` is recommended — the label appears in your results and makes failures easier to locate.
+</Note>
+
+## `testContextDependencies`
+
+`testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.
+
+## Target model
+
+The target input model is:
+
+```ts
+type AndroidFlowTargetInput =
+  | AndroidFlowTarget
+  | {
+      target: AndroidFlowTarget;
+      launch?: false | undefined;
+    }
+  | {
+      target: AndroidFlowTarget;
+      launch: true | LaunchOptions;
+    };
+```
+
+Pass either:
+
+- a target directly for the common path
+- `{ target, launch }` when startup behavior should be part of the flow
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export const targetOnlyFlow = flow(
+  "Target-only path",
+  "Android - Pixel",
+  async () => {
+    // call launch() explicitly when startup should happen in the callback
+  },
+);
+
+export const launchedFlow = flow(
+  "Launch-enabled path",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      await driver.pause(1000);
+    });
+  },
+);
+```
+
+## `flow(...)`
+
+Use `flow(...)` for Android authoring.
+
+- without launch, the callback receives `inputs`, `setOutput(...)`, and `test(...)`
+- with `launch: true`, the flow calls `launch()` with default Android startup
+- with `launch: <options>`, the flow calls `launch(options)`
+- when launch is enabled, the callback also receives `driver`
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Launch in flow definition",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      await driver.pause(1000);
+    });
+  },
+);
+```
+
+## `launch(...)`
+
+Starts Android automation for the active flow. Returns:
+
+```ts
+type LaunchResult = {
+  driver: Awaited<ReturnType<Dependencies["wdio"]["startAndroid"]>>;
+};
+```
+
+This API is only available while a flow is running.
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Launch explicitly", "Android - Pixel", async () => {
+  const { driver } = await launch();
+  await driver.pause(1000);
+});
+```
+
+### Launch shape
+
+```ts
+type LaunchOptions = {
+  app?: {
+    path?: string;
+    env?: string;
+    url?: string;
+  };
+  appPackage?: string;
+  appActivity?: string;
+  appWaitActivity?: string;
+  autoGrantPermissions?: boolean;
+  noReset?: boolean;
+  waitForIdleTimeout?: number;
+  browserName?: string;
+  capabilities?: Record<string, unknown>;
+};
+```
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Launch apk", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    app: { path: "apps/mobile/android/app.apk" },
+    appPackage: "com.example.android",
+    autoGrantPermissions: true,
+  });
+
+  await driver.pause(1000);
+});
+```
+
+### Launch defaults
+
+The implementation applies these defaults:
+
+- when `app` is omitted, launch falls back to the runner-provided executable input path and then to installed-app startup through `appPackage`
+- `autoGrantPermissions` defaults to `true`
+- `noReset` defaults to `false`
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow("Use Android defaults", "Android - Pixel", async () => {
+  const { driver } = await launch({
+    appPackage: "com.example.android",
+  });
+
+  await driver.pause(1000);
+});
+```
+
+### Supported app formats
+
+QA Wolf installs your app from either a local path or a URL, in either the `.apk` or `.aab` format.
+
+| Source | Formats | What QA Wolf does |
+| --- | --- | --- |
+| local path | `.apk`, `.aab` | installs the build |
+| URL | `.apk`, `.aab` | downloads the build, then installs it |
+
+```ts
+// a build your CI uploaded, or a path in your repository
+await launch({ app: { path: "apps/android/app.aab" } });
+
+// a link QA Wolf can fetch, including a signed or expiring one
+await launch({ app: { url: "https://builds.example.com/app.apk?token=abc" } });
+```
+
+QA Wolf writes the version of the installed build to the run log, so you can confirm which build a run tested against.
+
+QA Wolf only fetches a URL when its path ends in `.apk` or `.aab`. A query string does not change that, so a signed or expiring download link works as long as the path keeps the extension. QA Wolf passes anything else, such as a share page or a download endpoint that names the file elsewhere, to the driver untouched.
+
+You can also install an app yourself over adb, which skips everything above:
+
+```ts
+// -r to replace an existing install, and a timeout large enough for the transfer
+await device.adb(["install-multiple", "-r", ...splitPaths], { timeout: 600_000 });
+await launch({ appPackage: "com.example.app", appActivity: ".MainActivity" });
+```
+
+<Note>
+  Prefer handing QA Wolf the `.apk` or `.aab`. Installing over adb means you own everything that comes with it: choosing the right split APKs for the device, reading the manifest for the launcher activity, and sizing the transfer. Passing `app` gets all of that handled for you.
+</Note>
+
+### App resolution
+
+When your CI pipeline uploads an Android build, QA Wolf sets `RUN_INPUT_PATH` to the uploaded file before the flow runs. Omit `app` in your launch call and QA Wolf will use that path automatically — you only need to provide the `appPackage`.
+
+When `app` is provided, the resolution order is:
+
+1. `app.path`
+2. `app.env`
+3. `app.url`
+
+When `app` is omitted, launch falls back to `RUN_INPUT_PATH`.
+
+QA Wolf resolves relative paths against `RUN_INPUTS_EXECUTABLES_DIR` when that environment variable is present.
+
+Explicit app source examples:
+
+```ts
+await launch({ app: { path: "apps/mobile/android/app.apk" } });
+await launch({ app: { env: "ANDROID_APP_PATH" } });
+await launch({ app: { url: "https://example.com/app.apk" } });
+```
+
+`RUN_INPUT_PATH` fallback example:
+
+```ts
+// The runner sets RUN_INPUT_PATH before the flow starts.
+await launch({
+  appPackage: "com.example.android",
+});
+```
+
+<Note>
+  If `app` is present but does not resolve to a value, launch does not fall back to `RUN_INPUT_PATH`.
+</Note>
+
+### Advanced Appium capabilities
+
+The named launch options above cover the most common settings. For anything else, use the `capabilities` escape hatch: its entries are spread into the underlying [webdriver.io `remote`](https://webdriver.io/docs/api) capabilities and passed straight to the Android driver.
+
+`startAndroid` is a thin wrapper around webdriver.io's `remote`, so capabilities that QA Wolf does not set itself are forwarded as-is. See the Appium references for the full list of available keys:
+
+- [Appium core capabilities](https://appium.io/docs/en/2.11/guides/caps/)
+- [UiAutomator2 (Android) driver capabilities](https://github.com/appium/appium-uiautomator2-driver/blob/v3.7.8/README.md#capabilities)
+
+```ts
+import { flow, launch } from "@qawolf/flows/android";
+
+export default flow(
+  "Launch with custom capabilities",
+  "Android - Pixel",
+  async () => {
+    const { driver } = await launch({
+      // Named options cover the common knobs:
+      autoGrantPermissions: true,
+      waitForIdleTimeout: 10,
+      // Anything else is passed through verbatim:
+      capabilities: {
+        "appium:disableWindowAnimation": true,
+        "appium:uiautomator2ServerLaunchTimeout": 60000,
+      },
+    });
+
+    await driver.pause(1000);
+  },
+);
+```
+
+<Note>
+  Named options take precedence over `capabilities` for the same key. In particular, `autoGrantPermissions` and `noReset` are always applied (using their defaults when omitted), so configure those through the named options rather than `capabilities`.
+</Note>
+
+### Migrating from `wdio.startAndroid`
+
+Older flows obtained a `wdio` handle from the test context and called `startAndroid` directly. With the flow API, pass the same configuration through the flow's `launch` options instead — map the settings that have a named option, and route the rest through `capabilities`. The `driver` you receive is the same webdriver.io `Browser` handle, so there is no separate "raw" driver to obtain.
+
+```ts
+// Before: raw wdio.startAndroid
+const driver = await wdio.startAndroid({
+  "appium:app": process.env.ANDROID_PATH,
+  "appium:appPackage": "com.example.android",
+  "appium:autoGrantPermissions": true,
+  "appium:disableWindowAnimation": true,
+  "appium:waitForIdleTimeout": 10,
+});
+```
+
+```ts
+// After: flow launch options
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open Android app",
+  {
+    target: "Android - Pixel",
+    launch: {
+      app: { env: "ANDROID_PATH" },
+      appPackage: "com.example.android",
+      autoGrantPermissions: true,
+      waitForIdleTimeout: 10,
+      capabilities: {
+        "appium:disableWindowAnimation": true,
+      },
+    },
+  },
+  async ({ driver }) => {
+    await driver.pause(1000);
+  },
+);
+```
+
+<Note>
+  `app: { env: "ANDROID_PATH" }` reads the path from the environment variable named `ANDROID_PATH`, replacing the raw `"appium:app": process.env.ANDROID_PATH` form.
+</Note>
+
+## `device`
+
+`device` is a runtime proxy over the Android emulator API. Use it for device-level operations — such as setting location, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself. See [Android Device Controls](/libraries/flows/api-reference/android-device-reference) for the full method list.
+
+## `expect`
+
+The exported `expect` is the assertion helper for Android flows, backed by [`expect-webdriverio`](https://webdriver.io/docs/api/expect-webdriverio). All WebdriverIO matchers are available — including auto-retrying element matchers like `toBeDisplayed`, `toExist`, `toHaveText`, and `toHaveAttribute`. See the [expect-webdriverio matchers reference](https://webdriver.io/docs/api/expect-webdriverio) for the full list.
+
+Always import `expect` from `@qawolf/flows/android` rather than from `expect-webdriverio` directly, so that QA Wolf's defaults (timeout, `toHaveScreenshot`) stay in effect.
+
+Example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Verify welcome screen",
+  { target: "Android - Pixel", launch: true },
+  async ({ driver, test }) => {
+    await test("welcome heading is visible", async () => {
+      const heading = driver.$("~welcome-heading");
+      await expect(heading).toBeDisplayed();
+      await expect(heading).toHaveText("Welcome");
+    });
+  },
+);
+```
+
+For visual regression assertions with `expect(driver).toHaveScreenshot(...)`, see [Native mobile screenshots](/visual-diffing-native-app).

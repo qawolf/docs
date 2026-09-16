@@ -1,0 +1,166 @@
+---
+title: "Types"
+description: "Reference notes for the public types used by @qawolf/testkit."
+sidebarTitle: "Types"
+---
+
+These are the main public types exposed through `@qawolf/testkit` and `@qawolf/testkit/client`.
+
+## `MountCifsShareOptions`
+
+```ts
+type MountCifsShareOptions = {
+  mountPoint: string;
+  password: string;
+  share: string;
+  username: string;
+};
+```
+
+Used by:
+
+- `mountCifsShare(...)`
+- `TestkitPorts["mountCifsShare"]`
+
+Example:
+
+```ts
+const options: MountCifsShareOptions = {
+  mountPoint: "/Volumes/shared",
+  password: "secret",
+  share: "//server/share",
+  username: "wolf",
+};
+```
+
+## `StartOpenVpnOptions`
+
+```ts
+type StartOpenVpnOptions = {
+  configPath: string;
+  routeHosts?: string[];
+  routeIps?: string[];
+  routeNoPull?: boolean;
+};
+```
+
+Used by:
+
+- `startOpenVpn(...)`
+- `TestkitPorts["startOpenVpn"]`
+
+Example:
+
+```ts
+const options: StartOpenVpnOptions = {
+  configPath: "/tmp/test.ovpn",
+  routeHosts: ["internal.example.com"],
+};
+```
+
+## `StartWireGuardOptions`
+
+```ts
+type StartWireGuardOptions = {
+  configPath: string;
+};
+```
+
+Used by:
+
+- `TestkitPorts["startWireGuard"]`
+
+This type is exposed through the client ports, but there is no top-level `startWireGuard(...)` helper export.
+
+Example:
+
+```ts
+const options: StartWireGuardOptions = {
+  configPath: "/tmp/test.conf",
+};
+```
+
+## `Screenshotable`
+
+```ts
+type Screenshotable = {
+  screenshot: (screenshotOptions?: unknown) => Promise<Buffer>;
+};
+```
+
+Used by `saveBaselineScreenshot(...)`. Any page or locator-like object that supports this screenshot method shape can be used.
+
+Example:
+
+```ts
+const pageLike: Screenshotable = {
+  screenshot: async () => Buffer.from("image"),
+};
+```
+
+## `SaveBaselineScreenshot`
+
+```ts
+type SaveBaselineScreenshot = (
+  pageOrLocator: Screenshotable,
+  name: string,
+  screenshotOptions?: unknown,
+) => Promise<void>;
+```
+
+Example:
+
+```ts
+await saveBaselineScreenshot(page, "login-page");
+await saveBaselineScreenshot(locator, "login-form", {
+  animations: "disabled",
+});
+```
+
+## `SaveSnapshot`
+
+```ts
+type SaveSnapshot = (name: string, bytes: Buffer) => Promise<void>;
+```
+
+This is the lower-level runner port used to implement `saveBaselineScreenshot(...)`.
+
+Example:
+
+```ts
+const saveSnapshot: SaveSnapshot = async (name, bytes) => {
+  console.log(name, bytes.length);
+};
+```
+
+## `TestkitPorts`
+
+```ts
+type TestkitPorts = {
+  mountCifsShare: (options: MountCifsShareOptions) => Promise<string>;
+  saveSnapshot?: SaveSnapshot;
+  startOpenVpn: (options: StartOpenVpnOptions) => Promise<string>;
+  startWireGuard: (options: StartWireGuardOptions) => Promise<string>;
+};
+```
+
+These are the environment-specific ports that runners pass to `createTestkitClient(...)`. See [Client](/libraries/testkit/api-reference/client#input-ports) for a full working set of ports.
+
+## `TestkitClient`
+
+`TestkitClient` is a union of:
+
+- a client with baseline screenshot support
+- a client without baseline screenshot support
+
+If `saveSnapshot` is provided, the created client exposes `saveBaselineScreenshot(...)`. Otherwise that method is absent.
+
+Example — a client built without the `saveSnapshot` port (see [Client](/libraries/testkit/api-reference/client#input-ports) for a full set of ports):
+
+```ts
+import { createTestkitClient } from "@qawolf/testkit/client";
+
+const client = createTestkitClient(portsWithoutSaveSnapshot);
+
+console.log(client.saveBaselineScreenshot); // undefined without saveSnapshot
+```

@@ -1,0 +1,24 @@
+---
+title: "Run Rules"
+description: "Run Rules let you sequence the order of flows in your suite. "
+---
+
+By default all flows run in parallel on the QA Wolf run infrastructure, but there are times when you want to sequence some flows to run before others. 
+
+- Quick sanity checks before longer, or more complex flows
+- Multi-user flows where state is shared between flows. 
+- When the environment can't handle the load of an entire test suite. 
+
+# How Run Rules work
+
+## Configuring groups
+
+Run Rules execute one group of flows before another group of flows. Groups can be constructed by flow name or by tag. 
+
+Only **active** flows execute in a run. Drafts are ignored even if they're part of a rule.
+
+## Ordering
+
+To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
+
+For each rule, indicate whether flows in the second group should be allowed to run if any flows in the first group fail. 

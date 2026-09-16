@@ -1,0 +1,97 @@
+---
+title: "Configure environments"
+description: "Create and manage environments in QA Wolf with separate variables, concurrency settings, and VPN access."
+sidebarTitle: "Environment setup"
+hidden: true
+---
+
+## Environments
+
+In the QA Wolf platform, an [environment](/qawolf/Glossary) corresponds to a specific version of your app, such as development, staging, or production.
+
+Each environment can be configured with separate variables (e.g., base URL, users), concurrency rates, and other settings relevant to the application version you're testing. Flows and tests are unique to each environment and are not shared across environments.
+
+## Create an environment
+
+<Steps>
+  <Step>
+    Choose **Workspace settings** from the `Workspace name` dropdown above the flows list.
+  </Step>
+  <Step>
+    Click **Environments** in the left navigation bar.
+  </Step>
+  <Step>
+    Click **Create environment** in the upper-right corner. Give it a unique name and click **Create**.
+  </Step>
+  <Step title="Optional: Rename environment">
+    Replace the existing Environment Name and press Enter.
+  </Step>
+</Steps>
+
+## Change your default environment
+
+<Tip>
+  Both the **Flows** and **Runs** tabs require a default environment. Set this to the environment you use most often for running and debugging tests.
+</Tip>
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+  </Step>
+  <Step>
+    Go to **General**.
+  </Step>
+  <Step>
+    Under **Default environments**, choose the environment you want the **Flows** and **Runs** tabs to use by default from the **Default team environment** dropdown.
+  </Step>
+  <Step>
+    If your team is using PR testing environments, select the default environment from the dropdown labeled **Default team PR Testing base environment**.
+  </Step>
+</Steps>
+
+<Note>
+  Contact your QA Wolf Customer Success Manager to assist with PR testing configuration.
+</Note>
+
+## Limit the environment's concurrency
+
+<Tip>
+  By default, QA Wolf executes all flows in a run concurrently. You can change this by capping concurrency per environment.
+</Tip>
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+  </Step>
+  <Step>
+    Click **Environments** in the left navigation bar.
+  </Step>
+  <Step>
+    Scroll to **Run Concurrency Limit** and select the maximum number of flows to be executed at the same time.
+  </Step>
+  <Step>
+    Click **Save**.
+  </Step>
+</Steps>
+
+## Create and manage environment variables
+
+In the QA Wolf platform, environment variables are encrypted constants scoped to a specific environment.
+
+You can use the same variable across environments by reusing the same name in each environment and setting the appropriate value for that environment (for example, `BASE_URL` in Staging vs Production). QA Wolf doesn't enforce cross-environment consistency—this pattern relies on naming conventions.
+
+<Steps>
+  <Step>
+    Open the `Workspace name` dropdown and click **Workspace settings**.
+  </Step>
+  <Step>
+    Click **Environments** in the left navigation bar.
+  </Step>
+  <Step>
+    Click the **Environment variables** tab.
+  </Step>
+</Steps>
+
+<Tip>
+  These can also be updated from the **Flows** tab.
+</Tip>

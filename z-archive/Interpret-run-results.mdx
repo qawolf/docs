@@ -1,0 +1,61 @@
+---
+title: "Reviewing run results"
+description: "Navigate the Runs tab to review pass rates, failure counts, bug reports, and maintenance status for each run."
+sidebarTitle: "Review run results"
+hidden: true
+---
+
+## Overview
+
+For each run, the list shows:
+
+- The name of the schedule that triggered the run
+- <Icon icon="check" /> — the number of fully passing attempts over total attempts
+- <Icon icon="circle-x" /> — the number of flows still requiring investigation
+- <Icon icon="bug" /> — the number of open bug reports linked to flows in the run
+- <Icon icon="hammer" /> — the number of open maintenance reports linked to flows in the run
+- Total wall clock time of the run, including all attempts
+
+<Frame>
+  ![Runs](/images/runs.png)
+</Frame>
+
+## Identify environments that need attention
+
+The icon next to each environment name indicates its current status.
+
+| Status | Meaning |
+| :-- | :-- |
+| <Icon icon="circle" color="green" /> Ready | All flows passing |
+| <Icon icon="circle" color="goldenrod" /> Needs investigation | One or more flows failed, or a medium or low priority bug has been reported |
+| <Icon icon="circle" color="red" /> Failed | A high severity bug has been reported |
+
+You can see environment status in two places:
+
+- On the **Runs** tab, next to each environment name in the list on the left
+- On the **Flows** tab, in the environment name dropdown
+
+## Review a run
+
+<Steps>
+  <Step>
+    From the **Runs** tab, select the environment you want to investigate.
+  </Step>
+  <Step>
+    Runs are grouped into three categories:
+
+    - **Investigating** — flows in the run failed and have not been marked _Do Not Investigate_
+    - **Completed** — all flows have passed or been marked _Do Not Investigate_
+    - **Canceled** — the run was canceled mid-execution by a subsequent run matching the same branch and environment
+  </Step>
+  <Step>
+    Click the run you want to investigate.
+  </Step>
+</Steps>
+
+## Sort and filter runs
+
+The default view shows past runs sorted by date in descending order. Click the <Icon icon="filter" /> icon to filter by:
+
+- **Created date** — _1 week ago_, _1 month ago_, or _1 year ago_
+- **Trigger** — _Hourly_ or _Daily_

@@ -1,0 +1,114 @@
+---
+title: "Audio analysis (Web)"
+description: "Validate audio streams and files using ffprobe and ffmpeg to assert on codec, bitrate, duration, and silence."
+sidebarTitle: "Web"
+---
+
+Use `ffprobe` and `ffmpeg` via `execa` to inspect audio streams and downloaded files during a flow. Both tools are pre-installed on QA Wolf runners.
+
+See the [ffprobe documentation](https://ffmpeg.org/ffprobe.html) and [ffmpeg documentation](https://ffmpeg.org/ffmpeg.html) for the full list of available flags.
+
+## Examples
+
+**Inspect a stream URL**
+
+```typescript
+const { execa } = await import("execa");
+
+const streamUrl = await page.locator("audio").getAttribute("src");
+
+const { stdout } = await execa("ffprobe", [
+  "-v", "quiet",
+  "-print_format", "json",
+  "-show_format",
+  "-show_streams",
+  "-i", streamUrl,
+]);
+
+const metadata = JSON.parse(stdout);
+const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
+
+expect(audioStream.codec_name).toBe("aac");
+expect(parseInt(metadata.format.bit_rate) / 1000).toBeGreaterThan(100);
+```
+
+**Detect silence in a downloaded file**
+
+```typescript
+const { execa } = await import("execa");
+
+const { stderr } = await execa("ffmpeg", [
+  "-i", filePath,
+  "-af", "silencedetect=n=-50dB:d=1",
+  "-f", "null", "-",
+]);
+
+if (stderr.includes("silence_start")) {
+  throw new Error("Audio file contains silence.");
+}
+```
+
+**Assert file metadata**
+
+```typescript
+const { execa } = await import("execa");
+
+const { stdout } = await execa("ffprobe", [
+  "-v", "error",
+  "-show_entries", "format=bit_rate,duration",
+  "-show_streams",
+  "-of", "json",
+  filePath,
+]);
+
+const metadata = JSON.parse(stdout);
+const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
+
+expect(audioStream.codec_name).toBe("aac");
+expect(parseInt(metadata.format.bit_rate) / 1000).toBeGreaterThan(100);
+```
+
+## When to use
+
+- Your app streams audio and you need to assert on codec, bitrate, or sample rate.
+- Your app generates or downloads audio files and you need to verify they aren't silent or corrupted.
+- Your app plays back recordings and you need to confirm the file contains valid audio data.
+- Your test needs to validate audio properties that can't be asserted through the UI.
+
+## Full sample test
+
+```typescript
+import { flow, launch } from "@qawolf/flows/web";
+
+export default flow(
+  "Validate audio stream",
+  "Web - Chrome",
+  async ({ page, test }) => {
+    await test("navigate to player and assert stream metadata", async () => {
+      // Arrange
+      await page.goto("https://your-app.com/player");
+      await page.locator("audio").waitFor({ state: "attached" });
+
+      // Act
+      const { execa } = await import("execa");
+      const streamUrl = await page.locator("audio").getAttribute("src");
+
+      const { stdout } = await execa("ffprobe", [
+        "-v", "quiet",
+        "-print_format", "json",
+        "-show_format",
+        "-show_streams",
+        "-i", streamUrl,
+      ]);
+
+      // Assert
+      const metadata = JSON.parse(stdout);
+      const audioStream = metadata.streams.find((s) => s.codec_type === "audio");
+
+      expect(audioStream).toBeTruthy();
+      expect(audioStream.codec_name).toBe("aac");
+      expect(parseInt(metadata.format.bit_rate) / 1000).toBeGreaterThan(100);
+    });
+  },
+);
+```

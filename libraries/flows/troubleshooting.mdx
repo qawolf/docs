@@ -1,0 +1,32 @@
+---
+title: "Troubleshooting"
+description: "Troubleshoot common issues when authoring or running @qawolf/flows, including target configuration errors and missing launch context."
+sidebarTitle: "Troubleshooting"
+---
+
+## `platform.target` throws
+
+Cause: The flow read the active target before configuring it.
+
+Check:
+
+- the runner is setting the target before flow code executes
+- tests and local tooling call `configureTarget(...)` explicitly
+
+## Callback is missing `page` or `driver`
+
+Cause: The flow uses the no-`launch` path, so QA Wolf does not inject launched runtime objects into the callback automatically.
+
+Check:
+
+- whether the flow should use `{ target, launch: true }`
+- whether the flow should call `launch()` explicitly inside the callback
+
+## Runtime API called outside the flow callback
+
+Cause: Your code called `launch()`, `device`, or `platform.target` at the module level, outside the flow callback.
+
+Check:
+
+- that all runtime API calls are inside the flow callback, not at the top of the file
+- that module-level code is limited to imports, constants, and pure helper functions

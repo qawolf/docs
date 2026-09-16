@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Browser__navigate",
+      "mcp__Claude_Browser__find",
+      "mcp__Claude_Browser__get_page_text",
+      "mcp__1f16b2f1-650d-4b39-9064-bd5666071c85__slack_search_public_and_private",
+      "mcp__d3ba77fb-09ff-4190-b11d-17f90b6dbeaf__notion-search",
+      "mcp__d3ba77fb-09ff-4190-b11d-17f90b6dbeaf__notion-fetch",
+      "Bash(./.claude/bin/gh pr view *)",
+      "Bash(.claude/bin/gh pr view *)",
+      "Bash(git fetch *)",
+      "mcp__Claude_Browser__read_page",
+      "mcp__Claude_Browser__tabs_context",
+      "mcp__3d2c00db-9e8b-4cef-bd1f-6c8162a7d2cb__get_project",
+      "Bash(./.claude/bin/gh pr list *)",
+      "Bash(./.claude/bin/gh pr checks *)",
+      "Bash(./.claude/bin/gh auth status)",
+      "mcp__3d2c00db-9e8b-4cef-bd1f-6c8162a7d2cb__list_issues"
+    ]
+  }
+}

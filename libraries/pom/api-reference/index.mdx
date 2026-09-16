@@ -1,0 +1,233 @@
+---
+title: "POM Reference"
+description: "API reference for @qawolf/pom: page object base classes, the page registry, typed construction, and page hooks."
+sidebarTitle: "POM Reference"
+---
+
+`@qawolf/pom` provides Page Object Model (POM) infrastructure for
+[Playwright](https://playwright.dev): base classes for page objects, a registry
+that constructs page objects by name and collects their page hooks, and
+automatic installation of popup and route-interception hooks.
+
+## Requirements
+
+- **Node.js** `>=22.22`
+- **ES modules** — the package is ESM-only (`"type": "module"`). Import it from
+  ESM code and use explicit `.js` specifiers in relative imports.
+- **Peer dependencies**
+  - `@qawolf/flows` — used by `EntryPointPageObject` to launch the browser.
+  - `playwright` — for the `Page` / `Locator` types your page objects use.
+
+## Install
+
+```sh
+npm install @qawolf/pom
+```
+
+## Defining a page object
+
+Extend `BasePageObject`. It stores the Playwright `Page` (available as
+`this.page`) and provides two ways to construct another page object: the static
+`createFromPage(page)` factory on a class you imported, and `this.create(name)`
+for a registered name. Keep selectors in a private `locators` getter.
+
+```ts
+import { BasePageObject } from "@qawolf/pom";
+
+import { DashboardPage } from "./dashboard-page.js";
+
+export class LoginPage extends BasePageObject {
+  private get locators() {
+    return {
+      email: this.page.getByLabel("Email"),
+      password: this.page.getByLabel("Password"),
+      submit: this.page.getByRole("button", { name: "Sign in" }),
+    } as const;
+  }
+
+  async signIn(email: string, password: string) {
+    await this.locators.email.fill(email);
+    await this.locators.password.fill(password);
+    await this.locators.submit.click();
+    return DashboardPage.createFromPage(this.page);
+  }
+}
+```
+
+`dashboard-page.js` may import `login-page.js` back, so two page objects that
+navigate to each other can both expose the trip. What Node cannot load is a page
+object that `extend`s a class in a file importing it back — see
+[Troubleshooting](/libraries/pom/troubleshooting).
+
+## The page registry
+
+The registry does two things: it constructs a page object from a name, and it is
+the list `installPageHooks()` walks to collect popup handlers and route
+interceptors. A direct import replaces the first job but not the second, so a
+page object that declares `popupHandlers()` or `routeInterceptors()` needs a
+registry entry however its instances get built.
+
+Constructing by name also keeps a page object's module out of the calling file's
+import graph until the first construction, which is worth having when a
+workspace holds many page objects.
+
+### Registering
+
+Create one module that registers every page object, and import it for its side
+effects **before** you construct any page object. Register lazily with a module
+loader so a page object's module is only loaded when it is first used:
+
+```ts
+// register-pages.ts
+import { registerPage } from "@qawolf/pom";
+
+registerPage("LoginPage", () => import("./pages/login-page.js"));
+registerPage("DashboardPage", () => import("./pages/dashboard-page.js"));
+```
+
+The loader must resolve to a module that exports the class under the **same
+name** it was registered with. Eager registration also works when you already
+hold the class value:
+
+```ts
+import { LoginPage } from "./pages/login-page.js";
+
+registerPage("LoginPage", LoginPage);
+```
+
+### Constructing
+
+`createPage` builds a registered page object for a given `Page`. Import the
+registration module first so the registry is populated:
+
+```ts
+import "./register-pages.js";
+import { createPage } from "@qawolf/pom";
+
+const loginPage = await createPage("LoginPage", page);
+await loginPage.signIn("user@example.com", "hunter2");
+```
+
+Inside a page object, use the protected `this.create(...)` instead — it shares
+the current `Page` and goes through the same registry. Import the sibling's type
+for the return annotation:
+
+```ts
+import { BasePageObject } from "@qawolf/pom";
+import type { SettingsPage } from "./settings-page.js";
+
+export class DashboardPage extends BasePageObject {
+  async openSettings(): Promise<SettingsPage> {
+    await this.page.getByRole("link", { name: "Settings" }).click();
+    return this.create("SettingsPage");
+  }
+}
+```
+
+`create` / `createPage` are async because lazily registered modules load on
+first use. Importing `SettingsPage` and calling
+`SettingsPage.createFromPage(this.page)` is the synchronous alternative, and
+needs no registry entry and no separate return-type annotation.
+
+### Typing `this.create(...)`
+
+By default `this.create("LoginPage")` returns `any`. Augment the
+`RegisteredPages` interface — declared for exactly this purpose — to make the
+name-to-type mapping known, and `create` becomes fully typed. This is
+incremental: names you don't list keep the `any` fallback.
+
+```ts
+import type { LoginPage } from "./pages/login-page.js";
+import type { DashboardPage } from "./pages/dashboard-page.js";
+
+declare module "@qawolf/pom" {
+  interface RegisteredPages {
+    LoginPage: LoginPage;
+    DashboardPage: DashboardPage;
+  }
+}
+```
+
+Now `await this.create("LoginPage")` is typed as `LoginPage`.
+
+## Entry points and page hooks
+
+An **entry point** is the page object that owns browser startup. Extend
+`EntryPointPageObject` and expose a `create()` that launches the browser
+(`initializeBrowser`), builds the instance (`createFromPage`), and installs
+page hooks:
+
+```ts
+import { EntryPointPageObject } from "@qawolf/pom";
+
+export class AppEntryPoint extends EntryPointPageObject {
+  static async create(): Promise<AppEntryPoint> {
+    const page = await AppEntryPoint.initializeBrowser();
+    const entryPoint = AppEntryPoint.createFromPage(page);
+    await entryPoint.installPageHooks();
+    return entryPoint;
+  }
+
+  async openLogin() {
+    await this.goto("/login");
+    return this.create("LoginPage");
+  }
+}
+```
+
+A page object can own popups to auto-dismiss or routes to intercept by
+overriding `popupHandlers()` / `routeInterceptors()` on its class:
+
+```ts
+import { BasePageObject, type PopupHandlerDef } from "@qawolf/pom";
+
+export class CookieBannerPage extends BasePageObject {
+  override popupHandlers(): PopupHandlerDef[] {
+    return [
+      {
+        name: "cookie-banner",
+        trigger: this.page.getByRole("button", { name: "Accept cookies" }),
+        dismiss: async () => {
+          await this.page
+            .getByRole("button", { name: "Accept cookies" })
+            .click();
+        },
+      },
+    ];
+  }
+}
+```
+
+`installPageHooks()` collects these across **every** registered page object, not
+just the entry point — so register a page object that owns popups or routes even
+when your code only ever constructs it from a direct import. Its hooks never
+install otherwise. The registry detects overrides with an own-property check on
+the registered class's prototype, so declare `popupHandlers()` /
+`routeInterceptors()` directly on the class you register — it does not pick up
+an override inherited from a base class.
+
+When registering lazily, pass `{ providesPageHooks: false }` for page objects
+you know declare no hooks, so hook installation can skip loading their modules:
+
+```ts
+registerPage("StaticPage", () => import("./pages/static-page.js"), {
+  providesPageHooks: false,
+});
+```
+
+## Exports
+
+| Export | Description |
+| --- | --- |
+| `BasePageObject` | Base class for page objects. Holds `this.page`; provides `this.create(name)` and the static `createFromPage(page)` factory. |
+| `SubPageObject` | Base class for a page object scoped to a parent region/component. |
+| `EntryPointPageObject` | Base class for the entry point; owns browser launch (`initializeBrowser`), `goto`, and `installPageHooks`. |
+| `registerPage(name, classOrLoader, options?)` | Register a page object by name, eagerly (class) or lazily (`() => import(...)`). |
+| `createPage(name, page)` | Construct a registered page object for a `Page`. Returns a promise. |
+| `PopupHandler` | Manages add/remove of popup handlers on a page. |
+| `NetworkMonitor` | Observes network activity and surfaces `NetworkError`s. |
+| `RegisteredPages` | Empty interface you augment to type `create(name)`. |
+| `PopupHandlerDef`, `RouteInterceptorDef`, `PageSetupOptions` | Hook and setup types. |
+| `callPlatformAPI` | Client for the QA Wolf platform API. |
+| `assertPricesClose`, `moneyToNumber`, `numberToMoney` | Money/price test-data helpers. |
+| `reportCleanupFailed`, `reportCleanupFailure` | Report failures from test cleanup steps. |
