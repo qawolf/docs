@@ -12,7 +12,7 @@ Skills are additive. The agent keeps doing what it normally does and applies you
   These are skills stored in your QA Wolf workspace, for QA Wolf's own agent. To connect an external coding agent like Claude Code or Codex, see the [QA Wolf MCP guide](/qawolf-mcp).
 </Note>
 
-# Write a skill
+## Write a skill
 
 A skill is a Markdown file with frontmatter that names and describes it, and a body holding the knowledge.
 
@@ -40,7 +40,7 @@ deprecated and fails for most test users.
 
 Give every skill a `name` and a `description`. Both are required, and each name should be unique — two skills sharing a name leaves only one of them active.
 
-## Describe when your skill applies
+### Describe when your skill applies
 
 A skill only improves a test if the agent has it in hand at the moment it's writing that test. The `description` is what decides that — the agent matches the task against it to choose which skills to read. Four moves make one specific enough to land:
 
@@ -69,7 +69,7 @@ Descriptions get sharper as they get more specific:
 
 A long description is fine. It's an index entry the agent scans, not prose anyone reads start to finish.
 
-## What belongs in the body
+### What belongs in the body
 
 Anything you would otherwise repeat across many prompts:
 
@@ -80,7 +80,7 @@ Anything you would otherwise repeat across many prompts:
 
 Keep each skill to one topic. The agent opens the whole file once it selects a skill, so a file covering several unrelated subjects spends context on the parts that don't apply. Knowledge that matters to a single flow belongs in that flow's prompt or header instead.
 
-# Where skills live
+## Where skills live
 
 A `SKILL.md` file works anywhere in your workspace. Giving each one its own folder keeps them easy to find:
 
@@ -100,20 +100,20 @@ your-workspace/
 
 Skills take effect as soon as you save — there's no restart or reindex step. They're ordinary files in your workspace, so they're versioned alongside your flows and travel with your branches.
 
-# FAQ
+## FAQ
 
-## The agent isn't following a convention I documented.
+### The agent isn't following a convention I documented.
 
 The agent names the skill it read as it works, so check whether yours came up. If it didn't, revise the description: name the work it should shape and the specific terms your team uses. Selection happens on the description alone, so that's where it's decided.
 
-## My skill isn't showing up at all.
+### My skill isn't showing up at all.
 
 Check the frontmatter. A file missing `name` or `description`, or with malformed frontmatter, is skipped silently rather than reported. Also confirm no other skill shares the same `name`.
 
-## How long should a skill be?
+### How long should a skill be?
 
 Long enough to state the convention completely, short enough to stay accurate as your app changes. Splitting by topic beats one large file, since the agent loads everything in a skill it selects.
 
-## Do skills apply to flows my team writes by hand?
+### Do skills apply to flows my team writes by hand?
 
 No. Skills shape what the agent does. Code you write yourself is unaffected — though a skill is a reasonable place to document conventions your team follows too.

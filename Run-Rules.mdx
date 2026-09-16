@@ -9,15 +9,15 @@ By default all flows run in parallel on the QA Wolf run infrastructure, but ther
 - Multi-user flows where state is shared between flows. 
 - When the environment can't handle the load of an entire test suite. 
 
-# How Run Rules work
+## How Run Rules work
 
-## Configuring groups
+### Configuring groups
 
 Run Rules execute one group of flows before another group of flows. Groups can be constructed by flow name or by tag. 
 
 Only **active** flows execute in a run. Drafts are ignored even if they're part of a rule.
 
-## Ordering
+### Ordering
 
 To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
 
