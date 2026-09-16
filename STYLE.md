@@ -125,6 +125,23 @@ A survey of the live nav pages found three competing shapes for the same content
 
 This is the prose counterpart to rule 9: field tables get terse parallel fragments, and so do terminology lists.
 
+## 14. Heading levels — the title is the only H1
+
+The frontmatter `title` renders as the page's H1, so a `#` heading in the body creates a second one. Levels run from H2 down, and stop at H4:
+
+- **`##`** — a major section of the page.
+- **`###`** — a subsection of one of those.
+- **`####`** — the deepest heading. Use it sparingly.
+- **Bold body copy** — anything below that. If content feels like it needs an H5, it wants a bold lead-in on a paragraph, not another heading level.
+
+Never open a page at `###`, and never skip a level (an `##` followed by a `####`). A site-wide pass found 18 stray H1s across eight pages, plus two pages whose first heading was an `###` with no `##` above it.
+
+Two consequences worth knowing when choosing a level:
+
+- **Only `##`, `###`, and `####` get an anchor and a "On this page" entry** — `#####` and deeper are rendered but silently excluded, as are `<Step>` and `<Accordion>` titles (verified against rendered output). So a heading level is also a decision about whether readers can link to and navigate to that content.
+- **Anchors derive from heading text, not level**, so changing a heading's level never breaks an inbound link. Renaming it does.
+
+
 ---
 
 **Not a rule, but worth knowing while editing:** some "inconsistencies" found in the audit are actually correct, because the underlying behavior really does differ per package (testkit throws; ci-sdk returns outcomes; some config objects are named `Options`, others `Config` because that's the actual exported type name). Don't paper over a real difference to make the prose *sound* more consistent — rule 1 exists precisely to keep that distinction legible instead of hiding it.

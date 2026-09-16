@@ -4,7 +4,7 @@ description: "Set up SSO via SAML 2.0 and OpenID Connect"
 sidebarTitle: "SSO"
 ---
 
-# Requirements
+## Requirements
 
 The administrator configuring SSO must be able to:
 
@@ -13,7 +13,7 @@ The administrator configuring SSO must be able to:
 - Configure SAML or OIDC authentication settings.
 - Assign users or groups to applications.
 
-# Set up
+## Set up
 
 ### Verify your email domain
 
@@ -34,16 +34,16 @@ The administrator configuring SSO must be able to:
   </Step>
 </Steps>
 
-# Troubleshooting
+## Troubleshooting
 
-## I do not see the SSO setup page
+### I do not see the SSO setup page
 
 Confirm that:
 
 - You have been granted the **SSO Admin** role by a user with the **Membership Manager** role.
 - You signed out of QA Wolf and signed back in after your role was updated.
 
-## A user cannot sign in
+### A user cannot sign in
 
 Check that:
 
@@ -51,7 +51,7 @@ Check that:
 - The user is signing in with the correct email address.
 - The SSO configuration has been saved.
 
-## Authentication fails
+### Authentication fails
 
 Verify that the following values match between QA Wolf and your identity provider:
 
@@ -61,6 +61,6 @@ Verify that the following values match between QA Wolf and your identity provide
 - Login URL
 - Certificate
 
-## Users are not redirected back to QA Wolf
+### Users are not redirected back to QA Wolf
 
 Ensure the redirect or callback URL configured in your identity provider matches the value shown in the QA Wolf SSO settings page.
