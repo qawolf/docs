@@ -60,6 +60,486 @@
     {
       "source": "/qawolf/Workspace-settings",
       "destination": "/workspace-setup"
+    },
+    {
+      "source": "/qawolf/Asana",
+      "destination": "/Asana"
+    },
+    {
+      "source": "/qawolf/Azure-DevOps-Boards",
+      "destination": "/Azure-DevOps-Boards"
+    },
+    {
+      "source": "/qawolf/Fastlane",
+      "destination": "/Fastlane"
+    },
+    {
+      "source": "/qawolf/Full-Service-FAQs",
+      "destination": "/Full-Service-FAQs"
+    },
+    {
+      "source": "/qawolf/Full-Service-The-First-Three-Months",
+      "destination": "/Full-Service-The-First-Three-Months"
+    },
+    {
+      "source": "/qawolf/GitHub-GitHub-Actions",
+      "destination": "/GitHub-GitHub-Actions"
+    },
+    {
+      "source": "/qawolf/GitLab",
+      "destination": "/GitLab"
+    },
+    {
+      "source": "/qawolf/Glossary",
+      "destination": "/Glossary"
+    },
+    {
+      "source": "/qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
+      "destination": "/Integrate-a-mobile-build-with-GitHub-Actions"
+    },
+    {
+      "source": "/qawolf/Integrate-with-webhooks",
+      "destination": "/Integrate-with-webhooks"
+    },
+    {
+      "source": "/qawolf/Integrating-with-microsoft-teams",
+      "destination": "/Integrating-with-microsoft-teams"
+    },
+    {
+      "source": "/qawolf/Jira",
+      "destination": "/Jira"
+    },
+    {
+      "source": "/qawolf/Linear",
+      "destination": "/Linear"
+    },
+    {
+      "source": "/qawolf/Manage-maintenance-reports",
+      "destination": "/Manage-maintenance-reports"
+    },
+    {
+      "source": "/qawolf/Mobile-build-with-the-QA-Wolf-SDK",
+      "destination": "/Mobile-build-with-the-QA-Wolf-SDK"
+    },
+    {
+      "source": "/qawolf/OpenVPN-integration",
+      "destination": "/OpenVPN-integration"
+    },
+    {
+      "source": "/qawolf/PR-testing-for-GitHub-Integrations",
+      "destination": "/PR-testing-for-GitHub-Integrations"
+    },
+    {
+      "source": "/qawolf/PR-testing-for-GitLab-Integrations",
+      "destination": "/PR-testing-for-GitLab-Integrations"
+    },
+    {
+      "source": "/qawolf/Pass-data-between-flows",
+      "destination": "/Pass-data-between-flows"
+    },
+    {
+      "source": "/qawolf/QA-Wolf-s-static-IPv4",
+      "destination": "/QA-Wolf-s-static-IPv4"
+    },
+    {
+      "source": "/qawolf/Qase-io",
+      "destination": "/Qase-io"
+    },
+    {
+      "source": "/qawolf/Recommended-reading-for-QA-engineers-and-developers",
+      "destination": "/Recommended-reading-for-QA-engineers-and-developers"
+    },
+    {
+      "source": "/qawolf/Request-new-coverage",
+      "destination": "/Request-new-coverage"
+    },
+    {
+      "source": "/qawolf/Run-Rules",
+      "destination": "/Run-Rules"
+    },
+    {
+      "source": "/qawolf/Site-to-Site-IPSec-Tunnel",
+      "destination": "/Site-to-Site-IPSec-Tunnel"
+    },
+    {
+      "source": "/qawolf/Tailscale-Client-based-VPN",
+      "destination": "/Tailscale-Client-based-VPN"
+    },
+    {
+      "source": "/qawolf/Test-environments",
+      "destination": "/Test-environments"
+    },
+    {
+      "source": "/qawolf/TestRail",
+      "destination": "/TestRail"
+    },
+    {
+      "source": "/qawolf/Testmo",
+      "destination": "/Testmo"
+    },
+    {
+      "source": "/qawolf/Twingate-Client-based-VPN",
+      "destination": "/Twingate-Client-based-VPN"
+    },
+    {
+      "source": "/qawolf/Uploading-manually",
+      "destination": "/Uploading-manually"
+    },
+    {
+      "source": "/qawolf/Use-emails-in-tests",
+      "destination": "/Use-emails-in-tests"
+    },
+    {
+      "source": "/qawolf/Welcome-to-QA-Wolf",
+      "destination": "/"
+    },
+    {
+      "source": "/qawolf/Xray",
+      "destination": "/Xray"
+    },
+    {
+      "source": "/qawolf/Zephyr",
+      "destination": "/Zephyr"
+    },
+    {
+      "source": "/qawolf/a11y-native",
+      "destination": "/a11y-native"
+    },
+    {
+      "source": "/qawolf/a11y-web",
+      "destination": "/a11y-web"
+    },
+    {
+      "source": "/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
+      "destination": "/anatomy-of-a-qa-wolf-test-mobile-edition"
+    },
+    {
+      "source": "/qawolf/android-audio-injection",
+      "destination": "/android-audio-injection"
+    },
+    {
+      "source": "/qawolf/android-barcode",
+      "destination": "/android-barcode"
+    },
+    {
+      "source": "/qawolf/android-location-mocking",
+      "destination": "/android-location-mocking"
+    },
+    {
+      "source": "/qawolf/android-performance",
+      "destination": "/android-performance"
+    },
+    {
+      "source": "/qawolf/android-sensor-mocking",
+      "destination": "/android-sensor-mocking"
+    },
+    {
+      "source": "/qawolf/audio-capture",
+      "destination": "/audio-capture"
+    },
+    {
+      "source": "/qawolf/barcode-qrcode-scanning",
+      "destination": "/barcode-qrcode-scanning"
+    },
+    {
+      "source": "/qawolf/browser-extensions",
+      "destination": "/browser-extensions"
+    },
+    {
+      "source": "/qawolf/camera-and-audio-injection",
+      "destination": "/camera-and-audio-injection"
+    },
+    {
+      "source": "/qawolf/circle-ci",
+      "destination": "/circle-ci"
+    },
+    {
+      "source": "/qawolf/coding-agents/get-started",
+      "destination": "/qawolf-mcp"
+    },
+    {
+      "source": "/qawolf/connect-with-vpn-web",
+      "destination": "/connect-with-vpn-web"
+    },
+    {
+      "source": "/qawolf/deploy-success",
+      "destination": "/deploy-success"
+    },
+    {
+      "source": "/qawolf/electron",
+      "destination": "/electron"
+    },
+    {
+      "source": "/qawolf/environment_terminated",
+      "destination": "/environment_terminated"
+    },
+    {
+      "source": "/qawolf/i-beacon-injection",
+      "destination": "/i-beacon-injection"
+    },
+    {
+      "source": "/qawolf/i-os-audio-analysis",
+      "destination": "/i-os-audio-analysis"
+    },
+    {
+      "source": "/qawolf/ios-audio-injection",
+      "destination": "/ios-audio-injection"
+    },
+    {
+      "source": "/qawolf/libraries/ci-sdk/api-reference",
+      "destination": "/libraries/ci-sdk/api-reference"
+    },
+    {
+      "source": "/qawolf/libraries/ci-sdk/troubleshooting",
+      "destination": "/libraries/ci-sdk/troubleshooting"
+    },
+    {
+      "source": "/qawolf/libraries/cli/api-reference/commands",
+      "destination": "/libraries/cli/api-reference/commands"
+    },
+    {
+      "source": "/qawolf/libraries/cli/api-reference/environment-variables",
+      "destination": "/libraries/cli/api-reference/environment-variables"
+    },
+    {
+      "source": "/qawolf/libraries/cli/api-reference/index",
+      "destination": "/libraries/cli/api-reference/index"
+    },
+    {
+      "source": "/qawolf/libraries/cli/troubleshooting",
+      "destination": "/libraries/cli/troubleshooting"
+    },
+    {
+      "source": "/qawolf/libraries/emails/api-reference/client",
+      "destination": "/libraries/emails/api-reference/client"
+    },
+    {
+      "source": "/qawolf/libraries/emails/api-reference/index",
+      "destination": "/libraries/emails/api-reference/index"
+    },
+    {
+      "source": "/qawolf/libraries/emails/api-reference/mail",
+      "destination": "/libraries/emails/api-reference/mail"
+    },
+    {
+      "source": "/qawolf/libraries/emails/troubleshooting",
+      "destination": "/libraries/emails/troubleshooting"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/android-device-reference",
+      "destination": "/libraries/flows/api-reference/android-device-reference"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/android",
+      "destination": "/libraries/flows/api-reference/android"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/cli",
+      "destination": "/libraries/flows/api-reference/cli"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/index",
+      "destination": "/libraries/flows/api-reference/index"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/ios-device-pools",
+      "destination": "/libraries/flows/api-reference/ios-device-pools"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/ios-device-reference",
+      "destination": "/libraries/flows/api-reference/ios-device-reference"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/ios",
+      "destination": "/libraries/flows/api-reference/ios"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/top-level",
+      "destination": "/libraries/flows/api-reference/top-level"
+    },
+    {
+      "source": "/qawolf/libraries/flows/api-reference/web",
+      "destination": "/libraries/flows/api-reference/web"
+    },
+    {
+      "source": "/qawolf/libraries/flows/troubleshooting",
+      "destination": "/libraries/flows/troubleshooting"
+    },
+    {
+      "source": "/qawolf/libraries/pom/api-reference/index",
+      "destination": "/libraries/pom/api-reference/index"
+    },
+    {
+      "source": "/qawolf/libraries/pom/troubleshooting",
+      "destination": "/libraries/pom/troubleshooting"
+    },
+    {
+      "source": "/qawolf/libraries/testkit/api-reference/client",
+      "destination": "/libraries/testkit/api-reference/client"
+    },
+    {
+      "source": "/qawolf/libraries/testkit/api-reference/core",
+      "destination": "/libraries/testkit/api-reference/core"
+    },
+    {
+      "source": "/qawolf/libraries/testkit/api-reference/index",
+      "destination": "/libraries/testkit/api-reference/index"
+    },
+    {
+      "source": "/qawolf/libraries/testkit/api-reference/types",
+      "destination": "/libraries/testkit/api-reference/types"
+    },
+    {
+      "source": "/qawolf/libraries/testkit/api-reference/web",
+      "destination": "/libraries/testkit/api-reference/web"
+    },
+    {
+      "source": "/qawolf/libraries/testkit/troubleshooting",
+      "destination": "/libraries/testkit/troubleshooting"
+    },
+    {
+      "source": "/qawolf/lint-rules",
+      "destination": "/lint-rules"
+    },
+    {
+      "source": "/qawolf/local-execution/authenticate",
+      "destination": "/local-execution/authenticate"
+    },
+    {
+      "source": "/qawolf/local-execution/diagnose-problems",
+      "destination": "/local-execution/diagnose-problems"
+    },
+    {
+      "source": "/qawolf/local-execution/install-dependencies",
+      "destination": "/local-execution/install-dependencies"
+    },
+    {
+      "source": "/qawolf/local-execution/pull-flows",
+      "destination": "/local-execution/pull-flows"
+    },
+    {
+      "source": "/qawolf/local-execution/run-flows-locally",
+      "destination": "/local-execution/run-flows-locally"
+    },
+    {
+      "source": "/qawolf/local-execution/set-up-a-project",
+      "destination": "/local-execution/set-up-a-project"
+    },
+    {
+      "source": "/qawolf/mount-a-file-share",
+      "destination": "/mount-a-file-share"
+    },
+    {
+      "source": "/qawolf/network-connectivity",
+      "destination": "/network-connectivity"
+    },
+    {
+      "source": "/qawolf/network-simulation",
+      "destination": "/network-simulation"
+    },
+    {
+      "source": "/qawolf/non-deterministic-ai-testing",
+      "destination": "/non-deterministic-ai-testing"
+    },
+    {
+      "source": "/qawolf/other-ci-node",
+      "destination": "/other-ci-node"
+    },
+    {
+      "source": "/qawolf/other-ci-webhook",
+      "destination": "/other-ci-webhook"
+    },
+    {
+      "source": "/qawolf/other-web-hook-for-mobile",
+      "destination": "/other-web-hook-for-mobile"
+    },
+    {
+      "source": "/qawolf/photo-library-management",
+      "destination": "/photo-library-management"
+    },
+    {
+      "source": "/qawolf/product-mapping",
+      "destination": "/product-mapping"
+    },
+    {
+      "source": "/qawolf/qrcode",
+      "destination": "/qrcode"
+    },
+    {
+      "source": "/qawolf/rest-overview",
+      "destination": "/rest-overview"
+    },
+    {
+      "source": "/qawolf/reusable-ai-knowledge",
+      "destination": "/custom-skills"
+    },
+    {
+      "source": "/qawolf/reuse-state-between-runs",
+      "destination": "/reuse-state-between-runs"
+    },
+    {
+      "source": "/qawolf/run-inputs-executables-signed-urls",
+      "destination": "/run-inputs-executables-signed-urls"
+    },
+    {
+      "source": "/qawolf/smart-smoke-suites",
+      "destination": "/smart-smoke-suites"
+    },
+    {
+      "source": "/qawolf/solutions",
+      "destination": "/solutions"
+    },
+    {
+      "source": "/qawolf/sso",
+      "destination": "/sso"
+    },
+    {
+      "source": "/qawolf/tags",
+      "destination": "/tags"
+    },
+    {
+      "source": "/qawolf/test-automation",
+      "destination": "/test-automation"
+    },
+    {
+      "source": "/qawolf/test-mfa",
+      "destination": "/test-mfa"
+    },
+    {
+      "source": "/qawolf/v0-ci-greenlight",
+      "destination": "/v0-ci-greenlight"
+    },
+    {
+      "source": "/qawolf/video-injection",
+      "destination": "/video-injection"
+    },
+    {
+      "source": "/qawolf/visual-diffing-native-app",
+      "destination": "/visual-diffing-native-app"
+    },
+    {
+      "source": "/qawolf/visual-diffing",
+      "destination": "/visual-diffing"
+    },
+    {
+      "source": "/qawolf/web-audio-analysis",
+      "destination": "/web-audio-analysis"
+    },
+    {
+      "source": "/qawolf/web-audio-injection",
+      "destination": "/web-audio-injection"
+    },
+    {
+      "source": "/qawolf/web-performance",
+      "destination": "/web-performance"
+    },
+    {
+      "source": "/qawolf/web-speaker-capture",
+      "destination": "/web-speaker-capture"
+    },
+    {
+      "source": "/reusable-ai-knowledge",
+      "destination": "/custom-skills"
     }
   ],
   "integrations": {
