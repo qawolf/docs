@@ -1,139 +1,396 @@
 ---
 title: "QA Wolf MCP"
-description: "Install the QA Wolf MCP, connect your workspace, and create your first flow from Claude Code, Codex, or another coding agent."
+description: "Install the QA Wolf MCP to build and run your test suite from your favorite coding agent, including Claude Code and Codex."
 hidden: true
 ---
 
-The QA Wolf plugin lets your coding agent explore an application, propose test coverage, and ask QA Wolf to implement it. You can also run existing flows and investigate failures without leaving your coding agent.
-
-This is a different way to work with QA Wolf than [QA Wolf's in-app AI](/test-automation), which runs inside the QA Wolf platform itself, or [the QA Wolf CLI](/local-execution/authenticate), a separate command-line tool for authenticating and running flows — no AI involved.
-
-<Note>
-  The plugin is in preview and is not listed in the providers' official directories. Check the [public plugin repository](https://github.com/qawolf/agent-plugins) for release status and supported clients.
-</Note>
-
-## Before you begin
-
-You need:
-
-- Access to a QA Wolf workspace.
-- A supported coding agent, such as Claude Code or Codex.
-- A staging application and dedicated test access that QA Wolf's cloud browser can use.
-
-If the application is on a private network, configure [network access](/QA-Wolf-s-static-IPv4) first. An application reachable from your laptop is not necessarily reachable from QA Wolf.
-
-For definitions of workspaces, environments, flows, and runs, see the [glossary](/Glossary).
-
-## Install and sign in
+## Get started
 
 <Tabs>
-  <Tab title="Claude Code">
-    Run these commands inside Claude Code:
-
-    ```text
-    /plugin marketplace add qawolf/agent-plugins
-    /plugin install qawolf@qawolf
-    ```
-
-    Start a new session. If sign-in is required, open `/mcp`, select the QA Wolf plugin server, and choose **Authenticate**. Complete the browser sign-in and return to Claude Code.
-
-    For terminal-based sign-in, use the plugin-scoped server name:
-
-    ```bash
-    claude mcp login plugin:qawolf:qawolf
-    ```
-  </Tab>
   <Tab title="Codex">
-    Run these commands in your terminal:
+    <Steps>
+      <Step title="Install the [Codex plugin](https://chatgpt.com/plugins/plugin_asdk_app_6aa2be82194c81919e05f3e7c5eedeef?open_in_app)">
+        After clicking "Install" you'll be redirected to create an account or sign in.
+      </Step>
+      <Step title="Sign up for QA Wolf or log in">
+        Use your work email when creating a new account.
+      </Step>
+      <Step title="Allow access">
+        If you're not automatically redirected, return to Codex and click Install again.
+      </Step>
+      <Step title="Onboard your app">
+        Paste this prompt into the chat session for the project you're working on:
 
-    ```bash
-    codex plugin marketplace add qawolf/agent-plugins
-    codex plugin add qawolf@qawolf
-    ```
-
-    Start a new Codex session and complete its browser sign-in if requested. To sign in explicitly:
-
-    ```bash
-    codex mcp login qawolf
-    ```
+        ```text
+        Onboard this app to QA Wolf
+        ```
+      </Step>
+    </Steps>
   </Tab>
   <Tab title="Other coding agents">
-    Follow the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md). It covers native plugins, portable skills, and clients that need separate MCP configuration.
-
-    For a skill-only installation, install `qawolf`, `qawolf-flow-outline`, and `qawolf-onboarding` together. Loading their instructions does not necessarily connect the QA Wolf tools. Complete the MCP setup for your client too.
+    Follow the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md).
   </Tab>
 </Tabs>
 
-OAuth is the default. Reuse an existing connection rather than signing in again. For a client without OAuth, follow the API-key fallback in the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md).
+## What can you do with QA Wolf
 
-<Warning>
-  Complete authentication through your client's dedicated controls. Never paste callback URLs, authorization codes, API keys, or passwords into ordinary chat. Do not add a static Authorization header to an OAuth connection.
-</Warning>
+With QA Wolf MCP you can:
 
-## Verify the connection
+- Create and complete end-to-end browser test flows for user journeys.
+- Explore your staging or test app to turn real behavior into test coverage.
+- Run selected flows or tagged test suites and report pass/fail results.
+- Investigate, diagnose, and repair failing or flaky flows.
+- Manage test environments and test-only variables.
+- Use test inboxes to validate email-driven journeys.
+- Create and manage coverage requests, bug reports, tags, and scheduled triggers.
+- Interact with a cloud browser for testing, including screenshots and visual-baseline updates.
 
-Ask your coding agent:
+## How it works
 
-```text
-Call whoami and confirm my QA Wolf account and workspace. Then list the available environments. Do not create anything yet.
-```
+You describe the outcome you want in plain language, such as "create a checkout test" or "investigate this failing login flow."
 
-Browser tools require a connection bound to the intended workspace. If the connection only lists workspace candidates, resolve the binding before exploration. Passing a workspace ID to another tool does not bind the browser connection.
+Then QA Wolf works like this:
 
-Choose the QA Wolf environment where the new flow belongs. This is separate from the staging URL of the application you want to test.
+1. QA Wolf will choose the environment for the request (e.g., Staging or Production).
+2. For a new test, QA Wolf will explore the application in a cloud browser, identify the journey and expected outcomes, and prepare the flow.
+3. You approve the proposed test plan; QA Wolf builds and runs it.
+4. When the run is finished, QA Wolf will report the results, including links to run artifacts like video playbacks, Playwright traces, and logs.
+5. For an existing failure, QA Wolf reviews the run evidence, reproduces the problem, and proposes or carries out the repair.
 
-## Create your first flow
+QA Wolf can also run a set of existing flows on demand or through triggers, tag them into suites (like smoke tests), and manage test email inboxes and test environments.
 
-<Steps>
-  <Step title="Give the agent a target">
-    Open your coding agent in the project you want QA Wolf to test, or identify the project in your message. Then ask:
+## FAQ
 
-    ```text
-    Onboard this app to QA Wolf.
-    ```
+### Does QA Wolf confirm actions before committing?
 
-    Include the staging URL if the agent does not already know it.
+Yes. QA Wolf will ask before actions that could affect production, change configuration, delete data, or commit/push automation changes.
 
-    If you already know the journey, ask for it directly, such as "Create a QA Wolf flow for signing up with an email verification code."
-  </Step>
-  <Step title="Let the coding agent explore">
-    Your coding agent uses QA Wolf's cloud browser to inspect the application and gather test context. It asks about gaps it cannot resolve, such as missing access or unclear requirements. It does not write the test code locally.
+### What is the QA Wolf MCP?
 
-    A new-flow request covers routine staging exploration, including disposable test-account creation and cleanup. Production actions, purchases, changes to existing data, and contact with real users need explicit approval. Your client's tool permission controls still apply.
+It connects an AI assistant to your QA Wolf workspace, so you can create, run, inspect, and maintain end-to-end tests through a conversation instead of navigating the QA Wolf interface for every task.
 
-    Cloud browsers bill while their runners exist. The agent terminates its exploration runner before waiting for outline approval.
-  </Step>
-  <Step title="Review the outline">
-    Before asking you to approve creation, the agent displays the full outline:
+### What can it test?
 
-    - **Arrange:** The target, test account or role, data, and starting state.
-    - **Act:** The user actions to perform.
-    - **Assert:** The visible outcomes that establish success.
-    - **Cleanup and constraints:** What to remove or reset, and which actions are out of scope.
+It is designed for end-to-end user journeys in web applications: sign-up, login, checkout, account settings, search, forms, email verification, and similar workflows. It can also work with test inboxes, screenshots, and visual checks.
 
-    Review any assumptions or unverified steps. Choose which outlines to create and whether the finished flows should be published as drafts or made active. Active flows can run in triggered suites. Approve any required sharing of test access through a secure channel.
+### Do I need to write test code myself?
 
-    If the outline is missing or needs changes, ask to see the revised outline before approving it.
-  </Step>
-  <Step title="Follow implementation">
-    After approval, the coding agent sends the outline to QA Wolf for implementation and validation. It shares the live session link before monitoring the work.
+Not necessarily. You can describe the journey in plain language, for example, "Create a staging test that signs up a new user and verifies the welcome email." QA Wolf can explore the app, propose the test plan, and create the flow.
 
-    The coding agent keeps monitoring and reports new progress, questions, blockers, and the outcome. Unchanged status does not need another update. Answer any blocking questions in the same conversation so work continues in the same session.
-  </Step>
-  <Step title="Verify the finished flow">
-    Use the returned session and flow links to review the result. The coding agent checks three things separately:
+### What information should I provide to create a first test?
 
-    - The finished flow has a validation result, not just a passing starter step.
-    - The flow is published in the selected environment.
-    - Its readiness matches your choice of draft or active.
+The target environment (usually staging), the user journey to test, its expected result, and any needed test account or safe test data. A URL or an existing QA Wolf flow link is also helpful.
 
-    Publishing code does not make a draft flow active. If you approved activation, the agent completes that step and verifies the result. If a result is still missing, it reports the remaining work instead of claiming completion.
+### Should I test production?
 
-    See [Run status](/Glossary#run-status) for the possible outcomes.
-  </Step>
-</Steps>
+Prefer a staging, preview, or dedicated test environment. Production tests can create real orders, accounts, emails, or other side effects, so they should be deliberately scoped and use safe test data.
 
-## Troubleshooting
+### How are multiple environments handled?
+
+QA Wolf keeps environments separate. If you have staging, preview, and production, you choose which one to use for a given task; it should not assume that a default environment is safe.
+
+### Can it run my existing tests?
+
+Yes. You can run individual flows, tagged suites such as smoke tests, or other selected groups. It can then retrieve the run status and per-flow results.
+
+### Can it help when a test fails?
+
+Yes. You can ask it to investigate a failing or flaky flow. It can inspect the run, reproduce the failure, identify likely causes, and coordinate a repair.
+
+### Can it test email-based workflows?
+
+Yes. QA Wolf supports workspace test inboxes, so flows can validate sign-up confirmations, password resets, receipts, invitations, and similar messages.
+
+### Can it schedule tests?
+
+Yes. QA Wolf can manage triggers for recurring or event-driven runs. Setting up, changing, pausing, or deleting a trigger changes your testing configuration and should be intentional.
+
+### Can it change my application code or repository?
+
+Not by default. QA Wolf manages test flows and related QA configuration. Any action that would commit, push, or automate code changes should be explicitly reviewed and approved first.
+
+### How are secrets handled?
+
+Environment-variable values and credentials are treated as sensitive. Use test-only credentials where possible, and do not paste access tokens or production secrets into chat.
+
+### Will it make irreversible changes without asking?
+
+It should ask before destructive or consequential actions, such as deleting an environment variable, changing automation configuration, or performing work that affects a repository. Normal staging exploration and disposable test-data cleanup are part of creating a new flow.
+
+### Does browser testing cost anything?
+
+QA Wolf's cloud browser runners can consume billed usage, depending on your plan. Scope exploratory sessions and test runs appropriately, and ensure runners are shut down after use.
+
+### What is a good first test?
+
+Choose a high-value, stable, repeatable path that represents your product's core promise, usually login, sign-up, checkout, or creating the primary object in your app. Avoid an edge case for the first flow.
+
+### What should I ask first?
+
+"Help me choose and create our first staging test. Our most important user journey is [journey], and the expected outcome is [outcome]."
+
+## Troubleshooting Guide
+
+Use this guide when QA Wolf is not connecting, cannot find the right workspace or environment, a test run fails, or a browser session does not behave as expected.
+
+### Start with a quick triage
+
+Before changing anything, identify which layer is failing:
+
+1. **Connection** — QA Wolf is unavailable or not signed in.
+2. **Access** — the expected workspace, environment, or flow is missing.
+3. **Test execution** — a flow fails, times out, or behaves inconsistently.
+4. **Application behavior** — the test exposed an actual product defect.
+5. **Configuration** — credentials, variables, emails, triggers, or test data are incorrect.
+
+Capture the QA Wolf flow or run link, the environment name, the time of the failure, and the exact error or unexpected behavior. Do not copy secrets into issue reports or chat.
+
+### Connection and sign-in
+
+#### QA Wolf tools are unavailable
+
+**Likely cause:** The QA Wolf connection was not installed, was disconnected, or is not enabled in the current client.
+
+**What to do:**
+
+- Confirm that the QA Wolf plugin is connected.
+- Complete the client's sign-in prompt if one appears.
+- If your client requires manual MCP configuration, add the QA Wolf MCP server at `https://app.qawolf.com/api/mcp`.
+- Retry after authentication is complete.
+
+Never share API keys, OAuth codes, callback URLs, or credentials in chat.
+
+#### Sign-in succeeds, but access is denied
+
+**Likely cause:** Your authenticated QA Wolf account does not have the required workspace permission.
+
+**What to do:**
+
+- Confirm the email/account used to sign in.
+- Ask a QA Wolf workspace administrator to add or update your access.
+- Verify that you are using the intended organization if you belong to more than one.
+
+### Workspace and environment selection
+
+#### I cannot find the expected workspace
+
+**Likely cause:** You are signed into a different QA Wolf account, lack access, or the workspace name/link is incorrect.
+
+**What to do:**
+
+- Verify the workspace name and organization.
+- If you shared a QA Wolf link, confirm that its workspace portion matches the intended workspace.
+- Ask an administrator to confirm your membership and permissions.
+
+Do not proceed by substituting a different workspace; test assets and environments are not interchangeable.
+
+#### The correct environment is unclear
+
+**Likely cause:** Multiple environments exist, such as preview, staging, and production.
+
+**What to do:**
+
+- Choose the environment explicitly by name.
+- Prefer staging or a dedicated test environment for test creation and debugging.
+- Use production only when the test is deliberately designed to avoid real-world side effects.
+
+#### A flow appears to be missing
+
+**Likely cause:** The flow exists in another environment, is on a different branch, is not reconciled, or you lack access.
+
+**What to do:**
+
+- Confirm the environment first.
+- Check whether the flow is a draft or active.
+- Confirm the flow's branch and reconciliation status if your setup uses version-controlled test flows.
+- Verify access before recreating a flow.
+
+### Test runs and failures
+
+#### A flow fails
+
+**Likely cause:** The application changed, test data is invalid, an external dependency failed, a selector no longer matches, or the test exposed a genuine defect.
+
+**What to do:**
+
+1. Review the failed run and the affected flow.
+2. Check the failure evidence: screenshots, browser state, logs, and the exact step that failed.
+3. Reproduce in the same environment.
+4. Determine whether the behavior is:
+   - an application bug,
+   - a changed user interface or workflow,
+   - a bad credential or missing variable,
+   - unavailable test data, or
+   - a temporary dependency issue.
+5. Ask QA Wolf to investigate or repair the specific failing flow, providing the flow or run link.
+
+Avoid repeatedly rerunning a failed test without reviewing the first failure; it can obscure the original evidence.
+
+#### A test times out
+
+**Likely cause:** The page is slow, a request never completes, an expected element never appears, or a third-party dependency is delayed.
+
+**What to do:**
+
+- Identify the last successful step.
+- Check whether the target page or service was available at the time.
+- Confirm that the expected element still exists and is reachable.
+- Review whether the application introduced a longer loading state or changed navigation behavior.
+- Investigate the flow before increasing waits; longer waits can hide real defects.
+
+#### A test is flaky
+
+**Likely cause:** Timing-sensitive steps, unstable test data, asynchronous UI updates, third-party dependencies, or shared account state.
+
+**What to do:**
+
+- Compare multiple failed and passed attempts.
+- Look for a consistent failing step or dependency.
+- Use unique or disposable test data where possible.
+- Ensure the flow waits for meaningful application state, not arbitrary delays.
+- Avoid relying on shared user accounts, race-prone data, or visual state that changes by design.
+- Create a maintenance report if the pattern persists.
+
+#### A rerun passes after an earlier failure
+
+**Likely cause:** A transient dependency issue, temporary application instability, or a flaky test.
+
+**What to do:**
+
+- Do not automatically close the issue.
+- Compare the failed and successful attempts.
+- Record whether the failure is reproducible.
+- If the same pattern recurs, treat it as a flake and investigate the underlying cause.
+
+### Credentials, variables, and test data
+
+#### Login fails
+
+**Likely cause:** Incorrect, expired, locked, or unauthorized test credentials.
+
+**What to do:**
+
+- Confirm that the credentials are intended for the selected environment.
+- Confirm the user account is active and has the permissions required by the test.
+- Use a dedicated test account rather than a personal or production account.
+- Check that the relevant environment variables exist without exposing their values.
+
+#### A required configuration variable is missing
+
+**Likely cause:** The variable was never created, was removed, or is set in another environment.
+
+**What to do:**
+
+- Check the variable name in the target environment.
+- Verify spelling, casing, and environment selection.
+- Add or update the variable only with the correct approved value.
+- Never paste secret values into a test report, chat, or source-control commit.
+
+#### The test data already exists or cannot be created
+
+**Likely cause:** A previous run left data behind, the environment has validation constraints, or the test is using non-unique values.
+
+**What to do:**
+
+- Use unique, disposable test data for each run where practical.
+- Clean up only the records created by the test.
+- Ensure the environment is safe for the data-creation behavior.
+- Avoid testing destructive actions against production.
+
+### Email-based tests
+
+#### An expected email never arrives
+
+**Likely cause:** The application did not send it, the selected test inbox is wrong, delivery is delayed, or the triggering action failed.
+
+**What to do:**
+
+- Verify the action that should have sent the email.
+- Confirm the flow uses the correct QA Wolf inbox address.
+- Check the test inbox for delivery and timing.
+- Confirm the selected environment is configured to send email.
+- Inspect the application's email provider or event-processing logs if available.
+
+#### The email arrives but the test fails
+
+**Likely cause:** The subject, sender, content, link, or delivery timing changed.
+
+**What to do:**
+
+- Review the received message and the exact assertion that failed.
+- Confirm whether the product change was intentional.
+- Update the flow only when the new behavior is the accepted product behavior.
+- Keep assertions focused on durable behavior rather than incidental formatting.
+
+### Browser runner issues
+
+#### The browser runner is not responding
+
+**Likely cause:** The runner did not launch, is no longer active, or is blocked on a page or dialog.
+
+**What to do:**
+
+- Confirm that the runner is active.
+- Take a screenshot and inspect the current page state.
+- Check for modal dialogs, authentication screens, cookie banners, or navigation errors.
+- Stop the active run if it is stuck, then retry after addressing the cause.
+
+#### The browser is on an unexpected page
+
+**Likely cause:** A redirect, expired session, authentication issue, feature flag, locale difference, or application error.
+
+**What to do:**
+
+- Inspect the current URL and visible page content.
+- Confirm authentication state and test account access.
+- Check for environment-specific redirects or feature flags.
+- Update the test only after confirming the expected application journey.
+
+#### Keep runners from accruing unnecessary usage
+
+Cloud runners may consume billed usage while active.
+
+**What to do:**
+
+- Launch runners only for active exploration or diagnosis.
+- Stop stuck runs promptly.
+- Terminate the runner when the work is complete.
+- Avoid keeping a runner alive while waiting for unrelated decisions or changes.
+
+### Triggers and scheduled runs
+
+#### A scheduled test does not run
+
+**Likely cause:** The trigger is paused, misconfigured, lacks access, targets the wrong environment, or the selected flows are unavailable.
+
+**What to do:**
+
+- Confirm the trigger is active.
+- Check its environment, selected flows or tags, and schedule/event configuration.
+- Verify that the target flows are active and accessible.
+- Review recent run history for configuration or execution errors.
+
+#### A trigger runs the wrong suite
+
+**Likely cause:** Tags or flow selection changed after the trigger was created.
+
+**What to do:**
+
+- Review the trigger's current selection.
+- Confirm the intended tags and flows.
+- Update the trigger deliberately and document the expected suite.
+
+### When to escalate
+
+Escalate to your QA Wolf administrator or application team when:
+
+- You cannot access the correct workspace or environment.
+- A required test credential or configuration variable is unavailable.
+- The failure indicates a likely production-impacting defect.
+- A third-party service, authentication provider, or email provider is unavailable.
+- Repeated investigations show a systemic flaky-test or environment-stability issue.
+
+When escalating, include the environment name, flow or run link, timestamp, observed behavior, expected behavior, and any screenshots or logs. Exclude secrets and personal data.
 
 <AccordionGroup>
   <Accordion title="The agent cannot find QA Wolf tools">
@@ -149,5 +406,3 @@ Choose the QA Wolf environment where the new flow belongs. This is separate from
     Open the session link and check for a question or blocker. Answer in the existing conversation rather than starting another creation request. A completed implementation, published code, and active readiness are separate states; ask the agent which step remains.
   </Accordion>
 </AccordionGroup>
-
-For other plugin problems, [report an issue](https://github.com/qawolf/agent-plugins/issues) without credentials or customer test data. Skills installed in your coding agent are separate from [reusable skills stored in your QA Wolf workspace](/reusable-ai-knowledge).
