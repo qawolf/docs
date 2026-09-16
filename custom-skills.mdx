@@ -1,27 +1,25 @@
 ---
 title: "Custom skills"
-description: "Write down your team's conventions once, in SKILL.md files, and QA Wolf's agent follows them in every session."
+description: "Write your team's conventions into SKILL.md files so QA Wolf's agent applies them in every session."
 sidebarTitle: "Custom skills"
 ---
 
-Prompts teach the agent about your app one session at a time. A custom skill makes that knowledge permanent. You write a `SKILL.md` file into your workspace describing a convention — how sign-in works, what your domain terms mean, how your team writes flows — and the agent reads it whenever the work calls for it.
+Prompts teach the agent about your app one session at a time. A custom skill makes that knowledge permanent. You write a `SKILL.md` file into your workspace describing a convention — how sign-in works, what your domain terms mean, how your team writes flows — and the agent reads it whenever it takes on work that convention covers.
 
-Your skills are additive. QA Wolf's agent keeps doing what it normally does and follows your conventions on top, preferring yours wherever they differ from its defaults.
+Skills are additive. The agent keeps doing what it normally does and applies your conventions on top, preferring yours wherever they differ from its defaults. It selects them by matching the task against each skill's `description`, so a well-written description is what puts your skill to work.
 
 <Note>
   These are skills stored in your QA Wolf workspace, for QA Wolf's own agent. To connect an external coding agent like Claude Code or Codex, see the [QA Wolf MCP guide](/qawolf-mcp).
 </Note>
 
-# How it works
+# Write a skill
 
-The agent doesn't read every skill on every request. It sees an index of what's available — each skill's name, description, and path — and opens the ones relevant to the task in front of it.
-
-That makes the **description the most important line in the file**. It is all the agent has when deciding whether your skill applies, so write it to describe the situation it covers, not the file's contents.
+A skill is a Markdown file with frontmatter that names and describes it, and a body holding the knowledge.
 
 ```markdown
 ---
 name: acme-conventions
-description: Domain terms and test conventions for the Acme app
+description: How to sign in to Acme and what our domain terms mean — SSO-only login, seeded test users, and the difference between quotes, members, and subscribers. Read this before creating or editing any Acme flow, or when a sign-in step fails with "invalid credentials."
 ---
 
 # Logging in
@@ -40,11 +38,49 @@ deprecated and fails for most test users.
 - Prefer unique generated values over hardcoded ones for new records.
 ```
 
-Both frontmatter fields are required. A file missing either one is skipped without an error, so a skill that never seems to apply is worth checking for a malformed header first.
+Give every skill a `name` and a `description`. Both are required, and each name should be unique — two skills sharing a name leaves only one of them active.
 
-Skills take effect as soon as you save — there's no restart or reindex step. They're ordinary files in your workspace, so they're versioned alongside your flows and travel with your branches.
+## Write a description that gets your skill selected
 
-# Set up a skill
+The description is how the agent decides your skill is relevant, so give it enough to match on. Four moves make a description work:
+
+<Steps>
+  <Step title="Say what the skill covers">
+    Open with the subject in plain terms — "How to sign in to Acme," "Knowledge base for our billing API," "Checklist for reviewing a checkout flow."
+  </Step>
+  <Step title="Name the specifics">
+    List the actual topics inside, using the words your team uses. "SSO-only login, seeded test users, and the difference between quotes, members, and subscribers" gives the agent far more to match against than "domain terms."
+  </Step>
+  <Step title="Say when to read it">
+    Describe the situations that should pull the skill in: "Read this before creating or editing any Acme flow." Include the symptoms, too — an error message like `invalid credentials` or `mail is not defined` is often how the agent first meets the problem your skill solves.
+  </Step>
+  <Step title="Say when not to, if something's nearby">
+    When another skill covers adjacent ground, draw the line: "Not for billing flows, which have their own skill." This keeps each skill from being pulled into work it doesn't cover.
+  </Step>
+</Steps>
+
+Descriptions get sharper as they get more specific:
+
+| | |
+|---|---|
+| Too vague | `Notes about our app` |
+| Better | `Domain terms and test conventions for the Acme app` |
+| Best | `How to sign in to Acme and what our domain terms mean — SSO-only login, seeded test users, and the difference between quotes, members, and subscribers. Read this before creating or editing any Acme flow, or when a sign-in step fails with "invalid credentials." Not for billing flows, which have their own skill.` |
+
+A long description is fine. It's an index entry the agent scans, not prose anyone reads start to finish.
+
+## What belongs in the body
+
+Anything you would otherwise repeat across many prompts:
+
+- Domain vocabulary and what each term maps to in the UI
+- Environment quirks, such as which login method works and which test users are seeded
+- Team conventions, such as [structuring flow headers around AAA](/test-automation#structure-the-flow-header-around-arrange-act-assert)
+- Links to deeper documentation the agent should fetch when it becomes relevant
+
+Keep each skill to one topic. The agent opens the whole file once it selects a skill, so a file covering several unrelated subjects spends context on the parts that don't apply. Knowledge that matters to a single flow belongs in that flow's prompt or header instead.
+
+# Where skills live
 
 A `SKILL.md` file works anywhere in your workspace. Giving each one its own folder keeps them easy to find:
 
@@ -62,29 +98,22 @@ your-workspace/
 └── tsconfig.json
 ```
 
-Good skill content is anything you would otherwise repeat across many prompts:
-
-- Domain vocabulary and what each term maps to in the UI
-- Environment quirks, such as which login method works and which test users are seeded
-- Team conventions, such as [structuring flow headers around AAA](/test-automation#structure-the-flow-header-around-arrange-act-assert)
-- Links to deeper documentation the agent should fetch when it becomes relevant
-
-Keep each skill focused on one topic. Knowledge that matters to a single flow belongs in that flow's prompt or header, not in a skill.
+Skills take effect as soon as you save — there's no restart or reindex step. They're ordinary files in your workspace, so they're versioned alongside your flows and travel with your branches.
 
 # FAQ
 
 ## How do I know if my skill is being used?
 
-The agent names the skill it read as it works. If yours never comes up, the description is the first thing to check — it decides whether the skill is selected at all. A description that names the situation ("Domain terms and test conventions for the Acme app") gets matched more reliably than one that describes the document ("Notes about our app").
+The agent names the skill it read as it works. If yours never comes up, revise the description first: add the situations that should trigger it and the specific terms your team uses. Selection happens on the description alone, so that's where it's decided.
 
-## What happens if two skills have the same name?
+## My skill isn't showing up at all.
 
-Only one survives. Skills are tracked by the `name` in their frontmatter, so a duplicate name silently replaces the earlier one. Give each skill a distinct name.
+Check the frontmatter. A file missing `name` or `description`, or with malformed frontmatter, is skipped silently rather than reported. Also confirm no other skill shares the same `name`.
 
 ## How long should a skill be?
 
-Long enough to state the convention and short enough to stay true. Because the agent opens the whole file once it selects it, a skill covering several unrelated topics wastes context on the parts that don't apply — that's the reason to keep each one to a single topic.
+Long enough to state the convention completely, short enough to stay accurate as your app changes. Splitting by topic beats one large file, since the agent loads everything in a skill it selects.
 
 ## Do skills apply to flows my team writes by hand?
 
-No. Skills shape what the agent does. Code you write yourself is unaffected, though conventions documented in a skill are a reasonable reference for your team too.
+No. Skills shape what the agent does. Code you write yourself is unaffected — though a skill is a reasonable place to document conventions your team follows too.
