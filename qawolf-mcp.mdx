@@ -26,6 +26,44 @@ description: "Install the QA Wolf MCP to build and run your test suite from your
       </Step>
     </Steps>
   </Tab>
+  <Tab title="Claude Code">
+    <Steps>
+      <Step title="Install the Claude Code plugin">
+        Run these commands
+
+        ```text
+        /plugin marketplace add qawolf/agent-plugins
+        ```
+
+        ```text
+        /plugin install qawolf@qawolf
+        ```
+      </Step>
+      <Step title="Open the QA Wolf MCP server">
+        Run this command 
+
+        ```text
+        /mcp
+        ```
+
+        Then select **plugin:qawolf:qawolf**
+      </Step>
+      <Step title="Authenticate and approve">
+        When you select **Authenticate** a browser window will open with instructions to log in or sign up. 
+
+        - Existing accounts: Sign in and approve the connection.
+        - New accounts: Return to your terminal window. Press esc to go back, then choose Authenticate. A browser window will open with a prompt to approve the connection.
+      </Step>
+      <Step title="Onboard your app">
+        Paste this prompt into the chat session for the project you're working on:
+
+        ```text
+        Onboard this app to QA Wolf
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+
   <Tab title="Other coding agents">
     Follow the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md).
   </Tab>
