@@ -6,7 +6,7 @@ sidebarTitle: "Custom skills"
 
 Prompts teach the agent about your app one session at a time. A custom skill makes that knowledge permanent. You write a `SKILL.md` file into your workspace describing a convention — how sign-in works, what your domain terms mean, how your team writes flows — and the agent reads it whenever it takes on work that convention covers.
 
-Skills are additive. The agent keeps doing what it normally does and applies your conventions on top, preferring yours wherever they differ from its defaults. It selects them by matching the task against each skill's `description`, so a well-written description is what puts your skill to work.
+Skills are additive. The agent keeps doing what it normally does and applies your conventions on top, preferring yours wherever they differ from its defaults. The payoff is tests that match how your app actually behaves — the right sign-in path, the right terms for the right elements, your team's conventions — without anyone re-explaining it each time.
 
 <Note>
   These are skills stored in your QA Wolf workspace, for QA Wolf's own agent. To connect an external coding agent like Claude Code or Codex, see the [QA Wolf MCP guide](/qawolf-mcp).
@@ -40,9 +40,9 @@ deprecated and fails for most test users.
 
 Give every skill a `name` and a `description`. Both are required, and each name should be unique — two skills sharing a name leaves only one of them active.
 
-## Write a description that gets your skill selected
+## Describe when your skill applies
 
-The description is how the agent decides your skill is relevant, so give it enough to match on. Four moves make a description work:
+A skill only improves a test if the agent has it in hand at the moment it's writing that test. The `description` is what decides that — the agent matches the task against it to choose which skills to read. Four moves make one specific enough to land:
 
 <Steps>
   <Step title="Say what the skill covers">
@@ -52,7 +52,7 @@ The description is how the agent decides your skill is relevant, so give it enou
     List the actual topics inside, using the words your team uses. "SSO-only login, seeded test users, and the difference between quotes, members, and subscribers" gives the agent far more to match against than "domain terms."
   </Step>
   <Step title="Say when to read it">
-    Describe the situations that should pull the skill in: "Read this before creating or editing any Acme flow." Include the symptoms, too — an error message like `invalid credentials` or `mail is not defined` is often how the agent first meets the problem your skill solves.
+    Name the work it should shape: "Read this before creating or editing any Acme flow." Include the symptoms, too — an error message like `invalid credentials` or `mail is not defined` is often how the agent first meets the problem your skill solves.
   </Step>
   <Step title="Say when not to, if something's nearby">
     When another skill covers adjacent ground, draw the line: "Not for billing flows, which have their own skill." This keeps each skill from being pulled into work it doesn't cover.
@@ -61,11 +61,11 @@ The description is how the agent decides your skill is relevant, so give it enou
 
 Descriptions get sharper as they get more specific:
 
-| | |
+| Description | What the agent can do with it |
 |---|---|
-| Too vague | `Notes about our app` |
-| Better | `Domain terms and test conventions for the Acme app` |
-| Best | `How to sign in to Acme and what our domain terms mean — SSO-only login, seeded test users, and the difference between quotes, members, and subscribers. Read this before creating or editing any Acme flow, or when a sign-in step fails with "invalid credentials." Not for billing flows, which have their own skill.` |
+| `Notes about our app` | Nothing — no subject, no trigger, no terms to match against |
+| `Domain terms and test conventions for the Acme app` | Knows the topic, but not when it matters or which terms are inside |
+| `How to sign in to Acme and what our domain terms mean — SSO-only login, seeded test users, and the difference between quotes, members, and subscribers. Read this before creating or editing any Acme flow, or when a sign-in step fails with "invalid credentials." Not for billing flows, which have their own skill.` | Reads it before writing any Acme flow, uses SSO instead of the dead password form, and targets the right objects |
 
 A long description is fine. It's an index entry the agent scans, not prose anyone reads start to finish.
 
@@ -102,9 +102,9 @@ Skills take effect as soon as you save — there's no restart or reindex step. T
 
 # FAQ
 
-## How do I know if my skill is being used?
+## The agent isn't following a convention I documented.
 
-The agent names the skill it read as it works. If yours never comes up, revise the description first: add the situations that should trigger it and the specific terms your team uses. Selection happens on the description alone, so that's where it's decided.
+The agent names the skill it read as it works, so check whether yours came up. If it didn't, revise the description: name the work it should shape and the specific terms your team uses. Selection happens on the description alone, so that's where it's decided.
 
 ## My skill isn't showing up at all.
 
