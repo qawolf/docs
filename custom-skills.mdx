@@ -1,0 +1,90 @@
+---
+title: "Custom skills"
+description: "Write down your team's conventions once, in SKILL.md files, and QA Wolf's agent follows them in every session."
+sidebarTitle: "Custom skills"
+---
+
+Prompts teach the agent about your app one session at a time. A custom skill makes that knowledge permanent. You write a `SKILL.md` file into your workspace describing a convention — how sign-in works, what your domain terms mean, how your team writes flows — and the agent reads it whenever the work calls for it.
+
+Your skills are additive. QA Wolf's agent keeps doing what it normally does and follows your conventions on top, preferring yours wherever they differ from its defaults.
+
+<Note>
+  These are skills stored in your QA Wolf workspace, for QA Wolf's own agent. To connect an external coding agent like Claude Code or Codex, see the [QA Wolf MCP guide](/qawolf-mcp).
+</Note>
+
+# How it works
+
+The agent doesn't read every skill on every request. It sees an index of what's available — each skill's name, description, and path — and opens the ones relevant to the task in front of it.
+
+That makes the **description the most important line in the file**. It is all the agent has when deciding whether your skill applies, so write it to describe the situation it covers, not the file's contents.
+
+```markdown
+---
+name: acme-conventions
+description: Domain terms and test conventions for the Acme app
+---
+
+# Logging in
+
+Always sign in through the SSO tile. The email and password form is
+deprecated and fails for most test users.
+
+# Domain terms
+
+- A "quote" is a rate quote, not a chat message.
+- "Members" and "subscribers" are the same object in the UI.
+
+# Conventions
+
+- Structure every flow header around Arrange, Act, Assert.
+- Prefer unique generated values over hardcoded ones for new records.
+```
+
+Both frontmatter fields are required. A file missing either one is skipped without an error, so a skill that never seems to apply is worth checking for a malformed header first.
+
+Skills take effect as soon as you save — there's no restart or reindex step. They're ordinary files in your workspace, so they're versioned alongside your flows and travel with your branches.
+
+# Set up a skill
+
+A `SKILL.md` file works anywhere in your workspace. Giving each one its own folder keeps them easy to find:
+
+```text
+your-workspace/
+├── skills/
+│   ├── acme-conventions/
+│   │   └── SKILL.md
+│   └── payments-testing/
+│       └── SKILL.md
+├── src/
+│   ├── flows/
+│   └── pages/
+├── package.json
+└── tsconfig.json
+```
+
+Good skill content is anything you would otherwise repeat across many prompts:
+
+- Domain vocabulary and what each term maps to in the UI
+- Environment quirks, such as which login method works and which test users are seeded
+- Team conventions, such as [structuring flow headers around AAA](/test-automation#structure-the-flow-header-around-arrange-act-assert)
+- Links to deeper documentation the agent should fetch when it becomes relevant
+
+Keep each skill focused on one topic. Knowledge that matters to a single flow belongs in that flow's prompt or header, not in a skill.
+
+# FAQ
+
+## How do I know if my skill is being used?
+
+The agent names the skill it read as it works. If yours never comes up, the description is the first thing to check — it decides whether the skill is selected at all. A description that names the situation ("Domain terms and test conventions for the Acme app") gets matched more reliably than one that describes the document ("Notes about our app").
+
+## What happens if two skills have the same name?
+
+Only one survives. Skills are tracked by the `name` in their frontmatter, so a duplicate name silently replaces the earlier one. Give each skill a distinct name.
+
+## How long should a skill be?
+
+Long enough to state the convention and short enough to stay true. Because the agent opens the whole file once it selects it, a skill covering several unrelated topics wastes context on the parts that don't apply — that's the reason to keep each one to a single topic.
+
+## Do skills apply to flows my team writes by hand?
+
+No. Skills shape what the agent does. Code you write yourself is unaffected, though conventions documented in a skill are a reasonable reference for your team too.
