@@ -123,7 +123,7 @@
     },
     {
       "source": "/qawolf/OpenVPN-integration",
-      "destination": "/OpenVPN-integration"
+      "destination": "/vpn"
     },
     {
       "source": "/qawolf/PR-testing-for-GitHub-Integrations",
@@ -139,7 +139,7 @@
     },
     {
       "source": "/qawolf/QA-Wolf-s-static-IPv4",
-      "destination": "/QA-Wolf-s-static-IPv4"
+      "destination": "/vpn"
     },
     {
       "source": "/qawolf/Qase-io",
@@ -159,11 +159,11 @@
     },
     {
       "source": "/qawolf/Site-to-Site-IPSec-Tunnel",
-      "destination": "/Site-to-Site-IPSec-Tunnel"
+      "destination": "/vpn"
     },
     {
       "source": "/qawolf/Tailscale-Client-based-VPN",
-      "destination": "/Tailscale-Client-based-VPN"
+      "destination": "/vpn"
     },
     {
       "source": "/qawolf/Test-environments",
@@ -179,7 +179,7 @@
     },
     {
       "source": "/qawolf/Twingate-Client-based-VPN",
-      "destination": "/Twingate-Client-based-VPN"
+      "destination": "/vpn"
     },
     {
       "source": "/qawolf/Uploading-manually",
@@ -568,6 +568,26 @@
     {
       "source": "/other-ci-webhook",
       "destination": "/webhook-integration"
+    },
+    {
+      "source": "/QA-Wolf-s-static-IPv4",
+      "destination": "/vpn"
+    },
+    {
+      "source": "/OpenVPN-integration",
+      "destination": "/vpn"
+    },
+    {
+      "source": "/Site-to-Site-IPSec-Tunnel",
+      "destination": "/vpn"
+    },
+    {
+      "source": "/Twingate-Client-based-VPN",
+      "destination": "/vpn"
+    },
+    {
+      "source": "/Tailscale-Client-based-VPN",
+      "destination": "/vpn"
     }
   ],
   "integrations": {
@@ -894,16 +914,7 @@
               "mobile-build-testing"
             ]
           },
-          {
-            "group": "VPN",
-            "pages": [
-              "QA-Wolf-s-static-IPv4",
-              "OpenVPN-integration",
-              "Site-to-Site-IPSec-Tunnel",
-              "Twingate-Client-based-VPN",
-              "Tailscale-Client-based-VPN"
-            ]
-          },
+          "vpn",
           {
             "group": "Test Management Systems",
             "pages": [
