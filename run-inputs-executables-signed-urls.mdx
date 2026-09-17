@@ -1,13 +1,16 @@
 ---
 title: "v0/run-inputs-executables-signed-urls"
 description: "Generate a signed URL and upload an executable file to QA Wolf."
+sidebarTitle: "Upload a build"
 ---
 
 `GET https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls`
 
-<Warning>
-  QA Wolf only accepts the following file types: `.apk`, `.aab`, `.deb`, `.ipa`, `.zip`, `.csv`, `.pdf`
-</Warning>
+<Tip>
+  If your build server supports `node`, use [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.
+</Tip>
+
+This endpoint accepts app builds only: `.aab`, `.apk`, `.appimage`, `.deb`, `.ipa`, `.rpm`, and `.zip`. Any other extension returns a `400`. To upload a file your flows read, such as a `.csv` or `.pdf`, use [team storage](/use-files-in-flows#upload-a-file) instead.
 
 <Steps>
   <Step title="Generate a signed URL">
@@ -37,6 +40,7 @@ description: "Generate a signed URL and upload an executable file to QA Wolf."
 | Parameter | Description |
 | --- | --- |
 | `file` | Destination file path. At minimum the filename and extension. May include directories. |
+| `workspaceId` | Workspace to upload to. Required with an organization or user API key. Ignored by a workspace API key, which already implies its workspace. See [which workspace a request acts on](/rest-overview#which-workspace-a-request-acts-on). |
 
 ## Response
 
@@ -59,9 +63,9 @@ description: "Generate a signed URL and upload an executable file to QA Wolf."
 | Code | Description |
 | --- | --- |
 | `200` | Success. |
-| `401` | Missing or invalid API key. |
-| `403` | Forbidden. Usually indicates a disabled workspace. |
-| `500` | Internal server error. Contact support if the issue persists. |
+| `400` | `file` is missing, or its extension isn't one this endpoint accepts. Also returned when an organization or user API key omits `workspaceId`. |
+
+Plus the [common response codes](/rest-overview#common-response-codes).
 
 ## Related
 

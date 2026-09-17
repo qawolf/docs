@@ -49,3 +49,15 @@ https://app.qawolf.com
 | [`/api/webhooks/environment_terminated`](/environment_terminated) | `POST` | Notify QA Wolf that an ephemeral environment has been terminated. |
 | [`/api/v0/ci-greenlight/{root-run-id}`](/v0-ci-greenlight) | `GET` | Poll for the outcome of a run to gate a pipeline. |
 | [`/api/v0/run-inputs-executables-signed-urls`](/run-inputs-executables-signed-urls) | `GET` \+ `PUT` | Generate a signed URL and upload an executable file. |
+| [`/api/v0/team-storage-signed-url`](/use-files-in-flows#upload-a-file) | `GET` \+ `PUT` | Generate a signed URL and upload a file your flows read. |
+
+## Common response codes
+
+Every endpoint returns these for the same reasons. Each endpoint page lists only the codes specific to it.
+
+| Code | Description |
+| --- | --- |
+| `401` | Missing or invalid API key. |
+| `403` | Forbidden. Usually indicates a disabled workspace. |
+| `405` | Method not allowed. Use the method listed for the endpoint. |
+| `500` | Internal server error. Contact support if the issue persists. |

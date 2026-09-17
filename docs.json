@@ -867,10 +867,10 @@
             "group": "REST",
             "pages": [
               "rest-overview",
+              "run-inputs-executables-signed-urls",
               "deploy-success",
-              "environment_terminated",
               "v0-ci-greenlight",
-              "run-inputs-executables-signed-urls"
+              "environment_terminated"
             ]
           }
         ]
