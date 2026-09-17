@@ -4,7 +4,7 @@ description: "Automatically trigger test runs when you deploy code from your rep
 sidebarTitle: "GitLab"
 ---
 
-If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. If your GitLab instance does not allow outbound HTTPS connections — an air-gapped GitLab Enterprise installation, for example — use the [QA Wolf CI SDK](/other-ci-node) instead.
+If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. If your GitLab instance does not allow outbound HTTPS connections, use the [QA Wolf CI SDK](/other-ci-node) instead.
 
 ## Requirements
 
@@ -16,13 +16,13 @@ If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server i
 
 <Steps>
   <Step title="Connect QA Wolf to GitLab">
-    Enable the GitLab integration in Workspace settings. You'll be asked for a **Group Access Token** with the **Maintainer** role and **API** scope — Developer tokens can't create pipeline checks on protected branches.
+    Enable the GitLab integration in Workspace settings. You'll be asked for a **Group Access Token** with the **Maintainer** role and **API** scope.
 
     Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
   </Step>
 
   <Step title="Add the QAWOLF_API_KEY variable">
-    Add `QAWOLF_API_KEY` as a CI/CD variable in your GitLab project under **Settings → CI/CD → Variables**. Add any other variables your pipeline uses, such as a deployment URL.
+    Add `QAWOLF_API_KEY` as a CI/CD variable in your GitLab project under **Settings → CI/CD → Variables**. Add any other variables your pipeline uses.
   </Step>
 
   <Step title="Add the deploy notification to your pipeline">
