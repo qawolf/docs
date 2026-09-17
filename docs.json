@@ -630,8 +630,8 @@
       {
         "tab": "Start",
         "pages": [
-          "index",
           "quick-start",
+          "index",
           "Glossary"
         ]
       },

@@ -115,6 +115,10 @@ export const ConnectAgent = () => {
     .qaw-ca-btn--primary { width:100%; height:2.75rem; border:0;
       background:#3b3cef; color:#fff; }
     .qaw-ca-note { margin:.75rem 0 0; font-size:.75rem; color:var(--qaw-muted); }
+    .qaw-ca-link { color:var(--qaw-brand); text-decoration:none; font-weight:500; }
+    .qaw-ca-link:hover { text-decoration:underline; }
+    .qaw-ca-foot { margin:1rem 0 0; font-size:.875rem; line-height:1.5;
+      color:var(--qaw-muted); text-align:center; }
   `;
 
   const copyIcon = (
@@ -200,6 +204,16 @@ export const ConnectAgent = () => {
                 Couldn't copy. Select the text above and copy it manually.
               </p>
             )}
+            <p className="qaw-ca-note">
+              <a
+                className="qaw-ca-link"
+                href="https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Client-specific setup guide
+              </a>
+            </p>
           </div>
         </section>
 
@@ -246,6 +260,17 @@ export const ConnectAgent = () => {
           </div>
         </section>
       </div>
+
+      <p className="qaw-ca-foot">
+        Not using a coding agent?{" "}
+        <a
+          className="qaw-ca-link"
+          href="https://app.qawolf.com/sign-up?utm_source=help+docs+quick+start+guide"
+        >
+          Create a QA Wolf account
+        </a>{" "}
+        and drive the same agent from your browser.
+      </p>
     </div>
   );
 };
