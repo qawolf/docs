@@ -1,14 +1,65 @@
 ---
 title: "Workspace setup"
-description: "Set up QA Wolf as part of your development environment."
+description: "Point QA Wolf at your deployments, give it a route to your app, connect it to your pipeline, and set the conventions its AI writes to."
 sidebarTitle: "Workspace setup"
-noindex: true
 ---
 
-## Configure VPN connections
+A workspace holds your environments, your flows, and the settings that connect QA Wolf to the rest of your stack. You configure each of these once, under **Workspace settings**.
 
-If your application is behind a firewall or private network, a VPN or network allowlist must be configured so QA Wolf can reach it. 
+None of it blocks your first flow — [Quick start](/quick-start) gets you a passing test without any of it. Come back as you need each piece.
 
-## Set up deployment testing
+## Environments and variables
 
-Connect QA Wolf to your CI/CD pipeline to trigger test runs. 
+An environment points QA Wolf at one deployment of your app: staging, production, a preview build. Each environment carries its own URL, its own variables, and its own flows and runs. Create them under **Workspace settings → Environments**.
+
+Store every credential and configuration value your flows need as a variable on the environment that uses it. Flows reference a variable by name, so the value never appears in flow code or in a commit.
+
+<Note>
+  Give a coding agent the variable name, never the value. An agent that needs a
+  login should send you the environment's variables link and name the variable
+  it wants saved there.
+</Note>
+
+## Reach your app
+
+If your application sits behind a firewall, a private network, or an IP allowlist, QA Wolf needs a route to it before a flow can run. [Connect QA Wolf to your network](/vpn) covers the options: QA Wolf's static IP range, OpenVPN, a site-to-site IPSec tunnel, and client-based VPNs.
+
+A flow can also open a tunnel itself when only part of your app is private — see [Connect to a VPN (web)](/connect-with-vpn-web) and [Connect to a VPN (iOS)](/network-connectivity).
+
+## Run flows automatically
+
+Connect your pipeline so a deploy triggers a run:
+
+- **[GitHub/GitHub Actions](/GitHub-GitHub-Actions)** — the recommended setup for repositories on GitHub.com or GitHub Enterprise Cloud.
+- **[GitLab](/GitLab)** — for GitLab-hosted repositories.
+- **[CircleCI](/circle-ci)** — for CircleCI pipelines.
+- **[Node.js SDK](/ci-sdk-integration)** — for any CI system that runs Node.js.
+- **[Webhook](/webhook-integration)** — for any CI system at all.
+
+Once runs are triggered, [tags](/tags) group flows into suites, [Run Rules](/Run-Rules) sequence them, and [Smart Smoke Suites](/smart-smoke-suites) narrow a run to the flows your PR affects.
+
+## Set your code conventions
+
+QA Wolf's AI writes your flows and page objects, so lint is how you shape that code. QA Wolf lints every JavaScript and TypeScript file as you edit it, and again while an AI job writes code.
+
+A base set of rules always runs. Add an `.eslintrc.json` at the root of your repository to turn on QA Wolf's page object model rules — no raw `page.click()` in a flow, locators confined to the `locators` getter, Arrange/Act/Assert comments on every step:
+
+```json .eslintrc.json
+{
+  "extends": ["@qawolf/eslint-plugin-pom"]
+}
+```
+
+Nothing creates this file for you, so those rules stay off until you add it. [Lint rules](/lint-rules) lists every rule, how to change one's severity, and what QA Wolf reads from the file.
+
+## Manage access
+
+- **[SSO](/sso)** — authenticate your team through SAML 2.0 or OpenID Connect.
+- **API keys** — generate one under **Workspace settings → Integrations → API Access**. The [CLI](/libraries/cli/api-reference/index), the [REST API](/rest-overview), and every CI integration authenticate with it.
+
+## Connect your other tools
+
+QA Wolf files the bugs it finds into the tracker you already use, and syncs results to your test management system.
+
+- **Issue trackers** — [Jira](/Jira), [Linear](/Linear), [Asana](/Asana), [Azure DevOps Boards](/Azure-DevOps-Boards), or [any other tracker via webhooks](/Integrate-with-webhooks).
+- **Test management** — [Testmo](/Testmo), [TestRail](/TestRail), [Xray](/Xray), [Zephyr](/Zephyr), [Qase.io](/Qase-io).

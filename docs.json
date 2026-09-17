@@ -624,6 +624,7 @@
         "pages": [
           "index",
           "quick-start",
+          "workspace-setup",
           "Glossary"
         ]
       },
