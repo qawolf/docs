@@ -132,6 +132,8 @@ title: "Quick start"
   </Step>
 
   <Step title="Run them">
+    **On your machine:**
+
     ```bash
     qawolf flows list
     qawolf flows run --env <env>
@@ -139,19 +141,17 @@ title: "Quick start"
 
     The CLI exits `0` when every flow passes and `1` when one or more fail. See [exit codes](/libraries/cli/api-reference/index#exit-codes) for the rest.
 
+    **On QA Wolf infrastructure:**
+
+    ```bash
+    qawolf run create --environment-id <env> --flow-ids <flow_id>
+    ```
+
+    Select flows by id, by `--tag`, or both.
+
     Read more: [Run flows locally](/local-execution/run-flows-locally).
   </Step>
 </Steps>
-
-### Run on QA Wolf infrastructure
-
-To run flows on the platform rather than your machine:
-
-```bash
-qawolf run create --environment-id <env> --flow-ids <flow_id>
-```
-
-Select flows by id, by `--tag`, or both.
 
 ### If a step fails
 
