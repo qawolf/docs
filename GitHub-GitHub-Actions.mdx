@@ -1,72 +1,37 @@
 ---
-title: "How to integrate GitHub/GitHub Actions"
-description: "Connect QA Wolf to GitHub Actions to automatically trigger test runs when you deploy code from your repository."
+title: "Integrate GitHub/GitHub Actions"
+description: "Automatically trigger test runs when you deploy code from your repository."
 sidebarTitle: "GitHub/GitHub Actions"
 ---
 
-If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this is the recommended setup. The integration connects directly to your QA Wolf environments using GitHub Actions to notify QA Wolf of new deployments.
+If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this is the recommended setup. If your team self-hosts GitHub Enterprise Server without internet access, or has disabled GitHub Actions by policy, use the [QA Wolf CI SDK](/other-ci-node) instead.
 
-<Tip>
-  If your team self-hosts GitHub Enterprise Server without internet access, or has disabled GitHub Actions by policy, use the [QA Wolf CI SDK](/other-ci-node) instead.
-</Tip>
+## Requirements
 
-<Check>
-  Make sure you have:
+- Access to a QA Wolf workspace
+- Admin access to your GitHub repo
 
-  - Access to your QA Wolf workspace.
-  - Admin access to your GitHub repository.
-</Check>
-
-## Connect QA Wolf to GitHub
+## How to connect QA Wolf to GitHub
 
 <Steps>
-  <Step title="Enable the GitHub integration">
-    Enable the GitHub integration from **Workspace Settings → Integrations** in QA Wolf.
+  <Step title="Connect QA Wolf to GitHub">
+    Enable the GitHub integration in Workspace settings and install the GitHub App on the repo you want connected. 
   </Step>
-  <Step title="Install the QA Wolf GitHub App">
-    Install the QA Wolf GitHub App on the repositories you want connected.
+  <Step title="Add the GitHub Actions workflow">
+    [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy) notifies QA Wolf whenever a new deployment is ready for testing. This must be done for every repository you want connected to CI/CD.
+
+    Add a workflow file (e.g. `.github/workflows/deploy.yml`) with the following, replacing `deployment-type` and `deployment-url` with your actual values. 
+
+    ```yaml
+    - name: Notify QA Wolf
+      uses: qawolf/notify-qawolf-on-deploy-action@v1
+      with:
+        qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+        deployment-type: "staging"
+        deployment-url: "https://staging.example.com"
+    ```
   </Step>
-</Steps>
-
-<Danger>
-  Your user cannot be a member of multiple GitHub orgs.
-</Danger>
-
-<Steps>
-  <Step title="Generate a QAWOLF_API_KEY">
-    Generate a `QAWOLF_API_KEY` from **Workspace Settings → Integrations → API Access**.
-  </Step>
-  <Step title="Add it as a repository secret">
-    Add it as a `QAWOLF_API_KEY` secret in your repository's **Settings → Secrets and variables → Actions**.
-  </Step>
-</Steps>
-
-## Add the GitHub Actions workflow
-
-QA Wolf's official GitHub Action, [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy), notifies QA Wolf whenever a new deployment is ready for testing.
-
-<Danger>
-  This must be done for every repository you want connected to CI/CD.
-</Danger>
-
-Add a workflow file (e.g. `.github/workflows/deploy.yml`) with the following, replacing `deployment-type` and `deployment-url` with your actual values. To get the value for `deployment-type`, reach out to QA Wolf.
-
-```yaml
-- name: Notify QA Wolf
-  uses: qawolf/notify-qawolf-on-deploy-action@v1
-  with:
-    qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
-    deployment-type: "staging"
-    deployment-url: "https://staging.example.com"
-```
-
-## Verify the integration
-
-<Steps>
-  <Step title="Push a commit">
-    Push a commit to trigger a deployment.
-  </Step>
-  <Step title="Confirm the run appears">
-    Confirm a new run appears in QA Wolf under the expected environment.
+  <Step title="Verify the integration">
+    Push a commit to trigger a deployment. Confirm a new run appears in QA Wolf under the expected environment.
   </Step>
 </Steps>
