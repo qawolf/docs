@@ -1,0 +1,71 @@
+---
+title: "Connect QA Wolf to your network"
+description: "Reach an application behind a firewall or private network, using QA Wolf's static IP range, OpenVPN, a site-to-site IPSec tunnel, or a client-based VPN."
+sidebarTitle: "VPN"
+---
+
+If your application isn't reachable from the public internet, QA Wolf connects to your network to run flows against it. QA Wolf configures the connection — you provide the configuration and open the necessary access.
+
+## QA Wolf's static IPv4
+
+QA Wolf's range is `199.4.212.0/23`. Verify QA Wolf's ownership of this range through the [ARIN WHOIS registry](https://whois.arin.net/rest/net/NET-199-4-212-0-1).
+
+You need this range if you restrict access by source IP:
+
+- Firewall allowlisting for public or internal services
+- Client-based VPNs, such as OpenVPN, that restrict connections by IP
+
+You don't need it for:
+
+- Site-to-site IPSec tunnels
+- Mesh VPNs, such as Tailscale or Twingate
+- Routing inside a VPN tunnel
+
+## Choose a connection method
+
+| Method | Use it when |
+| --- | --- |
+| [OpenVPN](#openvpn) | You run an OpenVPN server and can allow inbound connections to it. |
+| [Site-to-site IPSec tunnel](#site-to-site-ipsec-tunnel) | You have a VPN gateway and want a persistent network-to-network tunnel. |
+| [Client-based VPN](#client-based-vpn) | You use a mesh VPN such as Tailscale or Twingate. |
+
+## OpenVPN
+
+- Provide QA Wolf with your `.ovpn` client configuration file. Refer to your VPN provider's documentation for generating or downloading this file.
+- Configure your firewall to allow inbound VPN connections to your OpenVPN server from QA Wolf's static IP range:
+  - **Port:** UDP 1194 (default; configurable)
+  - **Source IPs:** `199.4.212.0/23`
+
+## Site-to-site IPSec tunnel
+
+- Configure your VPN gateway to support:
+  - **IPsec site-to-site tunnels**
+  - **Pre-shared key (PSK) authentication**
+  - **Static routing** (dynamic routing is not supported)
+  - **IKEv1 or IKEv2**
+- Configure your firewall and VPN gateway to allow IPsec traffic:
+  - **Ports:** UDP 500 and UDP 4500
+- Use the information provided by QA Wolf to complete your VPN configuration:
+  - **QA Wolf VPN gateway public IP address(es):** configure these as the remote IPsec peer
+  - **Pre-shared key (PSK):** set as the tunnel authentication secret
+  - **Assigned subnet:** add static routes to allow traffic to and from QA Wolf
+
+### Compatibility
+
+- **Fully supported:** AWS Site-to-Site VPN, Google Cloud VPN, Azure VPN Gateway
+- **Supported with configuration:** Cisco ASA, Palo Alto, FortiGate
+- **Not supported:** dynamic-routing-only VPNs, such as BGP-only
+
+If your VPN solution isn't listed as fully compatible, contact your QA Wolf engineering lead to confirm interoperability before setup.
+
+## Client-based VPN
+
+Applies to mesh VPNs such as Tailscale and Twingate.
+
+- Provide QA Wolf with either an access token or client configuration, depending on your VPN.
+- Confirm that your VPN mesh supports Linux clients and outbound connections from a dedicated proxy.
+- Ensure your network allows VPN traffic on TCP 443.
+
+## Connecting from inside a flow
+
+The connections above let QA Wolf's infrastructure reach your network. To start a tunnel from within a flow instead — for one test that needs an internal service — see [Connect to a VPN (web)](/connect-with-vpn-web) or [Connect to a VPN (iOS)](/network-connectivity).
