@@ -447,7 +447,7 @@
     },
     {
       "source": "/qawolf/other-ci-webhook",
-      "destination": "/other-ci-webhook"
+      "destination": "/webhook-integration"
     },
     {
       "source": "/qawolf/other-web-hook-for-mobile",
@@ -564,6 +564,10 @@
     {
       "source": "/other-ci-node",
       "destination": "/ci-sdk-integration"
+    },
+    {
+      "source": "/other-ci-webhook",
+      "destination": "/webhook-integration"
     }
   ],
   "integrations": {
@@ -884,7 +888,7 @@
                   "GitLab",
                   "circle-ci",
                   "ci-sdk-integration",
-                  "other-ci-webhook"
+                  "webhook-integration"
                 ]
               },
               "mobile-build-testing"
