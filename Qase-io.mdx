@@ -24,20 +24,20 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Qase test cases must already exist.
 - Custom fields are not supported unless specially configured.
 
+## Requirements
+
+- Active Qase.io account
+- API access enabled, available on paid Qase plans. Tokens are generated at the account level, so this requires a project or account admin
+
 ## How to set up the integration
 
 <Steps>
   <Step title="Set up Qase">
-    - Active Qase.io account
-    - Existing Qase project to receive test runs
-    - API access enabled, available on paid Qase plans. Tokens are generated at the account level, so this requires a project or account admin
-    - Qase test cases already created, since tests are not created automatically
+    Define a Qase project to receive test runs, and create the Qase test cases QA Wolf will map results to. Tests are not created automatically.
   </Step>
 
-  <Step title="Send QA Wolf your credentials">
-    - Qase API token
-    - Qase project code (for example, `WEBAPP`, `API`, or `MOBILE`)
-    - Optionally, tags or environment values to associate with test runs
+  <Step title="Configure QA Wolf">
+    Provide your Qase API token, project code (for example, `WEBAPP`, `API`, or `MOBILE`), and optionally tags or environment values to associate with test runs.
   </Step>
 
   <Step title="Verify the integration">

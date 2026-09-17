@@ -24,23 +24,21 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Zephyr test cases must already exist.
 - Custom fields are not supported unless specially configured.
 
+## Requirements
+
+- Jira Cloud instance
+- Zephyr installed and licensed (Squad or Scale)
+- API access enabled via the Atlassian REST API, which requires an Atlassian account administrator
+
 ## How to set up the integration
 
 <Steps>
   <Step title="Set up Jira and Zephyr">
-    - Jira Cloud instance
-    - Zephyr installed and licensed (Squad or Scale)
-    - Zephyr-enabled Jira project to receive test executions
-    - API access enabled via the Atlassian REST API, which requires an Atlassian account administrator
-    - Zephyr test cases already created, since tests are not created automatically
+    Enable Zephyr on the Jira project that will receive test executions, and create the Zephyr test cases QA Wolf will link results to. Tests are not created automatically.
   </Step>
 
-  <Step title="Send QA Wolf your credentials">
-    - Jira user email
-    - Jira API token
-    - Jira base URL
-    - Zephyr project key (for example, `QA` or `MOBILE`)
-    - Optionally, a default test cycle name or naming convention
+  <Step title="Configure QA Wolf">
+    Provide your Jira user email, API token, and base URL, the Zephyr project key (for example, `QA` or `MOBILE`), and optionally a default test cycle name or naming convention.
   </Step>
 
   <Step title="Verify the integration">
