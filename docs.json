@@ -591,15 +591,11 @@
     },
     {
       "source": "/onboard",
-      "destination": "/"
+      "destination": "/quick-start"
     },
     {
       "source": "/Recommended-reading-for-QA-engineers-and-developers",
       "destination": "/Full-Service-The-First-Three-Months"
-    },
-    {
-      "source": "/quick-start",
-      "destination": "/"
     }
   ],
   "integrations": {
@@ -627,6 +623,7 @@
         "tab": "Start",
         "pages": [
           "index",
+          "quick-start",
           "Glossary"
         ]
       },
@@ -879,6 +876,7 @@
           {
             "group": "Local execution",
             "pages": [
+              "local-execution/get-started",
               "local-execution/authenticate",
               "local-execution/run-flows-locally",
               "local-execution/pull-flows",

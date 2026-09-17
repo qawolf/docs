@@ -1,0 +1,37 @@
+---
+title: "Quick start"
+description: "Connect QA Wolf to your coding agent and create your first end-to-end test."
+---
+
+import { ConnectAgent } from "/snippets/connect-agent.jsx";
+
+Connect QA Wolf to the coding agent you already use, then paste a prompt — the agent explores your app, writes the test, and runs it.
+
+<ConnectAgent />
+
+Using a different agent? Point it at QA Wolf's MCP server at `https://app.qawolf.com/api/mcp`, or follow the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md). In Claude Code, install from the terminal instead with `/plugin marketplace add qawolf/agent-plugins`.
+
+Once the agent is connected, hand it your whole application rather than a single test:
+
+```text
+Onboard this app to QA Wolf
+```
+
+**Not using a coding agent?** [Create a QA Wolf account](https://app.qawolf.com/sign-up?utm_source=help+docs+quick+start+guide) and drive the same agent from the browser.
+
+**Already have flows?** Run them on your machine or in CI with the [QA Wolf CLI](/local-execution/get-started).
+
+## Next
+
+<Columns cols={2}>
+  <Column>
+    <Card title="Coverage mapping" href="/product-mapping">
+      The QA Wolf agent will recommend E2E tests to automate.
+    </Card>
+  </Column>
+  <Column>
+    <Card title="Test automation" href="/test-automation">
+      The QA Wolf agent will automate and validate E2E tests.
+    </Card>
+  </Column>
+</Columns>

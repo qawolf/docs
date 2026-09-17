@@ -1,0 +1,79 @@
+---
+title: "Get started with the QA Wolf CLI"
+description: "Install the CLI, sign in, and run your team's existing flows on your own machine or in CI."
+sidebarTitle: "Get started"
+---
+
+The CLI runs flows that already exist. Create coverage first through [Quick start](/quick-start) — `qawolf flows pull` needs an environment that already has flows in it.
+
+<Steps>
+  <Step title="Install the CLI">
+    Requires Node.js 20.19 or later, or download a standalone binary from [GitHub Releases](https://github.com/qawolf/cli/releases).
+
+    ```bash
+    npm install -g @qawolf/cli
+    ```
+  </Step>
+
+  <Step title="Sign in">
+    Sign in through a browser or with an API key. In CI or an agent sandbox, set `QAWOLF_API_KEY` instead.
+
+    ```bash
+    qawolf auth login
+    ```
+
+    Confirm the connection with `qawolf auth whoami`.
+
+    Read more: [Authenticate the QA Wolf CLI](/local-execution/authenticate).
+  </Step>
+
+  <Step title="Pull your flows">
+    Find your environment with `qawolf --json environment find`, then pull its flows and install what they need to run.
+
+    ```bash
+    qawolf flows pull --env <env>
+    qawolf install
+    ```
+
+    Read more: [Pull an environment](/local-execution/pull-flows#pull-an-environment) and [Install runtime dependencies](/local-execution/install-dependencies).
+  </Step>
+
+  <Step title="Run them">
+    **On your machine:**
+
+    ```bash
+    qawolf flows list
+    qawolf flows run --env <env>
+    ```
+
+    The CLI exits `0` when every flow passes and `1` when one or more fail. See [exit codes](/libraries/cli/api-reference/index#exit-codes) for the rest.
+
+    **On QA Wolf infrastructure:**
+
+    ```bash
+    qawolf run create --environment-id <env> --flow-ids <flow_id>
+    ```
+
+    Select flows by id, by `--tag`, or both.
+
+    Read more: [Run flows locally](/local-execution/run-flows-locally).
+  </Step>
+</Steps>
+
+**If a step fails**, run `qawolf doctor`:
+
+```bash
+qawolf doctor
+```
+
+It reports the CLI version, the Node.js version, credentials, connectivity to QA Wolf, and the installed browsers.
+
+Read more: [Diagnose problems](/local-execution/diagnose-problems).
+
+**For coding agents.** The CLI ships a `qawolf-cli` agent skill covering every command, its read or write kind, and the conventions that matter — pass `--json` for stable output, and terminate interactive runners, which bill while they run. Agents such as Claude Code, Codex, Cursor, and Gemini CLI can use it. It's included in the [`@qawolf/cli` package](https://github.com/qawolf/cli) under `skills/qawolf-cli`.
+
+See the [CLI command reference](/libraries/cli/api-reference/commands) for every command, flag, and exit code.
+
+<Tip>
+  Before using a command whose flags you don't know, run `qawolf <command> --help`. The installed CLI always matches its own version.
+</Tip>
