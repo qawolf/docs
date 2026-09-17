@@ -191,7 +191,7 @@
     },
     {
       "source": "/qawolf/Welcome-to-QA-Wolf",
-      "destination": "/"
+      "destination": "/why-qa-wolf"
     },
     {
       "source": "/qawolf/Xray",
@@ -591,7 +591,7 @@
     },
     {
       "source": "/onboard",
-      "destination": "/quick-start"
+      "destination": "/"
     },
     {
       "source": "/Recommended-reading-for-QA-engineers-and-developers",
@@ -604,6 +604,10 @@
     {
       "source": "/local-execution/install-dependencies",
       "destination": "/local-execution/run-flows-locally#install-dependencies-ahead-of-time"
+    },
+    {
+      "source": "/quick-start",
+      "destination": "/"
     }
   ],
   "integrations": {
@@ -630,8 +634,8 @@
       {
         "tab": "Start",
         "pages": [
-          "quick-start",
           "index",
+          "why-qa-wolf",
           "Glossary"
         ]
       },
