@@ -9,7 +9,7 @@ Use `device.setVirtualSceneImage()` and `device.playAutomation()` to place a bar
 The sequence is: store the barcode image in team storage → place it on the virtual scene (`table` or `wall`) → play the `Walk_to_image_room` macro to animate the camera toward it → wait for your app to detect and process the scan.
 
 <Note>
-  Store your barcode image in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Upload files](/Uploading-manually) for instructions. The image must encode the exact value your test expects.
+  Store your barcode image in team storage and reference it via `process.env.TEAM_STORAGE_DIR`. See [Use files in flows](/use-files-in-flows) for instructions. The image must encode the exact value your test expects.
 </Note>
 
 ## Examples

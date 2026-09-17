@@ -183,7 +183,7 @@
     },
     {
       "source": "/qawolf/Uploading-manually",
-      "destination": "/Uploading-manually"
+      "destination": "/use-files-in-flows"
     },
     {
       "source": "/qawolf/Use-emails-in-tests",
@@ -556,6 +556,10 @@
     {
       "source": "/other-web-hook-for-mobile",
       "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/Uploading-manually",
+      "destination": "/use-files-in-flows"
     }
   ],
   "integrations": {
@@ -661,6 +665,7 @@
             "pages": [
               "Pass-data-between-flows",
               "reuse-state-between-runs",
+              "use-files-in-flows",
               "mount-a-file-share"
             ]
           },
@@ -781,7 +786,6 @@
             "group": "Flow conventions",
             "pages": [
               "anatomy-of-a-qa-wolf-test-mobile-edition",
-              "Uploading-manually",
               "lint-rules"
             ]
           },
