@@ -159,19 +159,34 @@ Two habits pad instructions without making them more actionable. Both were found
 
 This is not a ban on explaining consequences. A `<Warning>` whose whole job is "this fails silently if you skip it" is stating what happens, not justifying an instruction — keep that (see rule 6).
 
-## 17. `keywords` frontmatter — the words readers use, not the ones we chose
+## 17. `keywords` frontmatter — an SEO signal, not a search fix
 
-A page is findable by its title, its headings and its body. `keywords` frontmatter adds the terms a reader would actually type that appear nowhere on the page. Every page in a group of sibling integrations gets one.
+`keywords` is worth adding, but not for the reason it looks like. Verified against Mintlify's docs and a live QA Wolf page:
 
-Three kinds of entry earn a place:
+- It feeds **schema.org structured data**. `docs.qawolf.com/Jira` emits `"keywords":"bug tracker, issue tracker, defect tracking, two-way sync, Atlassian, Jira Cloud, Jira Software"` inside its JSON-LD `TechArticle`.
+- It does **not** emit a `<meta name="keywords">` tag on this deployment, and Mintlify doesn't list `keywords` among its frontmatter fields — it's accepted as custom YAML and consumed by the SEO layer.
+- It is **not** documented to affect in-product search ranking.
 
-- **The category, in every phrasing.** The same shared set across all siblings in a group, so any of them can be found by someone who doesn't yet know which one they need — `bug tracker`, `issue tracker`, `defect tracking`, `two-way sync` on the issue trackers; `test management`, `test case management`, `TMS`, `result sync` on the test management systems.
-- **Product aliases and abbreviations.** What people call it rather than what it's called: `ADO` and `AzDO` for Azure DevOps Boards, `Jira Cloud` and `Jira Software` and `Atlassian` for Jira, `Linear.app` for Linear, `Qase` for Qase.io.
-- **Names a page absorbed.** A catch-all page should list what it covers, so a search for `Trello` or `Bugzilla` reaches the webhook page even though neither is named in the body. The same applies after a consolidation: `vpn.mdx` carries `OpenVPN`, `IPSec`, `Tailscale` and `Twingate` because each of those was a page title until the five VPN pages merged into one.
+So `keywords` is an external-SEO aid. It does not make a page findable in the docs site's own search.
 
-**Don't repeat the title.** Jira's keywords don't include "Jira" — the title already matches that. Spend the entries on what the title misses.
+**For in-product findability, the levers are different:**
 
-**Don't invent product facts to fill the list.** A keyword is a search term, not a claim, but a wrong alias still misleads. Four or five entries that match real searches beat ten that guess.
+- **Put the term in the page.** In-product search indexes rendered content, so a word in a heading, a table cell or a sentence is what actually matches. When `vpn.mdx` absorbed four pages, `OpenVPN`, `IPSec`, `Tailscale` and `Twingate` stayed findable because the method table and the Client-based VPN section name all four — not because they're in `keywords`.
+- **`boost`** — a numeric multiplier on a page's in-product search ranking, set in frontmatter or on a navigation group. Mintlify recommends staying between 0.1 and 10.
+- **`searchable: false`** — removes a page from in-product search and the AI assistant while leaving it indexable externally. Distinct from `noindex: true`, which removes it from everything.
+
+**What earns a keyword**, given it's an SEO signal:
+
+- **The category, in every phrasing**, shared across siblings in a group — `bug tracker`, `issue tracker`, `defect tracking` on the issue trackers; `test management`, `test case management`, `TMS` on the test management systems.
+- **Product aliases and abbreviations** a reader would search but the copy doesn't use — `ADO` and `AzDO` for Azure DevOps Boards, `Jira Cloud` and `Jira Software` for Jira, `Linear.app` for Linear.
+- **Names a catch-all page covers but never mentions** — `Trello`, `Bugzilla` and `ClickUp` on the webhook page.
+
+**Don't repeat the title.** Jira's keywords omit "Jira" — the title already carries it.
+
+**Don't invent aliases to pad the list.** A keyword is a search term rather than a claim, but a wrong alias still misleads. Four entries that match real searches beat ten that guess.
+
+**Don't use keywords to paper over missing content.** If a term matters enough to search for, it usually belongs in the page.
+
 
 ---
 
