@@ -1,6 +1,5 @@
 ---
-title: "Test a mobile app"
-sidebarTitle: "Overview"
+title: "Mobile build testing"
 description: "Upload an Android or iOS build to QA Wolf and run your flows against every new version, using Fastlane, GitHub Actions, Node.js, or webhooks."
 ---
 
@@ -20,7 +19,7 @@ QA Wolf runs flows against a real build of your app — an `.apk` or `.aab` for 
 During setup you can upload builds without triggering runs.
 
 <Warning>
-  QA Wolf must enable mobile triggers for your workspace before any of this starts a run. Until then, uploads and deploy notifications both succeed and no flows run, with no error. Ask your QA Wolf representative to enable them, and expect to confirm which environments you want to test, whether PR testing is enabled, and your naming conventions.
+  QA Wolf must enable mobile triggers for your workspace before any of this starts a run. Until then, uploads and deploy notifications both succeed and no flows run, with no error. Ask your QA Wolf representative to enable them, and expect to confirm which environments you want to test, whether PR testing is enabled, your naming conventions, and the upload method you chose.
 </Warning>
 
 ## Requirements
@@ -81,6 +80,36 @@ Example: `app-myorg-myrepo-pr123`
         input-file-path: ./path/to/build.apk
         executable-file-basename: app-staging
     ```
+
+    Full workflow, including PR testing:
+
+    ```yaml expandable
+    name: Deploy and Notify QA Wolf
+    on: pull_request
+    jobs:
+      ...
+      notify:
+        needs: deploy-preview-environment
+        name: Trigger QA Wolf PR testing
+        runs-on: ubuntu-latest
+        steps:
+        ...
+          # Upload the run input file
+          - name: Upload Run Input
+            id: upload-run-inputs-executable
+            uses: qawolf/upload-run-inputs-executable-action@v1
+            with:
+              qawolf-api-key: "${{ secrets.QAWOLF_API_KEY }}"
+              input-file-path: "path/to/file.apk"
+          - name: Notify QA Wolf of deployment
+            uses: qawolf/notify-qawolf-on-deploy-action@v1
+            env:
+              ...
+              # Use the output in the RUN_INPUT_PATH environmental variable
+              RUN_INPUT_PATH: "${{ steps.upload-run-inputs-executable.outputs.destination-file-path }}"
+              ...
+            with: ...
+    ```
   </Tab>
 
   <Tab title="Node.js">
@@ -109,6 +138,81 @@ Example: `app-myorg-myrepo-pr123`
     });
 
     const executablePath = signedUrl.playgroundFileLocation;
+    ```
+
+    Full implementation, including the deploy notification:
+
+    ```js expandable
+    import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
+    import fs from "fs/promises";
+    import path from "path";
+
+    const { generateSignedUrlForRunInputsExecutablesStorage, attemptNotifyDeploy } =
+      makeQaWolfSdk({
+        apiKey: process.env.QAWOLF_API_KEY,
+      });
+
+    (async () => {
+      const playgroundFileLocation = await uploadRunArtifact("/FileLocation");
+
+      if (playgroundFileLocation) {
+        const deployConfig: DeployConfig = {
+          branch: undefined,
+          commitUrl: undefined,
+          deduplicationKey: undefined,
+          deploymentType: undefined,
+          deploymentUrl: undefined,
+          ephemeralEnvironment: undefined,
+          hostingService: undefined,
+          sha: undefined,
+          variables: {
+            RUN_INPUT_PATH: playgroundFileLocation,
+          },
+        };
+
+        const result = await attemptNotifyDeploy(deployConfig);
+        if (result.outcome !== "success") {
+          process.exit(1);
+        }
+        const runId = result.runId;
+      }
+    })();
+
+    async function uploadRunArtifact(filePath: string): Promise<string> {
+      const fileName = path.basename(filePath);
+
+      const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage({
+        destinationFilePath: fileName,
+      });
+
+      if (
+        signedUrlResponse?.success &&
+        signedUrlResponse.playgroundFileLocation &&
+        signedUrlResponse.uploadUrl
+      ) {
+        const fileBuffer = await fs.readFile(filePath);
+        const url = signedUrlResponse.uploadUrl;
+
+        try {
+          const response = await fetch(url, {
+            method: "PUT",
+            body: fileBuffer,
+            headers: {
+              "Content-Type": "application/octet-stream",
+            },
+          });
+
+          if (!response.ok) {
+            return "";
+          }
+        } catch (error) {
+          return "";
+        }
+
+        return signedUrlResponse.playgroundFileLocation;
+      }
+      return "";
+    }
     ```
   </Tab>
 
@@ -256,3 +360,4 @@ QA Wolf uses the most recent upload automatically. To point a flow at a specific
 - [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls)
 - [webhooks/deploy\_success](/deploy-success)
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
+- [CI greenlight](/v0-ci-greenlight)

@@ -71,7 +71,7 @@
     },
     {
       "source": "/qawolf/Fastlane",
-      "destination": "/Fastlane"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/Full-Service-FAQs",
@@ -95,7 +95,7 @@
     },
     {
       "source": "/qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
-      "destination": "/Integrate-a-mobile-build-with-GitHub-Actions"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/Integrate-with-webhooks",
@@ -119,7 +119,7 @@
     },
     {
       "source": "/qawolf/Mobile-build-with-the-QA-Wolf-SDK",
-      "destination": "/Mobile-build-with-the-QA-Wolf-SDK"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/OpenVPN-integration",
@@ -451,7 +451,7 @@
     },
     {
       "source": "/qawolf/other-web-hook-for-mobile",
-      "destination": "/other-web-hook-for-mobile"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/photo-library-management",
@@ -540,6 +540,22 @@
     {
       "source": "/reusable-ai-knowledge",
       "destination": "/custom-skills"
+    },
+    {
+      "source": "/Fastlane",
+      "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/Integrate-a-mobile-build-with-GitHub-Actions",
+      "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/Mobile-build-with-the-QA-Wolf-SDK",
+      "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/other-web-hook-for-mobile",
+      "destination": "/mobile-build-testing"
     }
   ],
   "integrations": {
@@ -863,16 +879,7 @@
                   "other-ci-webhook"
                 ]
               },
-              {
-                "group": "Mobile build testing",
-                "pages": [
-                  "test-a-mobile-app",
-                  "Fastlane",
-                  "Integrate-a-mobile-build-with-GitHub-Actions",
-                  "Mobile-build-with-the-QA-Wolf-SDK",
-                  "other-web-hook-for-mobile"
-                ]
-              }
+              "mobile-build-testing"
             ]
           },
           {
