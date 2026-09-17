@@ -268,8 +268,7 @@ export const ConnectAgent = () => {
           href="https://app.qawolf.com/sign-up?utm_source=help+docs+quick+start+guide"
         >
           Create a QA Wolf account
-        </a>{" "}
-        and drive the same agent from your browser.
+        </a>.
       </p>
     </div>
   );
