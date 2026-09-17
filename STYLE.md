@@ -188,6 +188,24 @@ So `keywords` is an external-SEO aid. It does not make a page findable in the do
 **Don't use keywords to paper over missing content.** If a term matters enough to search for, it usually belongs in the page.
 
 
+## 18. Write for coding agents as well as people
+
+A coding agent is a real reader of these docs, not a hypothetical one. It arrives through the QA Wolf MCP, the `qawolf-cli` agent skill, or by fetching a page directly, and it acts on what it finds. Write for it explicitly where it is genuinely part of the audience.
+
+**Name the affordances that exist.** Mintlify already serves machine-readable forms, and a page that needs them should say so rather than leaving an agent to guess:
+
+- **Every page as Markdown**, by appending `.md` — `docs.qawolf.com/quick-start.md` returns the page as plain text.
+- **`/llms.txt`** — the documentation index.
+- **`/llms-full.txt`** — the full text of the site.
+
+Quick start's "For coding agents" section is the model: it names the `qawolf-cli` skill, says where it ships, and states the two conventions an agent needs — pass `--json` for stable output, and terminate interactive runners, which bill while they run.
+
+**Address the agent directly when it is the one acting.** "A coding agent can read this page as plain Markdown at …" and "In CI or an agent sandbox, set `QAWOLF_API_KEY` instead" both tell a specific reader something a human-only phrasing would bury.
+
+**Be exact about anything an agent will copy.** An agent reproduces a command, a flag, an environment variable name or a path verbatim, and it cannot tell that `QAWOLF_API_URL` was meant to be `QAWOLF_HOST_URL`. Rule 1's terminology discipline and this are the same discipline: verify identifiers against the shipped package, not against another page.
+
+**Don't perform it.** Not every page has an agent audience, and a line addressed to one on a page about reading maintenance reports is noise. Add it where an agent would actually be doing the task — CLI and MCP setup, anything an agent automates, anything it would fetch on its own.
+
 ---
 
 **Not a rule, but worth knowing while editing:** some "inconsistencies" found in the audit are actually correct, because the underlying behavior really does differ per package (testkit throws; ci-sdk returns outcomes; some config objects are named `Options`, others `Config` because that's the actual exported type name). Don't paper over a real difference to make the prose *sound* more consistent — rule 1 exists precisely to keep that distinction legible instead of hiding it.
