@@ -2,7 +2,9 @@
 title: "Quick start"
 ---
 
-## Install the QA Wolf MCP <Badge color="green">Recommended</Badge>
+<Badge color="green">Recommended</Badge>
+
+## Install the QA Wolf MCP
 
 <Tabs>
   <Tab title="Codex">
@@ -153,7 +155,7 @@ title: "Quick start"
   </Step>
 </Steps>
 
-### If a step fails
+**If a step fails**, run `qawolf doctor`:
 
 ```bash
 qawolf doctor
@@ -163,9 +165,7 @@ It reports the CLI version, the Node.js version, credentials, connectivity to QA
 
 Read more: [Diagnose problems](/local-execution/diagnose-problems).
 
-### For coding agents
-
-The CLI ships a `qawolf-cli` agent skill covering every command, its read or write kind, and the conventions that matter — pass `--json` for stable output, and terminate interactive runners, which bill while they run. Agents such as Claude Code, Codex, Cursor, and Gemini CLI can use it. It's included in the [`@qawolf/cli` package](https://github.com/qawolf/cli) under `skills/qawolf-cli`.
+**For coding agents.** The CLI ships a `qawolf-cli` agent skill covering every command, its read or write kind, and the conventions that matter — pass `--json` for stable output, and terminate interactive runners, which bill while they run. Agents such as Claude Code, Codex, Cursor, and Gemini CLI can use it. It's included in the [`@qawolf/cli` package](https://github.com/qawolf/cli) under `skills/qawolf-cli`.
 
 See the [CLI command reference](/libraries/cli/api-reference/commands) for every command, flag, and exit code.
 
