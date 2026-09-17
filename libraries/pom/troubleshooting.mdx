@@ -66,9 +66,11 @@ Check:
 - drop `{ providesPageHooks: false }` from that registration so its hooks are
   installed
 
-## `this.create("X")` is typed as `any`
+## `this.create("X")` returns `BasePageObject` instead of `X`
 
-Cause: The name is not present in the `RegisteredPages` map.
+Cause: The name is not present in the `RegisteredPages` map, so `create` falls
+back to its default return type of `BasePageObject` and `X`'s own methods are
+not visible.
 
 Check:
 
