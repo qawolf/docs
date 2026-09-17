@@ -1,44 +1,30 @@
 ---
 title: "Upload files"
-description: "Upload files to QA Wolf and use them in your test flows."
+description: "Upload files to team storage and use them in your test flows."
 ---
 
-<Check>
-  Make sure you have:
+Flows read files from team storage — test data, images, audio, extensions, and anything else a flow needs at runtime. Uploaded files are available to every flow in the workspace as `process.env.TEAM_STORAGE_DIR`.
 
-  - Your `QAWOLF_API_KEY` — available under **Workspace Name → Workspace Settings → Integrations → API Access**
-</Check>
+Uploading needs your `QAWOLF_API_KEY`, available under **Workspace Settings → Integrations → API Access**.
 
-## Supported file types
-
-### App executables
-
-The build under test.
-
-- **Mobile apps** (`.apk`, `.aab`, `.ipa`) — use a static filename based on the environment (e.g., `app-staging.ipa`) so tests always reference the latest build. See [Mobile build testing](/mobile-build-testing) for how to automate this as part of your build process.
-- **Linux desktop apps** (`.deb`) — use a static filename based on the environment, the same convention as mobile app builds.
-
-### Data files
-
-Used inside a test flow, not the app itself.
-
-- **ZIP archives** (`.zip`) — bundle multiple assets for a single upload. Make sure the contents match the structure your tests expect.
-- **CSV files** (`.csv`) — test data inputs. Use a consistent filename so flows always pick up the latest version.
-- **PDF files** (`.pdf`) — for test flows that involve document handling or validation.
+<Note>
+  To upload an app build rather than a file a flow reads, see [Mobile build testing](/mobile-build-testing). Builds go to separate storage and are referenced differently.
+</Note>
 
 ## Upload a file
 
-QA Wolf accepts file uploads via a two-step signed URL process.
+Team storage accepts any file type. Upload happens in two steps: request a signed URL, then send the file to it.
 
 <Steps>
   <Step title="Generate a signed URL">
     ```bash
-    curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=$DESTINATION_FILE_PATH" \
+    curl "https://app.qawolf.com/api/v0/team-storage-signed-url?file=$DESTINATION_FILE_PATH" \
       -H "Authorization: Bearer $QAWOLF_API_KEY"
     ```
 
     Returns a `signedUrl` for the next step, plus `fileLocation` and `playgroundFileLocation` — the paths you'll use to reference the file afterward.
   </Step>
+
   <Step title="Upload the file">
     ```bash
     curl -X PUT \
@@ -49,25 +35,7 @@ QA Wolf accepts file uploads via a two-step signed URL process.
   </Step>
 </Steps>
 
-See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the full request/response reference, including error codes.
-
 ## Use an uploaded file in a flow
-
-### Mobile apps
-
-QA Wolf resolves an uploaded build automatically through `RUN_INPUT_PATH` — omit `app` in your launch call and provide only the package/bundle ID:
-
-```typescript
-import { flow, launch } from "@qawolf/flows/android";
-
-export default flow("Open uploaded build", "Android - Pixel", async () => {
-  const { driver } = await launch({
-    appPackage: "com.example.android",
-  });
-});
-```
-
-See [App resolution](/libraries/flows/api-reference/android#app-resolution) (or the [iOS equivalent](/libraries/flows/api-reference/ios#app-resolution)) for the full resolution order and how to reference a specific path or URL instead.
 
 ### Web file upload
 
