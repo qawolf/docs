@@ -443,11 +443,11 @@
     },
     {
       "source": "/qawolf/other-ci-node",
-      "destination": "/other-ci-node"
+      "destination": "/ci-sdk-integration"
     },
     {
       "source": "/qawolf/other-ci-webhook",
-      "destination": "/other-ci-webhook"
+      "destination": "/webhook-integration"
     },
     {
       "source": "/qawolf/other-web-hook-for-mobile",
@@ -560,6 +560,14 @@
     {
       "source": "/Uploading-manually",
       "destination": "/use-files-in-flows"
+    },
+    {
+      "source": "/other-ci-node",
+      "destination": "/ci-sdk-integration"
+    },
+    {
+      "source": "/other-ci-webhook",
+      "destination": "/webhook-integration"
     }
   ],
   "integrations": {
@@ -879,8 +887,8 @@
                   "GitHub-GitHub-Actions",
                   "GitLab",
                   "circle-ci",
-                  "other-ci-node",
-                  "other-ci-webhook"
+                  "ci-sdk-integration",
+                  "webhook-integration"
                 ]
               },
               "mobile-build-testing"

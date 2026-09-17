@@ -142,6 +142,23 @@ Two consequences worth knowing when choosing a level:
 - **Anchors derive from heading text, not level**, so changing a heading's level never breaks an inbound link. Renaming it does.
 
 
+## 15. Callouts don't stack
+
+Two callouts in a row read as one undifferentiated box and cost each other the emphasis they exist to provide. Never place a `<Note>`, `<Warning>`, `<Tip>`, `<Check>`, or `<Info>` immediately after another one.
+
+If two facts both feel callout-worthy, one of them isn't. Demote the weaker to plain body copy, or merge them if they're really the same point. `mobile-build-testing.mdx` originally ran a `<Note>` straight into a `<Warning>` after its "How it works" steps, and a `<Note>` into a `<Tip>` after its trigger tabs — in both cases the first was ordinary prose wearing a box, and became ordinary prose.
+
+This is rule 6's companion: rule 6 assigns each callout one job, and this one caps how many can sit together. One per stopping point.
+
+## 16. State the requirement, not the reasoning behind it
+
+Two habits pad instructions without making them more actionable. Both were found on `GitLab.mdx` and fixed there:
+
+- **Don't justify a requirement.** "You'll be asked for a Group Access Token with the **Maintainer** role and **API** scope — Developer tokens can't create pipeline checks on protected branches." The reader needs to pick Maintainer; why Developer fails is trivia. Cut to the requirement.
+- **Don't illustrate a condition with a case.** "If your GitLab instance does not allow outbound HTTPS connections (for example, an air-gapped GitLab Enterprise installation)" and "Add any other variables your pipeline uses, such as a deployment URL." A reader whose instance blocks outbound HTTPS already knows it does; the example only makes the sentence longer. State the condition and stop.
+
+This is not a ban on explaining consequences. A `<Warning>` whose whole job is "this fails silently if you skip it" is stating what happens, not justifying an instruction — keep that (see rule 6).
+
 ---
 
 **Not a rule, but worth knowing while editing:** some "inconsistencies" found in the audit are actually correct, because the underlying behavior really does differ per package (testkit throws; ci-sdk returns outcomes; some config objects are named `Options`, others `Config` because that's the actual exported type name). Don't paper over a real difference to make the prose *sound* more consistent — rule 1 exists precisely to keep that distinction legible instead of hiding it.

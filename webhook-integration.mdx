@@ -1,0 +1,52 @@
+---
+title: "Integrate with the deploy webhook"
+description: "Trigger QA Wolf test runs from any CI system using the deploy webhook directly."
+sidebarTitle: "Webhook"
+---
+
+Use this guide if your CI system can't run Node.js. If it can, use [Node.js SDK](/ci-sdk-integration) instead.
+
+## Requirements
+
+- Access to a QA Wolf workspace with at least one environment configured
+- The ability to make HTTP requests from your CI environment
+- Admin access to your CI system's secret or environment variable storage
+
+## How to connect QA Wolf to your CI system
+
+<Steps>
+  <Step title="Add the QAWOLF_API_KEY secret">
+    Store your QA Wolf API key as a secret named `QAWOLF_API_KEY` in your CI system.
+  </Step>
+
+  <Step title="Add the deploy notification to your pipeline">
+    Add a step that runs after your deployment is healthy.
+
+    ```bash
+    curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
+      -H "Authorization: Bearer $QAWOLF_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "branch": "$GIT_BRANCH",
+        "sha": "$GIT_COMMIT_SHA",
+        "deployment_type": "staging",
+        "hosting_service": "GitHub"
+      }'
+    ```
+
+    Replace `$GIT_BRANCH` and `$GIT_COMMIT_SHA` with the variable names your CI system provides for the current branch and commit SHA, and `deployment_type` with the value your QA Wolf representative provides. Set `hosting_service` to where your code is hosted, not where your pipeline runs.
+
+    <Warning>
+      A 200 response does not guarantee a run was created. Inspect the response body to confirm. See [webhooks/deploy\_success](/deploy-success) for full response details.
+    </Warning>
+  </Step>
+
+  <Step title="Verify the integration">
+    Trigger your CI pipeline with a new deployment. Confirm the notify step completes without errors, and that a new run appears in QA Wolf under the expected environment.
+  </Step>
+</Steps>
+
+## Related
+
+- [webhooks/deploy\_success](/deploy-success)
+- [REST API](/rest-overview)
