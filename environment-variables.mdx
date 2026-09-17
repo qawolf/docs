@@ -1,0 +1,44 @@
+---
+title: "Use environment variables in a flow"
+description: "Read environment variables from flow code, and save a new value back to the environment mid-run."
+sidebarTitle: "Use environment variables"
+---
+
+Variables are encrypted values scoped to one environment, created on its [Environment variables tab](/configure-environments#store-variables). Flow code reads them from `process.env`.
+
+The **Env vars** tab below the editing window lists the variables available to the flow you have open.
+
+<Frame>
+  ![The Env vars tab in the QA Wolf editor toolbar](/images/building-and-maintaining-flows/image-13.png)
+</Frame>
+
+## Read a variable
+
+Example:
+
+```typescript
+await page.goto(process.env.BASE_URL);
+```
+
+A variable that is not set on the current environment reads as `undefined`, so a flow that depends on one fails wherever it has not been created.
+
+## Save a value back
+
+`@qawolf/testkit` writes to the current environment from inside a run. Use it when a flow produces a value later runs need, such as a token it had to register for.
+
+Example:
+
+```typescript
+import {
+  reloadEnvironmentVariables,
+  saveEnvironmentVariable,
+} from "@qawolf/testkit";
+
+await saveEnvironmentVariable("SESSION_TOKEN", token);
+await reloadEnvironmentVariables();
+```
+
+- **`saveEnvironmentVariable(name, value)`** — saves a string to the current environment and updates `process.env[name]` for the running flow.
+- **`reloadEnvironmentVariables()`** — fetches the environment's current variables and copies string values into `process.env`.
+
+Both run only in QA Wolf runner environments. For signatures and error behavior, see the [testkit core reference](/libraries/testkit/api-reference/core#environment-variables).

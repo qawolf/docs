@@ -596,6 +596,22 @@
     {
       "source": "/Recommended-reading-for-QA-engineers-and-developers",
       "destination": "/Full-Service-The-First-Three-Months"
+    },
+    {
+      "source": "/qawolf/Environment-settings",
+      "destination": "/configure-environments"
+    },
+    {
+      "source": "/qawolf/z-archive/Environment-settings",
+      "destination": "/configure-environments"
+    },
+    {
+      "source": "/qawolf/Using-environment-variables",
+      "destination": "/environment-variables"
+    },
+    {
+      "source": "/qawolf/z-archive/Using-environment-variables",
+      "destination": "/environment-variables"
     }
   ],
   "integrations": {
@@ -638,6 +654,13 @@
               "test-automation",
               "custom-skills",
               "qawolf-mcp"
+            ]
+          },
+          {
+            "group": "Environments",
+            "pages": [
+              "configure-environments",
+              "environment-variables"
             ]
           },
           {

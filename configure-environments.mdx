@@ -1,0 +1,52 @@
+---
+title: "Configure environments"
+description: "Create environments, set a default, cap concurrency, and store the variables your flows use."
+sidebarTitle: "Configure environments"
+---
+
+An environment points QA Wolf at one deployment of your app — development, staging, production. Each one carries its own URL, its own variables, and its own flows and runs. Nothing is shared between them.
+
+Every setting below lives in **Workspace settings**, which you reach from the **Workspace name** dropdown.
+
+## Create an environment
+
+<Steps>
+  <Step title="Open your environments">
+    In **Workspace settings**, click **Environments**.
+  </Step>
+  <Step title="Create it">
+    Click **Create environment**, give it a name, and click **Create**.
+  </Step>
+</Steps>
+
+To rename one later, select it and edit **Environment name** on its **General** tab.
+
+## Set the default environment
+
+The **Flows** and **Runs** tabs each open on a default environment. Set it to the one you run and debug against most often.
+
+In **Workspace settings → General**, choose from **Default environment**.
+
+Teams that create preview environments also get **Default base environment when creating preview environments**, which sets the environment those are based on.
+
+## Cap concurrency
+
+QA Wolf runs every flow in a run at the same time. Cap that per environment when your app cannot take the load.
+
+Select the environment under **Workspace settings → Environments**, open its **General** tab, and set **Run concurrency limit**. **AI automation job concurrency limit** caps concurrent AI jobs the same way.
+
+## Store variables
+
+Variables are encrypted values scoped to one environment. Flows reference them by name, so credentials and per-environment configuration never appear in flow code.
+
+Select the environment under **Workspace settings → Environments** and open its **Environment variables** tab.
+
+Reuse a variable name across environments and give each its own value — `BASE_URL` in staging and in production, for example. QA Wolf does not require that the same names exist everywhere, so this depends on your own naming.
+
+<Note>
+  Give a coding agent the variable name, never the value. An agent that needs a
+  login should send you this page's link for the environment it resolved, and
+  name the variable it wants saved there.
+</Note>
+
+To read a variable from flow code, see [Use environment variables in a flow](/environment-variables).

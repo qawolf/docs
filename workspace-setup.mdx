@@ -10,19 +10,12 @@ These settings are what let QA Wolf run without you: flows that reach a private 
 
 ## Environments and variables
 
-An environment points QA Wolf at one deployment of your app: staging, production, a preview build. Each environment carries its own URL, its own variables, and its own flows and runs. Create them under **Workspace settings → Environments**.
-
-Store every credential and configuration value your flows need as a variable on the environment that uses it. Flows reference a variable by name, so the value never appears in flow code or in a commit.
-
-<Note>
-  Give a coding agent the variable name, never the value. An agent that needs a
-  login should send you the environment's variables link and name the variable
-  it wants saved there.
-</Note>
+- [Configure environments](/configure-environments)
+- [Use environment variables in a flow](/environment-variables)
 
 ## Reach your app
 
-If your application sits behind a firewall, a private network, or an IP allowlist, give QA Wolf a route in. [Connect QA Wolf to your network](/vpn) covers the options: QA Wolf's static IP range, OpenVPN, a site-to-site IPSec tunnel, and client-based VPNs.
+- [Connect QA Wolf to your network](/vpn)
 
 ## Manage access
 
@@ -31,7 +24,7 @@ If your application sits behind a firewall, a private network, or an IP allowlis
 
 ## Run flows automatically
 
-Connect your pipeline so a deploy triggers a run:
+### Trigger a run from CI
 
 - [GitHub/GitHub Actions](/GitHub-GitHub-Actions)
 - [GitLab](/GitLab)
@@ -39,25 +32,30 @@ Connect your pipeline so a deploy triggers a run:
 - [Node.js SDK](/ci-sdk-integration)
 - [Webhook](/webhook-integration)
 
-Once runs are triggered, [tags](/tags) group flows into suites, [Run Rules](/Run-Rules) sequence them, and [Smart Smoke Suites](/smart-smoke-suites) narrow a run to the flows your PR affects.
+### Control what runs
+
+- [Tags](/tags)
+- [Run Rules](/Run-Rules)
+- [Smart Smoke Suites](/smart-smoke-suites)
 
 ## Connect your other tools
 
-QA Wolf files the bugs it finds into the tracker you already use, and syncs results to your test management system.
+### Issue trackers
 
-- **Issue trackers** — [Jira](/Jira), [Linear](/Linear), [Asana](/Asana), [Azure DevOps Boards](/Azure-DevOps-Boards), or [any other tracker via webhooks](/Integrate-with-webhooks).
-- **Test management** — [Testmo](/Testmo), [TestRail](/TestRail), [Xray](/Xray), [Zephyr](/Zephyr), [Qase.io](/Qase-io).
+- [Jira](/Jira)
+- [Linear](/Linear)
+- [Asana](/Asana)
+- [Azure DevOps Boards](/Azure-DevOps-Boards)
+- [Any other tracker, via webhooks](/Integrate-with-webhooks)
+
+### Test management
+
+- [Testmo](/Testmo)
+- [TestRail](/TestRail)
+- [Xray](/Xray)
+- [Zephyr](/Zephyr)
+- [Qase.io](/Qase-io)
 
 ## Set your code conventions
 
-QA Wolf's AI writes your flows and page objects, and it follows the page object model either way. Lint is how you hold it to your team's version of those conventions.
-
-QA Wolf lints every JavaScript and TypeScript file as you edit it, and again while an AI job writes code. A base set of rules always runs. Add an `.eslintrc.json` at the root of your repository to enforce the page object model rules on top of it — locators confined to the `locators` getter, no raw `page.click()` in a flow, Arrange/Act/Assert comments on every step:
-
-```json .eslintrc.json
-{
-  "extends": ["@qawolf/eslint-plugin-pom"]
-}
-```
-
-Violations then surface inline in the editor, and to the AI as it works. Create the file yourself; new workspaces start without one. [Lint rules](/lint-rules) lists every rule, how to change one's severity, and how to turn on any other ESLint rule.
+- [Lint rules](/lint-rules)
