@@ -16,17 +16,11 @@ QA Wolf supports the full lifecycle of end-to-end testing—from identifying the
 
 ## Create your first test
 
-The fastest path is to connect QA Wolf to the coding agent you already use. Install the plugin, then paste a prompt — the agent explores your app, writes the test, and runs it.
+Connect QA Wolf to the coding agent you already use, then paste a prompt — the agent explores your app, writes the test, and runs it.
 
 <ConnectAgent />
 
-The panel above installs QA Wolf for Claude and for ChatGPT and Codex. If you use a different agent, point it at QA Wolf's MCP server directly:
-
-```text
-https://app.qawolf.com/api/mcp
-```
-
-Then follow the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md) for Cursor, Gemini CLI, and the rest.
+Using a different agent? Point it at QA Wolf's MCP server at `https://app.qawolf.com/api/mcp`, or follow the [client-specific setup guide](https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md). In Claude Code, install from the terminal instead with `/plugin marketplace add qawolf/agent-plugins`.
 
 Once the agent is connected, hand it your whole application rather than a single test:
 
@@ -34,64 +28,9 @@ Once the agent is connected, hand it your whole application rather than a single
 Onboard this app to QA Wolf
 ```
 
-### Claude Code
+**Not using a coding agent?** [Create a QA Wolf account](https://app.qawolf.com/sign-up?utm_source=help+docs+quick+start+guide) and drive the same agent from the browser.
 
-Claude Code installs from the terminal rather than the plugin directory. Run these from the project you want QA Wolf to test:
-
-```text
-/plugin marketplace add qawolf/agent-plugins
-```
-
-```text
-/plugin install qawolf@qawolf
-```
-
-Open the MCP server with `/mcp` and select **plugin:qawolf:qawolf**, then choose **Authenticate**. A browser window opens with instructions to sign in or sign up.
-
-- **Existing accounts.** Sign in and approve the connection.
-- **New accounts.** Return to your terminal, press `esc` to go back, then choose **Authenticate** again. A browser window opens with a prompt to approve the connection.
-
-Then onboard your app with the same prompt above.
-
-### Use the web app
-
-If you don't work in a coding agent, drive the same agent from the browser.
-
-<Steps>
-  <Step title="Sign up for QA Wolf">
-    [Create your QA Wolf account](https://app.qawolf.com/sign-up?utm_source=help+docs+quick+start+guide). Use your work email when creating a new account.
-  </Step>
-  <Step title="Onboard your app">
-    You'll need to give the agent access to the application you want to test.
-
-    You can send this prompt with the missing info completed:
-
-    ```text
-    Go to {URL of your app} and sign in with username {username} and password {password}
-    ```
-
-    Or navigate to your application through the streaming browser.
-  </Step>
-  <Step title="Automate your test suite">
-    If you know what test you want automated, describe it for the agent.
-
-    If you want the agent to build a test suite for you, paste this prompt into the chat:
-
-    ```text
-    Explore this application and automate a comprehensive test suite.
-    ```
-  </Step>
-</Steps>
-
-### Once you have flows
-
-The CLI is not a way to get started — it runs a suite that already exists. Once the agent has automated some flows, install it to run them on your machine or in CI:
-
-```bash
-npm install -g @qawolf/cli
-```
-
-See [Local execution](/local-execution/authenticate) to authenticate, pull an environment, and run flows, and the [CLI command reference](/libraries/cli/api-reference/commands) for every command, flag, and exit code. A coding agent driving the CLI should read the `qawolf-cli` agent skill shipped in the [`@qawolf/cli` package](https://github.com/qawolf/cli) under `skills/qawolf-cli` — pass `--json` for stable output, and terminate interactive runners, which bill while they run.
+**Already have flows?** Run them on your machine or in CI with the [QA Wolf CLI](/local-execution/authenticate).
 
 ---
 
