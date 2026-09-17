@@ -12,6 +12,11 @@
 // keyword. Styling is a self-contained <style> block keyed off Mintlify's
 // `html.dark` class rather than Tailwind utilities, so it does not depend on
 // which classes happen to survive the docs CSS build.
+//
+// The one/two column breakpoint is a container query, not a media query. What
+// decides whether this panel has room for two columns is the width of the
+// content column it sits in, not the width of the reader's window — on a
+// standard-width docs page those differ by the whole sidebar.
 
 export const ConnectAgent = () => {
   const [site, setSite] = useState("");
@@ -40,7 +45,7 @@ export const ConnectAgent = () => {
   };
 
   const css = `
-    .qaw-ca { --qaw-brand:#3b3cef; --qaw-tint:#eef0ff; --qaw-card:#ffffff;
+    .qaw-ca { container-type:inline-size; --qaw-brand:#3b3cef; --qaw-tint:#eef0ff; --qaw-card:#ffffff;
       --qaw-panel:#fafafa; --qaw-border:#d5d7db; --qaw-text:#111827;
       --qaw-muted:#4b5563; --qaw-chip:#f3f4f6;
       color:var(--qaw-text); margin:0 0 1.5rem; }
@@ -51,12 +56,12 @@ export const ConnectAgent = () => {
 
     .qaw-ca-grid { display:grid; border:1px solid var(--qaw-border);
       border-radius:12px; overflow:hidden; background:var(--qaw-card); }
-    @media (min-width:768px) { .qaw-ca-grid { grid-template-columns:1fr 1fr; } }
+    @container (min-width:768px) { .qaw-ca-grid { grid-template-columns:1fr 1fr; } }
 
     .qaw-ca-col { padding:1.75rem; }
     .qaw-ca-col + .qaw-ca-col { border-top:1px solid var(--qaw-border);
       background:var(--qaw-panel); }
-    @media (min-width:768px) { .qaw-ca-col + .qaw-ca-col {
+    @container (min-width:768px) { .qaw-ca-col + .qaw-ca-col {
       border-top:0; border-left:1px solid var(--qaw-border); } }
 
     .qaw-ca-h2 { display:flex; align-items:center; gap:.75rem; margin:0;

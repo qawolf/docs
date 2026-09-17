@@ -591,11 +591,15 @@
     },
     {
       "source": "/onboard",
-      "destination": "/quick-start"
+      "destination": "/"
     },
     {
       "source": "/Recommended-reading-for-QA-engineers-and-developers",
       "destination": "/Full-Service-The-First-Three-Months"
+    },
+    {
+      "source": "/quick-start",
+      "destination": "/"
     }
   ],
   "integrations": {
@@ -623,9 +627,7 @@
         "tab": "Start",
         "pages": [
           "index",
-          "quick-start",
-          "Glossary",
-          "previews/connect-agent-component"
+          "Glossary"
         ]
       },
       {
