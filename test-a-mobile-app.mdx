@@ -17,9 +17,7 @@ QA Wolf runs flows against a real build of your app — an `.apk` or `.aab` for 
   </Step>
 </Steps>
 
-<Note>
-  During setup you can upload builds without triggering runs.
-</Note>
+During setup you can upload builds without triggering runs.
 
 <Warning>
   QA Wolf must enable mobile triggers for your workspace before any of this starts a run. Until then, uploads and deploy notifications both succeed and no flows run, with no error. Ask your QA Wolf representative to enable them, and expect to confirm which environments you want to test, whether PR testing is enabled, and your naming conventions.
@@ -157,7 +155,7 @@ Example: `app-myorg-myrepo-pr123`
 
 ## Trigger a test run
 
-Pass the path from the upload step as `RUN_INPUT_PATH`.
+Pass the path from the upload step as `RUN_INPUT_PATH`. Set the deployment type to the label QA Wolf configured for your workspace, such as `staging`, or omit it if your workspace has no label.
 
 <Tabs>
   <Tab title="Fastlane">
@@ -221,12 +219,8 @@ Pass the path from the upload step as `RUN_INPUT_PATH`.
 </Tabs>
 
 <Note>
-  The deployment type is a free-form label QA Wolf matches against the trigger configured for your workspace — `staging` and `preview` are typical. It doesn't identify the app as Android or iOS, and there's no separate iOS value. Use the label your QA Wolf representative configured, and omit it if none was.
-</Note>
-
-<Tip>
   `RUN_INPUT_PATH` accepts either form of the path. An absolute path is used as-is; a bare filename resolves against the uploads directory on the runner.
-</Tip>
+</Note>
 
 ## Use the build in a flow
 
