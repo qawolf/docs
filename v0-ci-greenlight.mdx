@@ -1,6 +1,7 @@
 ---
 title: "v0/ci-greenlight"
 description: "Returns the outcome of a run for use as a pipeline gate."
+sidebarTitle: "Check run results"
 ---
 
 `GET https://app.qawolf.com/api/v0/ci-greenlight/{root-run-id}`
@@ -21,6 +22,12 @@ curl https://app.qawolf.com/api/v0/ci-greenlight/<root-run-id> \
 | Header | Value |
 | --- | --- |
 | `Authorization` | `Bearer <your-api-key>` |
+
+## Query parameters
+
+| Parameter | Values | Description |
+| --- | --- | --- |
+| `outcomeWhenBlockingBugsInOtherWorkflows` | `green` \| `red` | Defaults to `green`. When set to `red`, `greenlight` will be `false` if workflows not executed in this run have blocking bugs. Experimental. |
 
 ## Response
 
@@ -68,12 +75,6 @@ A bug is blocking if its priority is `"high"` or unset. Newly found bugs are uns
 | `completed` | Run has finished. |
 | `canceled` | Run was canceled. Polling should stop — a canceled run cannot be recovered. |
 
-## Query parameters
-
-| Parameter | Values | Description |
-| --- | --- | --- |
-| `outcomeWhenBlockingBugsInOtherWorkflows` | `green` \| `red` | Defaults to `green`. When set to `red`, `greenlight` will be `false` if workflows not executed in this run have blocking bugs. Experimental. |
-
 ## Superseding logic
 
 If a newer run has superseded the root run (identified by matching `deduplication_key`), this endpoint returns the greenlight status for the most recent superseding run. When `relevantRunId` differs from `rootRunId`, you are seeing the superseding run's status.
@@ -85,12 +86,10 @@ When polling, use `relevantRunId` rather than `rootRunId` for faster queries.
 | Code | Description |
 | --- | --- |
 | `200` | Success. |
-| `401` | Missing or invalid API key. |
-| `403` | Forbidden. Usually indicates a disabled workspace. |
 | `404` | Run not found. |
-| `405` | Method not allowed. Use `GET`. |
 | `410` | Gone. Returned for old or legacy runs. |
-| `500` | Internal server error. Contact support if the issue persists. |
+
+Plus the [common response codes](/rest-overview#common-response-codes).
 
 ## Related
 

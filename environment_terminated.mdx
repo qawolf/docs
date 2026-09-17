@@ -1,6 +1,7 @@
 ---
 title: "webhooks/environment_terminated"
 description: 'Stops all runs targeting the environment and requests flow promotion to the static base environment. The environment will show as "closed" in QA Wolf.'
+sidebarTitle: "Terminate an environment"
 ---
 
 `POST https://app.qawolf.com/api/webhooks/environment_terminated`
@@ -52,16 +53,18 @@ You may also pass `workspaceId`.
 
 A `warning` field behaves the same way here as on [webhooks/deploy_success](/deploy-success#response) — present when the request needed a workspace and didn't name one, never changing the outcome.
 
+An unsuccessful request returns `failureCode` and `failureMessage`. A `404` also carries `suggestions`, listing environments close to the one you named.
+
 ## Response codes
 
 | Code | Description |
 | --- | --- |
 | `200` | Environment terminated successfully. |
-| `401` | Missing or invalid API key. |
-| `403` | Forbidden. Usually indicates a disabled workspace. |
-| `404` | Environment not found. |
-| `409` | Conflict. Environment is already terminated. |
-| `500` | Internal server error. Contact support if the issue persists. |
+| `400` | None of `environmentId`, `environmentAlias`, or `deploymentUrl` was provided. Returns `failureCode: "missingLookup"`. |
+| `404` | Environment not found. Returns `failureCode: "environmentNotFound"` and `suggestions`. |
+| `409` | Environment is already terminated. Returns `failureCode: "alreadyTerminated"` and the `environmentId`. |
+
+Plus the [common response codes](/rest-overview#common-response-codes).
 
 ## Related
 

@@ -1,7 +1,7 @@
 ---
 title: "webhooks/deploy_success"
 description: "Notify QA Wolf of a successful deployment to trigger a test run, including request format, headers, body fields, and example responses."
-sidebarTitle: "webhooks/deploy_success"
+sidebarTitle: "Notify a deploy"
 ---
 
 `POST https://app.qawolf.com/api/webhooks/deploy_success`
@@ -61,9 +61,12 @@ All fields are optional.
 
 ```json
 {
+  "deployment_id": "cl9k2p0aa00031vzq4t8xh3mn",
+  "environment": "Staging",
   "results": [
     {
       "created_suite_id": "cl1f6i0in15676w115vt43vw2",
+      "environment_id": "ckz2y0o7j01914cgtra6lk4wn",
       "outcome": "created",
       "trigger_id": "ckzoog9wy01720xyrvl8ah7gu"
     }
@@ -71,7 +74,11 @@ All fields are optional.
 }
 ```
 
-`results` is an array of matched triggers. Each entry carries an `outcome` of `created`, `skipped`, or `failed`, alongside `created_suite_id` if QA Wolf created a run, `duplicate_suite_id` if a run for this deployment already exists, or `failure_code` and `failure_message` if QA Wolf could not create the run. Branch on `failure_code`, such as `billing-prevented` or `environment-not-ready`, and display `failure_message`. Treat `failure_code` as an open set, since QA Wolf adds new codes over time.
+`deployment_id` and `environment` identify the deployment QA Wolf recorded. `skipped_deployment` is present instead of triggering runs when QA Wolf skipped the deployment, carrying a `reason` and a `message`.
+
+`results` is an array of matched triggers. Every entry carries `environment_id`, and a skipped entry carries `skip_reason`. Each entry carries an `outcome` of `created`, `skipped`, or `failed`, alongside `created_suite_id` if QA Wolf created a run, `duplicate_suite_id` if a run for this deployment already exists, or `failure_code` and `failure_message` if QA Wolf could not create the run. Branch on `failure_code`, such as `billing-prevented` or `environment-not-ready`, and display `failure_message`. Treat `failure_code` as an open set, since QA Wolf adds new codes over time.
+
+Success bodies use snake_case and error bodies use camelCase: a `402`, `429` or `503` returns `failureCode` and `failureMessage`, not `failure_code` and `failure_message`. Handle both spellings.
 
 <Warning>
   A failed entry also carries `failure_reason`, which is deprecated. It holds an internal diagnostic whose values change without notice, so do not branch on it.
@@ -103,11 +110,12 @@ On the first delivery of a deployment, a matched trigger returns `created_suite_
 | Code | Description |
 | --- | --- |
 | `200` | Request accepted. Inspect the response body to confirm a run was created. |
-| `401` | Missing or invalid API key. |
-| `403` | Forbidden. Usually indicates a disabled workspace. |
-| `404` | Run not found. |
-| `405` | Method not allowed. Use `POST`. |
-| `500` | Internal server error. Contact support if the issue persists. |
+| `400` | Invalid request body. The response carries an `error` describing the problem. |
+| `402` | Billing prevented the run. Returns `failureCode: "BILLING_PREVENTED"`. |
+| `429` | Too many requests for this workspace. Returns `failureCode: "RATE_LIMITED"` and a `Retry-After` header giving the seconds to wait. |
+| `503` | QA Wolf is briefly unable to process the request. Returns `failureCode: "TRANSACTION_TIMEOUT"`. Retry in a few moments. |
+
+Plus the [common response codes](/rest-overview#common-response-codes).
 
 <Note>
   A 200 response does not guarantee a run was created. Inspect the response body to confirm.
