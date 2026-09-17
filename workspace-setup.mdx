@@ -24,6 +24,11 @@ Store every credential and configuration value your flows need as a variable on 
 
 If your application sits behind a firewall, a private network, or an IP allowlist, give QA Wolf a route in. [Connect QA Wolf to your network](/vpn) covers the options: QA Wolf's static IP range, OpenVPN, a site-to-site IPSec tunnel, and client-based VPNs.
 
+## Manage access
+
+- [SSO](/sso)
+- [API keys](/rest-overview#authentication)
+
 ## Run flows automatically
 
 Connect your pipeline so a deploy triggers a run:
@@ -35,6 +40,13 @@ Connect your pipeline so a deploy triggers a run:
 - [Webhook](/webhook-integration)
 
 Once runs are triggered, [tags](/tags) group flows into suites, [Run Rules](/Run-Rules) sequence them, and [Smart Smoke Suites](/smart-smoke-suites) narrow a run to the flows your PR affects.
+
+## Connect your other tools
+
+QA Wolf files the bugs it finds into the tracker you already use, and syncs results to your test management system.
+
+- **Issue trackers** — [Jira](/Jira), [Linear](/Linear), [Asana](/Asana), [Azure DevOps Boards](/Azure-DevOps-Boards), or [any other tracker via webhooks](/Integrate-with-webhooks).
+- **Test management** — [Testmo](/Testmo), [TestRail](/TestRail), [Xray](/Xray), [Zephyr](/Zephyr), [Qase.io](/Qase-io).
 
 ## Set your code conventions
 
@@ -49,15 +61,3 @@ QA Wolf lints every JavaScript and TypeScript file as you edit it, and again whi
 ```
 
 Violations then surface inline in the editor, and to the AI as it works. Create the file yourself; new workspaces start without one. [Lint rules](/lint-rules) lists every rule, how to change one's severity, and how to turn on any other ESLint rule.
-
-## Manage access
-
-- [SSO](/sso)
-- [API keys](/rest-overview#authentication)
-
-## Connect your other tools
-
-QA Wolf files the bugs it finds into the tracker you already use, and syncs results to your test management system.
-
-- **Issue trackers** — [Jira](/Jira), [Linear](/Linear), [Asana](/Asana), [Azure DevOps Boards](/Azure-DevOps-Boards), or [any other tracker via webhooks](/Integrate-with-webhooks).
-- **Test management** — [Testmo](/Testmo), [TestRail](/TestRail), [Xray](/Xray), [Zephyr](/Zephyr), [Qase.io](/Qase-io).
