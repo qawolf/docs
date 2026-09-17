@@ -1,0 +1,43 @@
+/*
+  Mintlify automatically includes any .css file in the content directory on
+  every page, which is the only way to attach real CSS to an MDX page: a
+  <style> tag written inline in .mdx is stripped by the MDX pipeline.
+
+  Embedded-iframe sizing. Two Mintlify behaviours make this necessary:
+
+  1. Mintlify injects `style="aspect-ratio: 16 / 9"` directly onto every
+     iframe element. That is an inline style, so a plain class rule loses to
+     it and the frame gets letterboxed to 9/16 of its width. Overriding it
+     needs !important.
+
+  2. An iframe cannot size itself to its content, so the height is pinned
+     here. The breakpoint is a container query, not a media query: what
+     decides whether the embedded page lays out in one column or two is the
+     width of the iframe, not the width of the reader's window. A media
+     query would measure the window and get it wrong on every page whose
+     sidebar is showing.
+
+  Heights are measured from the embedded page itself, at 984px wide
+  (two-column, 900px tall) and 700px wide (stacked, 1123px tall), plus a
+  small buffer.
+*/
+
+.qaw-embed-wrap {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.qaw-embed-frame {
+  width: 100%;
+  aspect-ratio: auto !important;
+  height: 1160px;
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 12px;
+  background: #fff;
+}
+
+@container (min-width: 768px) {
+  .qaw-embed-frame {
+    height: 920px;
+  }
+}

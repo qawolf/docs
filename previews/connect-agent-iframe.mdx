@@ -6,38 +6,27 @@ mode: "wide"
 ---
 
 {/*
-  PREVIEW PAGE — not linked from real navigation beyond the Start tab while
-  this branch is open. Deliberately blank apart from the embed, so the page
-  shows what the docs shell looks like when this is the only content.
+  PREVIEW PAGE — deliberately blank apart from the embed, so the page shows
+  what the docs shell looks like when this is the only content on it.
 
   Approach A: iframe the existing prototype at qaw-prototype.vercel.app.
   Verified embeddable — that host sends no X-Frame-Options and no CSP
-  frame-ancestors directive, and docs.qawolf.com's own CSP sets no frame-src.
+  frame-ancestors directive, and docs.qawolf.com's enforced CSP sets no
+  frame-src.
 
   allow="clipboard-write" is required: the panel's Copy buttons call
   navigator.clipboard, which is gated in a cross-origin frame without it.
 
-  Height is fixed and set here, because an iframe cannot size itself to its
-  content. The two breakpoints match where the prototype's own two-column
-  grid collapses to one column (its md: breakpoint, 768px).
+  Sizing lives in /style.css, not in a <style> tag here — Mintlify strips
+  inline <style> from MDX, and it injects an inline aspect-ratio onto every
+  iframe that a class rule has to override. See the comments there.
 */}
 
-<style>{`
-  .qaw-embed-frame {
-    width: 100%;
-    height: 1180px;
-    border: 1px solid rgba(128,128,128,.25);
-    border-radius: 12px;
-    background: #fff;
-  }
-  @media (min-width: 768px) {
-    .qaw-embed-frame { height: 700px; }
-  }
-`}</style>
-
-<iframe
-  className="qaw-embed-frame"
-  src="https://qaw-prototype.vercel.app/connect-agent"
-  title="Connect your agent"
-  allow="clipboard-write"
-/>
+<div className="qaw-embed-wrap">
+  <iframe
+    className="qaw-embed-frame"
+    src="https://qaw-prototype.vercel.app/connect-agent"
+    title="Connect your agent"
+    allow="clipboard-write"
+  />
+</div>
