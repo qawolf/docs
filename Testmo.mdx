@@ -4,7 +4,7 @@ description: "Sync QA Wolf automated test results to your Testmo project, includ
 sidebarTitle: "Testmo"
 ---
 
-QA Wolf configures this integration. You set up Testmo and provide credentials, then verify results once QA Wolf enables it.
+Sync QA Wolf automated test results to your Testmo project. QA Wolf configures this integration — you set up Testmo, send the credentials, and verify results once it's enabled.
 
 ## What QA Wolf syncs
 
@@ -26,30 +26,26 @@ Results are synced after runs reach Completed status in QA Wolf.
   Dynamic tags — different tags for staging and production, or for PR and scheduled runs — require custom configuration by QA Wolf.
 </Tip>
 
-## Requirements
-
-- Active Testmo account
-- API access enabled, which requires a Testmo **Administrator**
-- Target Testmo project to receive QA Wolf runs
-- Optionally, tags to apply to all synced runs
-
-## What to send QA Wolf
-
-- Testmo login email
-- Testmo API key
-- Target Testmo project (project ID or URL)
-- Optionally, tags to apply to runs
-
-## Verify the integration
+## How to set up the integration
 
 <Steps>
-  <Step title="Run your tests">
-    Run your automated tests in QA Wolf.
+  <Step title="Set up Testmo">
+    - Active Testmo account
+    - API access enabled, which requires a Testmo **Administrator**
+    - Target Testmo project to receive QA Wolf runs
+    - Optionally, tags to apply to all synced runs
   </Step>
 
-  <Step title="Check Testmo">
-    After the run completes, a new test run appears in your Testmo project with synced results and metadata.
+  <Step title="Send QA Wolf your credentials">
+    - Testmo login email
+    - Testmo API key
+    - Target Testmo project (project ID or URL)
+    - Optionally, tags to apply to runs
+  </Step>
+
+  <Step title="Verify the integration">
+    Once QA Wolf enables the integration, run your automated tests. A new test run appears in your Testmo project with synced results and metadata.
+
+    If runs don't appear as expected, contact your QA Wolf representative.
   </Step>
 </Steps>
-
-If runs don't appear as expected, contact your QA Wolf representative.

@@ -4,7 +4,7 @@ description: "Sync QA Wolf automated test results to your Qase.io project, inclu
 sidebarTitle: "Qase.io"
 ---
 
-Integrate QA Wolf with [Qase.io](https://qase.io/) to sync automated test results with your Qase project. QA Wolf configures this integration. You set up Qase and provide credentials, then verify results once QA Wolf enables it.
+Sync QA Wolf automated test results to your [Qase.io](https://qase.io/) project. QA Wolf configures this integration — you set up Qase, send the credentials, and verify results once it's enabled.
 
 ## What QA Wolf syncs
 
@@ -24,33 +24,25 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Qase test cases must already exist.
 - Custom fields are not supported unless specially configured.
 
-## Requirements
-
-- Active Qase.io account
-- Existing Qase project to receive test runs
-- API access enabled, available on paid Qase plans. Tokens are generated at the account level, so this requires a project or account admin
-- Qase test cases already created, since tests are not created automatically
-
-## What to send QA Wolf
-
-- Qase API token
-- Qase project code (for example, `WEBAPP`, `API`, or `MOBILE`)
-- Optionally, tags or environment values to associate with test runs
-
-## Verify the integration
+## How to set up the integration
 
 <Steps>
-  <Step title="Run your tests">
-    Run your automated tests in QA Wolf.
+  <Step title="Set up Qase">
+    - Active Qase.io account
+    - Existing Qase project to receive test runs
+    - API access enabled, available on paid Qase plans. Tokens are generated at the account level, so this requires a project or account admin
+    - Qase test cases already created, since tests are not created automatically
   </Step>
 
-  <Step title="Check Qase">
-    After the run completes, a new test run appears in your Qase project.
+  <Step title="Send QA Wolf your credentials">
+    - Qase API token
+    - Qase project code (for example, `WEBAPP`, `API`, or `MOBILE`)
+    - Optionally, tags or environment values to associate with test runs
   </Step>
 
-  <Step title="Check the mapped test cases">
-    Test results and run metadata are visible on the mapped test cases.
+  <Step title="Verify the integration">
+    Once QA Wolf enables the integration, run your automated tests. A new test run appears in your Qase project, with results and run metadata visible on the mapped test cases.
+
+    If runs don't appear as expected, or test cases aren't mapping correctly, contact your QA Wolf representative.
   </Step>
 </Steps>
-
-If runs don't appear as expected, or test cases aren't mapping correctly, contact your QA Wolf representative.

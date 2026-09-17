@@ -4,7 +4,7 @@ description: "Sync QA Wolf automated test results to TestRail, including pass/fa
 sidebarTitle: "TestRail"
 ---
 
-Integrate QA Wolf with [TestRail](https://www.testrail.com/) to centralize automated test results and reporting. QA Wolf configures this integration. You set up TestRail and provide credentials, then verify results once QA Wolf enables it.
+Sync QA Wolf automated test results to [TestRail](https://www.testrail.com/) to centralize reporting. QA Wolf configures this integration — you set up TestRail, send the credentials, and verify results once it's enabled.
 
 ## What QA Wolf syncs
 
@@ -23,29 +23,25 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Test runs are created at the run level, with no test plan–level updates.
 - The _Skipped_ test status must exist in TestRail.
 
-## Requirements
-
-- Active TestRail account
-- API access enabled, which requires a TestRail **Administrator**
-- Target TestRail project to receive QA Wolf runs
-- Custom test status _Skipped_ configured in TestRail
-
-## What to send QA Wolf
-
-- TestRail username or login email
-- TestRail API key or password, depending on your account configuration
-- Target TestRail project (project ID or URL)
-
-## Verify the integration
+## How to set up the integration
 
 <Steps>
-  <Step title="Run your tests">
-    Run your automated tests in QA Wolf.
+  <Step title="Set up TestRail">
+    - Active TestRail account
+    - API access enabled, which requires a TestRail **Administrator**
+    - Target TestRail project to receive QA Wolf runs
+    - Custom test status _Skipped_ configured in TestRail
   </Step>
 
-  <Step title="Check TestRail">
-    After the run completes, a new test run appears in your TestRail project with synced results and metadata, marked completed.
+  <Step title="Send QA Wolf your credentials">
+    - TestRail username or login email
+    - TestRail API key or password, depending on your account configuration
+    - Target TestRail project (project ID or URL)
+  </Step>
+
+  <Step title="Verify the integration">
+    Once QA Wolf enables the integration, run your automated tests. A new test run appears in your TestRail project with synced results and metadata, marked completed.
+
+    If runs don't appear as expected, contact your QA Wolf representative.
   </Step>
 </Steps>
-
-If runs don't appear as expected, contact your QA Wolf representative.

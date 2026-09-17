@@ -4,7 +4,7 @@ description: "Sync QA Wolf automated test results to Xray Test Management for Ji
 sidebarTitle: "Xray"
 ---
 
-Integrate QA Wolf with [Xray Test Management for Jira](https://marketplace.atlassian.com/apps/1211769/xray-test-management-for-jira) to sync automated test results directly to Jira. QA Wolf configures this integration. You set up Xray and Jira and provide credentials, then verify results once QA Wolf enables it.
+Sync QA Wolf automated test results directly to Jira with [Xray Test Management for Jira](https://marketplace.atlassian.com/apps/1211769/xray-test-management-for-jira). QA Wolf configures this integration — you set up Xray and Jira, send the credentials, and verify results once it's enabled.
 
 ## What QA Wolf syncs
 
@@ -26,34 +26,26 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Test executions are created at the execution level, with no test plan management.
 - Custom fields are not supported unless specially configured.
 
-## Requirements
-
-- Jira Cloud instance with Xray installed
-- Xray-enabled Jira project to receive test executions
-- Xray Cloud API access enabled, which requires a Jira/Xray administrator
-- Xray test cases already created, since tests are not created automatically
-
-## What to send QA Wolf
-
-- Xray Client ID
-- Xray Client Secret
-- Jira project key (for example, `QA` or `MOBILE`)
-- Optionally, a default test plan to link executions to
-
-## Verify the integration
+## How to set up the integration
 
 <Steps>
-  <Step title="Run your tests">
-    Run your automated tests in QA Wolf.
+  <Step title="Set up Xray and Jira">
+    - Jira Cloud instance with Xray installed
+    - Xray-enabled Jira project to receive test executions
+    - Xray Cloud API access enabled, which requires a Jira/Xray administrator
+    - Xray test cases already created, since tests are not created automatically
   </Step>
 
-  <Step title="Check Jira">
-    After the run completes, a new Test Execution appears in your Jira project.
+  <Step title="Send QA Wolf your credentials">
+    - Xray Client ID
+    - Xray Client Secret
+    - Jira project key (for example, `QA` or `MOBILE`)
+    - Optionally, a default test plan to link executions to
   </Step>
 
-  <Step title="Check Xray">
-    Test results and execution metadata are visible in Xray.
+  <Step title="Verify the integration">
+    Once QA Wolf enables the integration, run your automated tests. A new Test Execution appears in your Jira project, with results and execution metadata visible in Xray.
+
+    If executions don't appear as expected, or test cases aren't mapping correctly, contact your QA Wolf representative.
   </Step>
 </Steps>
-
-If executions don't appear as expected, or test cases aren't mapping correctly, contact your QA Wolf representative.

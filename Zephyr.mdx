@@ -4,7 +4,7 @@ description: "Sync QA Wolf automated test results to Zephyr Test Management for 
 sidebarTitle: "Zephyr"
 ---
 
-Integrate QA Wolf with [Zephyr Test Management for Jira](https://marketplace.atlassian.com/apps/1213259/zephyr-test-management-and-automation-for-jira) to sync automated test results directly to Jira. QA Wolf configures this integration. You set up Jira and Zephyr and provide credentials, then verify results once QA Wolf enables it.
+Sync QA Wolf automated test results directly to Jira with [Zephyr Test Management for Jira](https://marketplace.atlassian.com/apps/1213259/zephyr-test-management-and-automation-for-jira). QA Wolf configures this integration — you set up Jira and Zephyr, send the credentials, and verify results once it's enabled.
 
 ## What QA Wolf syncs
 
@@ -24,32 +24,28 @@ Results are synced after runs reach Completed status in QA Wolf.
 - Zephyr test cases must already exist.
 - Custom fields are not supported unless specially configured.
 
-## Requirements
-
-- Jira Cloud instance
-- Zephyr installed and licensed (Squad or Scale)
-- Zephyr-enabled Jira project to receive test executions
-- API access enabled via the Atlassian REST API, which requires an Atlassian account administrator
-- Zephyr test cases already created, since tests are not created automatically
-
-## What to send QA Wolf
-
-- Jira user email
-- Jira API token
-- Jira base URL
-- Zephyr project key (for example, `QA` or `MOBILE`)
-- Optionally, a default test cycle name or naming convention
-
-## Verify the integration
+## How to set up the integration
 
 <Steps>
-  <Step title="Run your tests">
-    Run your automated tests in QA Wolf.
+  <Step title="Set up Jira and Zephyr">
+    - Jira Cloud instance
+    - Zephyr installed and licensed (Squad or Scale)
+    - Zephyr-enabled Jira project to receive test executions
+    - API access enabled via the Atlassian REST API, which requires an Atlassian account administrator
+    - Zephyr test cases already created, since tests are not created automatically
   </Step>
 
-  <Step title="Check Zephyr">
-    After the run completes, test executions appear in the configured Zephyr project, grouped under the appropriate test cycle.
+  <Step title="Send QA Wolf your credentials">
+    - Jira user email
+    - Jira API token
+    - Jira base URL
+    - Zephyr project key (for example, `QA` or `MOBILE`)
+    - Optionally, a default test cycle name or naming convention
+  </Step>
+
+  <Step title="Verify the integration">
+    Once QA Wolf enables the integration, run your automated tests. Test executions appear in the configured Zephyr project, grouped under the appropriate test cycle.
+
+    If executions don't appear as expected, or test cases aren't mapping correctly, contact your QA Wolf representative.
   </Step>
 </Steps>
-
-If executions don't appear as expected, or test cases aren't mapping correctly, contact your QA Wolf representative.
