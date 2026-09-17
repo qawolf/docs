@@ -71,7 +71,7 @@
     },
     {
       "source": "/qawolf/Fastlane",
-      "destination": "/Fastlane"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/Full-Service-FAQs",
@@ -95,7 +95,7 @@
     },
     {
       "source": "/qawolf/Integrate-a-mobile-build-with-GitHub-Actions",
-      "destination": "/Integrate-a-mobile-build-with-GitHub-Actions"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/Integrate-with-webhooks",
@@ -119,7 +119,7 @@
     },
     {
       "source": "/qawolf/Mobile-build-with-the-QA-Wolf-SDK",
-      "destination": "/Mobile-build-with-the-QA-Wolf-SDK"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/OpenVPN-integration",
@@ -183,7 +183,7 @@
     },
     {
       "source": "/qawolf/Uploading-manually",
-      "destination": "/Uploading-manually"
+      "destination": "/use-files-in-flows"
     },
     {
       "source": "/qawolf/Use-emails-in-tests",
@@ -451,7 +451,7 @@
     },
     {
       "source": "/qawolf/other-web-hook-for-mobile",
-      "destination": "/other-web-hook-for-mobile"
+      "destination": "/mobile-build-testing"
     },
     {
       "source": "/qawolf/photo-library-management",
@@ -540,6 +540,26 @@
     {
       "source": "/reusable-ai-knowledge",
       "destination": "/custom-skills"
+    },
+    {
+      "source": "/Fastlane",
+      "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/Integrate-a-mobile-build-with-GitHub-Actions",
+      "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/Mobile-build-with-the-QA-Wolf-SDK",
+      "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/other-web-hook-for-mobile",
+      "destination": "/mobile-build-testing"
+    },
+    {
+      "source": "/Uploading-manually",
+      "destination": "/use-files-in-flows"
     }
   ],
   "integrations": {
@@ -568,8 +588,7 @@
         "pages": [
           "index",
           "quick-start",
-          "Glossary",
-          "workspace-setup"
+          "Glossary"
         ]
       },
       {
@@ -646,6 +665,7 @@
             "pages": [
               "Pass-data-between-flows",
               "reuse-state-between-runs",
+              "use-files-in-flows",
               "mount-a-file-share"
             ]
           },
@@ -766,7 +786,6 @@
             "group": "Flow conventions",
             "pages": [
               "anatomy-of-a-qa-wolf-test-mobile-edition",
-              "Uploading-manually",
               "lint-rules"
             ]
           },
@@ -864,15 +883,7 @@
                   "other-ci-webhook"
                 ]
               },
-              {
-                "group": "Mobile build testing",
-                "pages": [
-                  "Fastlane",
-                  "Integrate-a-mobile-build-with-GitHub-Actions",
-                  "Mobile-build-with-the-QA-Wolf-SDK",
-                  "other-web-hook-for-mobile"
-                ]
-              }
+              "mobile-build-testing"
             ]
           },
           {

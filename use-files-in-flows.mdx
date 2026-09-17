@@ -1,0 +1,76 @@
+---
+title: "Use files in flows"
+description: "Upload files to team storage and use them in your flows — test data, images, audio, and anything else a flow reads at runtime."
+---
+
+Flows read files from team storage — test data, images, audio, extensions, and anything else a flow needs at runtime. Uploaded files are available to every flow in the workspace as `process.env.TEAM_STORAGE_DIR`.
+
+Uploading needs your `QAWOLF_API_KEY`, available under **Workspace Settings → Integrations → API Access**.
+
+<Note>
+  To upload an app build rather than a file a flow reads, see [Mobile build testing](/mobile-build-testing). Builds go to separate storage and are referenced differently.
+</Note>
+
+## Upload a file
+
+Team storage accepts any file type. Upload happens in two steps: request a signed URL, then send the file to it.
+
+<Steps>
+  <Step title="Generate a signed URL">
+    ```bash
+    curl "https://app.qawolf.com/api/v0/team-storage-signed-url?file=$DESTINATION_FILE_PATH" \
+      -H "Authorization: Bearer $QAWOLF_API_KEY"
+    ```
+
+    Returns a `signedUrl` for the next step, plus `fileLocation` and `playgroundFileLocation` — the paths you'll use to reference the file afterward.
+  </Step>
+
+  <Step title="Upload the file">
+    ```bash
+    curl -X PUT \
+      --header "Content-Type: application/octet-stream" \
+      --data-binary @some_file.zip \
+      $SIGNED_URL
+    ```
+  </Step>
+</Steps>
+
+## Use an uploaded file in a flow
+
+### Web file upload
+
+Use Playwright's `filechooser` event to intercept the file dialog and set the uploaded file programmatically.
+
+```javascript
+const fileName = `${process.env.TEAM_STORAGE_DIR}/fileNameHere`;
+
+page.once(
+  "filechooser",
+  (chooser) => void chooser.setFiles(fileName).catch(console.error)
+);
+
+await page.getByText("Upload file").click();
+```
+
+<Warning>
+  Use `page.once` rather than `page.on`. `page.once` registers a one-time event listener that automatically unregisters after the first use. Using `page.on` adds a persistent listener that may interfere with subsequent file uploads in the same flow.
+</Warning>
+
+### PDF viewing
+
+Use the internal PDF viewer to open an uploaded PDF file in a flow.
+
+```javascript
+const invoicePath = `${process.env.TEAM_STORAGE_DIR}/invoices/invoice-1.pdf`;
+
+const pdfPage = await context.newPage();
+await pdfPage.goto("http://pdf-viewer.psc.qaw.internal");
+
+pdfPage.once(
+  "filechooser",
+  (chooser) => void chooser.setFiles(invoicePath).catch(console.error)
+);
+
+await pdfPage.waitForTimeout(4000);
+await pdfPage.click("#openFile");
+```
