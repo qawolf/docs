@@ -443,7 +443,7 @@
     },
     {
       "source": "/qawolf/other-ci-node",
-      "destination": "/other-ci-node"
+      "destination": "/ci-sdk-integration"
     },
     {
       "source": "/qawolf/other-ci-webhook",
@@ -560,6 +560,10 @@
     {
       "source": "/Uploading-manually",
       "destination": "/use-files-in-flows"
+    },
+    {
+      "source": "/other-ci-node",
+      "destination": "/ci-sdk-integration"
     }
   ],
   "integrations": {
@@ -879,7 +883,7 @@
                   "GitHub-GitHub-Actions",
                   "GitLab",
                   "circle-ci",
-                  "other-ci-node",
+                  "ci-sdk-integration",
                   "other-ci-webhook"
                 ]
               },
