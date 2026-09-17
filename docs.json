@@ -640,7 +640,14 @@
         "pages": [
           "index",
           "quick-start",
-          "workspace-setup",
+          {
+            "group": "Workspace setup",
+            "pages": [
+              "workspace-setup",
+              "configure-environments",
+              "environment-variables"
+            ]
+          },
           "Glossary"
         ]
       },
@@ -654,13 +661,6 @@
               "test-automation",
               "custom-skills",
               "qawolf-mcp"
-            ]
-          },
-          {
-            "group": "Environments",
-            "pages": [
-              "configure-environments",
-              "environment-variables"
             ]
           },
           {
