@@ -159,6 +159,20 @@ Two habits pad instructions without making them more actionable. Both were found
 
 This is not a ban on explaining consequences. A `<Warning>` whose whole job is "this fails silently if you skip it" is stating what happens, not justifying an instruction — keep that (see rule 6).
 
+## 17. `keywords` frontmatter — the words readers use, not the ones we chose
+
+A page is findable by its title, its headings and its body. `keywords` frontmatter adds the terms a reader would actually type that appear nowhere on the page. Every page in a group of sibling integrations gets one.
+
+Three kinds of entry earn a place:
+
+- **The category, in every phrasing.** The same shared set across all siblings in a group, so any of them can be found by someone who doesn't yet know which one they need — `bug tracker`, `issue tracker`, `defect tracking`, `two-way sync` on the issue trackers; `test management`, `test case management`, `TMS`, `result sync` on the test management systems.
+- **Product aliases and abbreviations.** What people call it rather than what it's called: `ADO` and `AzDO` for Azure DevOps Boards, `Jira Cloud` and `Jira Software` and `Atlassian` for Jira, `Linear.app` for Linear, `Qase` for Qase.io.
+- **Names a page absorbed.** A catch-all page should list what it covers, so a search for `Trello` or `Bugzilla` reaches the webhook page even though neither is named in the body. The same applies after a consolidation: `vpn.mdx` carries `OpenVPN`, `IPSec`, `Tailscale` and `Twingate` because each of those was a page title until the five VPN pages merged into one.
+
+**Don't repeat the title.** Jira's keywords don't include "Jira" — the title already matches that. Spend the entries on what the title misses.
+
+**Don't invent product facts to fill the list.** A keyword is a search term, not a claim, but a wrong alias still misleads. Four or five entries that match real searches beat ten that guess.
+
 ---
 
 **Not a rule, but worth knowing while editing:** some "inconsistencies" found in the audit are actually correct, because the underlying behavior really does differ per package (testkit throws; ci-sdk returns outcomes; some config objects are named `Options`, others `Config` because that's the actual exported type name). Don't paper over a real difference to make the prose *sound* more consistent — rule 1 exists precisely to keep that distinction legible instead of hiding it.
