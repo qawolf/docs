@@ -914,7 +914,12 @@
               "mobile-build-testing"
             ]
           },
-          "vpn",
+          {
+            "group": "VPN",
+            "pages": [
+              "vpn"
+            ]
+          },
           {
             "group": "Test Management Systems",
             "pages": [
