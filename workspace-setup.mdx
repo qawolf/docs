@@ -4,9 +4,9 @@ description: "Connect QA Wolf to the systems you already run — your network, y
 sidebarTitle: "Workspace setup"
 ---
 
-QA Wolf's AI writes and maintains your flows. It does not decide what it can reach, when it runs, or which conventions its code follows — you do, under **Workspace settings**.
+QA Wolf's AI writes and maintains your flows. You set what it reaches, when it runs, and the conventions its code follows — all under **Workspace settings**.
 
-Those decisions set the ceiling on what QA Wolf can test for you. A flow cannot cover what the network blocks, cannot log in without the credentials you store, and cannot catch a regression on a deploy nothing told it about.
+These settings are what let QA Wolf run without you: flows that reach a private staging environment, start on their own when you deploy, and file what they find where your team already looks.
 
 ## Environments and variables
 
@@ -22,7 +22,7 @@ Store every credential and configuration value your flows need as a variable on 
 
 ## Reach your app
 
-If your application sits behind a firewall, a private network, or an IP allowlist, QA Wolf needs a route to it before a flow can run. [Connect QA Wolf to your network](/vpn) covers the options: QA Wolf's static IP range, OpenVPN, a site-to-site IPSec tunnel, and client-based VPNs.
+If your application sits behind a firewall, a private network, or an IP allowlist, give QA Wolf a route in. [Connect QA Wolf to your network](/vpn) covers the options: QA Wolf's static IP range, OpenVPN, a site-to-site IPSec tunnel, and client-based VPNs.
 
 A flow can also open a tunnel itself when only part of your app is private — see [Connect to a VPN (web)](/connect-with-vpn-web) and [Connect to a VPN (iOS)](/network-connectivity).
 
@@ -50,7 +50,7 @@ A base set of rules always runs. Add an `.eslintrc.json` at the root of your rep
 }
 ```
 
-Nothing creates this file for you, so those rules stay off until you add it. [Lint rules](/lint-rules) lists every rule, how to change one's severity, and what QA Wolf reads from the file.
+Create the file yourself; new workspaces start without one. [Lint rules](/lint-rules) lists every rule, how to change one's severity, and what QA Wolf reads from the file.
 
 ## Manage access
 
