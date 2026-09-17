@@ -866,6 +866,7 @@
               {
                 "group": "Mobile build testing",
                 "pages": [
+                  "test-a-mobile-app",
                   "Fastlane",
                   "Integrate-a-mobile-build-with-GitHub-Actions",
                   "Mobile-build-with-the-QA-Wolf-SDK",

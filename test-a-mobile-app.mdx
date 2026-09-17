@@ -1,0 +1,295 @@
+---
+title: "Test a mobile app"
+sidebarTitle: "Overview"
+description: "Upload an Android or iOS build to QA Wolf and run your flows against every new version, using Fastlane, GitHub Actions, Node.js, or webhooks."
+---
+
+QA Wolf runs your flows against a real build of your app, so it needs a copy of that build. Getting a mobile app into QA Wolf means sending it your build artifact — an `.apk` or `.aab` for Android, an `.ipa` for iOS — and then telling QA Wolf when a new one is ready to test.
+
+Both steps run from the same pipeline that already builds your app, so every new build is tested without anyone uploading anything by hand.
+
+## How it works
+
+Two things happen each time your app is built:
+
+<Steps>
+  <Step title="Upload the build artifact">
+    Your pipeline sends the build to QA Wolf and gets back a path identifying it.
+  </Step>
+  <Step title="Notify QA Wolf of the deployment">
+    Your pipeline passes that path to QA Wolf as `RUN_INPUT_PATH`, which starts a run against the new build.
+  </Step>
+</Steps>
+
+You can upload builds without notifying, which is useful while setting this up. Flows won't run until the notify step is in place.
+
+The rest of this page covers both steps. Pick the tab that matches how your app is built — the steps are the same either way, only the syntax differs.
+
+## Before you begin
+
+<Check>
+  Make sure you have:
+
+  - A pipeline that produces a mobile build artifact (`.apk`, `.aab`, or `.ipa`).
+  - A QA Wolf API key, stored as a secret in your CI system under `QAWOLF_API_KEY`.
+  - Naming conventions agreed for your build artifacts. See [Name your build artifacts](#name-your-build-artifacts).
+</Check>
+
+<Warning>
+  QA Wolf must enable mobile triggers for your workspace before any of this starts a run. Until that's done, uploads and deploy notifications both succeed and no flows run — with no error to tell you why. Ask your QA Wolf representative to enable mobile triggers, and expect to tell them which environments you want to test, whether PR testing is enabled, and the naming conventions you're using.
+</Warning>
+
+### Find your API key
+
+<Steps>
+  <Step>
+    Open the workspace name dropdown in QA Wolf and click **Workspace Settings**.
+  </Step>
+  <Step>
+    Choose **Integrations**.
+  </Step>
+  <Step>
+    Under **API Access**, click the <Icon icon="clipboard" /> icon to the right of **API Key**.
+  </Step>
+</Steps>
+
+Store the key as a secret in your CI system and make sure the job that talks to QA Wolf can read it as `QAWOLF_API_KEY`.
+
+## Name your build artifacts
+
+Build artifacts need consistent names so QA Wolf can associate each one with the right environment. The name identifies which environment a build belongs to, whether it's tied to a pull request, and which build a given run used.
+
+Provide the basename only. QA Wolf applies the file extension automatically based on the artifact you upload.
+
+**Static environments** are long-lived, such as staging or release. Use the same basename every time you build for that environment.
+
+```text
+<prefix>-<environment-name>
+```
+
+Example: `app-staging`
+
+**PR (ephemeral) environments** are short-lived and tied to one pull request. These apply only if PR testing is enabled.
+
+```text
+<prefix>-<org>-<repo>-pr<number>
+```
+
+Example: `app-myorg-myrepo-pr123`
+
+## Upload a build artifact
+
+<Tabs>
+  <Tab title="Fastlane">
+    Add the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) to your project, then call `upload_to_qawolf` in the lane that builds your app.
+
+    Example:
+
+    ```ruby
+    lane :qawolf do
+      # Your existing build step
+
+      upload_to_qawolf(
+        executable_file_basename: "app-staging"
+      )
+    end
+    ```
+
+    QA Wolf doesn't set up Fastlane or create build lanes — this assumes Fastlane already produces a build artifact.
+  </Tab>
+
+  <Tab title="GitHub Actions">
+    Add the upload action to the workflow that builds your app, after the build step produces an artifact.
+
+    Example:
+
+    ```yaml
+    - name: Upload mobile build to QA Wolf
+      id: upload-run-input
+      uses: qawolf/upload-run-inputs-executable-action@v1
+      with:
+        qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+        input-file-path: ./path/to/build.apk
+        executable-file-basename: app-staging
+    ```
+  </Tab>
+
+  <Tab title="Node.js">
+    Use this tab if your CI system isn't GitHub Actions or Fastlane but can run Node.js 18 or later.
+
+    Install the SDK in your CI job:
+
+    ```bash
+    npm install @qawolf/ci-sdk
+    ```
+
+    Example:
+
+    ```js
+    import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+    import fs from "fs/promises";
+
+    const sdk = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
+
+    const signedUrl = await sdk.generateSignedUrlForRunInputsExecutablesStorage({
+      destinationFilePath: "app-staging",
+    });
+
+    await fetch(signedUrl.uploadUrl, {
+      method: "PUT",
+      body: await fs.readFile("./path/to/build.apk"),
+      headers: { "Content-Type": "application/octet-stream" },
+    });
+
+    const executablePath = signedUrl.playgroundFileLocation;
+    ```
+  </Tab>
+
+  <Tab title="Webhooks">
+    Use this tab if your CI system can't run Node.js — ArgoCD, locked-down runners, and minimal containers, for example. It needs only the ability to make HTTP requests.
+
+    <Steps>
+      <Step title="Generate a signed URL">
+        ```bash
+        curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=app-staging" \
+          -H "Authorization: Bearer $QAWOLF_API_KEY"
+        ```
+
+        On success, you'll receive:
+
+        ```json
+        {
+          "fileLocation": "$TEAM_ID/app-staging",
+          "playgroundFileLocation": "app-staging",
+          "signedUrl": "https://..."
+        }
+        ```
+
+        Copy the `playgroundFileLocation` value — you'll use it in the notify step.
+      </Step>
+
+      <Step title="Upload the file">
+        ```bash
+        curl -X PUT \
+          --header "Content-Type: application/octet-stream" \
+          --data-binary @./path/to/build.apk \
+          "$SIGNED_URL"
+        ```
+      </Step>
+    </Steps>
+
+    See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the full request and response reference, including error codes.
+  </Tab>
+</Tabs>
+
+<Note>
+  The examples above upload an Android `.apk`. iOS works identically — point the same steps at your `.ipa` instead. QA Wolf detects the extension from the artifact you upload.
+</Note>
+
+## Trigger a test run
+
+After the upload, notify QA Wolf that a new build is ready. Pass the path from the upload step as `RUN_INPUT_PATH`.
+
+<Tabs>
+  <Tab title="Fastlane">
+    The Fastlane plugin takes the *name* of the environment variable holding the path, rather than the path itself.
+
+    Example:
+
+    ```ruby
+    notify_deploy_qawolf(
+      executable_environment_key: "RUN_INPUT_PATH"
+    )
+    ```
+  </Tab>
+
+  <Tab title="GitHub Actions">
+    Example:
+
+    ```yaml
+    - name: Notify QA Wolf of deployment
+      uses: qawolf/notify-qawolf-on-deploy-action@v1
+      with:
+        qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+        deployment-type: staging
+        variables: >
+          { "RUN_INPUT_PATH": "${{ steps.upload-run-input.outputs.destination-file-path }}" }
+    ```
+  </Tab>
+
+  <Tab title="Node.js">
+    Example:
+
+    ```js
+    await sdk.attemptNotifyDeploy({
+      deploymentType: "staging",
+      variables: {
+        RUN_INPUT_PATH: executablePath,
+      },
+    });
+    ```
+  </Tab>
+
+  <Tab title="Webhooks">
+    Example:
+
+    ```bash
+    curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
+      -H "Authorization: Bearer $QAWOLF_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "deployment_type": "staging",
+        "variables": {
+          "RUN_INPUT_PATH": "<playgroundFileLocation>"
+        }
+      }'
+    ```
+
+    <Warning>
+      A 200 response doesn't guarantee a run was created. Inspect the response body to confirm. See [webhooks/deploy\_success](/deploy-success) for full response details.
+    </Warning>
+  </Tab>
+</Tabs>
+
+<Note>
+  **The deployment type isn't a platform setting.** It's a free-form label that QA Wolf matches against the trigger configured for your workspace — `staging` and `preview` are typical values. It doesn't identify the app as Android or iOS, and there's no separate value to use for iOS. Use whichever label your QA Wolf representative configured, and omit it if no label was configured.
+</Note>
+
+<Tip>
+  `RUN_INPUT_PATH` accepts either form of the path. An absolute path is used as-is; a bare filename is resolved against the uploads directory on the runner. Both reach the same build.
+</Tip>
+
+## Use the build in a flow
+
+Once a build is uploaded, QA Wolf uses the most recent one automatically — flows don't need to name it. To point a flow at a specific build instead, see [App resolution](/libraries/flows/api-reference/android#app-resolution) for Android or the [iOS equivalent](/libraries/flows/api-reference/ios#app-resolution).
+
+## Verify the integration
+
+<Steps>
+  <Step>
+    Run the CI job that builds your app.
+  </Step>
+  <Step>
+    Confirm the upload step completes successfully.
+  </Step>
+  <Step>
+    Confirm the deploy notification step runs without errors.
+  </Step>
+  <Step>
+    Once mobile triggers are enabled, check the **Runs** tab for the run that was triggered.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+- **Uploads succeed, but no runs start** — mobile triggers may not be enabled for your workspace yet. Ask your QA Wolf representative to complete the configuration.
+- **The artifact isn't found during a run** — verify the basename matches your naming conventions, and that `RUN_INPUT_PATH` carries the path returned by the upload step.
+- **Authentication errors** — verify `QAWOLF_API_KEY` is set correctly in the CI job.
+- **The wrong environment is tested** — verify the deployment type matches the value configured for your workspace.
+- **The job fails before the QA Wolf steps** — verify the build step completes and produces the artifact you expect.
+
+## Related
+
+- [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls)
+- [webhooks/deploy\_success](/deploy-success)
+- [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
