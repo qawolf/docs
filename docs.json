@@ -590,6 +590,10 @@
       "destination": "/vpn"
     },
     {
+      "source": "/onboard",
+      "destination": "/quick-start"
+    },
+    {
       "source": "/Recommended-reading-for-QA-engineers-and-developers",
       "destination": "/Full-Service-The-First-Three-Months"
     }
@@ -620,7 +624,6 @@
         "pages": [
           "index",
           "quick-start",
-          "onboard",
           "Glossary"
         ]
       },
