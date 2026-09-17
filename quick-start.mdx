@@ -115,6 +115,8 @@ title: "Quick start"
     qawolf auth login
     ```
 
+    Confirm the connection with `qawolf auth whoami`.
+
     Read more: [Authenticate the QA Wolf CLI](/local-execution/authenticate).
   </Step>
 
@@ -131,14 +133,45 @@ title: "Quick start"
 
   <Step title="Run them">
     ```bash
+    qawolf flows list
     qawolf flows run --env <env>
     ```
+
+    The CLI exits `0` when every flow passes and `1` when one or more fail. See [exit codes](/libraries/cli/api-reference/index#exit-codes) for the rest.
 
     Read more: [Run flows locally](/local-execution/run-flows-locally).
   </Step>
 </Steps>
 
-The CLI ships a `qawolf-cli` agent skill covering every command, so a coding agent can drive it directly. See the [CLI command reference](/libraries/cli/api-reference/commands) for every command, flag, and exit code, or [Diagnose problems](/local-execution/diagnose-problems) if a step fails.
+### Run on QA Wolf infrastructure
+
+To run flows on the platform rather than your machine:
+
+```bash
+qawolf run create --environment-id <env> --flow-ids <flow_id>
+```
+
+Select flows by id, by `--tag`, or both.
+
+### If a step fails
+
+```bash
+qawolf doctor
+```
+
+It reports the CLI version, the Node.js version, credentials, connectivity to QA Wolf, and the installed browsers.
+
+Read more: [Diagnose problems](/local-execution/diagnose-problems).
+
+### For coding agents
+
+The CLI ships a `qawolf-cli` agent skill covering every command, its read or write kind, and the conventions that matter — pass `--json` for stable output, and terminate interactive runners, which bill while they run. Agents such as Claude Code, Codex, Cursor, and Gemini CLI can use it. It's included in the [`@qawolf/cli` package](https://github.com/qawolf/cli) under `skills/qawolf-cli`.
+
+See the [CLI command reference](/libraries/cli/api-reference/commands) for every command, flag, and exit code.
+
+<Tip>
+  Before using a command whose flags you don't know, run `qawolf <command> --help`. The installed CLI always matches its own version.
+</Tip>
 
 ## Next
 
