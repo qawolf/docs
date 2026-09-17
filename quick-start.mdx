@@ -114,6 +114,8 @@ title: "Quick start"
     ```bash
     qawolf auth login
     ```
+
+    Read more: [Authenticate the QA Wolf CLI](/local-execution/authenticate).
   </Step>
 
   <Step title="Pull your flows">
@@ -123,16 +125,20 @@ title: "Quick start"
     qawolf flows pull --env <env>
     qawolf install
     ```
+
+    Read more: [Pull an environment](/local-execution/pull-flows#pull-an-environment) and [Install runtime dependencies](/local-execution/install-dependencies).
   </Step>
 
   <Step title="Run them">
     ```bash
     qawolf flows run --env <env>
     ```
+
+    Read more: [Run flows locally](/local-execution/run-flows-locally).
   </Step>
 </Steps>
 
-The CLI ships a `qawolf-cli` agent skill covering every command, so a coding agent can drive it directly. See [Local execution](/local-execution/authenticate) for the full path and the [CLI reference](/libraries/cli/api-reference/index) for every command, flag, and exit code.
+The CLI ships a `qawolf-cli` agent skill covering every command, so a coding agent can drive it directly. See the [CLI command reference](/libraries/cli/api-reference/commands) for every command, flag, and exit code, or [Diagnose problems](/local-execution/diagnose-problems) if a step fails.
 
 ## Next
 
