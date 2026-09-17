@@ -1,19 +1,23 @@
 ---
 title: "Connect your agent"
-sidebarTitle: "Preview: component"
-description: "Embed preview — the Connect your agent flow rebuilt as a native docs component."
+description: "Add QA Wolf to your coding agent, then copy a prompt to create your first test."
 mode: "wide"
 ---
 
 {/*
-  PREVIEW PAGE — see previews/connect-agent-iframe.mdx for the other approach.
-  Deliberately blank apart from the embed.
+  The panel is a native docs component rather than an iframe of the prototype
+  at qaw-prototype.vercel.app: it inherits the docs light/dark theme, sizes
+  itself to its content, and leaves out the prototype's own app chrome.
 
-  Approach B: rebuild the panel as a Mintlify JSX snippet. It inherits the
-  docs light/dark theme, sizes itself to its content, and leaves out the
-  prototype's own app chrome ("Back to app", "Get a demo") that the iframe
-  version pulls in. The page's own H1 above serves as the heading, so the
-  component does not repeat one.
+  The page's own H1 above serves as the heading, so the component does not
+  repeat one.
+
+  Note for whoever adds prose here: neither an embed nor a component is
+  visible to Mintlify search, /llms.txt or a page's .md form — the .md for
+  this page returns the component's JSX source, not its content. STYLE.md
+  rule 18 counts a coding agent as a real reader of exactly this kind of MCP
+  setup page, so the MCP URL, the install links and the prompt need to appear
+  as text somewhere on the page as well, not only inside the component.
 */}
 
 import { ConnectAgent } from "/snippets/connect-agent.jsx";
