@@ -147,7 +147,7 @@
     },
     {
       "source": "/qawolf/Recommended-reading-for-QA-engineers-and-developers",
-      "destination": "/Recommended-reading-for-QA-engineers-and-developers"
+      "destination": "/Full-Service-The-First-Three-Months"
     },
     {
       "source": "/qawolf/Request-new-coverage",
@@ -592,6 +592,10 @@
     {
       "source": "/onboard",
       "destination": "/quick-start"
+    },
+    {
+      "source": "/Recommended-reading-for-QA-engineers-and-developers",
+      "destination": "/Full-Service-The-First-Three-Months"
     }
   ],
   "integrations": {
@@ -953,8 +957,7 @@
             "group": "Introduction",
             "pages": [
               "Full-Service-The-First-Three-Months",
-              "Full-Service-FAQs",
-              "Recommended-reading-for-QA-engineers-and-developers"
+              "Full-Service-FAQs"
             ]
           },
           {
