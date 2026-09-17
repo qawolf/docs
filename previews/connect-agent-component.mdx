@@ -1,0 +1,21 @@
+---
+title: "Connect your agent"
+sidebarTitle: "Preview: component"
+description: "Embed preview — the Connect your agent flow rebuilt as a native docs component."
+mode: "wide"
+---
+
+{/*
+  PREVIEW PAGE — see previews/connect-agent-iframe.mdx for the other approach.
+  Deliberately blank apart from the embed.
+
+  Approach B: rebuild the panel as a Mintlify JSX snippet. It inherits the
+  docs light/dark theme, sizes itself to its content, and leaves out the
+  prototype's own app chrome ("Back to app", "Get a demo") that the iframe
+  version pulls in. The page's own H1 above serves as the heading, so the
+  component does not repeat one.
+*/}
+
+import { ConnectAgent } from "/snippets/connect-agent.jsx";
+
+<ConnectAgent />

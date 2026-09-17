@@ -624,7 +624,9 @@
         "pages": [
           "index",
           "quick-start",
-          "Glossary"
+          "Glossary",
+          "previews/connect-agent-iframe",
+          "previews/connect-agent-component"
         ]
       },
       {
