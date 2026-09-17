@@ -411,11 +411,11 @@
     },
     {
       "source": "/qawolf/local-execution/install-dependencies",
-      "destination": "/local-execution/install-dependencies"
+      "destination": "/local-execution/run-flows-locally#install-dependencies-ahead-of-time"
     },
     {
       "source": "/qawolf/local-execution/pull-flows",
-      "destination": "/local-execution/pull-flows"
+      "destination": "/local-execution/run-flows-locally#pull-an-environment"
     },
     {
       "source": "/qawolf/local-execution/run-flows-locally",
@@ -596,6 +596,14 @@
     {
       "source": "/Recommended-reading-for-QA-engineers-and-developers",
       "destination": "/Full-Service-The-First-Three-Months"
+    },
+    {
+      "source": "/local-execution/pull-flows",
+      "destination": "/local-execution/run-flows-locally#pull-an-environment"
+    },
+    {
+      "source": "/local-execution/install-dependencies",
+      "destination": "/local-execution/run-flows-locally#install-dependencies-ahead-of-time"
     }
   ],
   "integrations": {
@@ -879,8 +887,6 @@
               "local-execution/get-started",
               "local-execution/authenticate",
               "local-execution/run-flows-locally",
-              "local-execution/pull-flows",
-              "local-execution/install-dependencies",
               "local-execution/set-up-a-project",
               "local-execution/diagnose-problems"
             ]

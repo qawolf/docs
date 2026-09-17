@@ -61,7 +61,7 @@ Options:
 - `--har-content <mode>` — `omit` or `full`. `full` includes response bodies and uses more memory. Default: `omit`.
 - `--output-dir <path>` — directory for run artifacts (videos, traces, HAR). Default: `.qawolf/output`.
 - `--headed` — show the browser window instead of running headless. Default: `false`.
-- `--env <env_id>` — environment ID. When set, the CLI pulls missing flows before the run. See [where to find it](/local-execution/pull-flows#pull-an-environment).
+- `--env <env_id>` — environment ID. When set, the CLI pulls missing flows before the run. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
 
 Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments or an unrecognized flow target. See [Exit codes](/libraries/cli/api-reference/index#exit-codes).
 
@@ -91,7 +91,7 @@ qawolf flows pull --env <env_id> --yes
 
 Options:
 
-- `--env <env_id>` — required. The environment ID to pull from. See [where to find it](/local-execution/pull-flows#pull-an-environment).
+- `--env <env_id>` — required. The environment ID to pull from. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
 - `--out <path>` — destination directory. Defaults to `.qawolf/<env_id>/`.
 - `--yes` — overwrite locally-modified files without prompting. Default: `false`.
 
@@ -163,7 +163,7 @@ qawolf run create --environment-id <env_id> --flow-ids <flow_id>... --environmen
 
 Options:
 
-- `--environment-id <env>` — the id or alias of the environment to run. See [where to find it](/local-execution/pull-flows#pull-an-environment).
+- `--environment-id <env>` — the id or alias of the environment to run. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
 - `--environment-variables <KEY=VALUE...>` — environment variables to set for the run.
 - `--flow-ids <flow_id>...` — limit the run to specific flow IDs.
 - `--ignore-rules` — ignore the workspace's sequencing rules. By default they're honoured: the flows your selection depends on are added to the run, and flows run in the order the rules require.

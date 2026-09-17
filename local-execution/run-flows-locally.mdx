@@ -4,7 +4,7 @@ description: "Run your team's flows on your own machine — the CLI pulls, insta
 sidebarTitle: "Run flows locally"
 ---
 
-`qawolf flows run --env <env_id>` is the recommended path. It runs your team's flows from the local `.qawolf/<env_id>/` cache, pulling them first only if they are not already cached locally, then installs the npm dependencies and Playwright browsers they need and runs them. Android flows require installing the Android tooling first with `qawolf install android`. See [Install dependencies](/local-execution/install-dependencies).
+`qawolf flows run --env <env_id>` is the recommended path. It runs your team's flows from the local `.qawolf/<env_id>/` cache, pulling them first only if they are not already cached locally, then installs the npm dependencies and Playwright browsers they need and runs them. Android flows require installing the Android tooling first with `qawolf install android` — see [Install dependencies ahead of time](#install-dependencies-ahead-of-time).
 
 <Check>
   Authenticate the CLI first. See [Authenticate the QA Wolf CLI](/local-execution/authenticate).
@@ -14,7 +14,7 @@ sidebarTitle: "Run flows locally"
 
 <Steps>
   <Step>
-    Find the environment's ID — see [Pull an environment](/local-execution/pull-flows#pull-an-environment).
+    Find the environment's ID — see [Pull an environment](#pull-an-environment).
   </Step>
   <Step>
     From any directory, run:
@@ -30,7 +30,7 @@ sidebarTitle: "Run flows locally"
     3. installs the npm dependencies and Playwright browsers the flows need
     4. runs every flow
 
-    To refresh the local cache against the platform, run `qawolf flows pull --env <env_id>`. See [Pull your team's flows](/local-execution/pull-flows).
+    To refresh the local cache against the platform, run `qawolf flows pull --env <env_id>`. See [Refresh a pulled environment](#refresh-a-pulled-environment).
   </Step>
 </Steps>
 
@@ -119,7 +119,115 @@ If you've scaffolded a [local-only project](/local-execution/set-up-a-project) w
 qawolf flows run
 ```
 
-The CLI discovers flows matching `**/*.flow.{ts,js}` in the current directory and runs them against locally-installed runtime dependencies. See [Install dependencies](/local-execution/install-dependencies) if you need to install browsers or Android tooling explicitly.
+The CLI discovers flows matching `**/*.flow.{ts,js}` in the current directory and runs them against locally-installed runtime dependencies. See [Install dependencies ahead of time](#install-dependencies-ahead-of-time) if you need to install browsers or Android tooling explicitly.
+
+## Pull an environment
+
+A run pulls for you, so you only need `qawolf flows pull` when you want the flow files without running them: to inspect them, commit them to a repository, or refresh a stale cache.
+
+<Steps>
+  <Step>
+    Find the environment's ID in the QA Wolf app. Open **Workspace settings → Environments** and select the environment. Copy the `id` query parameter from the page URL: `https://app.qawolf.com/<team_slug>/settings/environments?id=<env_id>`. Use that value, not the environment's display name.
+  </Step>
+  <Step>
+    Pull the flows:
+
+    ```bash
+    qawolf flows pull --env <env_id>
+    ```
+
+    The CLI writes flows to `.qawolf/<env_id>/` by default. To use a different destination, pass `--out`:
+
+    ```bash
+    qawolf flows pull --env <env_id> --out ./snapshot
+    ```
+  </Step>
+  <Step>
+    List the pulled flows:
+
+    ```bash
+    qawolf flows list
+    ```
+  </Step>
+</Steps>
+
+### What `pull` writes
+
+Inside `.qawolf/<env_id>/`, the CLI stores:
+
+- the flow source files
+- a manifest tracking what was pulled and when
+- an `assets/` directory with the environment's file assets from team storage, wired up so flows resolve them locally
+- a `.env` file with the environment's variables, loaded automatically by `qawolf flows run`
+
+### Refresh a pulled environment
+
+Run `qawolf flows pull --env <env_id>` again. The CLI prompts before overwriting any file you've modified locally. To skip the prompt and overwrite, pass `--yes`:
+
+```bash
+qawolf flows pull --env <env_id> --yes
+```
+
+### List flows on the platform
+
+To see what is available on the platform without pulling, use `--remote`:
+
+```bash
+qawolf flows list --remote
+qawolf flows list "checkout/**" --remote
+```
+
+### What's not pulled
+
+QA Wolf doesn't download mobile app binaries. Mobile flows reference the APK or IPA build through an environment variable, so make sure that path points to a build available on the machine before running. Flows that read paths from runner-only `QAWOLF_*_DIR` environment variables also cannot resolve those paths locally; `qawolf doctor` flags both cases.
+
+## Install dependencies ahead of time
+
+A run installs npm dependencies and Playwright browsers automatically before its first run, so web-only users rarely invoke `qawolf install` directly. A run doesn't install Android dependencies; run `qawolf install android` before running Android flows. Use `qawolf install` to install ahead of time — for example, to warm a CI cache between the checkout step and the run step — or when running flows from a [local-only project](/local-execution/set-up-a-project).
+
+From the project root, run:
+
+```bash
+qawolf install
+```
+
+The CLI scans the project for flows, looks at each flow's `target`, and installs the dependencies required by every target it finds.
+
+### Install only for specific flows
+
+Pass a pattern to limit which flows are considered:
+
+```bash
+qawolf install "checkout/**"
+```
+
+This is useful in CI when a job only runs a subset of the suite.
+
+### Install browsers only
+
+```bash
+qawolf install browsers
+qawolf install browsers "flows/web/**"
+```
+
+Equivalent to running `playwright install` for the browsers your web flows target.
+
+### Install Android dependencies only
+
+<Check>
+  Set `ANDROID_HOME` (or `ANDROID_SDK_ROOT`) to the path of your Android SDK before running this command. Install the SDK through Android Studio's **SDK Manager** or the standalone `cmdline-tools` package.
+</Check>
+
+```bash
+qawolf install android
+qawolf install android "flows/mobile/**"
+```
+
+The command installs the Appium uiautomator2 driver, downloads the Android system images for each target the matching flows use, and creates the corresponding AVDs.
+
+### iOS support
+
+The CLI cannot yet execute iOS flows. `qawolf install` skips them with a warning. iOS support requires macOS with Xcode when it ships.
 
 ## Exit codes
 
