@@ -97,6 +97,43 @@ title: "Quick start"
   </Step>
 </Steps>
 
+## Use the CLI
+
+<Steps>
+  <Step title="Install the CLI">
+    Requires Node.js 20.19 or later, or download a standalone binary from [GitHub Releases](https://github.com/qawolf/cli/releases).
+
+    ```bash
+    npm install -g @qawolf/cli
+    ```
+  </Step>
+
+  <Step title="Sign in">
+    Sign in through a browser or with an API key. In CI or an agent sandbox, set `QAWOLF_API_KEY` instead.
+
+    ```bash
+    qawolf auth login
+    ```
+  </Step>
+
+  <Step title="Pull your flows">
+    Find your environment with `qawolf --json environment find`, then pull its flows and install what they need to run.
+
+    ```bash
+    qawolf flows pull --env <env>
+    qawolf install
+    ```
+  </Step>
+
+  <Step title="Run them">
+    ```bash
+    qawolf flows run --env <env>
+    ```
+  </Step>
+</Steps>
+
+The CLI ships a `qawolf-cli` agent skill covering every command, so a coding agent can drive it directly. See [Local execution](/local-execution/authenticate) for the full path and the [CLI reference](/libraries/cli/api-reference/index) for every command, flag, and exit code.
+
 ## Next
 
 <Columns cols={2}>

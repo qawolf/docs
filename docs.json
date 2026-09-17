@@ -588,6 +588,10 @@
     {
       "source": "/Tailscale-Client-based-VPN",
       "destination": "/vpn"
+    },
+    {
+      "source": "/onboard",
+      "destination": "/quick-start"
     }
   ],
   "integrations": {
@@ -616,7 +620,6 @@
         "pages": [
           "index",
           "quick-start",
-          "onboard",
           "Glossary"
         ]
       },
