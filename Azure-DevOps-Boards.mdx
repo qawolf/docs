@@ -1,66 +1,37 @@
 ---
-title: "How to integrate with Azure DevOps Boards"
+title: "Integrate with Azure DevOps Boards"
 description: "Connect QA Wolf to Azure DevOps Boards to automatically create and sync bug report issues using OAuth."
 sidebarTitle: "Azure DevOps Boards"
 ---
 
-<Check>
-  Go to `https://dev.azure.com/ORGANIZATION_NAME/_settings/organizationPolicy` — **ORGANIZATION_NAME** is your Azure DevOps Organization name.
+QA Wolf connects to Azure DevOps using OAuth, so **Third-party application access via OAuth** must be enabled for your organization before QA Wolf can be authorized.
 
-  **Because** QA Wolf connects to Azure DevOps using OAuth, you must enable **Third-party application access via OAuth**.
+## Requirements
 
-  <Frame>
-    ![](/images/integrate-your-issue-tracker/image-21.png)
-  </Frame>
-  If **Third-party application access via OAuth** is disabled, an Azure DevOps organization owner must enable it before QA Wolf can be authorized. If you are not an organization owner, contact your Azure DevOps administrator.
-</Check>
+- Access to a QA Wolf workspace
+- **Third-party application access via OAuth** enabled in Azure DevOps
+- An Azure DevOps project to create bug reports in
+
+## Enable OAuth access in Azure DevOps
+
+Go to `https://dev.azure.com/ORGANIZATION_NAME/_settings/organizationPolicy`, replacing **ORGANIZATION_NAME** with your Azure DevOps organization name, and enable **Third-party application access via OAuth**.
+
+Only an Azure DevOps organization owner can change this setting. If you aren't one, contact your Azure DevOps administrator.
+
+## How to connect QA Wolf to Azure DevOps
 
 <Steps>
-  <Step>
-    Select **Workspace settings** from the **Workspace name** dropdown above the flows list.
-
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-15.png)
-    </Frame>
+  <Step title="Start the connection">
+    Enable the Azure DevOps connection from **Workspace settings → Integrations**, then select the **Azure DevOps** service.
   </Step>
-  <Step>
-    Click **Integrations** from the left-side navigation bar.
 
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-16.png)
-    </Frame>
+  <Step title="Authorize your organization">
+    Enter your Azure DevOps **Organization name** and continue.
   </Step>
-  <Step>
-    Click **Enable** next to Azure DevOps.
-  </Step>
-  <Step>
-    Click on the connect button.
 
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-17.png)
-    </Frame>
-  </Step>
-  <Step>
-    Select the **Azure DevOps** service.
-
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-18.png)
-    </Frame>
-  </Step>
-  <Step>
-    Enter the Azure DevOps **Organization name** and click **Continue**.
-
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-19.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **Configuration**, then select the target project from the dropdown.
-
-    - Click **Disconnect** at any time to disable the integration.
-
-      <Frame>
-        ![](/images/integrate-your-issue-tracker/image-20.png)
-      </Frame>
+  <Step title="Choose the target project">
+    Click **Configuration**, then select the target project.
   </Step>
 </Steps>
+
+To disable the integration, click **Disconnect**.

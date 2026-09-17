@@ -1,41 +1,29 @@
 ---
-title: "How to integrate with Asana"
+title: "Integrate with Asana"
 description: "Connect QA Wolf to Asana to automatically create and sync bug report issues in your Asana workspace."
 sidebarTitle: "Asana"
 ---
 
+## What this integration does
+
+- **Automatic issue handling.** Creates Asana tasks automatically when new bug reports are generated in QA Wolf.
+- **Synchronization.** Closing a bug report in QA Wolf closes the linked Asana task, and closing, reopening, or updating the Asana task updates QA Wolf.
+
+## Requirements
+
+- Access to a QA Wolf workspace
+- An Asana workspace and project to create bug reports in
+
+## How to connect QA Wolf to Asana
+
 <Steps>
-  <Step>
-    Select **Workspace settings** from the `Workspace name` dropdown above the flows list.
-
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-11.png)
-    </Frame>
+  <Step title="Start the connection">
+    Enable the Asana connection from **Workspace settings → Integrations**.
   </Step>
-  <Step>
-    Click **Integrations** from the left-side navigation bar.
 
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-12.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **Enable** next to Asana.
-  </Step>
-  <Step>
-    Click **Connect** on the modal.
-
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-13.png)
-    </Frame>
-  </Step>
-  <Step>
-    Enable **Bug reports** and select the **Workspace** and **Project** in which bug reports are going to be created.
-
-    - Click **Disconnect** to disable the integration.
-
-      <Frame>
-        ![](/images/integrate-your-issue-tracker/image-14.png)
-      </Frame>
+  <Step title="Configure the integration">
+    Enable **Bug reports**, then select the **Workspace** and **Project** to create bug reports in.
   </Step>
 </Steps>
+
+To disable the integration, click **Disconnect**.

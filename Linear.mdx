@@ -1,46 +1,30 @@
 ---
-title: "How to integrate with Linear"
+title: "Integrate with Linear"
 description: "Connect QA Wolf to Linear to automatically create and sync bug report issues with your Linear team."
 sidebarTitle: "Linear"
 ---
 
+## What this integration does
+
+- **Automatic issue handling.** Creates Linear issues automatically when new bug reports are generated in QA Wolf.
+- **Synchronization.** Closing a bug report in QA Wolf closes the linked Linear issue, and closing, reopening, or updating the Linear issue updates QA Wolf.
+- **Test creation requests.** Add a **QA Wolf** label to a Linear issue, or assign it to a QA Wolf user, to automatically create a coverage request in QA Wolf. Matching ignores case and accepts `qawolf` or `qa wolf`.
+
+## Requirements
+
+- Access to a QA Wolf workspace
+- A Linear team to create issues in
+
+## How to connect QA Wolf to Linear
+
 <Steps>
-  <Step>
-    Open the `Workspace name` dropdown and click **Workspace settings**.
-
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-7.png)
-    </Frame>
+  <Step title="Start the connection">
+    Enable the Linear connection from **Workspace settings → Integrations**.
   </Step>
-  <Step>
-    Navigate to **Integrations**.
 
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-8.png)
-    </Frame>
-  </Step>
-  <Step>
-    Click **Enable** next to **Linear**. A modal opens.
-  </Step>
-  <Step>
-    Click **Connect**.
+  <Step title="Configure the integration">
+    Enter the **Team name** exactly as it appears in Linear. The team name is case sensitive.
 
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-9.png)
-    </Frame>
-  </Step>
-  <Step>
-    Enter the **Team name** exactly as in Linear.
-
-    <Danger>
-      Team name is case sensitive.
-    </Danger>
-  </Step>
-  <Step>
-    Enable the **Create bug report issue** toggle and optionally set **Label UUID** and **Assignee UUID** to set a default label and assignee for newly created issues.
-
-    <Frame>
-      ![](/images/integrate-your-issue-tracker/image-10.png)
-    </Frame>
+    Enable **Create bug report issue**. Optionally set **Label UUID** and **Assignee UUID** to give newly created issues a default label and assignee.
   </Step>
 </Steps>
