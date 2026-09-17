@@ -262,12 +262,12 @@ export const ConnectAgent = () => {
       </div>
 
       <p className="qaw-ca-foot">
-        Not using a coding agent?{" "}
+        Not using a coding agent? Use the{" "}
         <a
           className="qaw-ca-link"
           href="https://app.qawolf.com/sign-up?utm_source=help+docs+quick+start+guide"
         >
-          Create a QA Wolf account
+          QA Wolf platform
         </a>.
       </p>
     </div>
