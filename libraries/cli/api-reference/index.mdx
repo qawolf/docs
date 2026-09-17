@@ -50,3 +50,5 @@ Every qawolf CLI command exits with one of the codes below.
 | `3` | `auth` | `QAWOLF_API_KEY` is missing or invalid. |
 | `4` | `network` | The QA Wolf API was unreachable, a download from storage failed, or a registry was unreachable. |
 | `5` | `config` | `qawolf.config.ts` is invalid, or a file collision occurred during `qawolf init`. |
+| `6` | `timeout` | A command exceeded its timeout. |
+| `7` | `payment` | The workspace's billing state prevented the command. |
