@@ -26,9 +26,13 @@ If your application sits behind a firewall, a private network, or an IP allowlis
 
 ## Run flows automatically
 
-Connect your pipeline so a deploy triggers a run: [GitHub/GitHub Actions](/GitHub-GitHub-Actions), [GitLab](/GitLab), or [CircleCI](/circle-ci).
+Connect your pipeline so a deploy triggers a run:
 
-For any other CI system, use the [Node.js SDK](/ci-sdk-integration) if it runs Node.js, or the [deploy webhook](/webhook-integration) otherwise.
+- [GitHub/GitHub Actions](/GitHub-GitHub-Actions)
+- [GitLab](/GitLab)
+- [CircleCI](/circle-ci)
+- [Node.js SDK](/ci-sdk-integration)
+- [Webhook](/webhook-integration)
 
 Once runs are triggered, [tags](/tags) group flows into suites, [Run Rules](/Run-Rules) sequence them, and [Smart Smoke Suites](/smart-smoke-suites) narrow a run to the flows your PR affects.
 
@@ -48,8 +52,8 @@ Violations then surface inline in the editor, and to the AI as it works. Create 
 
 ## Manage access
 
-- **[SSO](/sso)** — authenticate your team through SAML 2.0 or OpenID Connect.
-- **API keys** — generate one under **Workspace settings → Integrations → API Access**. The [CLI](/libraries/cli/api-reference/index), the [REST API](/rest-overview), and every CI integration authenticate with it.
+- [SSO](/sso)
+- [API keys](/rest-overview#authentication)
 
 ## Connect your other tools
 
