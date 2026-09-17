@@ -1,97 +1,72 @@
 ---
-title: "How to integrate with our SDK"
+title: "Integrate with the QA Wolf CI SDK"
 description: "Trigger QA Wolf test runs from any CI system that supports Node.js."
-sidebarTitle: "Other (Node.js)"
+sidebarTitle: "Any CI with Node.js"
 ---
 
-Use this guide if your CI system supports Node.js but does not have a dedicated QA Wolf integration page.
+Use this guide if your CI system supports Node.js and doesn't have a dedicated QA Wolf integration page. If your CI system can't run Node.js, use [Any CI without Node.js](/other-ci-webhook) instead.
 
-<Tip>
-  If your CI system does not support Node.js, use [Other CI (webhook)](/other-ci-webhook) instead.
-</Tip>
+## Requirements
 
-<Check>
-  Make sure you have:
+- Access to a QA Wolf workspace with at least one environment configured
+- A CI pipeline that runs after a successful deployment, with Node.js 18 or later
+- Admin access to your CI system's secret or environment variable storage
 
-  - A CI pipeline that runs after a successful deployment.
-  - Node.js 18 or later available in your CI environment.
-  - Admin access to your CI system's secret or environment variable storage.
-  - At least one QA Wolf environment already configured.
-  - A QA Wolf API key.
-</Check>
-
-## Find the QAWOLF\_API\_KEY
+## How to connect QA Wolf to your CI system
 
 <Steps>
-  <Step>
-    Open the **Workspace name** dropdown in QA Wolf and click **Workspace Settings**.
+  <Step title="Add the QAWOLF_API_KEY secret">
+    Store your QA Wolf API key as a secret named `QAWOLF_API_KEY` in your CI system.
   </Step>
-  <Step>
-    Choose **Integrations** and click the <Icon icon="clipboard" /> icon to the right of **API Key** under **API Access**.
+
+  <Step title="Add the notify script to your repository">
+    Create `.ci/notifyQaWolf.mjs` in the repository that corresponds to the deployments QA Wolf will be testing.
+
+    ```javascript expandable
+    import assert from "assert";
+    import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+    const apiKey = process.env.QAWOLF_API_KEY;
+    assert(apiKey, "QAWOLF_API_KEY is required");
+
+    const sha = process.env.GIT_COMMIT_SHA;
+    assert(sha, "GIT_COMMIT_SHA is required");
+
+    const branch = process.env.GIT_BRANCH;
+    assert(branch, "GIT_BRANCH is required");
+
+    const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey });
+
+    const result = await attemptNotifyDeploy({
+      branch,
+      sha,
+      deploymentType: "staging",
+      hostingService: "GitHub", // or "GitLab"
+      repository: {
+        name: "your-repo-name",
+        owner: "your-org-name",
+      },
+    });
+
+    if (result.outcome !== "success") {
+      throw new Error(`Failed to notify QA Wolf: ${JSON.stringify(result)}`);
+    }
+    ```
+
+    Replace `GIT_COMMIT_SHA` and `GIT_BRANCH` with the variable names your CI system provides for the current commit SHA and branch, and `deploymentType` with the value your QA Wolf representative provides. Set `hostingService` to where your code is hosted, not where your pipeline runs.
   </Step>
-</Steps>
 
-Store the key as a secret in your CI system named `QAWOLF_API_KEY`.
+  <Step title="Run the notify script in your pipeline">
+    Add a step that runs after your deployment is healthy.
 
-## Add the notify script to your repository
-
-Create a file at `.ci/notifyQaWolf.mjs` in the repository that corresponds to the deployments QA Wolf will be testing.
-
-```javascript
-import assert from "assert";
-import { makeQaWolfSdk } from "@qawolf/ci-sdk";
-
-const apiKey = process.env.QAWOLF_API_KEY;
-assert(apiKey, "QAWOLF_API_KEY is required");
-
-const sha = process.env.GIT_COMMIT_SHA;
-assert(sha, "GIT_COMMIT_SHA is required");
-
-const branch = process.env.GIT_BRANCH;
-assert(branch, "GIT_BRANCH is required");
-
-const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey });
-
-const result = await attemptNotifyDeploy({
-  branch,
-  sha,
-  deploymentType: "staging",
-  hostingService: "GitHub", // or "GitLab"
-  repository: {
-    name: "your-repo-name",
-    owner: "your-org-name",
-  },
-});
-
-if (result.outcome !== "success") {
-  throw new Error(`Failed to notify QA Wolf: ${JSON.stringify(result)}`);
-}
-```
-
-<Note>
-  Replace `GIT_COMMIT_SHA` and `GIT_BRANCH` with the environment variable names your CI system provides for the current commit SHA and branch. Replace `deploymentType` with the value your QA Wolf representative provides. Set `hostingService` to where your code is hosted — `"GitHub"` or `"GitLab"` — not where your pipeline runs.
-</Note>
-
-## Run the notify script in your pipeline
-
-Add a step to your CI pipeline that runs after your deployment is healthy:
-
-```bash
-npm install @qawolf/ci-sdk
-node .ci/notifyQaWolf.mjs
-```
-
-## Verify the integration
-
-<Steps>
-  <Step>
-    Trigger your CI pipeline with a new deployment.
+    ```bash
+    npm install @qawolf/ci-sdk
+    node .ci/notifyQaWolf.mjs
+    ```
   </Step>
-  <Step>
-    Confirm the notify step completes without errors.
-  </Step>
-  <Step>
-    Open QA Wolf and confirm a new run appears under the expected environment.
+
+  <Step title="Verify the integration">
+    Trigger your CI pipeline with a new deployment. Confirm the notify step completes without errors, and that a new run appears in QA Wolf under the expected environment.
   </Step>
 </Steps>
 
