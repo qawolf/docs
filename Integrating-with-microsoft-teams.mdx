@@ -1,148 +1,142 @@
 ---
 title: "Integrating with Microsoft Teams"
-description: "Set up Microsoft Teams to receive QA Wolf notifications by configuring external access and shared channels."
+description: "Connect your Microsoft Teams tenant to QA Wolf's shared channel by configuring a Teams policy and cross-tenant access in Microsoft Entra."
 sidebarTitle: "Integrate MS Teams"
 ---
 
-## Completion checklist
+QA Wolf hosts a shared channel and invites your team into it. Shared channels run on Microsoft Entra B2B direct connect, so your team takes part from your own tenant — no guest accounts, no tenant switching.
 
-<Card>
-  In the [Teams Admin Center](https://admin.teams.microsoft.com/):
-
-  <Icon icon="square" /> Teams policies > Join external shared channels to On
-
-  <Icon icon="square" /> Users > External Access > Ensure QA Wolf is not blocked
-
-  In the [Microsoft Entra admin center](https://entra.microsoft.com/) (**as a Security Administrator**):
-
-  <Icon icon="square" /> Add QA Wolf's tenant ID - `3d41cc11-5772-457c-aad2-16b3924b22d0`
-
-  <Icon icon="square" /> Verify access settings do not restrict access to or from QA Wolf, or adjust accordingly
-
-  <Icon icon="square" /> Share your Microsoft Entra tenant ID with QA Wolf
-</Card>
-
-### Enable shared channels in Teams
+The connection is mutual. Both organizations have to allow the other, so nothing works until your side and ours are both configured.
 
 <Note>
-  Shared channels are **enabled by default** in Teams.
+  Send us your **Microsoft Entra tenant ID** and **domain name** so we can configure our side. Both are on the [Microsoft Entra dashboard](https://entra.microsoft.com/#home).
+
+  QA Wolf's tenant ID is `3d41cc11-5772-457c-aad2-16b3924b22d0`.
 </Note>
 
-QA Wolf provides a shared channel for your Teams integration. To use it, your organization must have shared channels enabled.
+<Frame>
+  ![The Microsoft Entra dashboard overview, showing the tenant ID and primary domain](/images/coverage-as-a-service/image-9.png)
+</Frame>
+
+## Before you start
+
+Shared channels depend on guest sharing being on for SharePoint and Microsoft 365 Groups, even though no guest account is created. These are on by default — confirm them only if your organization has changed them.
+
+- **Microsoft 365 Groups** — both sharing settings enabled.
+- **SharePoint** — organization-level and site-level sharing allow guests, and QA Wolf's domain is not on a blocked list.
+
+You need the **Security Administrator** role in Microsoft Entra. A Teams administrator can read cross-tenant access settings but cannot change them.
+
+<Warning>
+  Shared channels between Commercial and GCC clouds are not supported.
+</Warning>
+
+## Allow your users to join external shared channels
+
+Shared channels are enabled by default in Teams. This policy controls whether your users may take part in a channel that another organization hosts, which is what QA Wolf's channel is.
 
 <Steps>
   <Step>
-    In the [Microsoft Teams admin center](https://admin.teams.microsoft.com/), expand **Teams** in the left navigation bar and choose **Teams policies**.
+    In the [Teams admin center](https://admin.teams.microsoft.com/), expand **Teams** and select **Teams policies**. In the new admin center experience, go to **Settings & policies → Custom Policies for users and groups → Teams**.
   </Step>
   <Step>
-    Click the policy you want to confirm or change.
+    Select the policy assigned to the people who will use the channel, then select **Edit**.
   </Step>
   <Step>
-    Under _Shared channels settings_, turn on **Join external shared channels** to allow collaboration with other orgs.
-  </Step>
-  <Step>
-    Click **Apply** to save your changes.
+    Turn **Join external shared channels** on, then select **Apply**.
 
     <Frame>
-      ![](/images/coverage-as-a-service/image-4.png)
+      ![Teams policies with Join external shared channels turned on under shared channels settings](/images/coverage-as-a-service/image-4.png)
     </Frame>
   </Step>
 </Steps>
 
-### Enable external access
+**Create shared channels** and **Invite external users to shared channels** are separate settings. Turn those on only if your team also wants to host its own shared channels and invite QA Wolf into them.
 
-You must enable external access so QA Wolf team members can join your **Teams meetings** and your team can see QA Wolf's presence status (online/offline/away) in shared channels.
+<Note>
+  Teams policy changes can take up to 24 hours to take effect.
+</Note>
+
+## Allow QA Wolf in cross-tenant access settings
+
+B2B direct connect is blocked by default in both directions, so this step is always required. Add QA Wolf as an organization, then allow both directions: **outbound** lets your users reach our channel, and **inbound** lets our users reach yours.
 
 <Steps>
   <Step>
-    In the [Teams admin center](https://admin.teams.microsoft.com/), expand **Users** in the left navigation bar and choose **External access**.
+    Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com/) as a Security Administrator, then go to **External Identities → Cross-tenant access settings → Organizational settings**.
   </Step>
   <Step>
-    Choose the appropriate option for allowing **Teams and Skype for Business users in external organizations**.
-
-    <Warning>**Do not** select **Block all external domains** — this setting prevents the integration from working.</Warning>
-    <Tip>Allowing **qawolf.com** under **Allow only specific external domains** will ensure QA Wolf team members can participate while all other external domains remain blocked.</Tip>
+    Select **Add organization**, enter QA Wolf's tenant ID `3d41cc11-5772-457c-aad2-16b3924b22d0`, and select **Add**. QA Wolf now appears in the organizations list, inheriting your default settings.
 
     <Frame>
-      ![](/images/coverage-as-a-service/image-5.png)
+      ![The Add organization pane in cross-tenant access settings with a tenant ID entered](/images/coverage-as-a-service/image-6.png)
+    </Frame>
+  </Step>
+  <Step>
+    Select the link in the **Outbound access** column for QA Wolf. On the **B2B direct connect** tab, choose **Customize settings**.
+
+    - On **External users and groups**, choose **Allow access**, applied to all your users.
+    - On **External applications**, choose **Allow access** and **Select external applications**, then **Add Microsoft applications** and select **Office 365**.
+
+    Select **Save**.
+  </Step>
+  <Step>
+    Select the link in the **Inbound access** column and repeat with **Customize settings**.
+
+    - On **External users and groups**, choose **Allow access** and **All external users and groups**.
+    - On **Applications**, choose **Allow access** and **Select applications**, then **Add Microsoft applications** and select **Office 365**.
+
+    Select **Save**.
+
+    <Frame>
+      ![B2B direct connect settings with access allowed for external users and groups](/images/coverage-as-a-service/image-8.png)
     </Frame>
   </Step>
 </Steps>
 
-### Enable cross-tenant access in Microsoft Entra
+<Warning>
+  The **Office 365** application is what carries Teams and SharePoint across the connection. Allowing users and groups without it leaves the channel unreachable.
+</Warning>
 
-To use a shared channel with QA Wolf, you must allow our Microsoft Entra tenant by adding QA Wolf as an allowed organization using our Microsoft Entra tenant ID.
+QA Wolf then appears under **organizations found**, with both directions showing as configured.
+
+<Frame>
+  ![Cross-tenant access organizational settings listing QA Wolf with inbound and outbound access configured](/images/coverage-as-a-service/image-7.png)
+</Frame>
+
+<Note>
+  Cross-tenant access changes can take up to six hours to take effect.
+</Note>
+
+## Enable external access
+
+External access is optional. The shared channel works without it, but your team won't see QA Wolf members' presence in the channel, and QA Wolf members can't join your Teams meetings.
 
 <Steps>
   <Step>
-    As a **Security Administrator**, sign in to the [Microsoft Entra admin center](https://entra.microsoft.com/).
+    In the [Teams admin center](https://admin.teams.microsoft.com/), expand **Users** and select **External access**.
   </Step>
   <Step>
-    Choose **External Identities** from the left navigation bar, then choose **Cross-tenant access settings**.
-  </Step>
-  <Step>
-    On the **Organizational settings** tab, click **Add organization**.
-  </Step>
-  <Step>
-    In the **Add Organization** drawer on the right, type QA Wolf's tenant ID: `3d41cc11-5772-457c-aad2-16b3924b22d0` and click **Add** at the bottom.
+    Under **Teams and Skype for Business users in external organizations**, make sure QA Wolf is not blocked.
+
+    <Frame>
+      ![External access settings allowing specific external domains](/images/coverage-as-a-service/image-5.png)
+    </Frame>
   </Step>
 </Steps>
-
-<Frame>
-  ![](/images/coverage-as-a-service/image-6.png)
-</Frame>
-
-If your default access settings restrict access, update your inbound and outbound B2B direct connect settings to allow QA Wolf.
-
-Still under Organizational Settings, you should see QA Wolf listed under **organizations found**.
-
-<Frame>
-  ![](/images/coverage-as-a-service/image-7.png)
-</Frame>
-
-#### Check access
-
-<Steps>
-  <Step>
-    Click on the Configured link underneath Inbound access or Outbound access.
-  </Step>
-  <Step>
-    Click the B2B direct connect tab.
-  </Step>
-  <Step>
-    Select the Customize settings radio button.
-  </Step>
-</Steps>
-
-On the **External users and groups** tab:
-
-- For **Access status**, select _Allow access_
-- For **Applies to**, select _All QA Wolf users and groups_
-
-After updating these settings, verify that your default access configuration no longer blocks access to or from QA Wolf.
-
-<Danger>
-  Shared channel collaboration will not work if the default settings continue to block external tenants.
-</Danger>
-
-<Frame>
-  ![](/images/coverage-as-a-service/image-8.png)
-</Frame>
 
 <Tip>
-  We use shared channels so customers can access them without switching tenants, and B2B Direct Connect must be used to invite or join them. **B2B Collaboration** will not work (see [_MS doc_](https://learn.microsoft.com/en-us/microsoft-365/solutions/collaborate-teams-direct-connect?view=o365-worldwide) for details).
-
-  | B2B Collaboration | B2B Direct Connect |
-  | --- | --- |
-  | Applies to guest accounts | Enables direct shared channel invitations |
-  | Requires tenant switching | Seamless access from own tenant |
-  | Only supports standard channels | Fully supports shared channels |
+  Adding **qawolf.com** under **Allow only specific external domains** keeps every other external domain blocked.
 </Tip>
 
-#### Complete setup
+## If the channel doesn't work
 
-We need your **Microsoft Entra tenant ID** and **domain name** so we can configure cross-tenant access on our side. Customers can locate their Tenant ID and domain on the [Microsoft Entra dashboard](https://entra.microsoft.com/#home).
+- **Wait for propagation.** Cross-tenant access takes up to six hours and Teams policies up to 24 hours. Most setups that look broken immediately afterwards are not.
+- **Check the Office 365 application** on both the inbound and outbound B2B direct connect settings. This is the most commonly missed step.
+- **Check your default settings.** Organizational settings override defaults, so QA Wolf must be allowed on its own entry rather than relying on your tenant defaults, which block B2B direct connect.
+- **Check Conditional Access.** Policies scoped to external users and the Office 365 SharePoint Online app apply to people joining a shared channel. If yours require MFA or a compliant device, set **Trust settings** on the inbound configuration to trust those claims from QA Wolf's tenant.
+- **Guest accounts can't be used.** Someone who already has a guest account in your tenant has to be added by their organization account, searched as `ext:user@domain.com`.
 
-<Frame>
-  ![](/images/coverage-as-a-service/image-9.png)
-</Frame>
+<Tip>
+  Shared channels require **B2B direct connect**, not **B2B collaboration**. B2B collaboration creates guest accounts and requires tenant switching, and guests cannot be added to a shared channel at all. See Microsoft's [shared channels](https://learn.microsoft.com/en-us/microsoftteams/shared-channels) and [B2B direct connect](https://learn.microsoft.com/en-us/entra/external-id/cross-tenant-access-settings-b2b-direct-connect) documentation.
+</Tip>
