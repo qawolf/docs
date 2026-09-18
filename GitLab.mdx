@@ -1,70 +1,43 @@
 ---
 title: "Integrate with GitLab"
-description: "Automatically trigger test runs when you deploy code from your repository."
+description: "Connect QA Wolf to GitLab so deployments start test runs and results post back to your merge requests."
 sidebarTitle: "GitLab"
+keywords: "GitLab CI, group access token, review apps, environments, deployment events"
 ---
 
-If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. If your GitLab instance does not allow outbound HTTPS connections, use the [QA Wolf CI SDK](/ci-sdk-integration) instead.
+If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. QA Wolf listens for the deployments your pipeline creates, and a [deployment trigger](/triggers) decides which flows run for each one.
 
 ## Requirements
 
 - Access to a QA Wolf workspace with at least one environment configured
-- Maintainer access to the GitLab project
+- Maintainer access to the GitLab group
 
-## How to connect QA Wolf to GitLab
+## Connect QA Wolf to GitLab
 
 <Steps>
-  <Step title="Connect QA Wolf to GitLab">
-    Enable the GitLab integration in Workspace settings. You'll be asked for a **Group Access Token** with the **Maintainer** role and **API** scope.
-
-    Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
+  <Step title="Create a group access token">
+    Create a GitLab group access token with the **Maintainer** role and the `api` scope. QA Wolf refuses a lesser token.
   </Step>
-
-  <Step title="Add the QAWOLF_API_KEY variable">
-    Add `QAWOLF_API_KEY` as a CI/CD variable in your GitLab project under **Settings → CI/CD → Variables**. Add any other variables your pipeline uses.
-  </Step>
-
-  <Step title="Add the deploy notification to your pipeline">
-    Add a job to your `.gitlab-ci.yml` that calls QA Wolf after your deploy step succeeds, replacing `deployment_type` and `deployment_url` with your actual values.
-
-    ```yml expandable
-    stages:
-      - build
-      - deploy
-      - notify
-
-    deploy:
-      stage: deploy
-      script:
-        - ./deploy.sh
-      environment:
-        name: staging
-
-    notify_qawolf:
-      stage: notify
-      script:
-        - |
-          curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
-            -H "Authorization: Bearer $QAWOLF_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"branch\": \"$CI_COMMIT_REF_NAME\",
-              \"deployment_type\": \"staging\",
-              \"deployment_url\": \"$QA_WOLF_DEPLOY_URL\",
-              \"sha\": \"$CI_COMMIT_SHA\",
-              \"hosting_service\": \"GitLab\"
-            }"
-      when: on_success
-      needs: ["deploy"]
-    ```
-  </Step>
-
-  <Step title="Verify the integration">
-    Push a commit to trigger a deployment. Confirm a new run appears in QA Wolf under the expected environment.
+  <Step title="Enable the GitLab integration">
+    Paste the token into **Workspace settings → Integrations**. Once connected, QA Wolf can set commit statuses and link runs to GitLab commits.
   </Step>
 </Steps>
 
+## Emit deployments from your pipeline
+
+A job with the `environment:` keyword creates the deployment on its own, and the webhook fires when the job succeeds. No separate API call is needed.
+
+[Report deployments to QA Wolf](/triggers/report-deployments#gitlab) has the job, plus the two rules that decide whether a deploy lands where your triggers look: the environment name, and the `review/` prefix that marks a preview environment transient.
+
+## Create a trigger
+
+A connected integration does nothing on its own. Create a deployment trigger that matches the deployments you now emit, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+
+## Verify
+
+Push a commit and let it deploy. Confirm a new run appears in QA Wolf under the expected environment. When none does, [Diagnose a trigger](/triggers/diagnose-a-trigger) says whether the deployment arrived and which condition failed.
+
 ## Related
 
-- [webhooks/deploy\_success](/deploy-success)
-- [REST API](/rest-overview)
+- [Global triggers](/triggers)
+- [Legacy triggers](/legacy/legacy-triggers)

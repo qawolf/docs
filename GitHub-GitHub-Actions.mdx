@@ -1,37 +1,46 @@
 ---
 title: "Integrate GitHub/GitHub Actions"
-description: "Automatically trigger test runs when you deploy code from your repository."
+description: "Connect QA Wolf to GitHub so deployments start test runs and results post back to your pull requests."
 sidebarTitle: "GitHub/GitHub Actions"
+keywords: "GitHub App, GitHub Deployments, GitHub Actions, deployment events, status checks"
 ---
 
-If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this is the recommended setup. If your team self-hosts GitHub Enterprise Server without internet access, or has disabled GitHub Actions by policy, use the [QA Wolf CI SDK](/ci-sdk-integration) instead.
+If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this is the recommended setup. QA Wolf listens for the deployments your repository creates, and a [deployment trigger](/triggers) decides which flows run for each one.
 
 ## Requirements
 
 - Access to a QA Wolf workspace
-- Admin access to your GitHub repo
+- Admin access to the GitHub repository that deploys
 
-## How to connect QA Wolf to GitHub
+## Connect QA Wolf to GitHub
 
 <Steps>
-  <Step title="Connect QA Wolf to GitHub">
-    Enable the GitHub integration in Workspace settings and install the GitHub App on the repo you want connected. 
+  <Step title="Install the GitHub App">
+    Enable the GitHub integration from **Workspace settings → Integrations**, which installs the QA Wolf GitHub App.
   </Step>
-  <Step title="Add the GitHub Actions workflow">
-    [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy) notifies QA Wolf whenever a new deployment is ready for testing. This must be done for every repository you want connected to CI/CD.
-
-    Add a workflow file (e.g. `.github/workflows/deploy.yml`) with the following, replacing `deployment-type` and `deployment-url` with your actual values. 
-
-    ```yaml
-    - name: Notify QA Wolf
-      uses: qawolf/notify-qawolf-on-deploy-action@v1
-      with:
-        qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
-        deployment-type: "staging"
-        deployment-url: "https://staging.example.com"
-    ```
+  <Step title="Select every repository that deploys">
+    A repository the app does not cover sends no events, so the deploying repository has to be among the ones you select.
   </Step>
-  <Step title="Verify the integration">
-    Push a commit to trigger a deployment. Confirm a new run appears in QA Wolf under the expected environment.
+  <Step title="Confirm the connection">
+    Reopen the integrations page and confirm GitHub is listed as connected.
   </Step>
 </Steps>
+
+## Emit deployments from your pipeline
+
+QA Wolf fires on GitHub deployment records, not on workflow runs. Many hosting providers, Vercel among them, create those records already — check before adding anything.
+
+If yours does not, your workflow creates the deployment and reports its success. [Report deployments to QA Wolf](/triggers/report-deployments#github) has the workflow, plus the two rules that decide whether a deploy lands where your triggers look: the environment name, and per-pull-request isolation for previews.
+
+## Create a trigger
+
+A connected integration does nothing on its own. Create a deployment trigger that matches the deployments you now emit, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+
+## Verify
+
+Push a commit and let it deploy. Confirm a new run appears in QA Wolf under the expected environment. When none does, [Diagnose a trigger](/triggers/diagnose-a-trigger) says whether the deployment arrived and which condition failed.
+
+## Related
+
+- [Global triggers](/triggers)
+- [Legacy triggers](/legacy/legacy-triggers)
