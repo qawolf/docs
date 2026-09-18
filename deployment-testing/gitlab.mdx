@@ -36,6 +36,15 @@ A job with the `environment:` keyword creates the deployment, and the webhook fi
   A preview environment also needs a per-merge-request URL. With a shared URL the trigger still matches and the run executes against whatever was deployed last, which produces a green run for code that was never exercised.
 </Warning>
 
+## Test every merge request
+
+A preview deploy gives QA Wolf a deployment that resolves to the merge request it came from, which is what makes pull-request testing possible. Two things have to hold, both covered in [Report deployments to QA Wolf](/triggers/report-deployments#isolate-previews-per-pull-request): the deployment names an environment unique to the merge request, and its URL is unique too.
+
+Give previews their own trigger rather than widening the one that covers staging. Match the shape your pipeline emits — `review/*` — and choose what runs:
+
+- **A small tag**, for a fixed set of fast flows on every pull request.
+- **[Generative flow selection](/triggers/overview#generative-flow-selection)**, which lets QA Wolf pick the flows from the pull request itself. It needs the deployment to resolve to a pull request, so it fits a preview trigger and skips any deployment without one.
+
 ## Create a trigger
 
 A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments you now emit, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
