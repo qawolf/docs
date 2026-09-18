@@ -231,7 +231,7 @@ For the full callback context shape, see the API Reference for [Web](/libraries/
 
 ## Platform differences
 
-Prefer a separate flow per platform, each importing from its own [`@qawolf/flows` subpath](#import-statement). When one flow has to cover several — log capture, say, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — put the difference in a helper function so the flow stays linear.
+Prefer a separate flow per platform, each importing from its own [`@qawolf/flows` subpath](#import-statement). When one flow has to cover several platforms, put the difference in a helper function so the flow stays linear. Log capture is a typical case:
 
 ```typescript
 // /src/helpers/console-logs-ios.ts
