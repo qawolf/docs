@@ -104,9 +104,9 @@ export default flow(
 
 Pass `launch: true` to use the default startup, or an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
 
-<Tip>
+<Note>
   If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
-</Tip>
+</Note>
 
 <CodeGroup>
 
