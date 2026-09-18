@@ -644,6 +644,10 @@
     {
       "source": "/GitLab",
       "destination": "/legacy-triggers/GitLab"
+    },
+    {
+      "source": "/triggers/migrate-from-legacy-triggers",
+      "destination": "/triggers/overview"
     }
   ],
   "integrations": {
@@ -693,8 +697,7 @@
               "triggers/overview",
               "triggers/set-up-a-trigger",
               "triggers/report-deployments",
-              "triggers/diagnose-a-trigger",
-              "triggers/migrate-from-legacy-triggers"
+              "triggers/diagnose-a-trigger"
             ]
           },
           {
