@@ -65,7 +65,7 @@ When the right trigger did create it, the selection is the thing to check: a tag
 A missing deployment means the path between the pipeline and QA Wolf is broken. Which half depends on whether an integration is connected:
 
 - **No integration for the provider that hosts the pipeline, and no `deployment.reportStatus` call in CI.** QA Wolf cannot hear about deploys at all. Connecting one comes first; see [Connect your code host](/triggers/set-up-a-trigger#connect-your-code-host).
-- **An integration is connected but this deploy never arrived.** Either the code host is silent about it, or provider events were never this deploy's arrival path. Check that the installation covers the deploying repository, then read the pipeline: a workflow that deploys without creating a deployment record emits nothing to hear. See [Report deployments to QA Wolf](/triggers/report-deployments).
+- **An integration is connected but this deploy never arrived.** Either the code host is silent about it, or provider events were never this deploy's arrival path. Check that the installation covers the deploying repository, then read the pipeline: a workflow that deploys without creating a deployment emits nothing to hear. See [Report deployments to QA Wolf](/triggers/report-deployments).
 
 Other deployments still arriving for the workspace narrow the gap to this repository or this workflow.
 

@@ -11,7 +11,7 @@ Testing your deploys takes two pieces. Your pipeline reports a deployment to QA 
 
 Pick the one that matches where your code lives and how you deploy.
 
-- **[GitHub](/deployment-testing/github)** — your repositories are on GitHub and something creates a deployment record for each deploy, whether your own workflow or a provider such as Vercel.
+- **[GitHub](/deployment-testing/github)** — your repositories are on GitHub and something creates a deployment for each deploy, whether your own workflow or a provider such as Vercel.
 - **[GitLab](/deployment-testing/gitlab)** — your repositories are on GitLab and your pipeline's deploy job declares an `environment:`.
 - **[Webhook](/deployment-testing/webhook)** — your code host is not GitHub or GitLab, or the deploy happens somewhere your code host never sees, so the pipeline reports it directly.
 - **[CircleCI](/deployment-testing/circle-ci)** — you deploy from CircleCI, with the job and the environment variables it needs.

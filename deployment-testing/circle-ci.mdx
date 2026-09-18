@@ -1,6 +1,6 @@
 ---
 title: "CircleCI"
-description: "Report a deploy to QA Wolf from a CircleCI job, or have the job create the deployment record your code host already understands."
+description: "Report a deploy to QA Wolf from a CircleCI job, or have the job create the deployment your code host already understands."
 sidebarTitle: "CircleCI"
 keywords: "CircleCI, circle, deploy job, pipeline, config.yml"
 ---
@@ -54,9 +54,12 @@ workflows:
 
 ## Let your code host record the deploy instead
 
-If your repository is on GitHub or GitLab, a CircleCI job can create the code host's own deployment record through the code host's API, and QA Wolf picks it up through the connected integration. Nothing in the job talks to QA Wolf at all.
+If your repository is on GitHub or GitLab, a CircleCI job can create the code host's own deployment, and QA Wolf picks it up through the connected integration. Nothing in the job talks to QA Wolf at all.
 
-This is worth the extra step when you want the deploy visible in your code host as well, and when you want QA Wolf to resolve the pull request from the commit rather than from what the job declares. See [GitHub deployments](/deployment-testing/github) or [GitLab deployments](/deployment-testing/gitlab) for what the record has to carry.
+- **GitHub** — the job calls [`POST /repos/{owner}/{repo}/deployments`](https://docs.github.com/en/rest/deployments/deployments) with the `ref` it deployed, then marks the result with a [deployment status](https://docs.github.com/en/rest/deployments/statuses).
+- **GitLab** — CircleCI is not running the pipeline GitLab records deployments from, so the deploy has to move into a GitLab [deployment job](https://docs.gitlab.com/ci/environments/) for this route to apply. Otherwise report it from CircleCI as above.
+
+The code-host route is worth the extra step when you want the deploy visible in your code host as well, and when you want QA Wolf to resolve the pull request from the commit rather than from what the job declares. See [GitHub deployments](/deployment-testing/github) and [GitLab deployments](/deployment-testing/gitlab).
 
 ## Create a trigger
 
