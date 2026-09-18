@@ -36,6 +36,8 @@ Two facts decide whether a deployment lands where your triggers look:
 
 The environment's `url` becomes the deployment's deploy target, which is the address QA Wolf runs against.
 
+A GitLab deployment carries no slot for per-deploy environment variables, so runs against it use the QA Wolf environment's own variables. To vary them per deploy, report the deploy through the [Webhook](/deployment-testing/webhook) path instead.
+
 ## Test every merge request
 
 A review app gives QA Wolf a deployment that resolves to the merge request it came from, which is what makes merge-request testing possible. Two things have to hold, both covered in [Report deployments to QA Wolf](/triggers/report-deployments#isolate-previews-per-pull-request): the environment's name is unique to the merge request, and so is its `url`.

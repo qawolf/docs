@@ -23,7 +23,7 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `status` | `pending`, `success`, `failure` or `inactive`. |
 | `environment` | Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. |
 | `deployTarget` | The URL the deployment serves. |
-| `environmentVariables` | Overrides for the runs this deployment requests. A report that sends them replaces the stored values; one that omits them keeps them. |
+| `environmentVariables` | Overrides for the runs this deployment requests, as a flat map of string to string. A report that sends them replaces the stored values; one that omits them keeps them. |
 | `metadata` | Details about the deployed revision, such as the commit. |
 
 ## The request
