@@ -127,11 +127,11 @@
     },
     {
       "source": "/qawolf/PR-testing-for-GitHub-Integrations",
-      "destination": "/PR-testing-for-GitHub-Integrations"
+      "destination": "/legacy-triggers/PR-testing-for-GitHub-Integrations"
     },
     {
       "source": "/qawolf/PR-testing-for-GitLab-Integrations",
-      "destination": "/PR-testing-for-GitLab-Integrations"
+      "destination": "/legacy-triggers/PR-testing-for-GitLab-Integrations"
     },
     {
       "source": "/qawolf/Pass-data-between-flows",
@@ -251,7 +251,7 @@
     },
     {
       "source": "/qawolf/circle-ci",
-      "destination": "/circle-ci"
+      "destination": "/legacy-triggers/circle-ci"
     },
     {
       "source": "/qawolf/coding-agents/get-started",
@@ -443,11 +443,11 @@
     },
     {
       "source": "/qawolf/other-ci-node",
-      "destination": "/ci-sdk-integration"
+      "destination": "/legacy-triggers/ci-sdk-integration"
     },
     {
       "source": "/qawolf/other-ci-webhook",
-      "destination": "/webhook-integration"
+      "destination": "/legacy-triggers/webhook-integration"
     },
     {
       "source": "/qawolf/other-web-hook-for-mobile",
@@ -563,11 +563,11 @@
     },
     {
       "source": "/other-ci-node",
-      "destination": "/ci-sdk-integration"
+      "destination": "/legacy-triggers/ci-sdk-integration"
     },
     {
       "source": "/other-ci-webhook",
-      "destination": "/webhook-integration"
+      "destination": "/legacy-triggers/webhook-integration"
     },
     {
       "source": "/QA-Wolf-s-static-IPv4",
@@ -611,7 +611,31 @@
     },
     {
       "source": "/triggers",
-      "destination": "/triggers/global-triggers"
+      "destination": "/triggers/overview"
+    },
+    {
+      "source": "/legacy/legacy-triggers",
+      "destination": "/legacy-triggers/overview"
+    },
+    {
+      "source": "/ci-sdk-integration",
+      "destination": "/legacy-triggers/ci-sdk-integration"
+    },
+    {
+      "source": "/webhook-integration",
+      "destination": "/legacy-triggers/webhook-integration"
+    },
+    {
+      "source": "/circle-ci",
+      "destination": "/legacy-triggers/circle-ci"
+    },
+    {
+      "source": "/PR-testing-for-GitHub-Integrations",
+      "destination": "/legacy-triggers/PR-testing-for-GitHub-Integrations"
+    },
+    {
+      "source": "/PR-testing-for-GitLab-Integrations",
+      "destination": "/legacy-triggers/PR-testing-for-GitLab-Integrations"
     }
   ],
   "integrations": {
@@ -658,7 +682,7 @@
           {
             "group": "Triggers",
             "pages": [
-              "triggers/global-triggers",
+              "triggers/overview",
               "triggers/set-up-a-trigger",
               "triggers/report-deployments",
               "triggers/diagnose-a-trigger",
@@ -971,14 +995,14 @@
             ]
           },
           {
-            "group": "Legacy",
+            "group": "Legacy triggers",
             "pages": [
-              "legacy/legacy-triggers",
-              "PR-testing-for-GitHub-Integrations",
-              "PR-testing-for-GitLab-Integrations",
-              "ci-sdk-integration",
-              "webhook-integration",
-              "circle-ci"
+              "legacy-triggers/overview",
+              "legacy-triggers/PR-testing-for-GitHub-Integrations",
+              "legacy-triggers/PR-testing-for-GitLab-Integrations",
+              "legacy-triggers/ci-sdk-integration",
+              "legacy-triggers/webhook-integration",
+              "legacy-triggers/circle-ci"
             ]
           }
         ]

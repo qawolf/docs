@@ -42,7 +42,7 @@ Name the flows before you create the trigger:
 
 - **A tag** — every flow carrying it runs, and flows tagged later join automatically. The usual choice for a standing trigger.
 - **Named flows** — a fixed set that changes only when you change the trigger.
-- **Generative selection** — QA Wolf picks the flows from the pull request. Preview deployments only; see [Generative flow selection](/triggers/global-triggers#generative-flow-selection).
+- **Generative selection** — QA Wolf picks the flows from the pull request. Preview deployments only; see [Generative flow selection](/triggers/overview#generative-flow-selection).
 
 Static and preview deployments want different triggers. A static environment such as staging usually wants comprehensive coverage from a tag. A preview deployment wants a small, targeted set. One trigger matching both looks simpler and is worse: a pull request should not run everything staging runs, and a generative action would skip every static deploy.
 
