@@ -55,20 +55,10 @@ A deployment trigger's conditions say which deployments it fires for. Every cond
 
 A static environment usually needs only its own name, or a deploy-target pattern when its URL is stable and distinctive. A preview deployment needs a pattern matching the shape your pipeline actually emits — `pr-*`, `preview/*`, `review/*`. Read your workflow for the shape rather than guessing a convention.
 
-<Steps>
-  <Step title="Create the trigger">
-    Give it a name you will recognize later, the conditions above, and the action.
-  </Step>
-  <Step title="Check the environment name your pipeline sends">
-    A name that does not match the environment you intend lands the deploy in a different environment, which the trigger never sees. See [the environment name is the contract](/triggers/report-deployments#the-environment-name-is-the-contract).
-  </Step>
-  <Step title="Deploy">
-    Only a real deploy proves the wiring end to end. Confirm a run appeared for it on the environment's runs page.
-  </Step>
-</Steps>
+Give the trigger a name you will recognize later, the conditions above, and the action.
 
 <Warning>
-  A deployment trigger that has never seen a deployment is configured, not verified. Nothing tells you an environment name or a pattern is wrong until a deploy fails to produce a run.
+  The environment name your pipeline sends is what decides whether the trigger ever sees the deploy. A name that does not match the environment you intend lands the deploy somewhere else. See [the environment name is the contract](/triggers/report-deployments#the-environment-name-is-the-contract).
 </Warning>
 
 ## Create a schedule trigger

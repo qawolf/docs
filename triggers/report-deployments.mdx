@@ -100,7 +100,3 @@ environment:
   name: review/$CI_COMMIT_REF_SLUG
   url: https://$CI_COMMIT_REF_SLUG.example.com
 ```
-
-## Verify
-
-Only a real deploy proves the wiring: the event has to leave the pipeline, reach QA Wolf, and match a trigger. Deploy, then confirm a run appeared. When none did, [Diagnose a trigger](/triggers/diagnose-a-trigger) says which of those three steps failed.
