@@ -60,13 +60,7 @@ Pausing stops a trigger firing without deleting it, and resuming brings it back.
 
 ## Triggers and legacy triggers
 
-Legacy triggers attached to a single environment and came in three kinds: deployment triggers, scheduled triggers, and the pull-request testing button.
-
-<Warning>
-  The first unpaused trigger in a workspace switches that whole workspace off the legacy deployment path. Legacy deployment triggers and pull-request button triggers stop firing immediately while still displaying as active, and legacy scheduled triggers keep firing until you pause them. Migration is all-or-nothing per workspace.
-</Warning>
-
-If your workspace still runs legacy triggers, read [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) before creating your first trigger. [Legacy triggers](/legacy-triggers/overview) describes them on their own terms.
+Legacy triggers attach to a single environment and come in three kinds: deployment triggers, scheduled triggers, and the pull-request testing button. A workspace can still be running them. [Legacy triggers](/legacy-triggers/overview) describes that model on its own terms.
 
 ## Next
 
