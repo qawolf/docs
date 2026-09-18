@@ -22,7 +22,7 @@ These phrases showed up repeatedly and add nothing. Delete them; the sentence us
 - "Current" / "currently" as a reflexive hedge ("Current `GetInboxOptions`," "the current code exposes this," "there is no top-level helper today"). If something is genuinely unstable, say so specifically (e.g. an `<Info>` callout: "This may change before v1") — don't hedge every heading by default.
 - "It's worth noting that...", "This is because...", "Reach for X when..." as a soft substitute for a direct instruction.
 - Throat-clearing about the document itself: "This page explains...", "The sections below describe..." — cut it, start with the actual content.
-- First-person "we"/"us" for QA Wolf (found once, in lint-rules.mdx: "ask, and we will look at adding it"). QA Wolf is always third person in prose: "QA Wolf resigns your app," "ask your QA Wolf representative."
+- First-person "we"/"us" where QA Wolf is the product (found in lint-rules.mdx: "ask, and we will look at adding it"). See rule 19 — the product is third person, the service team is not.
 
 ## 3. One idea per sentence
 
@@ -205,6 +205,22 @@ Quick start's "For coding agents" section is the model: it names the `qawolf-cli
 **Be exact about anything an agent will copy.** An agent reproduces a command, a flag, an environment variable name or a path verbatim, and it cannot tell that `QAWOLF_API_URL` was meant to be `QAWOLF_HOST_URL`. Rule 1's terminology discipline and this are the same discipline: verify identifiers against the shipped package, not against another page.
 
 **Don't perform it.** Not every page has an agent audience, and a line addressed to one on a page about reading maintenance reports is noise. Add it where an agent would actually be doing the task — CLI and MCP setup, anything an agent automates, anything it would fetch on its own.
+
+
+## 19. First person — the product is third person, the service team is first
+
+The original ban on "we" was written from a self-service page, where "we" stands in for software. That reading doesn't survive contact with Full Service, where the subject is a team of people doing work for the reader. Which voice a page takes depends on what the sentence is actually about.
+
+- **QA Wolf the product is third person.** Anything the platform does on its own — running flows, resigning an app, storing artifacts — names the product: "QA Wolf resigns your app," "QA Wolf automatically re-runs any test that fails." Never "we resign your app."
+- **The QA Wolf team is first person.** On Full Service pages, sentences about people doing work take "we": "we generally start with the most complex flows," "we'll outline specific test steps after you approve." Writing those in third person ("QA Wolf generally starts with...") makes a human relationship sound like a subsystem.
+
+The test is the subject of the sentence, not the tab it sits on. A Full Service page still says "QA Wolf runs your flows in parallel," because that is the platform, and a reference page still avoids "we," because it has no service team in it.
+
+Two things this does not license:
+
+- **"We" as a vague authority.** "We recommend" on a reference page is the old problem in a new costume — it is the product speaking, so state the requirement directly (rule 16) or name the product.
+- **First person plural for the reader's team.** "Your team" and "our team" are different groups, and a page that blurs them becomes unreadable at exactly the moment it matters, in a table of who attends which meeting.
+
 
 ---
 
