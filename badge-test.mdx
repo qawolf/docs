@@ -1,0 +1,34 @@
+---
+title: "Badge TOC test"
+description: "Scratch page testing whether a Recommended badge can sit inline with a heading without entering the table of contents."
+---
+
+Three ways to attach a badge to a heading. The question is what each one does to the right-hand table of contents.
+
+## Variant one inline in heading <Badge color="green">Recommended</Badge>
+
+The badge is written inside the markdown heading itself.
+
+<div className="qaw-heading-badge">
+
+## Variant two flex wrapper
+
+<Badge color="green">Recommended</Badge>
+
+</div>
+
+The heading and the badge are siblings inside a flex container.
+
+<div className="qaw-heading-badge">
+
+### Variant three flex wrapper h3
+
+<Badge color="green">Recommended</Badge>
+
+</div>
+
+Same as variant two but at h3, to check nesting depth in the table of contents.
+
+## Variant four plain heading
+
+A control with no badge at all.

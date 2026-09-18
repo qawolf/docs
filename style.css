@@ -1,0 +1,12 @@
+/* Test: heading and badge on one line, heading still a real markdown heading
+   so the TOC picks up its text and nothing else. */
+.qaw-heading-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.qaw-heading-badge > h2,
+.qaw-heading-badge > h3 {
+  margin: 0;
+}
