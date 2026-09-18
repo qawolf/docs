@@ -176,9 +176,13 @@ Omit `launch` from the configuration and call `launch()` inside the callback whe
 
 Every flow callback receives three parameters regardless of platform:
 
-**`inputs`** — values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+### `inputs`
 
-**`setOutput(...)`** — publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
+Values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+
+### `setOutput(...)`
+
+Publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
 
 ```typescript
 setOutput("USER_ID", userId, "EMAIL", email);
@@ -188,7 +192,9 @@ setOutput("USER_ID", userId, "EMAIL", email);
   A consumer flow will not run until its producer has called `setOutput`. See [Passing data between flows](/Pass-data-between-flows) for how producers and consumers work together.
 </Info>
 
-**`test(...)`** — wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
+### `test(...)`
+
+Wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
 
 ```typescript
 export default flow(
@@ -208,6 +214,8 @@ export default flow(
   },
 );
 ```
+
+### Platform object
 
 A launch-enabled flow also receives the platform object, which differs by platform:
 
