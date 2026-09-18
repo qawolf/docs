@@ -211,7 +211,7 @@
     },
     {
       "source": "/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-      "destination": "/anatomy-of-a-qa-wolf-test-mobile-edition"
+      "destination": "/anatomy-of-a-flow"
     },
     {
       "source": "/qawolf/android-audio-injection",
@@ -610,6 +610,10 @@
       "destination": "/"
     },
     {
+      "source": "/anatomy-of-a-qa-wolf-test-mobile-edition",
+      "destination": "/anatomy-of-a-flow"
+    },
+    {
       "source": "/Full-Service-The-First-Three-Months",
       "destination": "/onboarding-to-full-service"
     }
@@ -837,7 +841,7 @@
           {
             "group": "Flow conventions",
             "pages": [
-              "anatomy-of-a-qa-wolf-test-mobile-edition",
+              "anatomy-of-a-flow",
               "lint-rules"
             ]
           },

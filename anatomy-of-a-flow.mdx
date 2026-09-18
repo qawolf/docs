@@ -1,6 +1,6 @@
 ---
 title: "Anatomy of a flow"
-description: "Learn the structure of every QA Wolf flow — the AAA framework, imports, the flow wrapper, launch styles, and callback parameters — and how that structure extends across web, iOS, and Android."
+description: "What each part of a QA Wolf flow does, and how the same structure carries across web, iOS, and Android."
 ---
 
 If the agent generated a flow for you and you want to understand what it produced, here's what each part does — and how those same parts extend once you're testing the same behavior on more than one platform.
@@ -53,6 +53,8 @@ export default flow(
 
 ## Import statement
 
+Import from the `@qawolf/flows` subpath that matches the platform you are testing.
+
 <CodeGroup>
 
 ```typescript Web
@@ -90,24 +92,23 @@ export default flow(
 ```
 
 - **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
-- **Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target literals](/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the list of values.
-- **Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
+- **Configuration** — where the flow runs and how it starts. See [Launch styles](#launch-styles) below, and [Target literals](/libraries/flows/api-reference/top-level#target-literals) for the values `target` accepts.
+- **Callback** — the `async` function containing your test logic. See [Callback parameters](#callback-parameters).
 
-## Launch styles
+### Launch styles
 
 | Style | When to use |
 | --- | --- |
-| `launch: true` | Most flows — default startup, no configuration needed |
-| Options object | Startup options are known up front — e.g., persistent browser context |
-| Explicit `launch()` | Startup depends on runtime logic — e.g., branching on an environment variable |
+| **Declarative** — `launch: true` or an options object | Startup is known before the flow runs. Most flows. |
+| **Explicit** — `launch()` inside the callback | Startup depends on runtime logic — e.g., branching on an environment variable |
 
-### Declarative launch — recommended
+**Declarative launch** <Badge color="green">Recommended</Badge>
 
-Pass `launch: true` to use the default startup, or pass an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
+Pass `launch: true` to use the default startup, or an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
 
-<Tip>
+<Note>
   If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
-</Tip>
+</Note>
 
 <CodeGroup>
 
@@ -169,27 +170,21 @@ export default flow(
 );
 ```
 
-The callback receives a different object depending on the platform:
+**Explicit launch**
 
-| Platform | Callback receives |
-| --- | --- |
-| Web browser | `page`, `context`, optional `browser` |
-| Web (Electron) | `page` |
-| iOS | `driver` — the Appium/WebdriverIO session for the device |
-| Android | `driver` — the Appium/WebdriverIO session for the device |
-| Node | nothing additional — only `inputs`, `setOutput`, and `test` |
-
-### Explicit launch — advanced flows only
-
-For advanced cases where the startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/electron).
+Omit `launch` from the configuration and call `launch()` inside the callback when startup options aren't known until the flow runs. The callback receives no platform object: `launch()` returns a result you narrow with `isPersistent()`, `isAnonymous()` or `isElectron()` before reading `page` or `context`. See the [Web API Reference](/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/electron).
 
 ## Callback parameters
 
 Every flow callback receives three parameters regardless of platform:
 
-**`inputs`** — values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+### `inputs`
 
-**`setOutput(...)`** — publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
+Values passed into the flow from outside. Use this to read data published by another flow in the same run. Keys are uppercase by convention, e.g. `inputs["EMAIL"]`.
+
+### `setOutput(...)`
+
+Publishes one or more key-value pairs that a later flow in the same run can read via its `inputs`. Keys are uppercase by convention. You can publish multiple values in a single call:
 
 ```typescript
 setOutput("USER_ID", userId, "EMAIL", email);
@@ -199,42 +194,54 @@ setOutput("USER_ID", userId, "EMAIL", email);
   A consumer flow will not run until its producer has called `setOutput`. See [Passing data between flows](/Pass-data-between-flows) for how producers and consumers work together.
 </Info>
 
-**`test(...)`** — wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
+### `test(...)`
+
+Wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened. All four parameters in one callback:
 
 ```typescript
-export default flow(
-  "Create account",
-  { target: "Web - Chrome", launch: true },
-  async ({ page, inputs, setOutput, test }) => {
-    await test("fill registration form", async () => {
-      await page.goto(process.env.BASE_URL);
-      await page.getByLabel("Email").fill(inputs["EMAIL"]);
-      await page.getByRole("button", { name: "Sign up" }).click();
-    });
+async ({ page, inputs, setOutput, test }) => {
+  await test("fill registration form", async () => {
+    await page.goto(process.env.BASE_URL);
+    await page.getByLabel("Email").fill(inputs["EMAIL"]);
+    await page.getByRole("button", { name: "Sign up" }).click();
+  });
 
-    await test("confirm account created", async () => {
-      const userId = await page.getByTestId("user-id").textContent();
-      setOutput("USER_ID", userId);
-    });
-  },
-);
+  await test("confirm account created", async () => {
+    const userId = await page.getByTestId("user-id").textContent();
+    setOutput("USER_ID", userId);
+  });
+}
 ```
 
-Launch-enabled flows also receive the platform object (`page`, `context`, `browser`, or `driver`) as shown in the launch styles section above.
+### Platform object
+
+A launch-enabled flow also receives the platform object, which differs by platform:
+
+| Platform | Callback receives |
+| --- | --- |
+| Web browser | `page`, `context`, optional `browser` |
+| Web (Electron) | `page` |
+| iOS | `driver` — the Appium/WebdriverIO session for the device |
+| Android | `driver` — the Appium/WebdriverIO session for the device |
+| Node | nothing additional — only `inputs`, `setOutput`, and `test` |
 
 For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/libraries/flows/api-reference/ios#flow-callback-context).
 
-<Note>
-  `launch()`, `device`, and `platform.target` are stubs in the package code, and the runner replaces them at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
-  \
-  Module-level code should be limited to imports, constants, and pure helper functions. \
-  \
-  `platform.target` (full API in the [Top-Level Reference](/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer [separate platform-specific flows](#import-statement) if you find yourself branching often.
-</Note>
+## Environment variables
 
-### Pure helper functions for platform differences
+An environment variable is set on the environment and holds the same value for every run, such as a base URL or a test account's password. [`inputs`](#inputs) holds values another flow published during the run.
 
-For platform-specific implementation differences that don't fit neatly into a Page Object — such as log capture, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — write a helper function that handles the difference internally. The flow calls the helper and stays linear.
+Read one with `process.env.VAR_NAME`, usually in the Arrange section before any interactions begin.
+
+```typescript
+await page.goto(process.env.BASE_URL);
+```
+
+Set them under **Workspace settings → Environments**, on the environment's **Environment variables** tab.
+
+## Platform differences
+
+Prefer a separate flow per platform, each importing from its own [`@qawolf/flows` subpath](#import-statement). When one flow has to cover several platforms, put the difference in a helper function so the flow stays linear. Log capture is a typical case:
 
 ```typescript
 // /src/helpers/console-logs-ios.ts
@@ -250,14 +257,8 @@ export async function getConsoleLogs(driver: WebdriverIO.Browser) {
 }
 ```
 
-Keep helper functions like this one pure. As noted above, runtime APIs only work inside the flow callback, not at module level.
+Helpers like these sit at module level, which holds only imports, constants and pure functions. To branch on the platform at runtime instead, read [`platform.target`](/libraries/flows/api-reference/top-level#platform-target) — sparingly.
 
-## Environment variables
-
-Reference environment variables with `process.env.VAR_NAME`. You typically use them in the Arrange section before any interactions begin.
-
-```typescript
-await page.goto(process.env.BASE_URL);
-```
-
-To set environment variables for your flows, use the environment settings in the QA Wolf platform.
+<Warning>
+  `launch()`, `device` and `platform.target` are stubs the runner replaces at execution time, so they work only inside the flow callback. At module level, `platform.target` throws.
+</Warning>
