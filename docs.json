@@ -981,14 +981,9 @@
         "tab": "Full Service",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "Full Service",
             "pages": [
-              "onboarding-to-full-service"
-            ]
-          },
-          {
-            "group": "Working with Wolves",
-            "pages": [
+              "onboarding-to-full-service",
               "Request-new-coverage"
             ]
           },
