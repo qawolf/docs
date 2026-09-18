@@ -115,7 +115,7 @@
     },
     {
       "source": "/qawolf/Manage-maintenance-reports",
-      "destination": "/Manage-maintenance-reports"
+      "destination": "/onboarding-to-full-service"
     },
     {
       "source": "/qawolf/Mobile-build-with-the-QA-Wolf-SDK",
@@ -620,6 +620,10 @@
     {
       "source": "/Full-Service-FAQs",
       "destination": "/onboarding-to-full-service"
+    },
+    {
+      "source": "/Manage-maintenance-reports",
+      "destination": "/onboarding-to-full-service"
     }
   ],
   "integrations": {
@@ -985,8 +989,7 @@
           {
             "group": "Working with Wolves",
             "pages": [
-              "Request-new-coverage",
-              "Manage-maintenance-reports"
+              "Request-new-coverage"
             ]
           },
           {
