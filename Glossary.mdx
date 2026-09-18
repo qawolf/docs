@@ -67,6 +67,14 @@ A **tag** groups flows so a trigger can run them together, and controls executio
 
 A **Run Rule** controls the order flows run in by defining a **before** set and an **after** set of flows, selected by name, group, or tag. By default, if a flow in the before set fails, flows in the after set are skipped rather than run, to keep the failure list focused on the root cause.
 
+## Schedule
+
+A schedule defines when and how often runs occur automatically. Scheduling is limited to flows. Individual tests can be run manually for debugging, but they cannot be scheduled independently.
+
+<Note>
+  Use schedules to execute flows at specific times (midnight) or at recurring intervals (every hour), or when a build is deployed.
+</Note>
+
 ## Trigger
 
 A **trigger** runs a chosen set of flows when something happens: a deployment your pipeline reports, or a point in time. Triggers belong to the workspace, so one trigger can cover every environment a deployment reaches.
