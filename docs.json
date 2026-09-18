@@ -103,7 +103,7 @@
     },
     {
       "source": "/qawolf/Integrating-with-microsoft-teams",
-      "destination": "/Integrating-with-microsoft-teams"
+      "destination": "/MS-Teams"
     },
     {
       "source": "/qawolf/Jira",
@@ -624,6 +624,10 @@
     {
       "source": "/Manage-maintenance-reports",
       "destination": "/onboarding-to-full-service"
+    },
+    {
+      "source": "/Integrating-with-microsoft-teams",
+      "destination": "/MS-Teams"
     }
   ],
   "integrations": {
@@ -974,6 +978,12 @@
               "Azure-DevOps-Boards",
               "Integrate-with-webhooks"
             ]
+          },
+          {
+            "group": "Communication",
+            "pages": [
+              "MS-Teams"
+            ]
           }
         ]
       },
@@ -991,7 +1001,6 @@
             "group": "Integrating Systems",
             "pages": [
               "Test-environments",
-              "Integrating-with-microsoft-teams",
               {
                 "group": "PR Testing",
                 "pages": [
