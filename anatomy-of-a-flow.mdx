@@ -196,25 +196,21 @@ setOutput("USER_ID", userId, "EMAIL", email);
 
 ### `test(...)`
 
-Wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened.
+Wraps a named sub-step, grouping actions and assertions under a label that appears in your results. When a step fails, the label tells you exactly where in the flow the failure happened. All four parameters in one callback:
 
 ```typescript
-export default flow(
-  "Create account",
-  { target: "Web - Chrome", launch: true },
-  async ({ page, inputs, setOutput, test }) => {
-    await test("fill registration form", async () => {
-      await page.goto(process.env.BASE_URL);
-      await page.getByLabel("Email").fill(inputs["EMAIL"]);
-      await page.getByRole("button", { name: "Sign up" }).click();
-    });
+async ({ page, inputs, setOutput, test }) => {
+  await test("fill registration form", async () => {
+    await page.goto(process.env.BASE_URL);
+    await page.getByLabel("Email").fill(inputs["EMAIL"]);
+    await page.getByRole("button", { name: "Sign up" }).click();
+  });
 
-    await test("confirm account created", async () => {
-      const userId = await page.getByTestId("user-id").textContent();
-      setOutput("USER_ID", userId);
-    });
-  },
-);
+  await test("confirm account created", async () => {
+    const userId = await page.getByTestId("user-id").textContent();
+    setOutput("USER_ID", userId);
+  });
+}
 ```
 
 ### Platform object
@@ -230,6 +226,18 @@ A launch-enabled flow also receives the platform object, which differs by platfo
 | Node | nothing additional — only `inputs`, `setOutput`, and `test` |
 
 For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/libraries/flows/api-reference/ios#flow-callback-context).
+
+## Environment variables
+
+An environment variable is set on the environment and holds the same value for every run, such as a base URL or a test account's password. [`inputs`](#inputs) holds values another flow published during the run.
+
+Read one with `process.env.VAR_NAME`, usually in the Arrange section before any interactions begin.
+
+```typescript
+await page.goto(process.env.BASE_URL);
+```
+
+Set them under **Workspace settings → Environments**, on the environment's **Environment variables** tab.
 
 ## Platform differences
 
@@ -254,13 +262,3 @@ Helpers like these sit at module level, which holds only imports, constants and 
 <Warning>
   `launch()`, `device` and `platform.target` are stubs the runner replaces at execution time, so they work only inside the flow callback. At module level, `platform.target` throws.
 </Warning>
-
-## Environment variables
-
-Reference environment variables with `process.env.VAR_NAME`. You typically use them in the Arrange section before any interactions begin.
-
-```typescript
-await page.goto(process.env.BASE_URL);
-```
-
-To set environment variables for your flows, use the environment settings in the QA Wolf platform.
