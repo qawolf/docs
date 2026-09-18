@@ -90,10 +90,10 @@ export default flow(
 ```
 
 - **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
-- **Configuration** — specifies where the flow runs and how it starts. Pass a plain target string to name the browser, device, or environment, or pass an object with `target` and `launch` to configure startup simultaneously — see [Target literals](/libraries/flows/api-reference/top-level#target-literals) for the exact matching rule and the list of values.
-- **Callback** — the `async` function containing your test logic. What it receives depends on the launch style and platform (see below).
+- **Configuration** — where the flow runs and how it starts. See [Launch styles](#launch-styles) below, and [Target literals](/libraries/flows/api-reference/top-level#target-literals) for the values `target` accepts.
+- **Callback** — the `async` function containing your test logic. See [Callback parameters](#callback-parameters).
 
-## Launch styles
+### Launch styles
 
 | Style | When to use |
 | --- | --- |
@@ -101,17 +101,13 @@ export default flow(
 | Options object | Startup options are known up front — e.g., persistent browser context |
 | Explicit `launch()` | Startup depends on runtime logic — e.g., branching on an environment variable |
 
-### Declarative launch — recommended
-
-Pass `launch: true` to use the default startup, or pass an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
+**Declarative launch** is the recommended style. Pass `launch: true` to use the default startup, or an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
 
 <Tip>
   If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
 </Tip>
 
-<CodeGroup>
-
-```typescript Web
+```typescript
 export default flow(
   "Sign in",
   { target: "Web - Chrome", launch: true },
@@ -123,31 +119,7 @@ export default flow(
 );
 ```
 
-```typescript iOS
-export default flow(
-  "Sign in",
-  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
-  async ({ driver, test }) => {
-    await test("launch app", async () => {
-      // driver is ready to use
-    });
-  },
-);
-```
-
-```typescript Android
-export default flow(
-  "Sign in",
-  { target: "Android - Pixel 9", launch: true },
-  async ({ driver, test }) => {
-    await test("launch app", async () => {
-      // driver is ready to use
-    });
-  },
-);
-```
-
-</CodeGroup>
+iOS and Android flows take the same shape with a device target, such as `"iOS - iPhone 15 (iOS 26)"` or `"Android - Pixel 9"`.
 
 Pass an options object instead of `true` when you need to customize startup, such as reusing a browser profile. See the [Web API Reference](/libraries/flows/api-reference/web) for the full list of options.
 
@@ -169,19 +141,7 @@ export default flow(
 );
 ```
 
-The callback receives a different object depending on the platform:
-
-| Platform | Callback receives |
-| --- | --- |
-| Web browser | `page`, `context`, optional `browser` |
-| Web (Electron) | `page` |
-| iOS | `driver` — the Appium/WebdriverIO session for the device |
-| Android | `driver` — the Appium/WebdriverIO session for the device |
-| Node | nothing additional — only `inputs`, `setOutput`, and `test` |
-
-### Explicit launch — advanced flows only
-
-For advanced cases where the startup depends on runtime logic, you can call `launch()` explicitly inside the callback. See the [Web API Reference](/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/electron).
+**Explicit launch** is for advanced flows only. When startup depends on runtime logic, call `launch()` inside the callback — see the [Web API Reference](/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/electron).
 
 ## Callback parameters
 
@@ -220,19 +180,27 @@ export default flow(
 );
 ```
 
-Launch-enabled flows also receive the platform object (`page`, `context`, `browser`, or `driver`) as shown in the launch styles section above.
+A launch-enabled flow also receives the platform object, which differs by platform:
+
+| Platform | Callback receives |
+| --- | --- |
+| Web browser | `page`, `context`, optional `browser` |
+| Web (Electron) | `page` |
+| iOS | `driver` — the Appium/WebdriverIO session for the device |
+| Android | `driver` — the Appium/WebdriverIO session for the device |
+| Node | nothing additional — only `inputs`, `setOutput`, and `test` |
 
 For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/libraries/flows/api-reference/ios#flow-callback-context).
+
+## Platform differences
 
 <Note>
   `launch()`, `device`, and `platform.target` are stubs in the package code, and the runner replaces them at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
   \
   Module-level code should be limited to imports, constants, and pure helper functions. \
   \
-  `platform.target` (full API in the [Top-Level Reference](/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer [separate platform-specific flows](#import-statement) if you find yourself branching often.
+  `platform.target` (full API in the [Top-Level Reference](/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer separate platform-specific flows, each importing from its own [`@qawolf/flows` subpath](#import-statement), if you find yourself branching often.
 </Note>
-
-### Pure helper functions for platform differences
 
 For platform-specific implementation differences that don't fit neatly into a Page Object — such as log capture, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — write a helper function that handles the difference internally. The flow calls the helper and stays linear.
 
