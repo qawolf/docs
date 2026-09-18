@@ -5,7 +5,7 @@ sidebarTitle: "Report deployments"
 keywords: "GitHub Deployments, GitLab environments, review apps, preview environment, transient environment, deployment status"
 ---
 
-A deployment trigger fires on a deployment QA Wolf received. Your pipeline produces those deployments in one of two ways: a GitHub or GitLab deployment event that the connected integration forwards, or a `deployment.reportStatus` call from the pipeline itself.
+A deployment trigger fires on a deployment QA Wolf received. Your pipeline produces those deployments in one of two ways: a GitHub or GitLab deployment event that the connected integration forwards, or a [direct report from the pipeline](/deployment-testing/webhook).
 
 Only a deployment that reports success evaluates triggers.
 
@@ -100,27 +100,6 @@ environment:
   name: review/$CI_COMMIT_REF_SLUG
   url: https://$CI_COMMIT_REF_SLUG.example.com
 ```
-
-## Report a deployment directly
-
-When your pipeline cannot create provider deployment events, report the deploy to QA Wolf yourself with the public API's `deployment.reportStatus` route. A coding agent reaches it through the [QA Wolf MCP](/qawolf-mcp) as `deployment_reportStatus`. The route requires an organization or user API key.
-
-| Field | Description |
-| --- | --- |
-| `workspaceId` | The workspace to report the deployment into. |
-| `providerDeploymentId` | Your identifier for the deployment. Reports carrying the same one update a single deployment. |
-| `status` | `pending`, `success`, `failure` or `inactive`. |
-| `environment` | Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. |
-| `deployTarget` | The URL the deployment serves. |
-| `environmentVariables` | Overrides for the runs this deployment requests. A report that sends them replaces the stored values; one that omits them keeps them. |
-| `metadata` | Details about the deployed revision, such as the commit. |
-
-Two rules decide when a run happens:
-
-- A deployment's first `success` report evaluates triggers, and it is the only report that does. A trigger added or resumed afterwards does not make that deployment evaluate again — report the deploy under a new `providerDeploymentId` to evaluate it against the current triggers.
-- The response contains the deployment only, never the resulting runs.
-
-A deployment stays bound to the environment resolved on its first report, so later reports may omit the selector. Report a promotion as a new deployment with a new `providerDeploymentId`.
 
 ## Verify
 

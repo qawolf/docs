@@ -973,7 +973,9 @@
                 "group": "Deployment testing",
                 "pages": [
                   "deployment-testing/github",
-                  "deployment-testing/gitlab"
+                  "deployment-testing/gitlab",
+                  "deployment-testing/webhook",
+                  "deployment-testing/circle-ci"
                 ]
               },
               "mobile-build-testing"

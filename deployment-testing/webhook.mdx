@@ -1,0 +1,48 @@
+---
+title: "Webhook"
+description: "Report a deploy to QA Wolf straight from your pipeline, for a CI system QA Wolf's code host integrations do not cover."
+sidebarTitle: "Webhook"
+keywords: "reportStatus, deployment status, CI notification, API key, self-hosted CI"
+---
+
+When your pipeline cannot create GitHub or GitLab deployment records, it can tell QA Wolf about the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/triggers/overview) evaluates it the same way.
+
+Pick this path when your code host is not GitHub or GitLab, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees.
+
+## Requirements
+
+- An organization or user API key. A workspace key cannot call this route.
+- The ability to make an authenticated HTTPS request from your pipeline.
+
+## What a report carries
+
+| Field | Description |
+| --- | --- |
+| `workspaceId` | The workspace to report the deployment into. |
+| `providerDeploymentId` | Your identifier for the deployment. Reports carrying the same one update a single deployment. |
+| `status` | `pending`, `success`, `failure` or `inactive`. |
+| `environment` | Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. |
+| `deployTarget` | The URL the deployment serves. |
+| `environmentVariables` | Overrides for the runs this deployment requests. A report that sends them replaces the stored values; one that omits them keeps them. |
+| `metadata` | Details about the deployed revision, such as the commit. |
+
+## When a report starts a run
+
+- A deployment's first `success` report evaluates triggers, and it is the only report that does. A trigger added or resumed afterwards does not make that deployment evaluate again — report the deploy under a new `providerDeploymentId` to evaluate it against the triggers as they stand.
+- The response carries the deployment only, never the resulting runs.
+
+A deployment stays bound to the environment resolved on its first report, so later reports may omit the selector. Report a promotion as a new deployment under a new `providerDeploymentId`.
+
+The environment you name decides where the runs happen, and the same matching rules apply as for a deployment event. See [the environment name is the contract](/triggers/report-deployments#the-environment-name-is-the-contract) and, for previews, [isolate previews per pull request](/triggers/report-deployments#isolate-previews-per-pull-request).
+
+<Note>
+  Ask your QA Wolf representative for the request URL and body to put in your pipeline. The fields above are what it carries.
+</Note>
+
+## Create a trigger
+
+Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+
+## Verify
+
+Deploy, and confirm a run appears under the environment you expect. When none does, [Diagnose a trigger](/triggers/diagnose-a-trigger) says whether the report reached QA Wolf and which condition failed.

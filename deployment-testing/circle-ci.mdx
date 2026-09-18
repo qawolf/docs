@@ -1,0 +1,13 @@
+---
+title: "CircleCI"
+description: "How a CircleCI pipeline gets its deploys tested, and which of the other integrations it actually uses."
+sidebarTitle: "CircleCI"
+keywords: "CircleCI, circle, pipeline, deploy job, CI"
+---
+
+QA Wolf has no CircleCI-specific integration. A CircleCI pipeline reports its deploys the same way any other pipeline does, so the question is only which path fits.
+
+- **Your repository is on GitHub or GitLab.** Let the code host record the deployment and connect that integration: QA Wolf then learns the branch, the commit and the environment without CircleCI doing anything. See [GitHub deployments](/deployment-testing/github) or [GitLab deployments](/deployment-testing/gitlab).
+- **Your repository is somewhere else, or the deploy never reaches the code host.** Add a step to the CircleCI job that deploys, reporting the deploy to QA Wolf directly. See [Webhook](/deployment-testing/webhook).
+
+Either way, a [trigger](/triggers/overview) decides which flows run for each deployment.
