@@ -1,18 +1,18 @@
 ---
 title: "GitHub deployments"
-description: "Let QA Wolf hear about every deploy through GitHub's deployment records, and let a trigger decide which flows run."
+description: "Let QA Wolf hear about every deploy through GitHub deployments, and let a trigger decide which flows run."
 sidebarTitle: "GitHub"
-keywords: "GitHub App, GitHub Deployments, deployment record, preview environment, status check"
+keywords: "GitHub App, GitHub Deployments, deployment status, ref, pull request"
 ---
 
-A GitHub deployment is a record GitHub keeps of a deploy: which commit, which environment, and whether it succeeded. QA Wolf reads those records through the installed GitHub App, and a [trigger](/triggers/overview) decides which flows run for each one.
+A [GitHub deployment](https://docs.github.com/en/rest/deployments/deployments) is a request to deploy a specific ref — a branch, SHA or tag. Creating one fires a webhook event that external services act on, and that is how QA Wolf hears about your deploys. A [deployment status](https://docs.github.com/en/rest/deployments/statuses) is how the service doing the deploying marks what became of it; QA Wolf acts on a status of `success`.
 
-Deployment records are separate from the workflow that produced them. A repository can run any CI it likes, as long as something creates the record.
+A deployment is separate from the workflow that created it, so your repository can run any CI it likes as long as something creates the deployment.
 
 ## Requirements
 
 - Access to a QA Wolf workspace
-- Permission to install a GitHub App on the organization that owns the deploying repository
+- Permission to install a GitHub App on the organization that owns the repository
 
 ## Install the GitHub App
 
@@ -28,28 +28,33 @@ Deployment records are separate from the workflow that produced them. A reposito
   </Step>
 </Steps>
 
-## Check what your repository already emits
+## Check what your repository already creates
 
-Many hosting providers create deployment records on their own — Vercel among them. Open a recent deploy's commit in GitHub and look for a deployment on it before changing anything.
+Many hosting providers create deployments on their own — Vercel among them. Open a recent commit in GitHub and look for a deployment on it before changing anything.
 
-If nothing creates them, your pipeline creates the record itself and reports its success. [Report deployments to QA Wolf](/triggers/report-deployments#github) has the exact calls, along with the two facts that decide whether a deploy lands where your triggers look:
+If nothing creates them, your workflow creates one itself with `POST /repos/{owner}/{repo}/deployments` and then marks it with a deployment status. [Report deployments to QA Wolf](/triggers/report-deployments#github) has the calls.
 
-- **The environment name** — QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches.
-- **Per-pull-request isolation** — a preview deploy needs a discriminator in both its environment name and its URL, or a run can execute against another pull request's build.
+Three fields carry most of the meaning:
+
+- **`ref`** — what was deployed.
+- **`environment`** — which target it went to. It defaults to `production`, so a deployment that omits it claims to be a production deploy. QA Wolf matches the name against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches.
+- **`environment_url`**, set on the deployment status — the address QA Wolf runs against.
 
 <Note>
-  QA Wolf evaluates triggers on a deployment's first success report, and only that one. A deploy left in a pending state starts nothing.
+  QA Wolf evaluates triggers on a deployment's first `success` status, and only that one. A deployment left `pending` starts nothing.
 </Note>
 
 ## Test every pull request
 
-A preview deploy gives QA Wolf a deployment that resolves to the pull request it came from, which is what makes pull-request testing possible. Two things have to hold, both covered in [Report deployments to QA Wolf](/triggers/report-deployments#isolate-previews-per-pull-request): the deployment names an environment unique to the pull request, and its URL is unique too.
+A preview deployment gives QA Wolf a deployment that resolves to the pull request it came from, which is what makes pull-request testing possible. Two things have to hold, both covered in [Report deployments to QA Wolf](/triggers/report-deployments#isolate-previews-per-pull-request): the `environment` name is unique to the pull request, and so is the `environment_url`.
 
-Give previews their own trigger rather than widening the one that covers staging. Match the shape your pipeline emits — `preview/*`, `pr-*` — and choose what runs:
+Mark a pull-request deployment with `transient_environment: true`, so GitHub and QA Wolf both treat its environment as short-lived rather than permanent.
+
+Give preview deployments their own trigger rather than widening the one that covers staging. Match the shape your workflow emits — `preview/*`, `pr-*` — and choose what runs:
 
 - **A small tag**, for a fixed set of fast flows on every pull request.
 - **[Generative flow selection](/triggers/overview#generative-flow-selection)**, which lets QA Wolf pick the flows from the pull request itself. It needs the deployment to resolve to a pull request, so it fits a preview trigger and skips any deployment without one.
 
 ## Create a trigger
 
-A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments you now emit, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your repository now creates, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).

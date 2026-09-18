@@ -40,7 +40,7 @@ The deploy URL — `environment_url` on GitHub, the environment's `url` on GitLa
 
 ## GitHub
 
-The workflow needs `permissions: deployments: write`. A long-lived deploy creates the deployment and reports success once the deploy finishes.
+The workflow needs `permissions: deployments: write`. A long-lived deploy creates the [deployment](https://docs.github.com/en/rest/deployments/deployments) and marks it with a [deployment status](https://docs.github.com/en/rest/deployments/statuses) of `success` once the deploy finishes.
 
 Example:
 
@@ -77,7 +77,7 @@ transient_environment: true,
 
 ## GitLab
 
-A job with the `environment:` keyword creates the deployment on its own, and the deployment webhook fires when the job succeeds. A separate API call is unnecessary.
+A [deployment job](https://docs.gitlab.com/ci/environments/) — one carrying the [`environment` keyword](https://docs.gitlab.com/ci/yaml/) — creates the deployment on its own, and the webhook fires when the job succeeds. A separate API call is unnecessary.
 
 Example:
 
@@ -91,7 +91,7 @@ deploy-staging:
     - ./deploy.sh
 ```
 
-A review app names its environment per branch, which the `review/` prefix marks transient.
+A [review app](https://docs.gitlab.com/ci/review_apps/) names its environment per branch, which the `review/` prefix marks transient.
 
 Example:
 
