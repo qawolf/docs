@@ -1,0 +1,134 @@
+---
+title: "Onboarding to Full Service"
+description: "What to expect during QA Wolf full service onboarding, including timelines, meetings, and setup steps."
+sidebarTitle: "Onboarding"
+---
+
+QA Wolf Full Service pairs your team with a dedicated QA engineering team that builds, runs, and maintains your automated test suite. If you're evaluating QA Wolf, [book a demo](https://www.qawolf.com/book-a-demo) to talk through your coverage goals.
+
+## Needed to get started
+
+**Integrations**
+
+- [ ] Connect a messaging app (Slack, MS Teams, Discord).
+- [ ] Provide test environment credentials.
+
+**Resources**
+
+- [ ] Share any existing test plans or internal priority lists.
+- [ ] Share any existing E2E tests you may be running.
+
+**Actions**
+
+- [ ] [Prepare your environment for E2E testing](/Test-environments)
+- [ ] Assign a champion point of contact to remove blockers
+
+## Onboarding timeline
+
+Note that these are rough timelines from the contract start date. 
+
+<Steps>
+  <Step title="**Kick-off** (by day 5)">
+    **Agenda**<br />Meet your dedicated team, review coverage goals, and align on milestones and timelines.
+
+    **Goals**
+
+    - Connect a shared Slack, Teams, or Discord channel.
+    - Get access to a testing environment.
+    - Learn about coverage goals and priorities. 
+
+     
+
+    **Attending**
+
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Point of contact during the sales process</td><td>Customer Success Manager</td></tr>
+        <tr><td>Day-to-day champion</td><td>QA team lead</td></tr>
+        <tr><td>Engineers, PMs, and members of your QA team you want involved</td><td>&nbsp;</td></tr>
+      </tbody>
+    </table>
+  </Step>
+  <Step title="**Product Tour** (by day 5)">
+    **Agenda**<br />You'll walk our team through your app and point out critical priorities or anything to avoid.
+
+    **Goals**
+
+    - Learn how your product works and how features are related.
+    - Discuss any "gotchas" that affect how tests need to run.
+    - Prioritize tests to build first.
+
+     
+
+    **Attending**
+
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM or engineering lead familiar with what needs testing</td><td>QA team lead</td></tr>
+        <tr><td>&nbsp;</td><td>Test outliner</td></tr>
+      </tbody>
+    </table>
+  </Step>
+  <Step title="**First Test Plan Review** (by day 15)">
+    **Agenda**<br />The initial test plan is a high-level view of what flows we recommend testing. After you approve we'll outline specific test steps and assertions. 
+
+    **Goals**
+
+    - Review the high-level flows. 
+    - Add, revise, or replace any flows you think are necessary. 
+    - Re-confirm priorities and get approval to begin outlining. 
+
+    **Attending**
+
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM or engineering lead</td><td>QA team lead</td></tr>
+        <tr><td>&nbsp;</td><td>Test outliner</td></tr>
+      </tbody>
+    </table>
+
+    <Warning>
+      Potential blockers: Stakeholders aren't aligned on what coverage is necessary, or they're not available to review and approve the test plan.
+    </Warning>
+  </Step>
+  <Step title="**Final Test Plan Review** (by day 20)">
+    **Agenda**<br />The final test plan outlines the specific test steps and assertions in the Arrange-Act-Assert format. 
+
+    **Goals**
+
+    - Review AAA outlines and make any necessary adjustments.
+    - Get approval to begin automating your tests. 
+
+    **Attending**
+
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM or engineering lead</td><td>QA team lead</td></tr>
+        <tr><td>&nbsp;</td><td>Test outliner</td></tr>
+      </tbody>
+    </table>
+  </Step>
+  <Step title="**Test automation** ">
+    We find this order works best for most teams:
+
+    1. Your highest priority flows.
+    2. Most complex flows that take longest to build and stabilize.
+    3. Simplest flows. 
+
+    <Warning>
+      Potential blocker: Your test environment is too unstable to run end-to-end tests reliably. Read: [Preparing an Environment for QA Wolf](/Test-environments).
+    </Warning>
+  </Step>
+</Steps>
