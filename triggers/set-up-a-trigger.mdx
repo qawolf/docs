@@ -1,0 +1,101 @@
+---
+title: "Set up a trigger"
+description: "Choose a trigger kind, decide which flows it runs, and create it from the triggers page or a coding agent."
+sidebarTitle: "Set up a trigger"
+keywords: "create a trigger, run tests on deploy, nightly test run, cron, deployment trigger setup"
+---
+
+Setting up a trigger is three decisions: what occasion starts the run, which flows run, and where. Settle all three before creating anything, because a trigger starts billed runs from the moment it exists.
+
+<Check>
+  If your workspace still has unpaused legacy triggers, stop here and read [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) first. The first global trigger you create cuts the whole workspace over.
+</Check>
+
+You create and edit triggers on your workspace's triggers page, or through the [QA Wolf MCP](/qawolf-mcp) from a coding agent.
+
+## Choose the occasion
+
+A deployment trigger runs your flows exactly when the application changed, against the deploy that changed it, so prefer one where your pipeline can support it. The options, best first:
+
+1. **GitHub or GitLab deployments.** QA Wolf learns the branch, the commit and the environment of every deploy. Many hosting providers, Vercel among them, already create these events.
+2. **`deployment.reportStatus`.** A step in your pipeline reports the deploy to QA Wolf directly. Use it when your pipeline cannot create provider deployment events.
+3. **A schedule.** Runs the flows hourly or daily. The only option that changes nothing in your pipeline.
+
+Options 1 and 2 usually need a change to your pipeline, and a real deploy to prove the events arrive. A schedule is a legitimate destination, not a consolation: if you want nightly runs, create a schedule and stop.
+
+Both deployment options need your pipeline to emit something QA Wolf can match. [Report deployments to QA Wolf](/triggers/report-deployments) covers what that is.
+
+## Connect your code host
+
+Provider deployment events reach QA Wolf through an installed integration, so connect one for the provider that hosts your pipeline.
+
+- **GitHub** — enable the integration from **Workspace settings → Integrations**, which installs the QA Wolf GitHub App. Select every repository that deploys: a repository the app does not cover sends no events.
+- **GitLab** — the same settings page takes a GitLab group access token with the **Maintainer** role and the `api` scope. QA Wolf refuses a lesser token.
+
+<Note>
+  A connected integration and a pipeline that emits deployments are separate things. An integration can be connected while the pipeline creates no deployment records at all, in which case QA Wolf hears nothing.
+</Note>
+
+## Decide what runs
+
+Name the flows before you create the trigger:
+
+- **A tag** — every flow carrying it runs, and flows tagged later join automatically. The usual choice for a standing trigger.
+- **Named flows** — a fixed set that changes only when you change the trigger.
+- **Generative selection** — QA Wolf picks the flows from the pull request. Preview deployments only; see [Generative flow selection](/triggers#generative-flow-selection).
+
+Static and preview deployments want different triggers. A static environment such as staging usually wants comprehensive coverage from a tag. A preview deployment wants a small, targeted set. One trigger matching both looks simpler and is worse: a pull request should not run everything staging runs, and a generative action would skip every static deploy.
+
+## Create a deployment trigger
+
+A deployment trigger's conditions say which deployments it fires for. Every condition supplied must match, and supplying none fires on every deployment the workspace reports.
+
+| Field | Description |
+| --- | --- |
+| `environmentIds` | Only fire for deployments to these environments. Mutually exclusive with `environmentPattern`. |
+| `environmentPattern` | Only fire for deployments to environments matching this pattern. Mutually exclusive with `environmentIds`. |
+| `deployTargetPattern` | Only fire for deployments of an app matching this pattern. A deploy target names one app within an environment. |
+| `branchPattern` | Only fire for deployments of a branch matching this pattern. |
+
+A static environment usually needs only its own name, or a deploy-target pattern when its URL is stable and distinctive. A preview deployment needs a pattern matching the shape your pipeline actually emits — `pr-*`, `preview/*`, `review/*`. Read your workflow for the shape rather than guessing a convention.
+
+<Steps>
+  <Step title="Create the trigger">
+    Give it a name you will recognize later, the conditions above, and the action.
+  </Step>
+  <Step title="Check the environment name your pipeline sends">
+    A name that does not match the environment you intend lands the deploy in a different environment, which the trigger never sees. See [the environment name is the contract](/triggers/report-deployments#the-environment-name-is-the-contract).
+  </Step>
+  <Step title="Deploy">
+    Only a real deploy proves the wiring end to end. Confirm a run appeared for it on the environment's runs page.
+  </Step>
+</Steps>
+
+<Warning>
+  A deployment trigger that has never seen a deployment is configured, not verified. Nothing tells you an environment name or a pattern is wrong until a deploy fails to produce a run.
+</Warning>
+
+## Create a schedule trigger
+
+A schedule needs a cadence, an environment, and for a daily cadence a time and a timezone.
+
+| Field | Description |
+| --- | --- |
+| `cadence` | `hourly` or `daily`. |
+| `environmentId` | The environment the scheduled runs happen in. |
+| `timeOfDay` | The wall clock time a daily schedule fires, as `HH:mm`. Required when the cadence is daily. |
+| `timezoneId` | The IANA timezone `timeOfDay` is read in, such as `America/New_York`. Required when the cadence is daily. |
+| `minuteOfHour` | Minutes past the hour an hourly schedule fires. Defaults to 0. |
+
+Set the timezone deliberately. A daily run in the wrong timezone fires during your business hours and looks like a malfunction.
+
+Once created, the trigger reports `nextScheduledAt`: when it next fires. Check that it matches what you asked for.
+
+## Turn a trigger off
+
+Pause it. Pausing stops the trigger firing without deleting it, and resuming brings it back unchanged.
+
+## Related
+
+- [Report deployments to QA Wolf](/triggers/report-deployments)
+- [Diagnose a trigger](/triggers/diagnose-a-trigger)

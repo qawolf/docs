@@ -1,0 +1,46 @@
+---
+title: "Legacy triggers"
+description: "The older per-environment trigger model: what the three kinds do, how deploys reach them, and what changes when a workspace moves to global triggers."
+sidebarTitle: "Legacy triggers"
+keywords: "per-environment triggers, deploy_success, PR testing button, adaptive flow selection, notify on deploy"
+---
+
+This section describes the older per-environment trigger model. It stays accurate for a workspace that has not migrated, and it is not how new automation is set up. [Global triggers](/triggers) is the current model, and [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) is the path between them.
+
+## The per-environment model
+
+A legacy trigger belongs to one environment, and there is no workspace-wide list of them — each environment carries its own. Covering staging and production means one trigger in each.
+
+Legacy triggers come in three kinds:
+
+- **Scheduled** — runs the environment's flows on a repeating interval.
+- **Deployment** — runs them when your pipeline reports a deploy that matches the trigger's deployment type and branch scope.
+- **Pull-request button** — runs them when someone presses the testing button on a pull request.
+
+Deployment and pull-request triggers are configured by QA Wolf rather than by you.
+
+## How deploys reach a legacy trigger
+
+A legacy deployment trigger fires on one of two arrival paths:
+
+- **The `deploy_success` endpoint** — reached directly, through `@qawolf/ci-sdk`, or through the notify-on-deploy GitHub Action. All three are the same endpoint. See [webhooks/deploy_success](/deploy-success) for the request and response.
+- **GitHub or GitLab deployment events** — forwarded by the connected code host integration.
+
+The deployment type your pipeline sends is an opaque label QA Wolf matches against the trigger. Your QA Wolf representative provides the value to send.
+
+## Which flows a legacy trigger runs
+
+A legacy trigger runs the flows carrying its tags, or every flow in its environment when it has no tags. Some deployment triggers instead use adaptive flow selection, where QA Wolf picks the flows from the pull request the deploy belongs to.
+
+## What changes when you migrate
+
+<Warning>
+  The first unpaused global trigger in a workspace switches the whole workspace off the legacy deployment path. Legacy deployment triggers and pull-request button triggers stop firing immediately while still displaying as active, and legacy scheduled triggers keep firing until they are paused. Migration is all-or-nothing per workspace.
+</Warning>
+
+Plan the move as one cutover rather than converting triggers one at a time. [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) has the full procedure, including the mappings that need a decision: branch scopes expressed as lists or negations, cadences with no equivalent, and the pull-request button, which becomes automatic testing on preview deploys.
+
+## In this section
+
+- [Setting up PR testing on GitHub](/PR-testing-for-GitHub-Integrations) and [on GitLab](/PR-testing-for-GitLab-Integrations).
+- [Node.js SDK](/ci-sdk-integration), [Webhook](/webhook-integration) and [CircleCI](/circle-ci) — reporting a deploy from a pipeline that is not on the GitHub or GitLab integration.

@@ -1,0 +1,85 @@
+---
+title: "Diagnose a trigger"
+description: "Find out why a deployment started no run, or started the wrong one, from the verdict QA Wolf recorded when it evaluated the deployment."
+sidebarTitle: "Diagnose a trigger"
+keywords: "trigger did not fire, no run for my deploy, wrong flows ran, trigger evaluation, troubleshooting"
+---
+
+QA Wolf keeps every deployment it received and, for each one, a per-trigger verdict recorded at the moment the deployment was evaluated. So the answer to "why didn't my trigger run?" is usually on record: nothing arrived, a named condition failed, a trigger matched and something stopped the run, or a different trigger than you assumed created it.
+
+A coding agent can work through all of this for you through the [QA Wolf MCP](/qawolf-mcp).
+
+## Find the deployment
+
+Start from the occasion, not from an id. A pull request gives its head commit and branch; a release gives its tag's commit; "yesterday's release to staging" gives a branch and a rough time. Any one of branch, commit, environment or time is enough to search the workspace's deployments on.
+
+Then read the deployment you found in full before judging anything. Its environment name says where the deploy actually landed, which is not always where you believe it went — a pipeline emitting an unexpected name lands deployments in a silently created environment the triggers never target.
+
+Three outcomes follow:
+
+- **The deployment is there.** Read its verdicts.
+- **Other deployments exist but this one is missing.** This deploy never arrived.
+- **The workspace has no deployments at all.** The integration or the pipeline is the problem, not the trigger.
+
+## Read the verdicts
+
+A deployment reports either that its triggers were never checked, or one verdict per trigger that existed at the time.
+
+**`not-evaluated`** means triggers were never checked, because only a deployment's first `success` report evaluates them. The deployment's own status says what was reported instead:
+
+- **`pending`** — the pipeline created the deployment and never reported success. Either the deploy step failed, or the success report is missing from the pipeline.
+- **`failure`** — the deploy itself failed, and no trigger should have fired.
+
+**`evaluated`** carries one verdict per trigger. Verdicts are a snapshot of the moment of evaluation:
+
+- Editing or deleting a trigger later does not change them.
+- A verdict with no trigger id belongs to a trigger deleted since.
+- A trigger created after the deployment has no verdict at all, and will be evaluated on the next deployment. That is the answer for anyone who created a trigger and expected it to cover an earlier deploy.
+
+### The trigger was not considered
+
+- **`trigger-paused`** — the trigger was paused when the deployment was evaluated. Resuming it is usually the whole fix.
+- **`not-a-deployment-trigger`** — the trigger has no deployment conditions, so no deploy can ever fire it. A schedule is the usual case. Deploy-driven runs need a deployment trigger; see [Set up a trigger](/triggers/set-up-a-trigger#choose-the-occasion).
+
+### The trigger did not match
+
+Each condition set records a verdict per condition, with a plain-language reason for every condition that failed. Condition sets are ORed, and the conditions inside a set are ANDed, so the explanation is the failed condition in each set. Most triggers have one set, one failed condition, and a one-sentence answer: the deployment reported into `pr-417`, and the trigger matches `staging`.
+
+Compare the recorded conditions against the trigger as it stands now before changing it. The trigger may have changed since the deployment was evaluated.
+
+### The trigger matched
+
+Matching is not running. A matched verdict carries a run outcome:
+
+- **`ran`** — names the run the trigger created. A run that happened and then failed is a flow problem, not a trigger problem.
+- **`starting`** — run creation is still in progress. Check the environment's runs again shortly.
+- **`did-not-run`** — carries the reason. A `supersededByRunId` means an earlier delivery of the same deployment already produced that run, which is coverage rather than a gap.
+- **`unknown`** — QA Wolf has no record of what followed the match. Ask QA Wolf rather than guessing.
+
+## Why the wrong flows ran
+
+The evaluations say which trigger created which run, so attribute the run before editing anything. A run you assumed came from one trigger often came from another, and editing the innocent one changes nothing.
+
+When the right trigger did create it, the selection is the thing to check: a tag whose membership changed, or a flow added since the trigger was created.
+
+## When no deployment arrived
+
+A missing deployment means the path between the pipeline and QA Wolf is broken. Which half depends on whether an integration is connected:
+
+- **No integration for the provider that hosts the pipeline, and no `deployment.reportStatus` call in CI.** QA Wolf cannot hear about deploys at all. Connecting one comes first; see [Connect your code host](/triggers/set-up-a-trigger#connect-your-code-host).
+- **An integration is connected but this deploy never arrived.** Either the code host is silent about it, or provider events were never this deploy's arrival path. Check that the installation covers the deploying repository, then read the pipeline: a workflow that deploys without creating a deployment record emits nothing to hear. See [Report deployments to QA Wolf](/triggers/report-deployments).
+
+Other deployments still arriving for the workspace narrow the gap to this repository or this workflow.
+
+<Note>
+  A pipeline that reports deploys only through the legacy path is invisible to these records and to global triggers, even while runs may still be happening. That workspace is due a [migration](/triggers/migrate-from-legacy-triggers), not a diagnosis.
+</Note>
+
+## When the records run out
+
+The evaluation data explains matching. It does not explain everything downstream of a match or upstream of an arrival, and two failure families look healthy in these records:
+
+- **Deployments arrive but connect to nothing.** Runs happen, yet no branch or pull request shows on them and nothing posts back to the code host. The tell is deployments consistently missing a commit and a branch even though the pipeline sends them.
+- **The match works and an expected side effect never happens.** Per-pull-request environments never get created, for example, although the deployments do resolve pull requests.
+
+Keep the two findings apart. "QA Wolf received nothing" has a checkable cause. "QA Wolf received it but could not connect it to anything" does not, and it is a question for QA Wolf support — send the deployment's time, environment, commit, and the gap you observed.

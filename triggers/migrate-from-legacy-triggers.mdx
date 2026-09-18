@@ -1,0 +1,137 @@
+---
+title: "Migrate from legacy triggers"
+description: "Move a workspace from per-environment legacy triggers to global triggers without a coverage gap, in one pass."
+sidebarTitle: "Migrate from legacy"
+keywords: "legacy triggers, migration, cutover, per-environment triggers, deploy_success"
+---
+
+Legacy triggers attach to one environment. Global triggers belong to the workspace. Moving between them is one planned cutover, not an incremental loop, and this page says why and in what order.
+
+A coding agent can carry out the whole migration through the [QA Wolf MCP](/qawolf-mcp). Ask it to migrate your triggers and it follows this procedure.
+
+## One trigger cuts the whole workspace over
+
+<Warning>
+  The first unpaused global trigger switches the entire workspace off the legacy deployment path. At that instant every legacy deployment trigger you have not yet replaced goes dark, silently, while still displaying as active.
+</Warning>
+
+Any unpaused global trigger trips the switch, whatever its kind. Migrating "just the schedules first" is not a smaller safe step — it opens the same gap.
+
+The two legacy families then fail in opposite directions:
+
+- **Legacy deployment triggers fed by GitHub or GitLab deployment events** stop firing on their own. Left unreplaced, they are a silent coverage gap.
+- **Legacy scheduled triggers keep firing**, and so do deployment triggers fed by the legacy `deploy_success` call, which the cutover does not gate. Until you pause them explicitly, the workspace gets duplicate runs.
+
+So the order is fixed: read everything, plan everything, create every replacement, and only then pause the legacy triggers.
+
+A single legacy trigger you cannot map blocks the whole migration. Creating "just the easy ones" cuts the workspace over and turns the hard one into the silent gap. Resolve it first, or decide deliberately to drop it.
+
+## Read everything first
+
+The plan is built entirely from reads. Collect all of it before creating anything:
+
+<Steps>
+  <Step title="List the workspace's global triggers">
+    An unpaused one means the cutover already happened: the legacy deployment triggers are already dark and the gap already exists. It can also mean a previous migration stopped halfway, so compare what exists against the legacy triggers before recreating anything.
+  </Step>
+  <Step title="List the environments">
+    Legacy triggers are listed per environment, so every static environment has to be read. Transient preview environments carry nothing to migrate.
+  </Step>
+  <Step title="List the legacy triggers in each environment">
+    Record each one's kind — scheduled, deployment, or pull-request button — its paused state, its tags, and its matching. Ask your QA Wolf team for the inventory if you cannot read it yourself.
+  </Step>
+  <Step title="Establish how deploys reach QA Wolf today">
+    This often decides the shape of the whole plan. See the next section.
+  </Step>
+</Steps>
+
+## Migrate the deployment reporting first
+
+Customers notify QA Wolf of deploys in several ways, and they are not interchangeable:
+
+- **The legacy path** — a `deploy_success` call, the legacy CI SDK, or the notify-on-deploy GitHub Action. Three faces of the same endpoint.
+- **The current path** — real GitHub or GitLab deployment events, or a `deployment.reportStatus` call.
+
+Global triggers evaluate the current path only. A deploy reported only through the legacy path is invisible to them, so that pipeline has to change before the deployment side of the migration can work at all. [Report deployments to QA Wolf](/triggers/report-deployments) covers the change; plan it as an explicit step of the migration rather than an afterthought.
+
+<Warning>
+  If you already emit deployment events and also call `deploy_success`, check what each one covers before dropping the legacy call. A very common shape is deployment events for long-lived environments only, with previews reported through `deploy_success`. Dropping the call there silently kills preview testing.
+</Warning>
+
+On GitLab, preview environments must be named under `review/` or every one accumulates permanently. Check the names before trusting a preview-matching trigger; see [long-lived versus transient](/triggers/report-deployments#long-lived-versus-transient).
+
+## Map each legacy trigger
+
+Aim for equivalent effect, not a faithful port. Several legacy fields have no counterpart, and forcing them through produces triggers that look right and fire wrong. When a trigger's intent has no clean expression, stop and establish what the trigger was for. Often the honest answer is a pipeline change — a distinguishable environment name, a deploy target on the deployment, real deployment events — rather than a cleverer mapping.
+
+### What runs
+
+Legacy tags become the new action's tags. A legacy trigger with no tags ran the environment's flows wholesale, and a global trigger's action must name flows or tags, so decide which: a tag, so future flows join, or an explicit list.
+
+### Adaptive flow selection
+
+Adaptive flow selection maps to the generative action, which needs the deployment to resolve to a pull request. It therefore belongs only on a preview-style trigger, and skips every deployment without a pull request. A legacy adaptive trigger that also covered static deploys cannot move across as one trigger — split it.
+
+### Cadence, time and timezone
+
+- **A daily legacy cadence** becomes a daily trigger. Derive the wall-clock time from the legacy start time rendered in the legacy timezone.
+- **An hourly legacy cadence** becomes an hourly trigger. Set the minute past the hour from the legacy start time — left out, it defaults to 0 and silently moves a quarter-past trigger to the top of the hour.
+- **A twice-daily cadence** becomes two daily triggers twelve hours apart, because one trigger carries at most one schedule.
+- **Any other cadence** has no equivalent. Stop and decide what the trigger was for.
+
+A legacy trigger with no timezone ran in UTC. Present it as UTC and confirm the time rather than inventing a zone the data does not carry.
+
+### Deployment matching
+
+The legacy deployment type was an opaque identifier your pipeline echoed back. Global triggers match on environment, deploy target and branch instead, so translate the intent: which deploys was this trigger for? Usually the trigger's own environment is the answer.
+
+Branch scoping is the gotcha. A legacy trigger's branch scope is a comma-separated list of globs whose leading `-` negates the whole list. A global trigger's `branchPattern` is one pattern with neither. A single plain entry maps directly; a comma list or a negation does not, and needs a decision rather than an approximation.
+
+A legacy rule that matched a specific repository by id also has no global equivalent. Mapped to the environment alone it would fire for every connected repository.
+
+### Pull-request button triggers
+
+The pull-request testing button has no global equivalent. It migrates to automatic pull-request testing: a deployment trigger matching your preview shape, with a generative action.
+
+<Note>
+  That is a behavior change worth confirming with whoever used the button. Testing moves from on-demand presses to automatic runs on every matching preview deploy.
+</Note>
+
+### Already-paused legacy triggers
+
+Leave them alone and list them as paused. If you want one carried over anyway, create its replacement and pause it immediately so it arrives off.
+
+## Create all, then pause
+
+With the plan agreed, in this order:
+
+<Steps>
+  <Step title="Create every replacement">
+    Check each one as you go. A schedule's next firing time should match the plan.
+  </Step>
+  <Step title="Pause every legacy scheduled trigger">
+    Do this promptly: duplicates run until it lands.
+  </Step>
+  <Step title="Pause the legacy deployment triggers">
+    Those fed by deployment events already stopped at step 1, so pausing makes the workspace's state legible. Those fed by `deploy_success` keep matching for as long as the pipeline keeps calling it, so for them pausing is as necessary as for the schedules.
+  </Step>
+</Steps>
+
+Nothing is deleted at any point. Pausing is reversible, which is also the rollback: pause the new triggers and resume the legacy ones.
+
+<Warning>
+  If execution breaks partway, finish the creates before anything else. An open coverage gap outranks a tidy pause, and the first create already cut the workspace over.
+</Warning>
+
+A pause that fails leaves coverage intact and duplicates running. Retry it, and if it keeps failing, note which legacy triggers are still live.
+
+## Verify
+
+Verify by re-reading, not by trusting what the creates reported.
+
+- Compare the new triggers against the plan: cadence, time, timezone, matching, and what runs.
+- Confirm every legacy trigger the plan said would be paused now reads as paused.
+- For schedules, check the next firing time.
+- For deployments, the proof is the next real deploy. Until one has produced a run, the deployment side is migrated but not verified.
+
+When a deploy produces no run, [Diagnose a trigger](/triggers/diagnose-a-trigger) says which condition failed.
