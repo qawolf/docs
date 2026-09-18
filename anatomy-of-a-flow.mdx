@@ -231,15 +231,7 @@ For the full callback context shape, see the API Reference for [Web](/libraries/
 
 ## Platform differences
 
-<Note>
-  `launch()`, `device`, and `platform.target` are stubs in the package code, and the runner replaces them at execution time. They only work while a flow is running inside the QA Wolf runner — keep them inside the flow callback, not at the module level. \
-  \
-  Module-level code should be limited to imports, constants, and pure helper functions. \
-  \
-  `platform.target` (full API in the [Top-Level Reference](/libraries/flows/api-reference/top-level)) lets a single flow branch on the active platform at runtime. Use it sparingly — prefer separate platform-specific flows, each importing from its own [`@qawolf/flows` subpath](#import-statement), if you find yourself branching often.
-</Note>
-
-For platform-specific implementation differences that don't fit neatly into a Page Object — such as log capture, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — write a helper function that handles the difference internally. The flow calls the helper and stays linear.
+Prefer a separate flow per platform, each importing from its own [`@qawolf/flows` subpath](#import-statement). When one flow has to cover several — log capture, say, where iOS uses `"safariConsole"` and parses JSON while Android uses `"browser"` with logging preferences — put the difference in a helper function so the flow stays linear.
 
 ```typescript
 // /src/helpers/console-logs-ios.ts
@@ -255,7 +247,11 @@ export async function getConsoleLogs(driver: WebdriverIO.Browser) {
 }
 ```
 
-Keep helper functions like this one pure. As noted above, runtime APIs only work inside the flow callback, not at module level.
+Helpers like these sit at module level, which holds only imports, constants and pure functions. To branch on the platform at runtime instead, read [`platform.target`](/libraries/flows/api-reference/top-level#platform-target) — sparingly.
+
+<Warning>
+  `launch()`, `device` and `platform.target` are stubs the runner replaces at execution time, so they work only inside the flow callback. At module level, `platform.target` throws.
+</Warning>
 
 ## Environment variables
 
