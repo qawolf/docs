@@ -7,8 +7,6 @@ keywords: "trigger did not fire, no run for my deploy, wrong flows ran, trigger 
 
 QA Wolf keeps every deployment it received and, for each one, a per-trigger verdict recorded at the moment the deployment was evaluated. So the answer to "why didn't my trigger run?" is usually on record: nothing arrived, a named condition failed, a trigger matched and something stopped the run, or a different trigger than you assumed created it.
 
-A coding agent can work through all of this for you through the [QA Wolf MCP](/qawolf-mcp).
-
 ## Find the deployment
 
 Start from the occasion, not from an id. A pull request gives its head commit and branch; a release gives its tag's commit; "yesterday's release to staging" gives a branch and a rough time. Any one of branch, commit, environment or time is enough to search the workspace's deployments on.
@@ -70,10 +68,6 @@ A missing deployment means the path between the pipeline and QA Wolf is broken. 
 - **An integration is connected but this deploy never arrived.** Either the code host is silent about it, or provider events were never this deploy's arrival path. Check that the installation covers the deploying repository, then read the pipeline: a workflow that deploys without creating a deployment record emits nothing to hear. See [Report deployments to QA Wolf](/triggers/report-deployments).
 
 Other deployments still arriving for the workspace narrow the gap to this repository or this workflow.
-
-<Note>
-  A pipeline that reports deploys only through the legacy path is invisible to these records, and no trigger can fire on it, even while runs may still be happening. That workspace is due a [migration](/triggers/migrate-from-legacy-triggers), not a diagnosis.
-</Note>
 
 ## When the records run out
 
