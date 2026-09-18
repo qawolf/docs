@@ -107,7 +107,9 @@ export default flow(
   If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
 </Tip>
 
-```typescript
+<CodeGroup>
+
+```typescript Web
 export default flow(
   "Sign in",
   { target: "Web - Chrome", launch: true },
@@ -119,7 +121,31 @@ export default flow(
 );
 ```
 
-iOS and Android flows take the same shape with a device target, such as `"iOS - iPhone 15 (iOS 26)"` or `"Android - Pixel 9"`.
+```typescript iOS
+export default flow(
+  "Sign in",
+  { target: "iOS - iPhone 15 (iOS 26)", launch: true },
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      // driver is ready to use
+    });
+  },
+);
+```
+
+```typescript Android
+export default flow(
+  "Sign in",
+  { target: "Android - Pixel 9", launch: true },
+  async ({ driver, test }) => {
+    await test("launch app", async () => {
+      // driver is ready to use
+    });
+  },
+);
+```
+
+</CodeGroup>
 
 Pass an options object instead of `true` when you need to customize startup, such as reusing a browser profile. See the [Web API Reference](/libraries/flows/api-reference/web) for the full list of options.
 
