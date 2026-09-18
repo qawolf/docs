@@ -11,7 +11,7 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 
 ## Requirements
 
-- An organization or user API key. A workspace key cannot call this route.
+- An organization or user API key, created under **Workspace Settings → API Keys**. A workspace key cannot call this route.
 - The ability to make an authenticated HTTPS request from your pipeline.
 
 ## What a report carries
@@ -26,6 +26,43 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `environmentVariables` | Overrides for the runs this deployment requests. A report that sends them replaces the stored values; one that omits them keeps them. |
 | `metadata` | Details about the deployed revision, such as the commit. |
 
+## The request
+
+Example:
+
+```bash
+curl -X POST "https://app.qawolf.com/api/trpc/public.deployment.reportStatus" \
+  -H "Authorization: Bearer $QAWOLF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"json\": {
+      \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
+      \"providerDeploymentId\": \"$DEPLOY_ID\",
+      \"status\": \"success\",
+      \"environment\": { \"name\": \"staging\" },
+      \"deployTarget\": \"https://staging.example.com\",
+      \"metadata\": { \"commitSha\": \"$GIT_COMMIT_SHA\", \"ref\": \"$GIT_BRANCH\" }
+    }
+  }"
+```
+
+The input goes inside a `json` wrapper, and the reply carries the deployment under `result.data.json`. Replace `$DEPLOY_ID` with whatever your pipeline calls this deploy — a build number or a pipeline id — and `$QAWOLF_WORKSPACE_ID` with the id from **Workspace Settings → API Keys**.
+
+### Metadata
+
+`metadata` describes the revision you deployed. Every field is optional, and each one QA Wolf receives makes the deployment easier to recognize and to link back to your code.
+
+| Field | Description |
+| --- | --- |
+| `commitSha` | The commit sha of the deployed revision. |
+| `ref` | The branch or ref that was deployed. |
+| `repository` | The `owner/name` of the repository, such as `acme/web`. |
+| `pullRequestNumber` | The pull request the deployment belongs to. Requires `repository`. |
+| `commitMessage` | The deployed commit's message. The deployments list shows its first line. |
+| `commitAuthorName` | The display name of the commit's author. |
+
+Sending `repository` and `pullRequestNumber` is what lets a preview deploy resolve to its pull request, which [generative flow selection](/triggers/overview#generative-flow-selection) needs.
+
 ## When a report starts a run
 
 - A deployment's first `success` report evaluates triggers, and it is the only report that does. A trigger added or resumed afterwards does not make that deployment evaluate again — report the deploy under a new `providerDeploymentId` to evaluate it against the triggers as they stand.
@@ -35,14 +72,6 @@ A deployment stays bound to the environment resolved on its first report, so lat
 
 The environment you name decides where the runs happen, and the same matching rules apply as for a deployment event. See [the environment name is the contract](/triggers/report-deployments#the-environment-name-is-the-contract) and, for previews, [isolate previews per pull request](/triggers/report-deployments#isolate-previews-per-pull-request).
 
-<Note>
-  Ask your QA Wolf representative for the request URL and body to put in your pipeline. The fields above are what it carries.
-</Note>
-
 ## Create a trigger
 
 Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
-
-## Verify
-
-Deploy, and confirm a run appears under the environment you expect. When none does, [Diagnose a trigger](/triggers/diagnose-a-trigger) says whether the report reached QA Wolf and which condition failed.
