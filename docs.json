@@ -167,7 +167,7 @@
     },
     {
       "source": "/qawolf/Test-environments",
-      "destination": "/Test-environments"
+      "destination": "/prepare-environments-for-qa-wolf"
     },
     {
       "source": "/qawolf/TestRail",
@@ -668,6 +668,10 @@
     {
       "source": "/Integrating-with-microsoft-teams",
       "destination": "/MS-Teams"
+    },
+    {
+      "source": "/Test-environments",
+      "destination": "/prepare-environments-for-qa-wolf"
     }
   ],
   "integrations": {
@@ -696,7 +700,13 @@
         "pages": [
           "index",
           "why-qa-wolf",
-          "Glossary"
+          {
+            "group": "Guides",
+            "pages": [
+              "prepare-environments-for-qa-wolf",
+              "Glossary"
+            ]
+          }
         ]
       },
       {
@@ -1057,12 +1067,6 @@
             "pages": [
               "onboarding-to-full-service",
               "Request-new-coverage"
-            ]
-          },
-          {
-            "group": "Integrating Systems",
-            "pages": [
-              "Test-environments"
             ]
           }
         ]
