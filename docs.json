@@ -79,7 +79,7 @@
     },
     {
       "source": "/qawolf/Full-Service-The-First-Three-Months",
-      "destination": "/Full-Service-The-First-Three-Months"
+      "destination": "/onboarding-to-full-service"
     },
     {
       "source": "/qawolf/GitHub-GitHub-Actions",
@@ -147,7 +147,7 @@
     },
     {
       "source": "/qawolf/Recommended-reading-for-QA-engineers-and-developers",
-      "destination": "/Full-Service-The-First-Three-Months"
+      "destination": "/onboarding-to-full-service"
     },
     {
       "source": "/qawolf/Request-new-coverage",
@@ -595,7 +595,7 @@
     },
     {
       "source": "/Recommended-reading-for-QA-engineers-and-developers",
-      "destination": "/Full-Service-The-First-Three-Months"
+      "destination": "/onboarding-to-full-service"
     },
     {
       "source": "/local-execution/pull-flows",
@@ -612,6 +612,10 @@
     {
       "source": "/anatomy-of-a-qa-wolf-test-mobile-edition",
       "destination": "/anatomy-of-a-flow"
+    },
+    {
+      "source": "/Full-Service-The-First-Three-Months",
+      "destination": "/onboarding-to-full-service"
     }
   ],
   "integrations": {
@@ -971,7 +975,7 @@
           {
             "group": "Introduction",
             "pages": [
-              "Full-Service-The-First-Three-Months",
+              "onboarding-to-full-service",
               "Full-Service-FAQs"
             ]
           },
