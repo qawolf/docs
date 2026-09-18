@@ -44,7 +44,7 @@ These use a matched word in an unrelated sense and need no change: `custom-skill
 
 | Page | Navigation location | Built from |
 |---|---|---|
-| `triggers/index.mdx` | Features → Triggers | `qawolf-trigger-setup`, the trigger contracts |
+| `triggers/global-triggers.mdx` | Features → Triggers | `qawolf-trigger-setup`, the trigger contracts |
 | `triggers/set-up-a-trigger.mdx` | Features → Triggers | `qawolf-trigger-setup` |
 | `triggers/report-deployments.mdx` | Features → Triggers | `qawolf-trigger-setup/references/deployment-events.md`, `deployment.reportStatus` |
 | `triggers/diagnose-a-trigger.mdx` | Features → Triggers | `qawolf-trigger-diagnostics`, `deployment.listTriggerEvaluations` |
