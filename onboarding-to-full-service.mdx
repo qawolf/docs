@@ -1,7 +1,7 @@
 ---
 title: "Onboarding to Full Service"
 description: "What to expect during QA Wolf full service onboarding, including timelines, meetings, and setup steps."
-hidden: true
+sidebarTitle: "Onboarding"
 ---
 
 QA Wolf Full Service pairs your team with a dedicated QA engineering team that builds, runs, and maintains your automated test suite. If you're evaluating QA Wolf, [book a demo](https://www.qawolf.com/book-a-demo) to talk through your coverage goals.
@@ -41,11 +41,16 @@ Note that these are rough timelines from the contract start date.
 
     **Attending**
 
-    | Your team | Our team |
-    | --- | --- |
-    | Point of contact during the sales process | Customer Success Manager |
-    | Day-to-day champion | QA team lead |
-    | Engineers, PMs, and members of your QA team you want involved |  |
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Point of contact during the sales process</td><td>Customer Success Manager</td></tr>
+        <tr><td>Day-to-day champion</td><td>QA team lead</td></tr>
+        <tr><td>Engineers, PMs, and members of your QA team you want involved</td><td>&nbsp;</td></tr>
+      </tbody>
+    </table>
   </Step>
   <Step title="**Product Tour** (by day 5)">
     **Agenda**<br />You'll walk our team through your app and point out critical priorities or anything to avoid.
@@ -60,10 +65,15 @@ Note that these are rough timelines from the contract start date.
 
     **Attending**
 
-    | Your team | Our team |
-    | --- | --- |
-    | PM or engineering lead familiar with what needs testing | QA team lead |
-    |  | Test outliner |
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM or engineering lead familiar with what needs testing</td><td>QA team lead</td></tr>
+        <tr><td>&nbsp;</td><td>Test outliner</td></tr>
+      </tbody>
+    </table>
   </Step>
   <Step title="**First Test Plan Review** (by day 15)">
     **Agenda**<br />The initial test plan is a high-level view of what flows we recommend testing. After you approve we'll outline specific test steps and assertions. 
@@ -76,10 +86,19 @@ Note that these are rough timelines from the contract start date.
 
     **Attending**
 
-    | Your team | Our team |
-    | :-- | :-- |
-    | PM or engineering lead | QA team lead |
-    |  | Test outliner |
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM or engineering lead</td><td>QA team lead</td></tr>
+        <tr><td>&nbsp;</td><td>Test outliner</td></tr>
+      </tbody>
+    </table>
+
+    <Warning>
+      Potential blockers: Stakeholders aren't aligned on what coverage is necessary, or they're not available to review and approve the test plan.
+    </Warning>
   </Step>
   <Step title="**Final Test Plan Review** (by day 20)">
     **Agenda**<br />The final test plan outlines the specific test steps and assertions in the Arrange-Act-Assert format. 
@@ -91,10 +110,15 @@ Note that these are rough timelines from the contract start date.
 
     **Attending**
 
-    | Your team | Our team |
-    | :-- | :-- |
-    | PM or engineering lead | QA team lead |
-    |  | Test outliner |
+    <table style={{ display: "table", tableLayout: "fixed", width: "100%" }}>
+      <thead>
+        <tr><th>Your team</th><th>Our team</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM or engineering lead</td><td>QA team lead</td></tr>
+        <tr><td>&nbsp;</td><td>Test outliner</td></tr>
+      </tbody>
+    </table>
   </Step>
   <Step title="**Test automation** ">
     We find this order works best for most teams:
@@ -108,17 +132,3 @@ Note that these are rough timelines from the contract start date.
     </Warning>
   </Step>
 </Steps>
-
-### <Icon icon="users-round" /> Your QA team
-
-- Read: <Icon icon="user-cog" /> [Who will we be working with from QA Wolf?](/Full-Service-FAQs#who-will-we-be-working-with-from-qa-wolf)
-
-### <Icon icon="ban" /> Common test planning blockers
-
-- Your stakeholders aren't aligned on testing goals and priorities, which prevents us from finalizing a Test Plan.
-- Your team is unresponsive when QA Wolf reports possible bugs or asks for product clarification.
-- Your team is unavailable to review the test plan.
-
-### <Icon icon="ban" /> Common test creation blockers
-
-- . Read: <Icon icon="clipboard-check" /> [Preparing an environment for QA Wolf test runs](/Test-environments).
