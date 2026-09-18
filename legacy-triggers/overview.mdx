@@ -1,13 +1,13 @@
 ---
 title: "Legacy triggers"
-description: "The older per-environment trigger model: what the three kinds do, how deploys reach them, and what changes when a workspace moves to global triggers."
+description: "The legacy per-environment triggers: what the three kinds do, how deploys reach them, and what changes when a workspace migrates."
 sidebarTitle: "Legacy triggers"
 keywords: "per-environment triggers, deploy_success, PR testing button, adaptive flow selection, notify on deploy"
 ---
 
-This section describes the older per-environment trigger model. It stays accurate for a workspace that has not migrated, and it is not how new automation is set up. [Global triggers](/triggers/overview) is the current model, and [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) is the path between them.
+This section describes legacy triggers, which attach to a single environment. It stays accurate for a workspace that has not migrated, and it is not how new automation is set up. [Triggers](/triggers/overview) is what replaces them, and [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) is the path between the two.
 
-## The per-environment model
+## What a legacy trigger is
 
 A legacy trigger belongs to one environment, and there is no workspace-wide list of them — each environment carries its own. Covering staging and production means one trigger in each.
 
@@ -35,7 +35,7 @@ A legacy trigger runs the flows carrying its tags, or every flow in its environm
 ## What changes when you migrate
 
 <Warning>
-  The first unpaused global trigger in a workspace switches the whole workspace off the legacy deployment path. Legacy deployment triggers and pull-request button triggers stop firing immediately while still displaying as active, and legacy scheduled triggers keep firing until they are paused. Migration is all-or-nothing per workspace.
+  The first unpaused trigger in a workspace switches the whole workspace off the legacy deployment path. Legacy deployment triggers and pull-request button triggers stop firing immediately while still displaying as active, and legacy scheduled triggers keep firing until they are paused. Migration is all-or-nothing per workspace.
 </Warning>
 
 Plan the move as one cutover rather than converting triggers one at a time. [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) has the full procedure, including the mappings that need a decision: branch scopes expressed as lists or negations, cadences with no equivalent, and the pull-request button, which becomes automatic testing on preview deploys.

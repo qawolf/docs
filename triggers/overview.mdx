@@ -1,11 +1,11 @@
 ---
-title: "Global triggers"
+title: "Triggers"
 description: "Run a chosen set of flows whenever your application deploys or on a schedule, configured once for the whole workspace."
 sidebarTitle: "Overview"
 keywords: "automatic test runs, run on deploy, nightly runs, deployment trigger, scheduled trigger, IFTTT"
 ---
 
-A global trigger says: when this happens, run these flows. The "this" is an occasion — a deployment your pipeline reports, or a point in time. The "these flows" is an action — the flows QA Wolf runs when the occasion arrives.
+A trigger says: when this happens, run these flows. The "this" is an occasion — a deployment your pipeline reports, or a point in time. The "these flows" is an action — the flows QA Wolf runs when the occasion arrives.
 
 Triggers belong to the workspace, not to one environment. A single deployment trigger can cover staging, production and every preview environment at once, and the same workspace can hold as many triggers as it needs.
 
@@ -58,15 +58,15 @@ The action's `investigateFailures` field decides whether QA Wolf investigates fa
 
 Pausing stops a trigger firing without deleting it, and resuming brings it back. Pausing is reversible and idempotent, which makes it the safe way to turn automation off while you change something.
 
-## Global triggers and legacy triggers
+## Triggers and legacy triggers
 
 Legacy triggers attached to a single environment and came in three kinds: deployment triggers, scheduled triggers, and the pull-request testing button.
 
 <Warning>
-  The first unpaused global trigger in a workspace switches that whole workspace off the legacy deployment path. Legacy deployment triggers and pull-request button triggers stop firing immediately while still displaying as active, and legacy scheduled triggers keep firing until you pause them. Migration is all-or-nothing per workspace.
+  The first unpaused trigger in a workspace switches that whole workspace off the legacy deployment path. Legacy deployment triggers and pull-request button triggers stop firing immediately while still displaying as active, and legacy scheduled triggers keep firing until you pause them. Migration is all-or-nothing per workspace.
 </Warning>
 
-If your workspace still runs legacy triggers, read [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) before creating your first global trigger. [Legacy triggers](/legacy-triggers/overview) describes the older model on its own terms.
+If your workspace still runs legacy triggers, read [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) before creating your first trigger. [Legacy triggers](/legacy-triggers/overview) describes them on their own terms.
 
 ## Next
 

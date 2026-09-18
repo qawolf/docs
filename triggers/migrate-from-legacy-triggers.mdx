@@ -1,21 +1,21 @@
 ---
 title: "Migrate from legacy triggers"
-description: "Move a workspace from per-environment legacy triggers to global triggers without a coverage gap, in one pass."
+description: "Move a workspace off legacy per-environment triggers without a coverage gap, in one pass."
 sidebarTitle: "Migrate from legacy"
 keywords: "legacy triggers, migration, cutover, per-environment triggers, deploy_success"
 ---
 
-Legacy triggers attach to one environment. Global triggers belong to the workspace. Moving between them is one planned cutover, not an incremental loop, and this page says why and in what order.
+A legacy trigger attaches to one environment. A trigger belongs to the workspace. Moving between them is one planned cutover, not an incremental loop, and this page says why and in what order.
 
 A coding agent can carry out the whole migration through the [QA Wolf MCP](/qawolf-mcp). Ask it to migrate your triggers and it follows this procedure.
 
 ## One trigger cuts the whole workspace over
 
 <Warning>
-  The first unpaused global trigger switches the entire workspace off the legacy deployment path. At that instant every legacy deployment trigger you have not yet replaced goes dark, silently, while still displaying as active.
+  The first unpaused trigger switches the entire workspace off the legacy deployment path. At that instant every legacy deployment trigger you have not yet replaced goes dark, silently, while still displaying as active.
 </Warning>
 
-Any unpaused global trigger trips the switch, whatever its kind. Migrating "just the schedules first" is not a smaller safe step — it opens the same gap.
+Any unpaused trigger trips the switch, whatever its kind. Migrating "just the schedules first" is not a smaller safe step — it opens the same gap.
 
 The two legacy families then fail in opposite directions:
 
@@ -31,7 +31,7 @@ A single legacy trigger you cannot map blocks the whole migration. Creating "jus
 The plan is built entirely from reads. Collect all of it before creating anything:
 
 <Steps>
-  <Step title="List the workspace's global triggers">
+  <Step title="List the workspace's triggers">
     An unpaused one means the cutover already happened: the legacy deployment triggers are already dark and the gap already exists. It can also mean a previous migration stopped halfway, so compare what exists against the legacy triggers before recreating anything.
   </Step>
   <Step title="List the environments">
@@ -52,7 +52,7 @@ Customers notify QA Wolf of deploys in several ways, and they are not interchang
 - **The legacy path** — a `deploy_success` call, the legacy CI SDK, or the notify-on-deploy GitHub Action. Three faces of the same endpoint.
 - **The current path** — real GitHub or GitLab deployment events, or a `deployment.reportStatus` call.
 
-Global triggers evaluate the current path only. A deploy reported only through the legacy path is invisible to them, so that pipeline has to change before the deployment side of the migration can work at all. [Report deployments to QA Wolf](/triggers/report-deployments) covers the change; plan it as an explicit step of the migration rather than an afterthought.
+Triggers evaluate the current path only. A deploy reported only through the legacy path is invisible to them, so that pipeline has to change before the deployment side of the migration can work at all. [Report deployments to QA Wolf](/triggers/report-deployments) covers the change; plan it as an explicit step of the migration rather than an afterthought.
 
 <Warning>
   If you already emit deployment events and also call `deploy_success`, check what each one covers before dropping the legacy call. A very common shape is deployment events for long-lived environments only, with previews reported through `deploy_success`. Dropping the call there silently kills preview testing.
@@ -66,7 +66,7 @@ Aim for equivalent effect, not a faithful port. Several legacy fields have no co
 
 ### What runs
 
-Legacy tags become the new action's tags. A legacy trigger with no tags ran the environment's flows wholesale, and a global trigger's action must name flows or tags, so decide which: a tag, so future flows join, or an explicit list.
+Legacy tags become the new action's tags. A legacy trigger with no tags ran the environment's flows wholesale, and a trigger's action must name flows or tags, so decide which: a tag, so future flows join, or an explicit list.
 
 ### Adaptive flow selection
 
@@ -83,15 +83,15 @@ A legacy trigger with no timezone ran in UTC. Present it as UTC and confirm the 
 
 ### Deployment matching
 
-The legacy deployment type was an opaque identifier your pipeline echoed back. Global triggers match on environment, deploy target and branch instead, so translate the intent: which deploys was this trigger for? Usually the trigger's own environment is the answer.
+The legacy deployment type was an opaque identifier your pipeline echoed back. Triggers match on environment, deploy target and branch instead, so translate the intent: which deploys was this trigger for? Usually the trigger's own environment is the answer.
 
-Branch scoping is the gotcha. A legacy trigger's branch scope is a comma-separated list of globs whose leading `-` negates the whole list. A global trigger's `branchPattern` is one pattern with neither. A single plain entry maps directly; a comma list or a negation does not, and needs a decision rather than an approximation.
+Branch scoping is the gotcha. A legacy trigger's branch scope is a comma-separated list of globs whose leading `-` negates the whole list. A trigger's `branchPattern` is one pattern with neither. A single plain entry maps directly; a comma list or a negation does not, and needs a decision rather than an approximation.
 
-A legacy rule that matched a specific repository by id also has no global equivalent. Mapped to the environment alone it would fire for every connected repository.
+A legacy rule that matched a specific repository by id also has no equivalent. Mapped to the environment alone it would fire for every connected repository.
 
 ### Pull-request button triggers
 
-The pull-request testing button has no global equivalent. It migrates to automatic pull-request testing: a deployment trigger matching your preview shape, with a generative action.
+The pull-request testing button has no equivalent. It migrates to automatic pull-request testing: a deployment trigger matching your preview shape, with a generative action.
 
 <Note>
   That is a behavior change worth confirming with whoever used the button. Testing moves from on-demand presses to automatic runs on every matching preview deploy.
