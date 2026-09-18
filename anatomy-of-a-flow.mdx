@@ -101,7 +101,7 @@ export default flow(
 | Options object | Startup options are known up front — e.g., persistent browser context |
 | Explicit `launch()` | Startup depends on runtime logic — e.g., branching on an environment variable |
 
-**Declarative launch** is the recommended style. Pass `launch: true` to use the default startup, or an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
+**Declarative launch** <Badge color="green">Recommended</Badge> — pass `launch: true` to use the default startup, or an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
 
 <Tip>
   If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
@@ -141,7 +141,7 @@ export default flow(
 );
 ```
 
-**Explicit launch** is for advanced flows only. When startup depends on runtime logic, call `launch()` inside the callback — see the [Web API Reference](/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/electron).
+**Explicit launch** — omit `launch` from the configuration and call `launch()` inside the callback when startup options aren't known until the flow runs. The callback receives no platform object: `launch()` returns a result you narrow with `isPersistent()`, `isAnonymous()` or `isElectron()` before reading `page` or `context`. See the [Web API Reference](/libraries/flows/api-reference/web) for details. For Electron desktop app testing, see [Testing Electron apps](/electron).
 
 ## Callback parameters
 
