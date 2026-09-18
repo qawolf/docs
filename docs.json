@@ -608,6 +608,10 @@
     {
       "source": "/quick-start",
       "destination": "/"
+    },
+    {
+      "source": "/triggers",
+      "destination": "/triggers/global-triggers"
     }
   ],
   "integrations": {
@@ -649,6 +653,16 @@
               "test-automation",
               "custom-skills",
               "qawolf-mcp"
+            ]
+          },
+          {
+            "group": "Triggers",
+            "pages": [
+              "triggers/global-triggers",
+              "triggers/set-up-a-trigger",
+              "triggers/report-deployments",
+              "triggers/diagnose-a-trigger",
+              "triggers/migrate-from-legacy-triggers"
             ]
           },
           {
@@ -921,13 +935,10 @@
             "group": "CI/CD",
             "pages": [
               {
-                "group": "Deployment testing ",
+                "group": "Deployment testing",
                 "pages": [
                   "GitHub-GitHub-Actions",
-                  "GitLab",
-                  "circle-ci",
-                  "ci-sdk-integration",
-                  "webhook-integration"
+                  "GitLab"
                 ]
               },
               "mobile-build-testing"
@@ -958,6 +969,17 @@
               "Azure-DevOps-Boards",
               "Integrate-with-webhooks"
             ]
+          },
+          {
+            "group": "Legacy",
+            "pages": [
+              "legacy/legacy-triggers",
+              "PR-testing-for-GitHub-Integrations",
+              "PR-testing-for-GitLab-Integrations",
+              "ci-sdk-integration",
+              "webhook-integration",
+              "circle-ci"
+            ]
           }
         ]
       },
@@ -982,14 +1004,7 @@
             "group": "Integrating Systems",
             "pages": [
               "Test-environments",
-              "Integrating-with-microsoft-teams",
-              {
-                "group": "PR Testing",
-                "pages": [
-                  "PR-testing-for-GitHub-Integrations",
-                  "PR-testing-for-GitLab-Integrations"
-                ]
-              }
+              "Integrating-with-microsoft-teams"
             ]
           }
         ]
