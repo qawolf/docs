@@ -1,0 +1,69 @@
+---
+title: "Triggers"
+description: "Run a chosen set of flows whenever your application deploys or on a schedule, configured once for the whole workspace."
+sidebarTitle: "Overview"
+keywords: "automatic test runs, run on deploy, nightly runs, deployment trigger, scheduled trigger, IFTTT"
+---
+
+A trigger says: when this happens, run these flows. The "this" is an occasion — a deployment your pipeline reports, or a point in time. The "these flows" is an action — the flows QA Wolf runs when the occasion arrives.
+
+Triggers belong to the workspace, not to one environment. A single deployment trigger can cover staging, production and every preview environment at once, and the same workspace can hold as many triggers as it needs.
+
+## The two halves of a trigger
+
+- **The occasion** — what has to happen. A deployment trigger fires on a reported deployment that matches its conditions. A schedule trigger fires on a cadence.
+- **The action** — what runs. Flows named directly, flows carrying a tag, or a set QA Wolf selects itself.
+
+Every trigger also carries a name and a paused state. A paused trigger never fires, on any path.
+
+## Trigger kinds
+
+- **Deployment** — fires when your pipeline reports a successful deployment that matches the trigger's conditions. The flows run against the deployment that changed the application.
+- **Schedule** — fires hourly or daily in one environment. The only kind that needs nothing from your pipeline.
+
+A deployment's first success report is what evaluates triggers, and it is the only report that does. A trigger added or resumed later does not make an already-reported deployment evaluate again.
+
+<Note>
+  A schedule trigger runs in exactly one environment, named on the trigger. A deployment trigger has no environment of its own — the deployment says where the flows run.
+</Note>
+
+## Choosing the flows
+
+The action carries two fields that select flows, and they combine:
+
+- **`flowIds`** — flows named one by one. The set stays fixed until you change the trigger.
+- **`tagNames`** — every flow carrying one of these tags. A flow tagged later joins the trigger's set automatically, which is why a tag is usually the better choice for a long-lived trigger.
+
+At least one flow or tag is required. See [Tags](/tags) for how to group flows.
+
+### Generative flow selection
+
+A deployment trigger can hand the selection to QA Wolf instead. With the action kind set to `generativeSuite`, QA Wolf chooses the flows from the pull request the deployment belongs to, and an optional `instructions` field guides that choice.
+
+Generative selection carries three constraints:
+
+- It needs the deployment to resolve to a pull request. A preview deploy of a pull request's head commit does; a push to a static branch does not, and the trigger skips it.
+- It names no flows or tags. Supplying `flowIds` or `tagNames` alongside it is refused.
+- A schedule trigger cannot use it, because a schedule has no changes to select from.
+
+<Warning>
+  A generative action on a trigger that also matches static deploys skips every one of them. Give preview deployments their own trigger rather than widening an existing one.
+</Warning>
+
+## Investigating failures
+
+The action's `investigateFailures` field decides whether QA Wolf investigates failures in the runs the trigger creates. It defaults to true.
+
+## Pausing a trigger
+
+Pausing stops a trigger firing without deleting it, and resuming brings it back. Pausing is reversible and idempotent, which makes it the safe way to turn automation off while you change something.
+
+## Triggers and legacy triggers
+
+Legacy triggers attach to a single environment and come in three kinds: deployment triggers, scheduled triggers, and the pull-request testing button. A workspace can still be running them. [Legacy triggers](/legacy-triggers/overview) describes that model on its own terms.
+
+## Next
+
+- [Set up a trigger](/triggers/set-up-a-trigger) — choose a kind, decide what runs, and create it.
+- [Report deployments to QA Wolf](/triggers/report-deployments) — what your pipeline has to emit for a deployment trigger to fire.
+- [Diagnose a trigger](/triggers/diagnose-a-trigger) — why a trigger did not fire, or selected the wrong flows.

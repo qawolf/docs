@@ -1,0 +1,39 @@
+---
+title: "Legacy triggers"
+description: "The legacy per-environment triggers: what the three kinds do and how deploys reach them."
+sidebarTitle: "Legacy triggers"
+keywords: "per-environment triggers, deploy_success, PR testing button, adaptive flow selection, notify on deploy"
+---
+
+This section describes legacy triggers, which attach to a single environment. It stays accurate for a workspace still running them, and it is not how new automation is set up. [Triggers](/triggers/overview) is the current documentation.
+
+## What a legacy trigger is
+
+A legacy trigger belongs to one environment, and there is no workspace-wide list of them — each environment carries its own. Covering staging and production means one trigger in each.
+
+Legacy triggers come in three kinds:
+
+- **Scheduled** — runs the environment's flows on a repeating interval.
+- **Deployment** — runs them when your pipeline reports a deploy that matches the trigger's deployment type and branch scope.
+- **Pull-request button** — runs them when someone presses the testing button on a pull request.
+
+Deployment and pull-request triggers are configured by QA Wolf rather than by you.
+
+## How deploys reach a legacy trigger
+
+A legacy deployment trigger fires on one of two arrival paths:
+
+- **The `deploy_success` endpoint** — reached directly, through `@qawolf/ci-sdk`, or through the notify-on-deploy GitHub Action. All three are the same endpoint. See [webhooks/deploy_success](/deploy-success) for the request and response.
+- **GitHub or GitLab deployment events** — forwarded by the connected code host integration.
+
+The deployment type your pipeline sends is an opaque label QA Wolf matches against the trigger. Your QA Wolf representative provides the value to send.
+
+## Which flows a legacy trigger runs
+
+A legacy trigger runs the flows carrying its tags, or every flow in its environment when it has no tags. Some deployment triggers instead use adaptive flow selection, where QA Wolf picks the flows from the pull request the deploy belongs to.
+
+## In this section
+
+- [GitHub Actions](/legacy-triggers/GitHub-GitHub-Actions) and [GitLab CI](/legacy-triggers/GitLab) — notifying QA Wolf from the pipeline that deploys.
+- [Setting up PR testing on GitHub](/legacy-triggers/PR-testing-for-GitHub-Integrations) and [on GitLab](/legacy-triggers/PR-testing-for-GitLab-Integrations).
+- [Node.js SDK](/legacy-triggers/ci-sdk-integration), [Webhook](/legacy-triggers/webhook-integration) and [CircleCI](/legacy-triggers/circle-ci) — reporting a deploy from a pipeline QA Wolf's code host integrations do not cover.
