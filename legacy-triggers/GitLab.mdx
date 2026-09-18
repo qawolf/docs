@@ -1,0 +1,74 @@
+---
+title: "Integrate GitLab CI"
+description: "Notify QA Wolf from a GitLab CI pipeline when you deploy, so a legacy trigger starts a run."
+sidebarTitle: "GitLab CI"
+---
+
+<Note>
+  This page describes [legacy triggers](/legacy-triggers/overview). A workspace that has migrated reports deploys through [deployment events or `deployment.reportStatus`](/triggers/report-deployments) instead. See [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers).
+</Note>
+
+If your repositories are hosted on GitLab.com or on a GitLab Enterprise Server instance with internet access, this is the recommended setup. If your GitLab instance does not allow outbound HTTPS connections, use the [QA Wolf CI SDK](/legacy-triggers/ci-sdk-integration) instead.
+
+## Requirements
+
+- Access to a QA Wolf workspace with at least one environment configured
+- Maintainer access to the GitLab project
+
+## How to connect QA Wolf to GitLab
+
+<Steps>
+  <Step title="Connect QA Wolf to GitLab">
+    Enable the GitLab integration in Workspace settings. You'll be asked for a **Group Access Token** with the **Maintainer** role and **API** scope.
+
+    Once connected, QA Wolf can set commit statuses and link test runs to GitLab commits.
+  </Step>
+
+  <Step title="Add the QAWOLF_API_KEY variable">
+    Add `QAWOLF_API_KEY` as a CI/CD variable in your GitLab project under **Settings → CI/CD → Variables**. Add any other variables your pipeline uses.
+  </Step>
+
+  <Step title="Add the deploy notification to your pipeline">
+    Add a job to your `.gitlab-ci.yml` that calls QA Wolf after your deploy step succeeds, replacing `deployment_type` and `deployment_url` with your actual values.
+
+    ```yml expandable
+    stages:
+      - build
+      - deploy
+      - notify
+
+    deploy:
+      stage: deploy
+      script:
+        - ./deploy.sh
+      environment:
+        name: staging
+
+    notify_qawolf:
+      stage: notify
+      script:
+        - |
+          curl -X POST "https://app.qawolf.com/api/webhooks/deploy_success" \
+            -H "Authorization: Bearer $QAWOLF_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"branch\": \"$CI_COMMIT_REF_NAME\",
+              \"deployment_type\": \"staging\",
+              \"deployment_url\": \"$QA_WOLF_DEPLOY_URL\",
+              \"sha\": \"$CI_COMMIT_SHA\",
+              \"hosting_service\": \"GitLab\"
+            }"
+      when: on_success
+      needs: ["deploy"]
+    ```
+  </Step>
+
+  <Step title="Verify the integration">
+    Push a commit to trigger a deployment. Confirm a new run appears in QA Wolf under the expected environment.
+  </Step>
+</Steps>
+
+## Related
+
+- [webhooks/deploy\_success](/deploy-success)
+- [REST API](/rest-overview)

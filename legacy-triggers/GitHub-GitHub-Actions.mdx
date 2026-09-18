@@ -1,0 +1,41 @@
+---
+title: "Integrate GitHub Actions"
+description: "Notify QA Wolf from a GitHub Actions workflow when you deploy, so a legacy trigger starts a run."
+sidebarTitle: "GitHub Actions"
+---
+
+<Note>
+  This page describes [legacy triggers](/legacy-triggers/overview). A workspace that has migrated reports deploys through [deployment events or `deployment.reportStatus`](/triggers/report-deployments) instead. See [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers).
+</Note>
+
+If your repositories are hosted on GitHub.com or GitHub Enterprise Cloud, this is the recommended setup. If your team self-hosts GitHub Enterprise Server without internet access, or has disabled GitHub Actions by policy, use the [QA Wolf CI SDK](/legacy-triggers/ci-sdk-integration) instead.
+
+## Requirements
+
+- Access to a QA Wolf workspace
+- Admin access to your GitHub repo
+
+## How to connect QA Wolf to GitHub
+
+<Steps>
+  <Step title="Connect QA Wolf to GitHub">
+    Enable the GitHub integration in Workspace settings and install the GitHub App on the repo you want connected. 
+  </Step>
+  <Step title="Add the GitHub Actions workflow">
+    [Notify QA Wolf on Deploy](https://github.com/marketplace/actions/notify-qa-wolf-on-deploy) notifies QA Wolf whenever a new deployment is ready for testing. This must be done for every repository you want connected to CI/CD.
+
+    Add a workflow file (e.g. `.github/workflows/deploy.yml`) with the following, replacing `deployment-type` and `deployment-url` with your actual values. 
+
+    ```yaml
+    - name: Notify QA Wolf
+      uses: qawolf/notify-qawolf-on-deploy-action@v1
+      with:
+        qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+        deployment-type: "staging"
+        deployment-url: "https://staging.example.com"
+    ```
+  </Step>
+  <Step title="Verify the integration">
+    Push a commit to trigger a deployment. Confirm a new run appears in QA Wolf under the expected environment.
+  </Step>
+</Steps>

@@ -1,0 +1,45 @@
+---
+title: "GitLab deployments"
+description: "Let QA Wolf hear about every deploy through GitLab environments, and let a trigger decide which flows run."
+sidebarTitle: "GitLab"
+keywords: "GitLab environments, review apps, group access token, deployment webhook, merge request"
+---
+
+GitLab creates a deployment whenever a job declares an `environment:`. QA Wolf receives those deployments through the connected integration, and a [trigger](/triggers/overview) decides which flows run for each one.
+
+## Requirements
+
+- Access to a QA Wolf workspace with at least one environment
+- Maintainer access to the GitLab group that owns the deploying project
+
+## Connect GitLab
+
+<Steps>
+  <Step title="Create a group access token">
+    The token needs the **Maintainer** role and the `api` scope. QA Wolf refuses anything lower, because a lesser role cannot create the webhooks it reads deployments from.
+  </Step>
+  <Step title="Enable the GitLab integration">
+    Paste the token into **Workspace settings → Integrations**. QA Wolf can then read deployments, set commit statuses, and link runs to GitLab commits.
+  </Step>
+</Steps>
+
+## Declare an environment on your deploy job
+
+A job with the `environment:` keyword creates the deployment, and the webhook fires when the job succeeds. Nothing else is required of the pipeline.
+
+[Report deployments to QA Wolf](/triggers/report-deployments#gitlab) has the job, along with the two facts that decide whether a deploy lands where your triggers look:
+
+- **The environment name** — QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches.
+- **The `review/` prefix** — GitLab has no transient flag, so the name is what marks a preview environment short-lived. A preview named anything else accumulates permanently.
+
+<Warning>
+  A preview environment also needs a per-merge-request URL. With a shared URL the trigger still matches and the run executes against whatever was deployed last, which produces a green run for code that was never exercised.
+</Warning>
+
+## Create a trigger
+
+A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments you now emit, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+
+## Verify
+
+Deploy, and confirm a run appears under the environment you expect. When none does, [Diagnose a trigger](/triggers/diagnose-a-trigger) says whether the deployment reached QA Wolf and which condition failed.

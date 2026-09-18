@@ -83,11 +83,11 @@
     },
     {
       "source": "/qawolf/GitHub-GitHub-Actions",
-      "destination": "/GitHub-GitHub-Actions"
+      "destination": "/legacy-triggers/GitHub-GitHub-Actions"
     },
     {
       "source": "/qawolf/GitLab",
-      "destination": "/GitLab"
+      "destination": "/legacy-triggers/GitLab"
     },
     {
       "source": "/qawolf/Glossary",
@@ -636,6 +636,14 @@
     {
       "source": "/PR-testing-for-GitLab-Integrations",
       "destination": "/legacy-triggers/PR-testing-for-GitLab-Integrations"
+    },
+    {
+      "source": "/GitHub-GitHub-Actions",
+      "destination": "/legacy-triggers/GitHub-GitHub-Actions"
+    },
+    {
+      "source": "/GitLab",
+      "destination": "/legacy-triggers/GitLab"
     }
   ],
   "integrations": {
@@ -961,8 +969,8 @@
               {
                 "group": "Deployment testing",
                 "pages": [
-                  "GitHub-GitHub-Actions",
-                  "GitLab"
+                  "deployment-testing/github",
+                  "deployment-testing/gitlab"
                 ]
               },
               "mobile-build-testing"
@@ -998,6 +1006,8 @@
             "group": "Legacy triggers",
             "pages": [
               "legacy-triggers/overview",
+              "legacy-triggers/GitHub-GitHub-Actions",
+              "legacy-triggers/GitLab",
               "legacy-triggers/PR-testing-for-GitHub-Integrations",
               "legacy-triggers/PR-testing-for-GitLab-Integrations",
               "legacy-triggers/ci-sdk-integration",
