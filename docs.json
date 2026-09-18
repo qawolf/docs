@@ -75,7 +75,7 @@
     },
     {
       "source": "/qawolf/Full-Service-FAQs",
-      "destination": "/Full-Service-FAQs"
+      "destination": "/onboarding-to-full-service"
     },
     {
       "source": "/qawolf/Full-Service-The-First-Three-Months",
@@ -616,6 +616,10 @@
     {
       "source": "/Full-Service-The-First-Three-Months",
       "destination": "/onboarding-to-full-service"
+    },
+    {
+      "source": "/Full-Service-FAQs",
+      "destination": "/onboarding-to-full-service"
     }
   ],
   "integrations": {
@@ -975,8 +979,7 @@
           {
             "group": "Introduction",
             "pages": [
-              "onboarding-to-full-service",
-              "Full-Service-FAQs"
+              "onboarding-to-full-service"
             ]
           },
           {
