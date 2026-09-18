@@ -101,7 +101,9 @@ export default flow(
 | Options object | Startup options are known up front — e.g., persistent browser context |
 | Explicit `launch()` | Startup depends on runtime logic — e.g., branching on an environment variable |
 
-**Declarative launch** <Badge color="green">Recommended</Badge> — pass `launch: true` to use the default startup, or an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
+**Declarative launch** <Badge color="green">Recommended</Badge>
+
+Pass `launch: true` to use the default startup, or an options object to customize it. Either way, QA Wolf starts the browser or app before your callback runs, and the callback receives the platform object ready to use.
 
 <Tip>
   If you've used Playwright directly, this is the equivalent of calling `await browser.launch()` — QA Wolf handles that setup for you, so your callback starts with a ready-to-use `page`.
