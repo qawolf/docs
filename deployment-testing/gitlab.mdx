@@ -1,0 +1,56 @@
+---
+title: "GitLab deployments"
+description: "Let QA Wolf hear about every deploy through GitLab environments, and let a trigger decide which flows run."
+sidebarTitle: "GitLab"
+keywords: "GitLab environments, deployment job, review apps, group access token, merge request"
+---
+
+A [GitLab environment](https://docs.gitlab.com/ci/environments/) represents a deployment target for your application, such as development, staging or production. A **deployment job** — a job carrying the [`environment` keyword](https://docs.gitlab.com/ci/yaml/) — creates a **deployment** under that environment when it succeeds.
+
+QA Wolf receives those deployments through the connected integration, and a [trigger](/triggers/overview) decides which flows run for each one.
+
+## Requirements
+
+- Access to a QA Wolf workspace with at least one environment
+- Maintainer access to the GitLab group that owns the project
+
+## Connect GitLab
+
+<Steps>
+  <Step title="Create a group access token">
+    The token needs the **Maintainer** role and the `api` scope. QA Wolf refuses anything lower, because a lesser role cannot create the webhooks it reads deployments from.
+  </Step>
+  <Step title="Enable the GitLab integration">
+    Paste the token into **Workspace settings → Integrations**. QA Wolf can then read deployments, set commit statuses, and link runs to GitLab commits.
+  </Step>
+</Steps>
+
+## Give your deployment job an environment
+
+A deployment job needs nothing beyond the `environment` keyword: GitLab creates the deployment itself, and the webhook fires when the job succeeds. [Report deployments to QA Wolf](/triggers/report-deployments#gitlab) has the job.
+
+Two facts decide whether a deployment lands where your triggers look:
+
+- **The environment name** — QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches.
+- **The `review/` prefix** — GitLab has no transient flag, so the environment's name is what marks it short-lived. An environment named under `review/` is a [review app](https://docs.gitlab.com/ci/review_apps/); anything else accumulates permanently.
+
+The environment's `url` becomes the deployment's deploy target, which is the address QA Wolf runs against.
+
+A GitLab deployment carries no slot for per-deploy environment variables, so runs against it use the QA Wolf environment's own variables. To vary them per deploy, report the deploy through the [Webhook](/deployment-testing/webhook) path instead.
+
+## Test every merge request
+
+A review app gives QA Wolf a deployment that resolves to the merge request it came from, which is what makes merge-request testing possible. Two things have to hold, both covered in [Report deployments to QA Wolf](/triggers/report-deployments#isolate-previews-per-pull-request): the environment's name is unique to the merge request, and so is its `url`.
+
+<Warning>
+  A review app whose environments are per-merge-request but whose `url` is shared fails silently. The trigger matches, and the run executes against whatever was deployed last rather than the merge request under test.
+</Warning>
+
+Give review apps their own trigger rather than widening the one that covers staging. Match the shape your pipeline emits — `review/*` — and choose what runs:
+
+- **A small tag**, for a fixed set of fast flows on every merge request.
+- **[Generative flow selection](/triggers/overview#generative-flow-selection)**, which lets QA Wolf pick the flows from the merge request itself. It needs the deployment to resolve to a merge request, so it fits a review-app trigger and skips any deployment without one.
+
+## Create a trigger
+
+A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your jobs now create, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).

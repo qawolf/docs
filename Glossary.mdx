@@ -71,7 +71,7 @@ QA Wolf will attempt to run a flow up to three times: the first attempt runs all
 
 ## Tag
 
-A **tag** groups flows for scheduled runs and controls execution order in run rules. Tags are intended to express **run intent** (test type, expected duration) rather than application structure — QA Wolf runs with full concurrency by default, so organizing flows by feature area rarely adds value.
+A **tag** groups flows so a trigger can run them together, and controls execution order in run rules. Tags are intended to express **run intent** (test type, expected duration) rather than application structure — QA Wolf runs with full concurrency by default, so organizing flows by feature area rarely adds value.
 
 ## Run Rule
 
@@ -87,4 +87,12 @@ A schedule defines when and how often runs occur automatically. Scheduling is li
 
 ## Trigger
 
-A run can be started four ways: manually, on a **schedule**, from a deployment webhook, or from a CI pull-request button. Of these, only schedule-based triggers are self-serve — deployment and PR-based triggers require setup from QA Wolf.
+A **trigger** runs a chosen set of flows when something happens: a deployment your pipeline reports, or a point in time. Triggers belong to the workspace, so one trigger can cover every environment a deployment reaches.
+
+A trigger has two halves. The occasion decides when it fires — a matching deployment, or an hourly or daily cadence. The action decides what runs — flows named directly, flows carrying a tag, or a set QA Wolf selects from a pull request.
+
+<Note>
+  Older workspaces may still run legacy triggers, which attach to a single environment. See [Legacy triggers](/legacy-triggers/overview).
+</Note>
+
+See [Triggers](/triggers/overview) for the full model.

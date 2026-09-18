@@ -12,6 +12,8 @@ Pick the canonical term and use it everywhere in prose. Don't rename actual API 
 | The account-level container | **workspace** | team (found in four REST response-code tables: "usually indicates a disabled team") |
 | A QA Wolf test environment (staging, prod, etc.) | **environment** | — but when a page is actually about an *ephemeral CI-created* environment, say "ephemeral environment" on first use per page so it's never ambiguous with the standing kind |
 | The object returned by `createXClient(...)` | **client** | instance — and always name *which* client in prose ("the testkit client," "the emails client") since three packages each have one |
+| Workspace-level automation that runs flows on a deployment or a schedule | **trigger** | any qualified variant of the word |
+| The superseded per-environment automation | **legacy trigger** | old trigger, legacy model |
 | How an operation reports failure | **throws** (only if the function literally throws) or **returns a `failed`/`aborted` outcome** (if it's a result-object API) | Don't paper over this with one word — testkit throws, `@qawolf/ci-sdk` doesn't, and the docs should state which applies, not sound consistent at the cost of being wrong |
 | The Arrange, Act, Assert pattern | **Arrange-Act-Assert (AAA)** on first reference on a page, then **AAA** or **the AAA framework** as the sentence reads best | Arrange, Act, Assert; Arrange/Act/Assert; a bare **AAA** before the page has spelled it out once |
 

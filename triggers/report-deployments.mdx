@@ -1,0 +1,102 @@
+---
+title: "Report deployments to QA Wolf"
+description: "What a pipeline has to emit before a deployment trigger can fire, on GitHub, on GitLab, or through the public API."
+sidebarTitle: "Report deployments"
+keywords: "GitHub Deployments, GitLab environments, review apps, preview environment, transient environment, deployment status"
+---
+
+A deployment trigger fires on a deployment QA Wolf received. Your pipeline produces those deployments in one of two ways: a GitHub or GitLab deployment event that the connected integration forwards, or a [direct report from the pipeline](/deployment-testing/webhook).
+
+Only a deployment that reports success evaluates triggers.
+
+## The environment name is the contract
+
+The deployment's environment name is what QA Wolf matches against the workspace's environments, by alias or by slugified name. When nothing matches, QA Wolf creates a new environment under that name. That cuts both ways:
+
+- A name that matches the intended QA Wolf environment lands the deploy exactly where the triggers look.
+- A name that does not match creates a second environment the existing triggers do not target. A pipeline sending `prod-us` while the QA Wolf environment is named `production` produces runs in neither.
+
+So settle the name deliberately: make the pipeline emit the QA Wolf environment's name, or add that name as the environment's alias. Per-pull-request preview names are the exception — each one is meant to create its own short-lived environment.
+
+## Isolate previews per pull request
+
+A preview deployment must be isolated per pull request in two independent ways. A pipeline missing either is a mistake to correct, because neither failure announces itself.
+
+- **The environment name needs a per-pull-request discriminator** — `preview/pr-42` on GitHub, `review/pr-42` on GitLab, never a bare `preview`. A single shared preview environment means every pull request overwrites the same environment's deploy target. A run triggered by one pull request can then execute against another's build, concurrent pull requests collide on environment state, and closing any one pull request terminates the environment the others are still using.
+- **The deploy target URL needs a discriminator too** — the pull request number, the commit sha, or the branch slug. Any unique-per-deployment value works.
+
+<Warning>
+  Per-pull-request names with a static URL fail silently. The environment is isolated, the trigger matches, and the run executes against whatever was deployed last rather than the pull request under test. The result is a green run for code that was never exercised.
+</Warning>
+
+## Long-lived versus transient
+
+A deployment must say whether its environment is permanent or per-branch, because that decides what kind of environment QA Wolf creates for an unmatched name.
+
+- **GitHub** — set `transient_environment: true` for a preview or pull-request deploy, and `false` for a long-lived environment such as staging. Omitting it marks every deploy long-lived, so previews pile up as permanent environments.
+- **GitLab** — there is no transient flag, so the name decides. A preview environment's name must start with `review/`, GitLab's review-apps prefix. A GitLab preview named `preview/pr-42` piles up permanently.
+
+The deploy URL — `environment_url` on GitHub, the environment's `url` on GitLab — becomes the deployment's deploy target. That is what `deployTargetPattern` matches, and what a created environment takes as its URL.
+
+## GitHub
+
+The workflow needs `permissions: deployments: write`. A long-lived deploy creates the [deployment](https://docs.github.com/en/rest/deployments/deployments) and marks it with a [deployment status](https://docs.github.com/en/rest/deployments/statuses) of `success` once the deploy finishes.
+
+Example:
+
+```yaml
+- uses: actions/github-script@v7
+  with:
+    script: |
+      const deployment = await github.rest.repos.createDeployment({
+        ...context.repo,
+        ref: context.sha,
+        environment: "staging",
+        transient_environment: false,
+        auto_merge: false,
+        required_contexts: [],
+      });
+      await github.rest.repos.createDeploymentStatus({
+        ...context.repo,
+        deployment_id: deployment.data.id,
+        state: "success",
+        environment_url: "https://staging.example.com",
+      });
+```
+
+`auto_merge: false` and `required_contexts: []` keep the API from refusing or deferring the deployment behind branch checks.
+
+A preview deploy differs in three fields. It runs on `pull_request`, it deploys `ref: pullRequest.head.sha`, and it names and marks the environment per pull request.
+
+Example:
+
+```javascript
+environment: `preview/pr-${pullRequest.number}`,
+transient_environment: true,
+```
+
+## GitLab
+
+A [deployment job](https://docs.gitlab.com/ci/environments/) — one carrying the [`environment` keyword](https://docs.gitlab.com/ci/yaml/) — creates the deployment on its own, and the webhook fires when the job succeeds. A separate API call is unnecessary.
+
+Example:
+
+```yaml
+deploy-staging:
+  stage: deploy
+  environment:
+    name: staging
+    url: https://staging.example.com
+  script:
+    - ./deploy.sh
+```
+
+A [review app](https://docs.gitlab.com/ci/review_apps/) names its environment per branch, which the `review/` prefix marks transient.
+
+Example:
+
+```yaml
+environment:
+  name: review/$CI_COMMIT_REF_SLUG
+  url: https://$CI_COMMIT_REF_SLUG.example.com
+```
