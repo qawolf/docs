@@ -54,9 +54,9 @@ If a flow depends on setup that is only explained in your documentation, include
 Create a test for connecting a Jira project. Follow the setup guide at {{your docs URL}} to configure the integration first.
 ```
 
-### Structure the flow header around Arrange, Act, Assert
+### Structure the flow header around Arrange-Act-Assert (AAA)
 
-When the agent completes a flow on its own, the comment block at the top of the flow is its specification. Structuring that header around [Arrange, Act, Assert](/anatomy-of-a-qa-wolf-test-mobile-edition#aaa-framework) tells the agent how far each verification should go.
+When the agent completes a flow on its own, the comment block at the top of the flow is its specification. Structuring that header around [AAA](/anatomy-of-a-flow#aaa-framework) tells the agent how far each verification should go.
 
 For example, a flow that disables a feature could reload the page and check that the toggle is still off. It could also go further and sign in as a different user to verify the feature is no longer accessible. An AAA header states which one you want, so the agent doesn't have to guess:
 

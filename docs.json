@@ -75,7 +75,7 @@
     },
     {
       "source": "/qawolf/Full-Service-FAQs",
-      "destination": "/Full-Service-FAQs"
+      "destination": "/onboarding-to-full-service"
     },
     {
       "source": "/qawolf/Full-Service-The-First-Three-Months",
@@ -115,7 +115,7 @@
     },
     {
       "source": "/qawolf/Manage-maintenance-reports",
-      "destination": "/Manage-maintenance-reports"
+      "destination": "/onboarding-to-full-service"
     },
     {
       "source": "/qawolf/Mobile-build-with-the-QA-Wolf-SDK",
@@ -211,7 +211,7 @@
     },
     {
       "source": "/qawolf/anatomy-of-a-qa-wolf-test-mobile-edition",
-      "destination": "/anatomy-of-a-qa-wolf-test-mobile-edition"
+      "destination": "/anatomy-of-a-flow"
     },
     {
       "source": "/qawolf/android-audio-injection",
@@ -650,7 +650,19 @@
       "destination": "/triggers/overview"
     },
     {
+      "source": "/anatomy-of-a-qa-wolf-test-mobile-edition",
+      "destination": "/anatomy-of-a-flow"
+    },
+    {
       "source": "/Full-Service-The-First-Three-Months",
+      "destination": "/onboarding-to-full-service"
+    },
+    {
+      "source": "/Full-Service-FAQs",
+      "destination": "/onboarding-to-full-service"
+    },
+    {
+      "source": "/Manage-maintenance-reports",
       "destination": "/onboarding-to-full-service"
     }
   ],
@@ -886,7 +898,7 @@
           {
             "group": "Flow conventions",
             "pages": [
-              "anatomy-of-a-qa-wolf-test-mobile-edition",
+              "anatomy-of-a-flow",
               "lint-rules"
             ]
           },
@@ -1031,17 +1043,10 @@
         "tab": "Full Service",
         "groups": [
           {
-            "group": "Introduction",
-            "pages": [
-              "onboarding-to-full-service",
-              "Full-Service-FAQs"
-            ]
-          },
-          {
             "group": "Working with Wolves",
             "pages": [
-              "Request-new-coverage",
-              "Manage-maintenance-reports"
+              "onboarding-to-full-service",
+              "Request-new-coverage"
             ]
           },
           {

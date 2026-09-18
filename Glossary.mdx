@@ -23,6 +23,16 @@ Flows are the primary unit of end-to-end testing in QA Wolf. Flows can be run in
 
 A **test** verifies a specific behavior or step in your application. Multiple tests combine to form a flow that validates a complete user journey.
 
+## Arrange-Act-Assert (AAA)
+
+**Arrange-Act-Assert** is the format QA Wolf flows follow. The tests inside a flow divide into three parts:
+
+- **Arrange** — sets up state before the interaction.
+- **Act** — performs the interaction being tested.
+- **Assert** — verifies the expected outcome.
+
+See [Anatomy of a flow](/anatomy-of-a-flow) for how this looks in flow code.
+
 ## Coverage outline
 
 A **coverage outline** is the set of groups and flow stubs that define what needs to be tested in an environment. Outlining is the act of producing one: you point the agent at your application, it explores, and it proposes the groups and flows that represent the main areas and user journeys. An outline records scope — it does not contain test code until the flows are created.
