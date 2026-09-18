@@ -1,13 +1,63 @@
 ---
 title: "CircleCI"
-description: "How a CircleCI pipeline gets its deploys tested, and which of the other integrations it actually uses."
+description: "Report a deploy to QA Wolf from a CircleCI job, or have the job create the deployment record your code host already understands."
 sidebarTitle: "CircleCI"
-keywords: "CircleCI, circle, pipeline, deploy job, CI"
+keywords: "CircleCI, circle, deploy job, pipeline, config.yml"
 ---
 
-QA Wolf has no CircleCI-specific integration. A CircleCI pipeline reports its deploys the same way any other pipeline does, so the question is only which path fits.
+A CircleCI pipeline tells QA Wolf about a deploy in one of two ways. Both are supported, and which one fits depends on where your repository lives.
 
-- **Your repository is on GitHub or GitLab.** Let the code host record the deployment and connect that integration: QA Wolf then learns the branch, the commit and the environment without CircleCI doing anything. See [GitHub deployments](/deployment-testing/github) or [GitLab deployments](/deployment-testing/gitlab).
-- **Your repository is somewhere else, or the deploy never reaches the code host.** Add a step to the CircleCI job that deploys, reporting the deploy to QA Wolf directly. See [Webhook](/deployment-testing/webhook).
+## Report the deploy from CircleCI
 
-Either way, a [trigger](/triggers/overview) decides which flows run for each deployment.
+The direct route: a job that runs after your deploy succeeds and reports it to QA Wolf. This works whatever your code host is.
+
+Add `QAWOLF_API_KEY` and `QAWOLF_WORKSPACE_ID` under **Project Settings → Environment Variables**, then add the job to `.circleci/config.yml`.
+
+Example:
+
+```yaml
+jobs:
+  notify-qa-wolf:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - run:
+          name: Report the deploy to QA Wolf
+          command: |
+            curl -X POST "https://app.qawolf.com/api/trpc/public.deployment.reportStatus" \
+              -H "Authorization: Bearer $QAWOLF_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"json\": {
+                  \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
+                  \"providerDeploymentId\": \"$CIRCLE_WORKFLOW_ID\",
+                  \"status\": \"success\",
+                  \"environment\": { \"name\": \"staging\" },
+                  \"deployTarget\": \"https://staging.example.com\",
+                  \"metadata\": {
+                    \"commitSha\": \"$CIRCLE_SHA1\",
+                    \"ref\": \"$CIRCLE_BRANCH\",
+                    \"repository\": \"$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME\"
+                  }
+                }
+              }"
+
+workflows:
+  build-deploy-test:
+    jobs:
+      - notify-qa-wolf:
+          requires:
+            - deploy
+```
+
+`CIRCLE_WORKFLOW_ID` is stable for one workflow run, so a retried job reports the same deployment rather than a second one. [Webhook](/deployment-testing/webhook) documents every field the report carries.
+
+## Let your code host record the deploy instead
+
+If your repository is on GitHub or GitLab, a CircleCI job can create the code host's own deployment record through the code host's API, and QA Wolf picks it up through the connected integration. Nothing in the job talks to QA Wolf at all.
+
+This is worth the extra step when you want the deploy visible in your code host as well, and when you want QA Wolf to resolve the pull request from the commit rather than from what the job declares. See [GitHub deployments](/deployment-testing/github) or [GitLab deployments](/deployment-testing/gitlab) for what the record has to carry.
+
+## Create a trigger
+
+Either route produces a deployment. A [trigger](/triggers/overview) is what turns it into a run — see [Set up a trigger](/triggers/set-up-a-trigger).
