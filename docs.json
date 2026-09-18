@@ -103,7 +103,7 @@
     },
     {
       "source": "/qawolf/Integrating-with-microsoft-teams",
-      "destination": "/Integrating-with-microsoft-teams"
+      "destination": "/MS-Teams"
     },
     {
       "source": "/qawolf/Jira",
@@ -664,6 +664,10 @@
     {
       "source": "/Manage-maintenance-reports",
       "destination": "/onboarding-to-full-service"
+    },
+    {
+      "source": "/Integrating-with-microsoft-teams",
+      "destination": "/MS-Teams"
     }
   ],
   "integrations": {
@@ -1025,6 +1029,12 @@
             ]
           },
           {
+            "group": "Communication",
+            "pages": [
+              "MS-Teams"
+            ]
+          },
+          {
             "group": "Legacy triggers",
             "pages": [
               "legacy-triggers/overview",
@@ -1052,8 +1062,7 @@
           {
             "group": "Integrating Systems",
             "pages": [
-              "Test-environments",
-              "Integrating-with-microsoft-teams"
+              "Test-environments"
             ]
           }
         ]
