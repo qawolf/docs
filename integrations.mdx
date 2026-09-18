@@ -1,0 +1,29 @@
+---
+title: "Integrations"
+description: "How QA Wolf connects to the systems you already run, and which connection to start with."
+sidebarTitle: "Overview"
+keywords: "integrations, CI/CD, deployment testing, issue tracker, test management, VPN"
+---
+
+Testing your deploys takes two pieces. Your pipeline reports a deployment to QA Wolf, and a [trigger](/triggers/overview) decides which flows run for it. The pages below cover the first piece: how the report reaches QA Wolf from where you deploy.
+
+## Report your deploys
+
+Pick the one that matches where your code lives and how you deploy.
+
+- **[GitHub](/deployment-testing/github)** — your repositories are on GitHub and something creates a deployment record for each deploy, whether your own workflow or a provider such as Vercel.
+- **[GitLab](/deployment-testing/gitlab)** — your repositories are on GitLab and your pipeline's deploy job declares an `environment:`.
+- **[Webhook](/deployment-testing/webhook)** — your code host is not GitHub or GitLab, or the deploy happens somewhere your code host never sees, so the pipeline reports it directly.
+- **[CircleCI](/deployment-testing/circle-ci)** — you deploy from CircleCI and want to know which of the three above it uses.
+
+[Mobile build testing](/mobile-build-testing) is its own path: your pipeline uploads a build rather than reporting a URL.
+
+## Connect the rest of your tooling
+
+- **Issue trackers** — send bug reports to [Jira](/Jira), [Linear](/Linear), [Asana](/Asana), [Azure DevOps Boards](/Azure-DevOps-Boards), or [any tracker over a webhook](/Integrate-with-webhooks).
+- **Test management** — mirror results into [Testmo](/Testmo), [TestRail](/TestRail), [Xray](/Xray), [Zephyr](/Zephyr) or [Qase](/Qase-io).
+- **[VPN](/vpn)** — reach an application that is not on the public internet.
+
+## Still on legacy triggers
+
+A workspace whose deploys are wired up the older way is documented under [Legacy triggers](/legacy-triggers/overview).

@@ -966,6 +966,7 @@
       {
         "tab": "Integrations",
         "pages": [
+          "integrations",
           {
             "group": "CI/CD",
             "pages": [
