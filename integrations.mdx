@@ -5,18 +5,19 @@ sidebarTitle: "Overview"
 keywords: "integrations, CI/CD, deployment testing, issue tracker, test management, VPN"
 ---
 
-Testing your deploys takes two pieces. Your pipeline reports a deployment to QA Wolf, and a [trigger](/triggers/overview) decides which flows run for it. The pages below cover the first piece: how the report reaches QA Wolf from where you deploy.
+Testing your deploys — including [PR testing](/deployment-testing/pr-testing) — takes two pieces. Your pipeline notifies QA Wolf that you deployed, and a [trigger](/triggers/overview) decides which flows run for it. The pages below cover the first piece: how that notification reaches QA Wolf from where you deploy.
 
-## Report your deploys
+## Notify QA Wolf of your deploys
 
 Pick the one that matches where your code lives and how you deploy.
 
+- **[PR testing](/deployment-testing/pr-testing)** — what running your tests on every pull request needs, whichever of the paths below you take.
 - **[GitHub](/deployment-testing/github)** — your repositories are on GitHub and something creates a deployment for each deploy, whether your own workflow or a provider such as Vercel.
 - **[GitLab](/deployment-testing/gitlab)** — your repositories are on GitLab and your pipeline's deploy job declares an `environment:`.
-- **[Webhook](/deployment-testing/webhook)** — your code host is not GitHub or GitLab, or the deploy happens somewhere your code host never sees, so the pipeline reports it directly.
+- **[Webhook](/deployment-testing/webhook)** — your code host is not GitHub or GitLab, or the deploy happens somewhere your code host never sees, so the pipeline notifies QA Wolf directly.
 - **[CircleCI](/deployment-testing/circle-ci)** — you deploy from CircleCI, with the job and the environment variables it needs.
 
-[Mobile build testing](/mobile-build-testing) is its own path: your pipeline uploads a build rather than reporting a URL.
+[Mobile build testing](/mobile-build-testing) is its own path: your pipeline uploads a build rather than notifying QA Wolf of a URL.
 
 ## Connect the rest of your tooling
 

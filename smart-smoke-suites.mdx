@@ -1,6 +1,7 @@
 ---
 title: "Smart Smoke Suites"
 description: "Let QA Wolf automatically select the flows affected by your PR."
+keywords: "Smart Smoke Suite, smoke tests, smoke suite, generativeSuite, PR testing, adaptive flow selection"
 ---
 
 A Smart Smoke Suite is a targeted selection of flows identified by the QA Wolf agent based on the description of your PR, giving engineers a faster release signal in the review cycle. 
@@ -21,11 +22,11 @@ Smart Smoke Suites are designed to layer onto your existing coverage strategies.
 ## Requirements
 
 - **QA Wolf GitHub App** installed in the target repository.
-- **Stable preview environments** for PRs, with deployments registered as GitHub Deployments or notified to QA Wolf via the deployment notification action.
+- **Stable preview environments** for PRs, with deployments registered as GitHub Deployments or notified to QA Wolf from your pipeline.
 
 Once configured, every new preview deployment automatically starts a targeted test run. Enabling and disabling is a single toggle on the trigger, so you can turn it off instantly to revert to standard PR testing.
 
-A workspace on [triggers](/triggers/overview) configures this as a deployment trigger with a generative action. See [Generative flow selection](/triggers/overview#generative-flow-selection).
+A workspace on [triggers](/triggers/overview) configures a Smart Smoke Suite as a deployment trigger whose action kind is `generativeSuite`. See [Smart Smoke Suites](/triggers/overview#smart-smoke-suites) for the trigger fields, and [PR testing](/deployment-testing/pr-testing) for what tying a deploy to its pull request requires — without that, the trigger skips every deploy.
 
 ## FAQ
 

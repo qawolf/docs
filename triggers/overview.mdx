@@ -1,27 +1,27 @@
 ---
 title: "Triggers"
-description: "Run a chosen set of flows whenever your application deploys or on a schedule, configured once for the whole workspace."
+description: "Run your tests when you deploy, on every pull request, or on a schedule — configured once for the whole workspace."
 sidebarTitle: "Overview"
-keywords: "automatic test runs, run on deploy, nightly runs, deployment trigger, scheduled trigger, IFTTT"
+keywords: "automatic test runs, run on deploy, notify QA Wolf on deploy, PR testing, nightly runs, deployment trigger, scheduled trigger, Smart Smoke Suite"
 ---
 
-A trigger says: when this happens, run these flows. The "this" is an occasion — a deployment your pipeline reports, or a point in time. The "these flows" is an action — the flows QA Wolf runs when the occasion arrives.
+A trigger says: when this happens, run these flows. The "when" is a deploy your pipeline notifies QA Wolf about, or a time of day. The "these flows" is what QA Wolf runs when it happens.
 
 Triggers belong to the workspace, not to one environment. A single deployment trigger can cover staging, production and every preview environment at once, and the same workspace can hold as many triggers as it needs.
 
-## The two halves of a trigger
+## When it fires, and what it runs
 
-- **The occasion** — what has to happen. A deployment trigger fires on a reported deployment that matches its conditions. A schedule trigger fires on a cadence.
-- **The action** — what runs. Flows named directly, flows carrying a tag, or a set QA Wolf selects itself.
+- **When it fires** — the trigger's `occasion`. A deployment trigger fires on a deployment your pipeline notified QA Wolf of that matches its conditions. A schedule trigger fires on a cadence.
+- **What it runs** — the trigger's `action`. Flows named directly, flows carrying a tag, or a set QA Wolf selects itself.
 
 Every trigger also carries a name and a paused state. A paused trigger never fires, on any path.
 
 ## Trigger kinds
 
-- **Deployment** — fires when your pipeline reports a successful deployment that matches the trigger's conditions. The flows run against the deployment that changed the application.
+- **Deployment** — fires when your pipeline notifies QA Wolf of a successful deploy that matches the trigger's conditions. The flows run against the deploy that changed the application.
 - **Schedule** — fires hourly or daily in one environment. The only kind that needs nothing from your pipeline.
 
-A deployment's first success report is what evaluates triggers, and it is the only report that does. A trigger added or resumed later does not make an already-reported deployment evaluate again.
+A deployment's first success report is what evaluates triggers, and it is the only report that does. A trigger added or resumed later does not make an already-notified deployment evaluate again.
 
 <Note>
   A schedule trigger runs in exactly one environment, named on the trigger. A deployment trigger has no environment of its own — the deployment says where the flows run.
@@ -36,18 +36,18 @@ The action carries two fields that select flows, and they combine:
 
 At least one flow or tag is required. See [Tags](/tags) for how to group flows.
 
-### Generative flow selection
+### Smart Smoke Suites
 
-A deployment trigger can hand the selection to QA Wolf instead. With the action kind set to `generativeSuite`, QA Wolf chooses the flows from the pull request the deployment belongs to, and an optional `instructions` field guides that choice.
+A deployment trigger can hand the selection to QA Wolf instead. Set the action kind to `generativeSuite` and QA Wolf chooses the flows by reading the pull request the deploy belongs to, guided by an optional `instructions` field. This is the feature the [Smart Smoke Suites](/smart-smoke-suites) page describes.
 
-Generative selection carries three constraints:
+A Smart Smoke Suite carries three constraints:
 
-- It needs the deployment to resolve to a pull request. A preview deploy of a pull request's head commit does; a push to a static branch does not, and the trigger skips it.
+- **It only works for [PR testing](/deployment-testing/pr-testing).** The deploy has to be tied to a pull request — a preview of the pull request's head commit is; a push to `main` is not, and the trigger skips it with the reason `no-pull-request`. Tying a deploy to its pull request needs a connected GitHub or GitLab integration covering the deploying repository.
 - It names no flows or tags. Supplying `flowIds` or `tagNames` alongside it is refused.
-- A schedule trigger cannot use it, because a schedule has no changes to select from.
+- A schedule trigger cannot use it, because a schedule has no pull request to read.
 
 <Warning>
-  A generative action on a trigger that also matches static deploys skips every one of them. Give preview deployments their own trigger rather than widening an existing one.
+  A `generativeSuite` action on a trigger that also matches static deploys skips every one of them. Give preview deployments their own trigger rather than widening an existing one.
 </Warning>
 
 ## Investigating failures
@@ -60,10 +60,11 @@ Pausing stops a trigger firing without deleting it, and resuming brings it back.
 
 ## Triggers and legacy triggers
 
-Legacy triggers attach to a single environment and come in three kinds: deployment triggers, scheduled triggers, and the pull-request testing button. A workspace can still be running them. [Legacy triggers](/legacy-triggers/overview) describes that model on its own terms.
+Legacy triggers attach to a single environment and come in three kinds: deployment triggers, scheduled triggers, and the PR testing button. A workspace can still be running them. [Legacy triggers](/legacy-triggers/overview) describes that model on its own terms.
 
 ## Next
 
 - [Set up a trigger](/triggers/set-up-a-trigger) — choose a kind, decide what runs, and create it.
-- [Report deployments to QA Wolf](/triggers/report-deployments) — what your pipeline has to emit for a deployment trigger to fire.
+- [Notify QA Wolf when you deploy](/triggers/report-deployments) — what your pipeline has to emit for a deployment trigger to fire.
+- [PR testing](/deployment-testing/pr-testing) — run your tests on every pull request, and what that needs.
 - [Diagnose a trigger](/triggers/diagnose-a-trigger) — why a trigger did not fire, or selected the wrong flows.

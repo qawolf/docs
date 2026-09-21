@@ -1,13 +1,13 @@
 ---
-title: "Report deployments to QA Wolf"
-description: "What a pipeline has to emit before a deployment trigger can fire, on GitHub, on GitLab, or through the public API."
-sidebarTitle: "Report deployments"
-keywords: "GitHub Deployments, GitLab environments, review apps, preview environment, transient environment, deployment status"
+title: "Notify QA Wolf when you deploy"
+description: "What your pipeline has to emit to notify QA Wolf of a deploy, on GitHub, on GitLab, or through the public API, before a deployment trigger can fire."
+sidebarTitle: "Notify on deploy"
+keywords: "notify QA Wolf on deploy, notify-qawolf-on-deploy, deploy_success, PR testing, GitHub Deployments, GitLab environments, review apps, preview environment, transient environment, deployment status"
 ---
 
-A deployment trigger fires on a deployment QA Wolf received. Your pipeline produces those deployments in one of two ways: a GitHub or GitLab deployment event that the connected integration forwards, or a [direct report from the pipeline](/deployment-testing/webhook).
+Your pipeline has to notify QA Wolf when you deploy, because a deployment trigger fires on a deployment QA Wolf received. There are two ways to do it: a GitHub or GitLab deployment event that the connected integration forwards, or a [direct report from the pipeline](/deployment-testing/webhook) through `deployment.reportStatus`.
 
-Only a deployment that reports success evaluates triggers.
+Only a deploy notified as a success evaluates triggers.
 
 ## The environment name is the contract
 
@@ -29,11 +29,11 @@ A preview deployment must be isolated per pull request in two independent ways. 
   Per-pull-request names with a static URL fail silently. The environment is isolated, the trigger matches, and the run executes against whatever was deployed last rather than the pull request under test. The result is a green run for code that was never exercised.
 </Warning>
 
-## Long-lived versus transient
+## Preview versus permanent
 
-A deployment must say whether its environment is permanent or per-branch, because that decides what kind of environment QA Wolf creates for an unmatched name.
+A deploy must say whether its environment is permanent or per-branch, because that decides what kind of environment QA Wolf creates for an unmatched name.
 
-- **GitHub** — set `transient_environment: true` for a preview or pull-request deploy, and `false` for a long-lived environment such as staging. Omitting it marks every deploy long-lived, so previews pile up as permanent environments.
+- **GitHub** — set `transient_environment: true` for a preview or pull-request deploy, and `false` for a permanent environment such as staging. Omitting it marks every deploy permanent, so previews pile up as permanent environments.
 - **GitLab** — there is no transient flag, so the name decides. A preview environment's name must start with `review/`, GitLab's review-apps prefix. A GitLab preview named `preview/pr-42` piles up permanently.
 
 The deploy URL — `environment_url` on GitHub, the environment's `url` on GitLab — becomes the deployment's deploy target. That is what `deployTargetPattern` matches, and what a created environment takes as its URL.
@@ -91,7 +91,7 @@ deploy-staging:
     - ./deploy.sh
 ```
 
-A [review app](https://docs.gitlab.com/ci/review_apps/) names its environment per branch, which the `review/` prefix marks transient.
+A [review app](https://docs.gitlab.com/ci/review_apps/) names its environment per branch, which the `review/` prefix marks as a preview.
 
 Example:
 

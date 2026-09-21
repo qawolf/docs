@@ -2,7 +2,7 @@
 title: "GitLab deployments"
 description: "Let QA Wolf hear about every deploy through GitLab environments, and let a trigger decide which flows run."
 sidebarTitle: "GitLab"
-keywords: "GitLab environments, deployment job, review apps, group access token, merge request"
+keywords: "GitLab environments, deployment job, review apps, notify QA Wolf on deploy, PR testing, group access token, merge request"
 ---
 
 A [GitLab environment](https://docs.gitlab.com/ci/environments/) represents a deployment target for your application, such as development, staging or production. A **deployment job** — a job carrying the [`environment` keyword](https://docs.gitlab.com/ci/yaml/) — creates a **deployment** under that environment when it succeeds.
@@ -27,7 +27,7 @@ QA Wolf receives those deployments through the connected integration, and a [tri
 
 ## Give your deployment job an environment
 
-A deployment job needs nothing beyond the `environment` keyword: GitLab creates the deployment itself, and the webhook fires when the job succeeds. [Report deployments to QA Wolf](/triggers/report-deployments#gitlab) has the job.
+A deployment job needs nothing beyond the `environment` keyword: GitLab creates the deployment itself, and the webhook fires when the job succeeds. [Notify QA Wolf when you deploy](/triggers/report-deployments#gitlab) has the job.
 
 Two facts decide whether a deployment lands where your triggers look:
 
@@ -38,9 +38,9 @@ The environment's `url` becomes the deployment's deploy target, which is the add
 
 A GitLab deployment carries no slot for per-deploy environment variables, so runs against it use the QA Wolf environment's own variables. To vary them per deploy, report the deploy through the [Webhook](/deployment-testing/webhook) path instead.
 
-## Test every merge request
+## PR testing: run your tests on every merge request
 
-A review app gives QA Wolf a deployment that resolves to the merge request it came from, which is what makes merge-request testing possible. Two things have to hold, both covered in [Report deployments to QA Wolf](/triggers/report-deployments#isolate-previews-per-pull-request): the environment's name is unique to the merge request, and so is its `url`.
+GitLab calls them merge requests; QA Wolf calls the feature [PR testing](/deployment-testing/pr-testing) either way. A review app tied to its merge request is what it runs against. Two things have to hold, both covered in [Notify QA Wolf when you deploy](/triggers/report-deployments#isolate-previews-per-pull-request): the environment's name is unique to the merge request, and so is its `url`.
 
 <Warning>
   A review app whose environments are per-merge-request but whose `url` is shared fails silently. The trigger matches, and the run executes against whatever was deployed last rather than the merge request under test.
@@ -49,7 +49,7 @@ A review app gives QA Wolf a deployment that resolves to the merge request it ca
 Give review apps their own trigger rather than widening the one that covers staging. Match the shape your pipeline emits — `review/*` — and choose what runs:
 
 - **A small tag**, for a fixed set of fast flows on every merge request.
-- **[Generative flow selection](/triggers/overview#generative-flow-selection)**, which lets QA Wolf pick the flows from the merge request itself. It needs the deployment to resolve to a merge request, so it fits a review-app trigger and skips any deployment without one.
+- **A [Smart Smoke Suite](/triggers/overview#smart-smoke-suites)**, which lets QA Wolf pick the flows by reading the merge request itself. It needs the deploy tied to a merge request, so it fits a review-app trigger and skips any deploy without one.
 
 ## Create a trigger
 

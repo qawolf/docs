@@ -1,11 +1,11 @@
 ---
 title: "Webhook"
-description: "Report a deploy to QA Wolf straight from your pipeline, for a CI system QA Wolf's code host integrations do not cover."
+description: "Notify QA Wolf of a deploy straight from your pipeline, for a CI system QA Wolf's code host integrations do not cover."
 sidebarTitle: "Webhook"
-keywords: "reportStatus, deployment status, CI notification, API key, self-hosted CI, ephemeral environment, preview environment, permanent environment"
+keywords: "reportStatus, notify QA Wolf on deploy, deployment status, CI notification, API key, self-hosted CI, ephemeral environment, preview environment, permanent environment"
 ---
 
-When your pipeline cannot create a GitHub or GitLab deployment, it can tell QA Wolf about the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/triggers/overview) evaluates it the same way.
+When your pipeline cannot create a GitHub or GitLab deployment, it can notify QA Wolf of the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/triggers/overview) evaluates it the same way.
 
 Pick this path when your code host is not GitHub or GitLab, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees.
 
@@ -96,4 +96,4 @@ The environment you name decides where the runs happen, and the same matching ru
 
 ## Create a trigger
 
-Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+Notifying QA Wolf starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
