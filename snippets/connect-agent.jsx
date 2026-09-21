@@ -207,7 +207,7 @@ export const ConnectAgent = () => {
             <p className="qaw-ca-note">
               <a
                 className="qaw-ca-link"
-                href="https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/skills/qawolf/references/platforms.md"
+                href="https://github.com/qawolf/agent-plugins/blob/main/plugins/qawolf/PLATFORMS.md"
                 target="_blank"
                 rel="noopener noreferrer"
               >
