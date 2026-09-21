@@ -1,0 +1,68 @@
+---
+title: "PR testing"
+description: "Run your tests on every pull request, against that pull request's own preview deploy, and see the result as a check on the pull request."
+sidebarTitle: "PR testing"
+keywords: "PR testing, pull request testing, merge request testing, preview environment, QA Wolf Test Results, status check, notify QA Wolf on deploy"
+---
+
+PR testing runs your flows against the preview deploy of a pull request and reports the result back onto the pull request as a check.
+
+Mechanically it is an ordinary deployment trigger: your pipeline notifies QA Wolf of the preview deploy, and a trigger matching preview deployments decides what runs. What makes it PR testing rather than plain preview testing is that QA Wolf could tie the deploy to the pull request it came from.
+
+## PR testing needs a connected repository
+
+<Warning>
+  Pull-request-linked testing requires a connected GitHub or GitLab integration covering the deploying repository. Without one, QA Wolf cannot resolve the pull request behind a deploy — and nothing reports the gap. The deployment is accepted, the trigger matches, and the flows run; only the pull request link is missing.
+</Warning>
+
+QA Wolf resolves the pull request by reading it from your code host, through the installed GitHub App or the GitLab group access token. That read is the only way the link is made, so it covers exactly the repositories the installation covers:
+
+- **A code host QA Wolf does not integrate with** — Bitbucket, Azure DevOps, or anything else. No deploy from those repositories can link to a pull request.
+- **GitHub or GitLab, but the repository is outside the installation.** The integration reads as connected and this repository is still invisible to it, with the same effect.
+- **`deployment.reportStatus` carrying `metadata.repository` and `metadata.pullRequestNumber`.** Naming the pull request does not stand in for the integration — it only tells QA Wolf which pull request to go and read. A repository with no integration resolves to no pull request, and the report succeeds regardless.
+
+What you still get without a connected repository is preview testing: notify QA Wolf of the preview deploy, match it with a trigger, and your flows run against that deploy. What you do not get is anything that needs the pull request itself — the checks on the pull request below, and [Smart Smoke Suites](/smart-smoke-suites), which choose the flows by reading the pull request.
+
+## Set it up
+
+<Steps>
+  <Step title="Connect the code host, and select the repository that deploys">
+    Enable [GitHub](/deployment-testing/github) or [GitLab](/deployment-testing/gitlab) under **Workspace settings → Integrations**. On GitHub, select every repository whose pull requests you want tested; a repository the App does not cover is invisible to QA Wolf.
+  </Step>
+  <Step title="Deploy a preview per pull request, and notify QA Wolf">
+    Each pull request needs its own environment name and its own deploy target URL. Sharing either one between pull requests fails silently — see [isolate previews per pull request](/triggers/report-deployments#isolate-previews-per-pull-request).
+  </Step>
+  <Step title="Create a trigger that matches previews">
+    Give preview deployments a trigger of their own, matching the environment shape your pipeline emits — `preview/*`, `pr-*`, `review/*` — rather than widening the trigger that covers staging. See [Set up a trigger](/triggers/set-up-a-trigger).
+  </Step>
+</Steps>
+
+## What appears on the pull request
+
+Once the repository is connected, QA Wolf posts two checks against the deployed commit, which GitHub and GitLab show on the pull request:
+
+- **QA Wolf Test Run** — the run's progress, from the moment it starts.
+- **QA Wolf Test Results** — the outcome, once the results are in.
+
+To gate merges on QA Wolf, make **QA Wolf Test Results** a required check in your branch protection rules or ruleset.
+
+## Verify it
+
+<Steps>
+  <Step title="Open a pull request">
+    Push a branch and open a pull request that produces a preview deploy.
+  </Step>
+  <Step title="Confirm the deployment arrived">
+    In QA Wolf, find the deployment and confirm it landed in the environment you expect, with the pull request on it. A deployment with no pull request is the symptom this page is about.
+  </Step>
+  <Step title="Confirm a run started">
+    A trigger should have matched the deployment and created a run against the preview deploy. If none did, [Diagnose a trigger](/triggers/diagnose-a-trigger) reads the recorded verdict.
+  </Step>
+  <Step title="Confirm the checks land">
+    Back on the pull request, watch **QA Wolf Test Run** appear and **QA Wolf Test Results** settle to a pass or a fail.
+  </Step>
+</Steps>
+
+## Still on legacy triggers
+
+A workspace whose PR testing was set up the older way is documented under [PR testing on GitHub](/legacy-triggers/PR-testing-for-GitHub-Integrations) and [PR testing on GitLab](/legacy-triggers/PR-testing-for-GitLab-Integrations).

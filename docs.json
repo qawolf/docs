@@ -1003,6 +1003,7 @@
               {
                 "group": "Deployment testing",
                 "pages": [
+                  "deployment-testing/pr-testing",
                   "deployment-testing/github",
                   "deployment-testing/gitlab",
                   "deployment-testing/webhook",

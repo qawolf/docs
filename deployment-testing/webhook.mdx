@@ -2,16 +2,20 @@
 title: "Webhook"
 description: "Report a deploy to QA Wolf straight from your pipeline, for a CI system QA Wolf's code host integrations do not cover."
 sidebarTitle: "Webhook"
-keywords: "reportStatus, deployment status, CI notification, API key, self-hosted CI"
+keywords: "reportStatus, deployment status, CI notification, API key, self-hosted CI, ephemeral environment, preview environment, permanent environment"
 ---
 
 When your pipeline cannot create a GitHub or GitLab deployment, it can tell QA Wolf about the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/triggers/overview) evaluates it the same way.
 
 Pick this path when your code host is not GitHub or GitLab, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees.
 
+<Note>
+  Reporting a deploy this way does not link it to a pull request on its own. That still needs a connected integration covering the repository — see [PR testing](/deployment-testing/pr-testing).
+</Note>
+
 ## Requirements
 
-- An organization or user API key, created under **Workspace Settings → API Keys**. A workspace key cannot call this route.
+- An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work. A workspace key reports into its own workspace, so `workspaceId` has to name that workspace.
 - The ability to make an authenticated HTTPS request from your pipeline.
 
 ## What a report carries
@@ -21,10 +25,24 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `workspaceId` | The workspace to report the deployment into. |
 | `providerDeploymentId` | Your identifier for the deployment. Reports carrying the same one update a single deployment. |
 | `status` | `pending`, `success`, `failure` or `inactive`. |
-| `environment` | Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. |
-| `deployTarget` | The URL the deployment serves. |
+| `environment` | Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. A `{ name }` selector also takes `ephemeral` and `baseEphemeralEnvironment`. |
+| `environment.ephemeral` | Set it to `true` for a preview deploy. Decides whether an environment created from the name is short-lived or permanent. |
+| `environment.baseEphemeralEnvironment` | The alias or name of the environment a created ephemeral environment copies from. Only valid alongside `ephemeral`. Defaults to the workspace's base environment. |
+| `deployTarget` | The URL the deployment serves. Required whenever the report creates an environment — without it the runs point at the base environment's URL instead of at what you deployed. |
 | `environmentVariables` | Overrides for the runs this deployment requests, as a flat map of string to string. A report that sends them replaces the stored values; one that omits them keeps them. |
 | `metadata` | Details about the deployed revision, such as the commit. |
+
+<Warning>
+  **Send `environment.ephemeral: true` for every preview deploy.** It defaults to `false`, so a report that omits it creates a **permanent** environment. Nothing rejects the report and nothing warns: the deploy is accepted, the trigger fires, the run happens — and a per-pull-request environment is left behind that is never torn down, once per pull request, forever.
+
+  This is the direct equivalent of `transient_environment: true` on a GitHub deployment and of the `review/` prefix on GitLab.
+</Warning>
+
+Example:
+
+```json
+"environment": { "name": "preview/pr-42", "ephemeral": true }
+```
 
 ## The request
 
@@ -57,11 +75,15 @@ The input goes inside a `json` wrapper, and the reply carries the deployment und
 | `commitSha` | The commit sha of the deployed revision. |
 | `ref` | The branch or ref that was deployed. |
 | `repository` | The `owner/name` of the repository, such as `acme/web`. |
-| `pullRequestNumber` | The pull request the deployment belongs to. Requires `repository`. |
+| `pullRequestNumber` | The pull request the deployment belongs to. Requires `repository`, and a connected integration covering that repository. |
 | `commitMessage` | The deployed commit's message. The deployments list shows its first line. |
 | `commitAuthorName` | The display name of the commit's author. |
 
-Sending `repository` and `pullRequestNumber` is what lets a preview deploy resolve to its pull request, which [generative flow selection](/triggers/overview#generative-flow-selection) needs.
+Sending `repository` and `pullRequestNumber` is what lets a preview deploy resolve to its pull request.
+
+<Warning>
+  Both fields only work for a repository a connected GitHub or GitLab integration covers. QA Wolf does not take the number at its word — it reads the pull request from the code host, and a repository it has no integration for resolves to nothing. The failure is silent: the report still succeeds, the trigger still matches, and the deployment simply carries no pull request. See [PR testing](/deployment-testing/pr-testing).
+</Warning>
 
 ## When a report starts a run
 
