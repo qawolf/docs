@@ -8,6 +8,8 @@ A Smart Smoke Suite is a targeted selection of flows identified by the QA Wolf a
 
 Smart Smoke Suites are designed to layer onto your existing coverage strategies. Combined with tags and branch rules, Smart Smoke Suites provide another way to customize your runs in a way that balances speed and coverage. 
 
+The suite has no fixed size. The agent selects the flows it judges affected by the change, so a wide-ranging PR selects more flows than a narrow one.
+
 <Note>
   Smart Smoke Suites are currently in alpha and not available to all customers. Early customers running it in production work closely with QA Wolf to validate the experience and tune selection quality.
 </Note>
@@ -26,7 +28,7 @@ Smart Smoke Suites are designed to layer onto your existing coverage strategies.
 
 Once configured, every new preview deployment automatically starts a targeted test run. Enabling and disabling is a single toggle on the trigger, so you can turn it off instantly to revert to standard PR testing.
 
-A workspace on [triggers](/triggers/overview) configures a Smart Smoke Suite as a deployment trigger whose action kind is `generativeSuite`. See [Smart Smoke Suites](/triggers/overview#smart-smoke-suites) for the trigger fields, and [PR testing](/deployment-testing/pr-testing) for what tying a deploy to its pull request requires — without that, the trigger skips every deploy.
+A Smart Smoke Suite is a [deployment trigger](/triggers/overview) whose action kind is `generativeSuite`; see [Trigger fields](/triggers/reference#action). It needs [PR testing](/deployment-testing/pr-testing): a deploy that is not linked to a pull request is skipped.
 
 ## FAQ
 

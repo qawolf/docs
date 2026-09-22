@@ -58,6 +58,18 @@
   },
   "redirects": [
     {
+      "source": "/triggers/set-up-a-trigger",
+      "destination": "/triggers/reference"
+    },
+    {
+      "source": "/triggers/report-deployments",
+      "destination": "/triggers/deployments"
+    },
+    {
+      "source": "/triggers/diagnose-a-trigger",
+      "destination": "/triggers/deployments"
+    },
+    {
       "source": "/qawolf/Workspace-settings",
       "destination": "/workspace-setup"
     },
@@ -724,10 +736,7 @@
           {
             "group": "Triggers",
             "pages": [
-              "triggers/overview",
-              "triggers/set-up-a-trigger",
-              "triggers/report-deployments",
-              "triggers/diagnose-a-trigger"
+              "triggers/overview"
             ]
           },
           {
@@ -979,6 +988,13 @@
             "pages": [
               "libraries/ci-sdk/api-reference",
               "libraries/ci-sdk/troubleshooting"
+            ]
+          },
+          {
+            "group": "Triggers",
+            "pages": [
+              "triggers/reference",
+              "triggers/deployments"
             ]
           },
           {

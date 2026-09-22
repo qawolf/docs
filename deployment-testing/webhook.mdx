@@ -9,10 +9,6 @@ When your pipeline cannot create a GitHub or GitLab deployment, it can notify QA
 
 Pick this path when your code host is not GitHub or GitLab, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees.
 
-<Note>
-  Reporting a deploy this way does not link it to a pull request on its own. That still needs a connected integration covering the repository — see [PR testing](/deployment-testing/pr-testing).
-</Note>
-
 ## Requirements
 
 - An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work. A workspace key reports into its own workspace, so `workspaceId` has to name that workspace.
@@ -26,16 +22,14 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `providerDeploymentId` | Your identifier for the deployment. Reports carrying the same one update a single deployment. |
 | `status` | `pending`, `success`, `failure` or `inactive`. |
 | `environment` | Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. A `{ name }` selector also takes `ephemeral` and `baseEphemeralEnvironment`. |
-| `environment.ephemeral` | Set it to `true` for a preview deploy. Decides whether an environment created from the name is short-lived or permanent. |
+| `environment.ephemeral` | `true` for a preview deploy. Defaults to `false`, which creates a permanent environment. |
 | `environment.baseEphemeralEnvironment` | The alias or name of the environment a created ephemeral environment copies from. Only valid alongside `ephemeral`. Defaults to the workspace's base environment. |
 | `deployTarget` | The URL the deployment serves. Required whenever the report creates an environment — without it the runs point at the base environment's URL instead of at what you deployed. |
 | `environmentVariables` | Overrides for the runs this deployment requests, as a flat map of string to string. A report that sends them replaces the stored values; one that omits them keeps them. |
 | `metadata` | Details about the deployed revision, such as the commit. |
 
 <Warning>
-  **Send `environment.ephemeral: true` for every preview deploy.** It defaults to `false`, so a report that omits it creates a **permanent** environment. Nothing rejects the report and nothing warns: the deploy is accepted, the trigger fires, the run happens — and a per-pull-request environment is left behind that is never torn down, once per pull request, forever.
-
-  This is the direct equivalent of `transient_environment: true` on a GitHub deployment and of the `review/` prefix on GitLab.
+  Send `environment.ephemeral: true` for every preview deploy. A report that omits it is accepted and creates a permanent environment, one per pull request, that is never torn down.
 </Warning>
 
 Example:
@@ -79,21 +73,18 @@ The input goes inside a `json` wrapper, and the reply carries the deployment und
 | `commitMessage` | The deployed commit's message. The deployments list shows its first line. |
 | `commitAuthorName` | The display name of the commit's author. |
 
-Sending `repository` and `pullRequestNumber` is what lets a preview deploy resolve to its pull request.
-
 <Warning>
-  Both fields only work for a repository a connected GitHub or GitLab integration covers. QA Wolf does not take the number at its word — it reads the pull request from the code host, and a repository it has no integration for resolves to nothing. The failure is silent: the report still succeeds, the trigger still matches, and the deployment simply carries no pull request. See [PR testing](/deployment-testing/pr-testing).
+  `repository` and `pullRequestNumber` only link the deployment to its pull request when a connected GitHub or GitLab integration covers that repository. QA Wolf reads the pull request from the code host. Without the integration the report succeeds and the deployment carries no pull request. See [PR testing](/deployment-testing/pr-testing).
 </Warning>
 
 ## When a report starts a run
 
-- A deployment's first `success` report evaluates triggers, and it is the only report that does. A trigger added or resumed afterwards does not make that deployment evaluate again — report the deploy under a new `providerDeploymentId` to evaluate it against the triggers as they stand.
+- A deployment's first `success` report evaluates triggers, and it is the only report that does. To evaluate a deploy again, report it under a new `providerDeploymentId`.
 - The response carries the deployment only, never the resulting runs.
+- A deployment stays bound to the environment resolved on its first report, so later reports may omit the selector. Report a promotion as a new deployment under a new `providerDeploymentId`.
 
-A deployment stays bound to the environment resolved on its first report, so later reports may omit the selector. Report a promotion as a new deployment under a new `providerDeploymentId`.
-
-The environment you name decides where the runs happen, and the same matching rules apply as for a deployment event. See [the environment name is the contract](/triggers/report-deployments#the-environment-name-is-the-contract) and, for previews, [isolate previews per pull request](/triggers/report-deployments#isolate-previews-per-pull-request).
+How the environment name resolves, and what a preview deploy needs, is covered in [Deployments](/triggers/deployments).
 
 ## Create a trigger
 
-Notifying QA Wolf starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report. See [Triggers](/triggers/overview).

@@ -87,22 +87,18 @@ A schedule defines when and how often runs occur automatically. Scheduling is li
 
 ## Trigger
 
-A **trigger** runs a chosen set of flows when something happens: a deployment your pipeline reports, or a point in time. Triggers belong to the workspace, so one trigger can cover every environment a deployment reaches.
-
-A trigger has two halves. The `occasion` decides when it fires — a matching deployment, or an hourly or daily cadence. The `action` decides what runs — flows named directly, flows carrying a tag, or a set QA Wolf selects by reading a pull request.
+A **trigger** runs a set of flows when your application deploys, or on a schedule. Triggers belong to the workspace, so one trigger can cover every environment a deployment reaches. The flows are named directly, selected by tag, or chosen by QA Wolf as a Smart Smoke Suite.
 
 <Note>
   Older workspaces may still run legacy triggers, which attach to a single environment. See [Legacy triggers](/legacy-triggers/overview).
 </Note>
 
-See [Triggers](/triggers/overview) for the full model.
+See [Triggers](/triggers/overview).
 
 ## PR testing
 
-**PR testing** is running your tests automatically on every pull request, against that pull request's own preview deploy, with the result reported back as a check on the pull request. GitLab calls them merge requests; the feature has the same name either way.
-
-It is set up as a deployment trigger matching preview deploys. Tying a deploy to its pull request requires a connected GitHub or GitLab integration covering the deploying repository. See [PR testing](/deployment-testing/pr-testing).
+**PR testing** runs your flows on every pull request, against its preview deploy, and reports the result as checks on the pull request. It requires a connected GitHub or GitLab integration covering the deploying repository. See [PR testing](/deployment-testing/pr-testing).
 
 ## Smart Smoke Suite
 
-A **Smart Smoke Suite** is a set of flows QA Wolf selects itself, by reading the pull request a deploy belongs to, rather than a set you name in advance. It is the `generativeSuite` action kind on a deployment trigger, and it needs [PR testing](/deployment-testing/pr-testing) to be working. See [Smart Smoke Suites](/smart-smoke-suites).
+A **Smart Smoke Suite** is a set of flows QA Wolf selects from the pull request behind a deploy, rather than a set you name in advance. See [Smart Smoke Suites](/smart-smoke-suites).

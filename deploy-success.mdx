@@ -6,7 +6,7 @@ sidebarTitle: "Notify a deploy"
 
 `POST https://app.qawolf.com/api/webhooks/deploy_success`
 
-This endpoint feeds [legacy triggers](/legacy-triggers/overview). A workspace that has migrated reports deploys through [deployment events or `deployment.reportStatus`](/triggers/report-deployments), which this endpoint does not reach.
+This endpoint feeds [legacy triggers](/legacy-triggers/overview). A workspace that has migrated reports deploys through [deployment events or `deployment.reportStatus`](/triggers/deployments), which this endpoint does not reach.
 
 <Tip>
   If your build server supports `node`, use [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference) instead of calling this endpoint directly. This gives you type safety and clearer errors and output.
