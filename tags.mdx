@@ -1,11 +1,11 @@
 ---
 title: "Tags"
-description: "Use tags to create custom suites for nightly runs, smoke suites, etc."
+description: "Group flows under a name so a trigger can run them together and a Run Rule can order them."
 ---
 
 ## How tags work
 
-The primary purpose of tags is to create custom suites — subsets of flows that run according to [Run Rules](/Run-Rules) or the [triggers](/triggers/overview) you define. A trigger that names a tag picks up every flow tagged later, so tagging a new flow adds it to that trigger's runs.
+A tag names a group of flows so other features can select them. A [trigger](/triggers/overview) can run every flow carrying a tag, and a [Run Rule](/Run-Rules) can order flows by tag. A trigger that names a tag picks up every flow tagged later, so tagging a new flow adds it to that trigger's runs.
 
 Tags exist at the Workspace level, can be applied to any flow, and are available to all users in your workspace. 
 

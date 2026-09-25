@@ -734,17 +734,12 @@
             ]
           },
           {
-            "group": "Triggers",
-            "pages": [
-              "triggers/overview"
-            ]
-          },
-          {
             "group": "Run Orchestration",
             "pages": [
-              "tags",
+              "triggers/overview",
               "smart-smoke-suites",
-              "Run-Rules"
+              "Run-Rules",
+              "tags"
             ]
           },
           {

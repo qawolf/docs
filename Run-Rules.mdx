@@ -9,6 +9,8 @@ By default all flows run in parallel on the QA Wolf run infrastructure, but ther
 - Multi-user flows where state is shared between flows.
 - When the environment can't handle the load of an entire test suite.
 
+Run Rules act on the flows inside a run. They apply whether a [trigger](/triggers/overview) started the run or you did, and they never start a run themselves.
+
 ## How Run Rules work
 
 ### Configuring groups
@@ -22,3 +24,11 @@ Only **active** flows execute in a run. Drafts are ignored even if they're part 
 To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
 
 For each rule, indicate whether flows in the second group should be allowed to run if any flows in the first group fail. 
+
+## Runs you start yourself
+
+Runs a trigger starts always follow the rules. Runs you start yourself follow them by default, and you can choose to skip them.
+
+If you select a flow that a rule runs after other flows, the rule requires those earlier flows too. When you start a run in the platform and your selection leaves any out, QA Wolf asks whether to add them. Choose **Yes, apply rules** to add them, or **No, skip rules** to run your selection without the rules.
+
+From the CLI, `qawolf run create` adds the required flows automatically. Pass `--ignore-rules` to skip the rules.
