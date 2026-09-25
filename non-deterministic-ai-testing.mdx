@@ -3,6 +3,8 @@ title: "Non-deterministic AI assertions"
 description: "Validate AI-generated responses using a judge model and assert on a structured JSON verdict."
 ---
 
+For a built-in assertion that needs no API key, see [Assert on the meaning of generated text](/semantic-assertions). This page covers calling a judge model yourself.
+
 <Info>
   Add `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` to your environment variables before using these helpers. `askClaudeTextValidation` and `askChatGPTTextValidation` share the same signature and return shape, and can be swapped with no other changes to your test.
 </Info>

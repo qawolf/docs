@@ -877,6 +877,7 @@
           {
             "group": "AI & LLMs",
             "pages": [
+              "semantic-assertions",
               "non-deterministic-ai-testing"
             ]
           },
