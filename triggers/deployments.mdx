@@ -1,0 +1,63 @@
+---
+title: "Deployments"
+description: "What a deployment carries when it reaches QA Wolf, how it resolves to an environment and a pull request, and the verdict recorded for each trigger."
+sidebarTitle: "Deployments"
+keywords: "deployment, environment name, deploy target, preview environment, transient environment, ephemeral, pull request, trigger evaluation, trigger did not fire, no run for my deploy"
+---
+
+A deployment trigger fires on a deployment QA Wolf received. Deployments arrive through the [GitHub](/deployment-testing/github) or [GitLab](/deployment-testing/gitlab) integration, or through [`deployment.reportStatus`](/deployment-testing/webhook).
+
+## What a deployment carries
+
+| | GitHub | GitLab | `deployment.reportStatus` |
+| --- | --- | --- | --- |
+| Environment name | `environment` | `environment.name` | `environment.name` or `environment.id` |
+| Deploy target URL | `environment_url` on the deployment status | `environment.url` | `deployTarget` |
+| Preview | `transient_environment: true` | Name starts with `review/` | `environment.ephemeral: true` |
+| Branch and commit | The deployed `ref` | The pipeline's commit | `metadata.ref`, `metadata.commitSha` |
+| Pull request | Resolved from the deployed commit | Resolved from the deployed commit | `metadata.repository` and `metadata.pullRequestNumber` |
+
+## Environment
+
+QA Wolf matches the environment name against the workspace's environments by alias or by slugified name. When nothing matches, it creates a new environment under that name.
+
+A pipeline sending `prod-us` while the QA Wolf environment is named `production` creates a second environment that no trigger targets. Make the pipeline send the QA Wolf environment's name, or add the name it sends as an alias.
+
+The preview flag decides what kind of environment gets created. A preview environment is torn down when its pull request closes. A permanent one is not. The flag defaults to permanent on every path, so a preview deploy that omits it leaves a permanent environment behind, once per pull request.
+
+`deployTarget` is required whenever a `deployment.reportStatus` report creates an environment. Without it the runs point at the base environment's URL rather than at the deploy.
+
+## Previews
+
+Each pull request needs its own environment name (`preview/pr-42`, `review/pr-42`) and its own deploy target URL. A shared environment name makes concurrent pull requests overwrite each other's deploy target. A shared URL under per-pull-request names passes silently: the trigger matches and the run executes against whatever was deployed last.
+
+## Pull request
+
+Linking a deployment to its pull request requires a connected GitHub or GitLab integration covering the deploying repository. `metadata.pullRequestNumber` names the pull request to read; it does not replace the integration. A report for a repository with no integration succeeds and carries no pull request. See [PR testing](/deployment-testing/pr-testing).
+
+## Evaluation
+
+A deployment's first `success` status evaluates every trigger in the workspace. No later status does, and a trigger created or resumed afterwards is not evaluated against it. To evaluate a deploy again, report it under a new `providerDeploymentId`.
+
+QA Wolf records one verdict per trigger. `deployment.listTriggerEvaluations` returns them.
+
+| State | Meaning |
+| --- | --- |
+| `not-evaluated` | No `success` status arrived. The deployment's own status is `pending` or `failure`. |
+| `evaluated` | One verdict per trigger that existed at the time. |
+
+| Verdict | Meaning |
+| --- | --- |
+| `not-considered`, `trigger-paused` | The trigger was paused. |
+| `not-considered`, `not-a-deployment-trigger` | The trigger is a schedule. |
+| `did-not-match` | A condition failed. Each condition records a reason. |
+| `matched` | The trigger fired. The verdict carries a run outcome. |
+
+| Run outcome | Meaning |
+| --- | --- |
+| `ran` | Names the run the trigger created. |
+| `starting` | Run creation is in progress. |
+| `did-not-run` | Carries the reason. `no-pull-request` means a Smart Smoke Suite found no pull request on the deploy. `supersededByRunId` names a run an earlier delivery of the same deployment already created. |
+| `unknown` | No record of what followed the match. |
+
+Verdicts are a snapshot. Editing or deleting a trigger later does not change them. A verdict with no trigger id belongs to a trigger deleted since.

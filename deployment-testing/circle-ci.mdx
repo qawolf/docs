@@ -1,15 +1,15 @@
 ---
 title: "CircleCI"
-description: "Report a deploy to QA Wolf from a CircleCI job, or have the job create the deployment your code host already understands."
+description: "Notify QA Wolf of a deploy from a CircleCI job, or have the job create the deployment your code host already understands."
 sidebarTitle: "CircleCI"
-keywords: "CircleCI, circle, deploy job, pipeline, config.yml"
+keywords: "CircleCI, circle, deploy job, notify QA Wolf on deploy, pipeline, config.yml"
 ---
 
 A CircleCI pipeline tells QA Wolf about a deploy in one of two ways. Both are supported, and which one fits depends on where your repository lives.
 
-## Report the deploy from CircleCI
+## Notify QA Wolf from CircleCI
 
-The direct route: a job that runs after your deploy succeeds and reports it to QA Wolf. This works whatever your code host is.
+The direct route: a job that runs after your deploy succeeds and notifies QA Wolf of it. This works whatever your code host is.
 
 Add `QAWOLF_API_KEY` and `QAWOLF_WORKSPACE_ID` under **Project Settings → Environment Variables**, then add the job to `.circleci/config.yml`.
 
@@ -22,7 +22,7 @@ jobs:
       - image: cimg/base:current
     steps:
       - run:
-          name: Report the deploy to QA Wolf
+          name: Notify QA Wolf of the deploy
           command: |
             curl -X POST "https://app.qawolf.com/api/trpc/public.deployment.reportStatus" \
               -H "Authorization: Bearer $QAWOLF_API_KEY" \
@@ -63,4 +63,4 @@ The code-host route is worth the extra step when you want the deploy visible in 
 
 ## Create a trigger
 
-Either route produces a deployment. A [trigger](/triggers/overview) is what turns it into a run — see [Set up a trigger](/triggers/set-up-a-trigger).
+Either route produces a deployment. A [trigger](/triggers/overview) is what turns it into a run.

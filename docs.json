@@ -58,6 +58,18 @@
   },
   "redirects": [
     {
+      "source": "/triggers/set-up-a-trigger",
+      "destination": "/triggers/reference"
+    },
+    {
+      "source": "/triggers/report-deployments",
+      "destination": "/triggers/deployments"
+    },
+    {
+      "source": "/triggers/diagnose-a-trigger",
+      "destination": "/triggers/deployments"
+    },
+    {
       "source": "/qawolf/Workspace-settings",
       "destination": "/workspace-setup"
     },
@@ -722,20 +734,12 @@
             ]
           },
           {
-            "group": "Triggers",
-            "pages": [
-              "triggers/overview",
-              "triggers/set-up-a-trigger",
-              "triggers/report-deployments",
-              "triggers/diagnose-a-trigger"
-            ]
-          },
-          {
             "group": "Run Orchestration",
             "pages": [
-              "tags",
+              "triggers/overview",
               "smart-smoke-suites",
-              "Run-Rules"
+              "Run-Rules",
+              "tags"
             ]
           },
           {
@@ -982,6 +986,13 @@
             ]
           },
           {
+            "group": "Triggers",
+            "pages": [
+              "triggers/reference",
+              "triggers/deployments"
+            ]
+          },
+          {
             "group": "REST",
             "pages": [
               "rest-overview",
@@ -1003,6 +1014,7 @@
               {
                 "group": "Deployment testing",
                 "pages": [
+                  "deployment-testing/pr-testing",
                   "deployment-testing/github",
                   "deployment-testing/gitlab",
                   "deployment-testing/webhook",

@@ -2,7 +2,7 @@
 title: "GitHub deployments"
 description: "Let QA Wolf hear about every deploy through GitHub deployments, and let a trigger decide which flows run."
 sidebarTitle: "GitHub"
-keywords: "GitHub App, GitHub Deployments, deployment status, ref, pull request"
+keywords: "GitHub App, GitHub Deployments, deployment status, notify QA Wolf on deploy, PR testing, ref, pull request"
 ---
 
 A [GitHub deployment](https://docs.github.com/en/rest/deployments/deployments) is a request to deploy a specific ref — a branch, SHA or tag. Creating one fires a webhook event that external services act on, and that is how QA Wolf hears about your deploys. A [deployment status](https://docs.github.com/en/rest/deployments/statuses) is how the service doing the deploying marks what became of it; QA Wolf acts on a status of `success`.
@@ -28,32 +28,45 @@ A deployment is separate from the workflow that created it, so your repository c
   </Step>
 </Steps>
 
-## Check what your repository already creates
+## Create the deployment
 
-Many hosting providers create deployments on their own — Vercel among them. Open a recent commit in GitHub and look for a deployment on it before changing anything.
+Some hosting providers, Vercel among them, create deployments on their own. Otherwise the workflow creates one and marks it with a deployment status of `success` once the deploy finishes.
 
-If nothing creates them, your workflow creates one itself with `POST /repos/{owner}/{repo}/deployments` and then marks it with a deployment status. [Report deployments to QA Wolf](/triggers/report-deployments#github) has the calls.
+```yaml
+- uses: actions/github-script@v7
+  with:
+    script: |
+      const deployment = await github.rest.repos.createDeployment({
+        ...context.repo,
+        ref: context.sha,
+        environment: "staging",
+        transient_environment: false,
+        auto_merge: false,
+        required_contexts: [],
+      });
+      await github.rest.repos.createDeploymentStatus({
+        ...context.repo,
+        deployment_id: deployment.data.id,
+        state: "success",
+        environment_url: "https://staging.example.com",
+      });
+```
 
-Three fields carry most of the meaning:
+- The workflow needs [`permissions: deployments: write`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax).
+- `auto_merge: false` and `required_contexts: []` keep GitHub from refusing or deferring the deployment behind other checks.
+- `environment` defaults to `production`. QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches. See [Deployments](/triggers/deployments#environment).
+- `environment_url`, set on the deployment status, is the address QA Wolf runs against.
 
-- **`ref`** — what was deployed.
-- **`environment`** — which target it went to. It defaults to `production`, so a deployment that omits it claims to be a production deploy. QA Wolf matches the name against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches.
-- **`environment_url`**, set on the deployment status — the address QA Wolf runs against.
+QA Wolf evaluates triggers on a deployment's first `success` status only. A deployment left `pending` starts nothing.
 
-<Note>
-  QA Wolf evaluates triggers on a deployment's first `success` status, and only that one. A deployment left `pending` starts nothing.
-</Note>
+## Preview deployments
 
-## Test every pull request
+For [PR testing](/deployment-testing/pr-testing), a preview deployment runs on `pull_request`, deploys `ref: pullRequest.head.sha`, and names its environment and `environment_url` per pull request. Set `transient_environment: true` so the environment is a preview rather than permanent.
 
-A preview deployment gives QA Wolf a deployment that resolves to the pull request it came from, which is what makes pull-request testing possible. Two things have to hold, both covered in [Report deployments to QA Wolf](/triggers/report-deployments#isolate-previews-per-pull-request): the `environment` name is unique to the pull request, and so is the `environment_url`.
-
-Mark a pull-request deployment with `transient_environment: true`, so GitHub and QA Wolf both treat its environment as short-lived rather than permanent.
-
-Give preview deployments their own trigger rather than widening the one that covers staging. Match the shape your workflow emits — `preview/*`, `pr-*` — and choose what runs:
-
-- **A small tag**, for a fixed set of fast flows on every pull request.
-- **[Generative flow selection](/triggers/overview#generative-flow-selection)**, which lets QA Wolf pick the flows from the pull request itself. It needs the deployment to resolve to a pull request, so it fits a preview trigger and skips any deployment without one.
+```javascript
+environment: `preview/pr-${pullRequest.number}`,
+transient_environment: true,
+```
 
 ## Advanced: pass environment variables into the run
 
@@ -89,16 +102,11 @@ Example:
 ```
 
 <Warning>
-  A `payload` that does not match this shape is ignored rather than rejected. Every value has to be a string, so a number, a boolean or a nested object anywhere inside `environmentVariables` means QA Wolf reads no variables at all. The deployment still succeeds, the run still starts, and nothing reports that the variables were dropped. Quote every value.
+  A `payload` that does not match this shape is ignored rather than rejected. Every value has to be a string; a number, a boolean or a nested object anywhere inside `environmentVariables` means QA Wolf reads no variables at all. Quote every value.
 </Warning>
 
-Two things in that call are easy to miss, and both stop the deployment ever existing:
-
-- The workflow needs [`permissions: deployments: write`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax).
-- `required_contexts: []` waives the commit status checks GitHub otherwise verifies before accepting a deployment. Without it, GitHub rejects or defers the deployment while other checks are still running.
-
-Reporting a deploy through the [Webhook](/deployment-testing/webhook) path carries the same idea differently: `environmentVariables` is a field of the report itself rather than something nested in a payload, and a report that sends it replaces the stored values while a report that omits it keeps them.
+The [Webhook](/deployment-testing/webhook) path takes `environmentVariables` as a field of the report itself.
 
 ## Create a trigger
 
-A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your repository now creates, and name the flows it runs. See [Set up a trigger](/triggers/set-up-a-trigger).
+A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your repository now creates. See [Triggers](/triggers/overview).

@@ -1,0 +1,53 @@
+---
+title: "Trigger fields"
+description: "The fields of a trigger: deployment conditions, schedule, and the action that selects flows."
+sidebarTitle: "Trigger fields"
+keywords: "trigger fields, environmentPattern, deployTargetPattern, branchPattern, cadence, generativeSuite, flowIds, tagNames, investigateFailures"
+---
+
+Every trigger has a name, a paused state, one occasion (deployment conditions or a schedule) and one action.
+
+## Deployment conditions
+
+Every condition supplied must match. A trigger with no conditions fires on every deployment the workspace receives.
+
+| Field | Description |
+| --- | --- |
+| `environmentIds` | Only fire for deployments to these environments. Mutually exclusive with `environmentPattern`. |
+| `environmentPattern` | Only fire for deployments to environments whose name matches this pattern, such as `preview/*`. Mutually exclusive with `environmentIds`. |
+| `deployTargetPattern` | Only fire for deployments whose deploy target URL matches this pattern. |
+| `branchPattern` | Only fire for deployments of a branch matching this pattern. |
+
+The environment name a deployment carries decides whether the trigger sees it. See [Deployments](/triggers/deployments#environment).
+
+## Schedule
+
+| Field | Description |
+| --- | --- |
+| `cadence` | `hourly` or `daily`. |
+| `environmentId` | The environment the runs happen in. |
+| `timeOfDay` | When a daily schedule fires, as `HH:mm`. Required when the cadence is daily. |
+| `timezoneId` | The IANA timezone `timeOfDay` is read in, such as `America/New_York`. Required when the cadence is daily. |
+| `minuteOfHour` | Minutes past the hour an hourly schedule fires. Defaults to 0. |
+
+A created schedule reports `nextScheduledAt`.
+
+## Action
+
+| Field | Description |
+| --- | --- |
+| `flowIds` | Flows named one by one. |
+| `tagNames` | Every flow carrying one of these tags. Combines with `flowIds`. |
+| `kind` | `generativeSuite` makes the trigger a [Smart Smoke Suite](/smart-smoke-suites): QA Wolf selects the flows from the pull request the deploy belongs to. |
+| `instructions` | Optional guidance for a `generativeSuite` selection. |
+| `investigateFailures` | Whether QA Wolf investigates failures in the runs the trigger creates. Defaults to `true`. |
+
+An action names at least one flow or tag, or is a `generativeSuite`. A `generativeSuite` action:
+
+- Refuses `flowIds` and `tagNames`.
+- Is only valid on a deployment trigger.
+- Skips any deploy that is not tied to a pull request, with the verdict reason `no-pull-request`. See [PR testing](/deployment-testing/pr-testing) for what ties a deploy to its pull request.
+
+## Paused
+
+A paused trigger is never evaluated. Pausing and resuming change nothing else on the trigger.

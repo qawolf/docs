@@ -1,0 +1,33 @@
+---
+title: "PR testing"
+description: "Run your flows on every pull request, against its preview deploy, with the result reported as checks on the pull request."
+sidebarTitle: "PR testing"
+keywords: "PR testing, pull request testing, merge request testing, preview environment, QA Wolf Test Results, status check"
+---
+
+PR testing runs your flows against a pull request's preview deploy and reports the result as checks on the pull request. GitLab calls them merge requests; the feature is the same.
+
+## What it needs
+
+- **A connected GitHub or GitLab integration covering the deploying repository.** This is what ties a deploy to its pull request. Connect it under **Workspace settings → Integrations**; see [GitHub](/deployment-testing/github) or [GitLab](/deployment-testing/gitlab).
+- **A preview deploy per pull request**, with its own environment name and its own URL, marked as a preview. See [Deployments](/triggers/deployments#previews).
+- **A deployment trigger matching those previews**, such as `preview/*` or `review/*`. See [Triggers](/triggers/overview).
+
+## Without a connected repository
+
+A deploy from a repository QA Wolf cannot read still runs: the deployment is accepted, the trigger matches, and the flows run against the preview. It is not linked to a pull request, so no checks are posted and a [Smart Smoke Suite](/smart-smoke-suites) skips it. Nothing reports the gap.
+
+This applies to Bitbucket, Azure DevOps and any other code host, to a GitHub or GitLab repository outside the installation, and to a `deployment.reportStatus` report that names `metadata.pullRequestNumber` for a repository with no integration.
+
+## Checks on the pull request
+
+QA Wolf posts two checks against the deployed commit:
+
+- **QA Wolf Test Run** — the run's progress.
+- **QA Wolf Test Results** — the outcome.
+
+To gate merges on QA Wolf, require **QA Wolf Test Results** in your branch protection rules or ruleset.
+
+<Note>
+  A workspace still on legacy triggers is documented under [PR testing on GitHub](/legacy-triggers/PR-testing-for-GitHub-Integrations) and [PR testing on GitLab](/legacy-triggers/PR-testing-for-GitLab-Integrations).
+</Note>
