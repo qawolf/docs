@@ -24,7 +24,7 @@ export const ConnectAgent = () => {
   const [failed, setFailed] = useState("");
 
   const host = site.trim() || "yoururl.com";
-  const prompt = "Create a sign-in test for " + host + " with QA Wolf";
+  const prompt = "Create my first test for signing in to " + host + " with QA Wolf MCP";
   const mcpUrl = "https://app.qawolf.com/api/mcp";
 
   const copy = (key, text) => {
