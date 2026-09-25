@@ -1,6 +1,6 @@
 ---
 title: "Assert on the meaning of generated text"
-description: "Use ai.expect(...).toSatisfy(...) to check what AI-generated text means, so a flow accepts new wording and still catches wrong answers."
+description: "Use toSatisfy to check what AI-generated text means, so a flow accepts new wording and still catches wrong answers."
 sidebarTitle: "Semantic assertions"
 keywords:
   - "LLM testing"
@@ -10,7 +10,22 @@ keywords:
   - "chatbot testing"
 ---
 
-An exact text assertion fails whenever an AI feature rewords a correct answer. A semantic assertion checks meaning instead. `ai.expect(locator).toSatisfy(statement)` passes when the element's text makes the statement true, whatever words the app chose.
+<Check>
+  Semantic assertions must be enabled for your workspace. Ask your QA Wolf team to turn them on. They aren't available to workspaces whose AI data policy restricts provider data retention.
+</Check>
+
+To assert on what an element's text means rather than its exact wording, use `ai.expect(...).toSatisfy(...)` from `@qawolf/ai/web`.
+
+```ts
+ai.expect(locator).toSatisfy(statement, options)
+```
+
+- `statement` — the requirement the element's text must satisfy
+- `options` — optional object, see Key options below
+
+## Examples
+
+**Assert on the meaning of a reply**
 
 ```ts
 import * as ai from "@qawolf/ai/web";
@@ -20,33 +35,58 @@ await ai.expect(page.getByTestId("assistant-reply")).toSatisfy(
 );
 ```
 
-"Your parcel is on its way" passes. "We're preparing your order" fails, because it doesn't confirm shipment.
+**Pass the original request as context**
 
-<Check>
-  Semantic assertions must be enabled for your workspace. Ask your QA Wolf team to turn them on. They aren't available to workspaces whose AI data policy restricts provider data retention.
-</Check>
+```ts
+await ai.expect(reply).toSatisfy(
+  "The reply says the issue was referred to the delivery team",
+  { context: { customerRequest: request } },
+);
+```
+
+**Assert that text doesn't say something**
+
+```ts
+await ai.expect(reply).not.toSatisfy("The reply promises a refund");
+```
+
+**Wait for a streamed reply to finish**
+
+```ts
+await expect(reply).toHaveAttribute("data-generation-state", "complete");
+await ai.expect(reply).toSatisfy("The reply confirms the order has shipped");
+```
+
+<Warning>
+  Wait for the app's completion signal before asserting on streamed text. `toSatisfy` retries until the statement holds, so it can pass on a partial response.
+</Warning>
 
 ## When to use
 
-Use `toSatisfy` only where the product allows the wording to vary. Everything the product fixes stays an exact assertion.
+- Your app shows AI-generated text, such as chat replies or summaries, whose wording changes between runs.
+- The requirement is what the text means, not the exact words.
+- An exact-match assertion would need to list every acceptable phrasing.
 
-| What you're checking | Assertion |
-| --- | --- |
-| The meaning of generated text: chat replies, summaries, explanations, generated prompts | `ai.expect(locator).toSatisfy(...)` |
-| Required copy, legal text, exact labels | `expect(locator).toHaveText(...)` |
-| Numbers, dates, IDs, formats, counts | `toBe(...)`, `toHaveText(...)`, `toHaveCount(...)` |
-| Visibility, enabled state, input values | `toBeVisible()`, `toBeEnabled()`, `toHaveValue(...)` |
-| What the app actually did: saved records, API responses, side effects | `expect` on the response or on the record read back |
+Avoid `toSatisfy` for required copy, numbers, IDs, and formats, or to prove what the app did, such as saving a record. Use an exact `expect` assertion instead.
 
-Generated text isn't proof of an outcome. An assistant can say it opened a ticket without opening one, so assert on the ticket too.
+## Key options
 
-When semantic assertions are enabled, the QA Wolf agent uses them for generated text in the flows it writes.
+| Option | Description | Recommended |
+| --- | --- | --- |
+| `context` | JSON facts that inform the judgment, such as the original request. | Situational |
+| `threshold` | Probability required to pass, greater than `0.5` and at most `1`. | `0.9` (default) |
+| `timeout` | Max milliseconds to read and evaluate the text. | The flow's `expect` timeout (default) |
 
-## Examples
+## Notes
 
-**Verify a support hand-off: the ticket exactly, the reply by meaning**
+- `ai.expect` offers only `toSatisfy` and `.not.toSatisfy`. Use `expect` from `@qawolf/flows/web` for every other matcher.
+- The locator must match exactly one element. `toSatisfy` reads its text, not its visibility or input value, so add `toBeVisible()` when visibility matters.
+- An uncertain judgment or an evaluator error fails both `toSatisfy` and `.not.toSatisfy`. Treat an inconclusive result as a failure to investigate, not a reason to lower the threshold.
+- Semantic assertions run in web flows, in the editor and in triggered runs. They aren't available in iOS, Android, or local execution.
+- QA Wolf evaluates each assertion with TypeSafe's Jev model, so flows need no API key.
+- When semantic assertions are enabled, the QA Wolf agent uses them for generated text in the flows it writes.
 
-A customer reports a delayed parcel. The app must save an open ticket in the delivery queue, and the assistant must tell the customer the issue was referred. The ticket is fixed. The reply's wording isn't.
+## Full sample test
 
 ```ts
 import * as ai from "@qawolf/ai/web";
@@ -56,153 +96,24 @@ export default flow(
   "Route a delayed delivery",
   { target: "Web - Chrome", launch: true },
   async ({ page, test }) => {
+    const request = "Order ORD-1042 hasn't moved in a week. Please ask the delivery team to investigate.";
     const reply = page.getByTestId("assistant-reply");
-    const request =
-      "Order ORD-1042 shipped last week, but tracking has stopped. " +
-      "Please ask the delivery team to investigate.";
-
-    await test("open a new support conversation", async () => {
-      await page.goto(`${process.env.BASE_URL}/support/new`);
-      await expect(reply).toHaveCount(0);
-    });
 
     await test("send the request and verify the ticket", async () => {
+      await page.goto(`${process.env.BASE_URL}/support/new`);
       await page.getByRole("textbox", { name: "Message" }).fill(request);
-
-      const ticketCreated = page.waitForResponse(
-        (response) =>
-          new URL(response.url()).pathname === "/api/support/tickets" &&
-          response.request().method() === "POST",
-      );
-      await page.getByRole("button", { name: "Send", exact: true }).click();
-
-      const response = await ticketCreated;
-      expect(response.status()).toBe(201);
-      const ticket = await response.json();
-      expect(ticket.orderId).toBe("ORD-1042");
-      expect(ticket.queue).toBe("delivery");
-      expect(ticket.status).toBe("open");
+      const ticket = page.waitForResponse("**/api/support/tickets");
+      await page.getByRole("button", { name: "Send" }).click();
+      expect((await ticket).status()).toBe(201);
     });
 
     await test("reply confirms the hand-off", async () => {
       await expect(reply).toHaveAttribute("data-generation-state", "complete");
-      await expect(reply).toBeVisible();
       await ai.expect(reply).toSatisfy(
-        "The reply tells the customer their delivery issue has been referred " +
-          "to the delivery team for investigation",
+        "The reply says the issue was referred to the delivery team",
         { context: { customerRequest: request } },
       );
     });
   },
 );
 ```
-
-The ticket assertions are exact. If the app saved no ticket, the flow fails however convincing the reply sounds.
-
-The example assumes a signed-in customer and an order `ORD-1042` with a delayed shipment. It also assumes the app returns `201` from `POST /api/support/tickets` once the ticket is saved, and sets `data-generation-state="complete"` on the reply when it finishes. Replace those routes and selectors with your own.
-
-**Assert that text doesn't say something**
-
-```ts
-await ai.expect(reply).not.toSatisfy("The reply promises the customer a refund");
-```
-
-`.not.toSatisfy` passes only when the evaluator judges the statement false. An uncertain judgment fails in both directions.
-
-## Write a reliable assertion
-
-- **State one concrete requirement that can fail.** "The reply is helpful" can't fail in a useful way. "The reply confirms the order has shipped" can. Write it from the product requirement, not from a response you saw.
-- **Pass what the flow knows as `context`.** The original request, known facts, or acceptance criteria. The element's text stays the evidence under test.
-- **Scope the locator to one element.** `toSatisfy` fails if the locator matches more than one. Select the output by a stable identity, such as a test ID or role, never by its wording.
-- **Assert visibility separately.** `toSatisfy` reads text and doesn't check that the element is visible. Add `toBeVisible()` when visibility matters.
-- **Keep the default threshold.** An inconclusive judgment or an evaluator error is a failure to investigate. Lowering the threshold, or rerunning until it passes, hides what the assertion caught.
-- **Try it against a wrong answer.** Before relying on a new assertion, confirm it fails on text that shouldn't pass.
-
-<Warning>
-  Wait for the app's completion signal before asserting on streamed text. `toSatisfy` keeps re-reading the element until the statement holds, so it can pass on a partial response. `.not.toSatisfy` can pass before the text has said what you're ruling out. Assert on a finished-state attribute, or on a stop button disappearing, first.
-</Warning>
-
-## Reference
-
-### `ai.expect(locator).toSatisfy(statement, options?)`
-
-Passes when the element's text makes `statement` true, with a probability at or above the threshold. `.not.toSatisfy(statement, options?)` passes when the statement is judged false at the same threshold.
-
-```ts
-import * as ai from "@qawolf/ai/web";
-```
-
-`ai.expect` offers only `toSatisfy` and `.not.toSatisfy`. Keep `expect` from `@qawolf/flows/web` for every other matcher.
-
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `statement` | `string` | The requirement the text must satisfy. Required. Up to 4,000 characters. |
-| `options.context` | JSON value | Known inputs or facts that inform the judgment, such as the original request. Up to 32,000 characters once serialized. |
-| `options.threshold` | `number` | Required probability. Greater than `0.5` and at most `1`. Defaults to `0.9`. |
-| `options.timeout` | `number` | Milliseconds covering text reads and evaluation. Defaults to the flow's `expect` timeout. |
-
-### How the judgment works
-
-The evaluator returns the probability that the statement is true of the text. With the default threshold of `0.9`:
-
-| Probability the statement is true | `toSatisfy` | `.not.toSatisfy` |
-| --- | --- | --- |
-| `0.9` or higher | Passes | Fails |
-| `0.1` or lower | Fails | Passes |
-| Between `0.1` and `0.9` | Fails as inconclusive | Fails as inconclusive |
-
-Evaluator errors fail in both directions too. The threshold is a pass/fail policy, not a measured accuracy rate.
-
-### What it reads
-
-- **Text** — the element's rendered `innerText`, or `textContent` for non-HTML elements such as SVG. Up to 64,000 characters.
-- **Not read** — screenshots, styling, and input values. Use `toHaveValue(...)` for a text field.
-- **Waiting** — waits for the element to exist and to have non-whitespace text, until the timeout.
-- **Changing text** — evaluates each distinct version of the text once per assertion. It re-reads the text before accepting a result, and evaluates again if the text changed.
-
-### Where it runs
-
-Semantic assertions run in web flows, both in the flow editor and in runs from triggers. They aren't available in iOS, Android, or [local execution](/local-execution/get-started).
-
-QA Wolf supplies the evaluator, so a flow needs no provider SDK or API key. Each assertion sends the element's text, the statement, and `context` to QA Wolf's evaluator, which uses TypeSafe's Jev model.
-
-## Read a failure
-
-A failed assertion reports the statement, the text it judged, and the probability.
-
-Example:
-
-```text
-expect(locator).toSatisfy
-
-Semantic assertion failed
-Locator: getByTestId('assistant-reply')
-Statement: The reply confirms the order has shipped
-Expected: P(true) >= 0.9
-Observed: "We're preparing your order now."
-P(true): 0.03
-Model: jev-1.13.0
-Reason: Expected probability threshold was not reached
-Evaluated 1 distinct text snapshot(s) within 30000ms.
-```
-
-These reasons appear after the assertion has retried until its timeout:
-
-| Reason | What to check |
-| --- | --- |
-| `Expected probability threshold was not reached` | The text was judged the opposite of what the assertion expects. Compare it with the requirement. This is usually a real failure. |
-| `Probability is inside the uncertainty band` | The evaluator couldn't decide. Make the statement more specific, or add `context`. |
-| `Element was not found` | The locator matched nothing. |
-| `Element has no non-whitespace text` | The element exists but has no text, often a reply that hasn't started rendering. |
-| `Text changed while it was being evaluated` | The text was still changing when time ran out. Wait for the completion signal first. |
-| `Evaluation exceeded the assertion timeout` | The evaluator didn't respond in time. Raise `timeout` if it recurs. |
-
-These errors fail the assertion immediately, without retrying:
-
-| Error | Cause |
-| --- | --- |
-| `toSatisfy requires exactly one element; locator matched N` | The locator matched several elements. Narrow it to one. |
-| `Semantic evaluator failed` | The evaluator couldn't run. Semantic assertions aren't enabled for the workspace, an input is over its size limit, or the service is unavailable. |
-| `ai.expect requires a semantic evaluator configured by the runner` | The flow isn't running on a QA Wolf web runner. |
-| `threshold must be greater than 0.5 and at most 1` | `threshold` is out of range. |
-| `context must contain only ...` | `context` holds something that isn't plain JSON, such as a `Date`, a class instance, or a circular reference. |
