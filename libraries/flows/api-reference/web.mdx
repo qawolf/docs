@@ -254,6 +254,8 @@ The exported `expect` is the assertion helper for web flows, backed by [Playwrig
 
 Always import `expect` from `@qawolf/flows/web` rather than from `@playwright/test` directly, so that QA Wolf's defaults (custom timeout, visual diffing) stay in effect.
 
+To assert on the meaning of AI-generated text rather than its exact wording, use `ai.expect(locator).toSatisfy(...)` from `@qawolf/ai/web`. See [Assert on the meaning of generated text](/semantic-assertions).
+
 Example:
 
 ```ts

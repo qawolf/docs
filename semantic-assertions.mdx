@@ -1,0 +1,119 @@
+---
+title: "Assert on the meaning of generated text"
+description: "Use toSatisfy to check what AI-generated text means, so a flow accepts new wording and still catches wrong answers."
+sidebarTitle: "Semantic assertions"
+keywords:
+  - "LLM testing"
+  - "LLM-as-a-judge"
+  - "natural language assertion"
+  - "AI output validation"
+  - "chatbot testing"
+---
+
+<Check>
+  Semantic assertions must be enabled for your workspace. Ask your QA Wolf team to turn them on. They aren't available to workspaces whose AI data policy restricts provider data retention.
+</Check>
+
+To assert on what an element's text means rather than its exact wording, use `ai.expect(...).toSatisfy(...)` from `@qawolf/ai/web`.
+
+```ts
+ai.expect(locator).toSatisfy(statement, options)
+```
+
+- `statement` — the requirement the element's text must satisfy
+- `options` — optional object, see Key options below
+
+## Examples
+
+**Assert on the meaning of a reply**
+
+```ts
+import * as ai from "@qawolf/ai/web";
+
+await ai.expect(page.getByTestId("assistant-reply")).toSatisfy(
+  "The reply confirms the order has shipped",
+);
+```
+
+**Pass the original request as context**
+
+```ts
+await ai.expect(reply).toSatisfy(
+  "The reply says the issue was referred to the delivery team",
+  { context: { customerRequest: request } },
+);
+```
+
+**Assert that text doesn't say something**
+
+```ts
+await ai.expect(reply).not.toSatisfy("The reply promises a refund");
+```
+
+**Wait for a streamed reply to finish**
+
+```ts
+await expect(reply).toHaveAttribute("data-generation-state", "complete");
+await ai.expect(reply).toSatisfy("The reply confirms the order has shipped");
+```
+
+<Warning>
+  Wait for the app's completion signal before asserting on streamed text. `toSatisfy` retries until the statement holds, so it can pass on a partial response.
+</Warning>
+
+## When to use
+
+- Your app shows AI-generated text, such as chat replies or summaries, whose wording changes between runs.
+- The requirement is what the text means, not the exact words.
+- An exact-match assertion would need to list every acceptable phrasing.
+
+Avoid `toSatisfy` for required copy, numbers, IDs, and formats, or to prove what the app did, such as saving a record. Use an exact `expect` assertion instead.
+
+## Key options
+
+| Option | Description | Recommended |
+| --- | --- | --- |
+| `context` | JSON facts that inform the judgment, such as the original request. | Situational |
+| `threshold` | Probability required to pass, greater than `0.5` and at most `1`. | `0.9` (default) |
+| `timeout` | Max milliseconds to read and evaluate the text. | The flow's `expect` timeout (default) |
+
+## Notes
+
+- `ai.expect` offers only `toSatisfy` and `.not.toSatisfy`. Use `expect` from `@qawolf/flows/web` for every other matcher.
+- The locator must match exactly one element. `toSatisfy` reads its text, not its visibility or input value, so add `toBeVisible()` when visibility matters.
+- An uncertain judgment or an evaluator error fails both `toSatisfy` and `.not.toSatisfy`. Treat an inconclusive result as a failure to investigate, not a reason to lower the threshold.
+- Semantic assertions run in web flows, in the editor and in triggered runs. They aren't available in iOS, Android, or local execution.
+- QA Wolf evaluates each assertion with TypeSafe's Jev model, so flows need no API key.
+- When semantic assertions are enabled, the QA Wolf agent uses them for generated text in the flows it writes.
+
+## Full sample test
+
+```ts
+import * as ai from "@qawolf/ai/web";
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Route a delayed delivery",
+  { target: "Web - Chrome", launch: true },
+  async ({ page, test }) => {
+    const request = "Order ORD-1042 hasn't moved in a week. Please ask the delivery team to investigate.";
+    const reply = page.getByTestId("assistant-reply");
+
+    await test("send the request and verify the ticket", async () => {
+      await page.goto(`${process.env.BASE_URL}/support/new`);
+      await page.getByRole("textbox", { name: "Message" }).fill(request);
+      const ticket = page.waitForResponse("**/api/support/tickets");
+      await page.getByRole("button", { name: "Send" }).click();
+      expect((await ticket).status()).toBe(201);
+    });
+
+    await test("reply confirms the hand-off", async () => {
+      await expect(reply).toHaveAttribute("data-generation-state", "complete");
+      await ai.expect(reply).toSatisfy(
+        "The reply says the issue was referred to the delivery team",
+        { context: { customerRequest: request } },
+      );
+    });
+  },
+);
+```
