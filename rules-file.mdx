@@ -116,12 +116,15 @@ Even so, a run can need rules from a file that has a problem at that moment — 
 
 ## What isn't visible in the file
 
-`run-with` and `run-without` describe one pair of names at a time, but QA Wolf builds groups from every rule in the file together, and three behaviors follow from that which the file itself doesn't show.
+`run-with` and `run-without` describe one pair of names at a time, but QA Wolf builds groups from every rule in the file together, and checks those groups against each run before it starts. Several behaviors follow from that which the file itself doesn't show.
 
 - **Groups grow transitively.** If checkout is `run-with` billing, and billing is `run-with` invoicing, all three start together — even though nothing in the file names checkout and invoicing together directly.
-- **A conflict beats a `run-with`.** If a `run-with` edge would put two flows together that a `run-without` rule or an ordering rule keeps apart, QA Wolf drops the `run-with` edge and keeps the conflicting rule.
-- **An oversized group is dropped, not stalled.** If a group grows larger than the number of flows a run is allowed to start at once, QA Wolf drops the group rather than holding up the run. Those flows still run, just without the grouping, and nothing else in the run waits on them.
+- **A `run-without` rule only needs to be written once.** It keeps two flows apart no matter which one is picked first, so you don't need to add the rule to both flows.
+- **`fail-together` covers the whole group.** Set it on any one flow in a `run-with` group, and every flow in that group fails together — you don't need to repeat it on each flow.
+- **A run applies none of the file's `run-with` and `run-without` rules if even one of them can't be honored.** Before a run starts, QA Wolf checks every `run-with` and `run-without` rule against the flows in that run and against the most flows the run could ever have going at once. A rule can't be honored when it would combine two flows that a `run-without` rule keeps apart, when it would combine two flows an ordering rule (`run-after`/`run-before`) already keeps in sequence, when the group it forms is bigger than the run could ever have going at the same time, or when two groups would end up waiting on each other and neither could ever start. If any single rule fails one of these checks, the whole run applies none of the file's `run-with` and `run-without` rules — not only the one that failed. Ordering rules are unaffected and keep applying. QA Wolf is alerted whenever this happens, so it shouldn't go unnoticed for long — but it does mean a rule you're expecting to apply may quietly not, for that run.
+- **Too many possible pairings has the same effect.** A tag-to-tag rule expands into every flow carrying the first tag paired with every flow carrying the second. If a run's `run-with` and `run-without` rules add up to more than 20,000 such pairings, QA Wolf applies none of the file's grouping rules to that run either.
+- **This is checked per run, so the same file can behave differently from one run to the next.** A run with a lower concurrency limit, or one that happens to include a flow another run leaves out, can end up with none of its grouping rules applied, while another run built from the exact same file applies them without issue.
 
 <Tip>
-  If a `run-with` rule doesn't seem to apply, check whether the group it builds is larger than your environment's concurrency limit.
+  Keep `run-with` groups small, and avoid combining `run-with` with `run-without` or an ordering rule between the same two flows. Those are the most common reasons a run ends up applying none of its grouping rules — check them first if co-scheduling doesn't seem to be working.
 </Tip>
