@@ -739,6 +739,7 @@
               "triggers/overview",
               "smart-smoke-suites",
               "Run-Rules",
+              "rules-file",
               "tags"
             ]
           },
