@@ -1,6 +1,13 @@
 ---
 title: "Run Rules"
 description: "Run Rules let you sequence the order of flows in your suite."
+keywords:
+  - "rules.yaml"
+  - "file based rules"
+  - "run-with"
+  - "run-without"
+  - "co-scheduling"
+  - "sequencing rules"
 ---
 
 By default all flows run in parallel on the QA Wolf run infrastructure, but there are times when you want to sequence some flows to run before others. 
@@ -12,7 +19,7 @@ By default all flows run in parallel on the QA Wolf run infrastructure, but ther
 Run Rules act on the flows inside a run. They apply whether a [trigger](/triggers/overview) started the run or you did, and they never start a run themselves.
 
 <Note>
-  You can also define Run Rules as code in a [rules file](/rules-file) committed to your repository. Once a branch has one, this screen becomes read-only for the environments that read from it.
+  You can also define Run Rules as code in a [rules file](#rules-file) committed to your repository. Once a branch has one, this screen becomes read-only for the environments that read from it.
 </Note>
 
 ## How Run Rules work
@@ -36,3 +43,124 @@ Runs a trigger starts always follow the rules. Runs you start yourself follow th
 If you select a flow that a rule runs after other flows, the rule requires those earlier flows too. When you start a run in the platform and your selection leaves any out, QA Wolf asks whether to add them. Choose **Yes, apply rules** to add them, or **No, skip rules** to run your selection without the rules.
 
 From the CLI, `qawolf run create` adds the required flows automatically. Pass `--ignore-rules` to skip the rules.
+
+## Rules file
+
+A `rules.yaml` file lets you define Run Rules as code instead of using the Run Rules screen. Add it to the root of your repository, alongside `package.json`, and QA Wolf reads your run rules from it instead of the screen. It can express everything the screen can, plus two grouping rules the screen doesn't offer.
+
+<Note>
+  This feature is rolling out gradually and may not be available in your workspace yet.
+</Note>
+
+### Where the file lives and what it contains
+
+QA Wolf looks for a file named exactly `rules.yaml` at the root of your repository. A `rules.yml` file with the same content is reported as a violation telling you to rename it — QA Wolf never reads it silently.
+
+The file has a `version` key and a `rules` map. Each key inside `rules` is a subject — the name of a flow or a tag — and its value sets one or more rules for that subject.
+
+| Key | Type | Default | Sets |
+| --- | --- | --- | --- |
+| `version` | number | required | Must be `1`. |
+| `rules` | map | required | Maps each subject to its rules. |
+| `run-after` | list of names | — | The subject runs after every flow or tag listed. |
+| `run-before` | list of names | — | The subject runs before every flow or tag listed. |
+| `run-with` | list of names | — | The subject starts at the same time as every flow or tag listed. |
+| `run-without` | list of names | — | The subject never starts at the same time as any flow or tag listed. |
+| `fail-if-priors-fail` | boolean | `true` | Only valid next to `run-after` or `run-before`. See [The two modifiers](#the-two-modifiers). |
+| `fail-together` | boolean | `false` | Only valid next to `run-with`. See [The two modifiers](#the-two-modifiers). |
+
+A subject needs at least one of `run-after`, `run-before`, `run-with`, or `run-without` — a subject with none of these is a violation, not a no-op.
+
+Example:
+
+```yaml
+# checkout combines two rule kinds on one subject, and both modifiers appear elsewhere in the file.
+version: 1
+rules:
+  checkout:
+    run-after: [login]
+    run-without: [flaky-upload]
+  smoke:
+    run-before: [regression]
+    fail-if-priors-fail: false
+  billing:
+    run-with: [invoicing]
+    fail-together: true
+```
+
+<Note>
+  If a branch has no `rules.yaml` file, QA Wolf uses whatever rules you've saved on the Run Rules screen for that environment, exactly as before. A `rules.yaml` file with an empty rules map is different — it means this branch deliberately has no run rules, and QA Wolf does not fall back to the screen's rules.
+</Note>
+
+Example of an intentionally empty file:
+
+```yaml
+# A migrated branch with no ordering rules yet.
+version: 1
+rules: {}
+```
+
+<Warning>
+  A `rules.yaml` file larger than 1 MB can't be read, and is treated the same as an invalid file. See [When the file can't be used](#when-the-file-cant-be-used).
+</Warning>
+
+### Naming a flow or a tag
+
+Every name — a subject, or a name inside `run-after`, `run-before`, `run-with`, or `run-without` — is checked against your flows first and your tags second.
+
+If a name matches both a flow and a tag, that's a collision QA Wolf can't resolve on its own. The rule is invalid until you disambiguate it by writing `flow:<name>` or `tag:<name>` instead of the bare name.
+
+Example:
+
+```yaml
+# flow:checkout and tag:checkout name different things when a flow and a tag share a name.
+version: 1
+rules:
+  "flow:checkout":
+    run-after: [login]
+  "tag:checkout":
+    run-after: [smoke]
+```
+
+<Note>
+  If a flow or tag is genuinely named `flow:something` or `tag:something`, you can't reference it in `rules.yaml` at all — QA Wolf always reads a `flow:` or `tag:` prefix as the escape hatch above. Rename the flow or tag instead.
+</Note>
+
+### The two modifiers
+
+Two boolean keys fine-tune how a rule behaves. Each is only valid next to the rule kind it modifies — setting one without a matching rule makes the file invalid.
+
+- **`fail-if-priors-fail`** (next to `run-after` or `run-before`, default `true`) — controls whether flows in the later group are skipped when a flow in the earlier group fails. See [Ordering](#ordering) for what this looks like in a run. Set it to `false` to let the later flows run anyway.
+- **`fail-together`** (next to `run-with`, default `false`) — when `true`, every flow in the group fails if any one of them does. See [What isn't visible in the file](#what-isnt-visible-in-the-file) for how groups are built.
+
+Both defaults match what the Run Rules screen already does, so moving a rule from the screen into the file doesn't change how it behaves.
+
+### Rules apply per branch
+
+Each environment is tied to one branch of your repository, and a `rules.yaml` file governs only the branch it's committed to. There's no way to write one set of rules that covers every environment — production and staging each read whichever `rules.yaml` exists on their own branch, independently of each other.
+
+This means a rules change for production only takes effect once it reaches your production branch. Adding or editing rules on a different branch — staging, or a pull request — has no effect on production until that same change merges into production's branch too.
+
+### When the file can't be used
+
+QA Wolf checks `rules.yaml` for problems as you write it. Invalid YAML, an unrecognized key, a modifier without its matching rule kind, and a few other mistakes all show up as violations against the file, the same way any other problem in your project would.
+
+Even so, a run can need rules from a file that has a problem at that moment — an existing file that's briefly unreachable, or a valid file that a later edit broke. What happens next depends on whether you still have rules saved on the Run Rules screen:
+
+- **You still have rules saved on the screen:** QA Wolf falls back to those rules for that run. Fix `rules.yaml`, and future runs use it again.
+- **You've already removed your Run Rules screen rules:** QA Wolf has nothing to fall back to. A file it couldn't reach is retried for a short time in case the problem clears up on its own. A file that was reached but is invalid is not retried. Either way, once QA Wolf gives up, no run is created until you fix the file.
+
+### What isn't visible in the file
+
+`run-with` and `run-without` describe one pair of names at a time, but QA Wolf builds groups from every rule in the file together, and checks those groups against each run before it starts. Several behaviors follow from that which the file itself doesn't show.
+
+- **Groups grow transitively.** If checkout is `run-with` billing, and billing is `run-with` invoicing, all three start together — even though nothing in the file names checkout and invoicing together directly.
+- **A `run-without` rule only needs to be written once.** It keeps two flows apart no matter which one is picked first, so you don't need to add the rule to both flows.
+- **`fail-together` covers the whole group.** Set it on any one flow in a `run-with` group, and every flow in that group fails together — you don't need to repeat it on each flow.
+- **A run applies none of the file's `run-with` and `run-without` rules if even one of them can't be honored.** Before a run starts, QA Wolf checks every `run-with` and `run-without` rule against the flows in that run and against the most flows the run could ever have going at once. A rule can't be honored when it would combine two flows that a `run-without` rule keeps apart, when it would combine two flows an ordering rule (`run-after`/`run-before`) already keeps in sequence, when the group it forms is bigger than the run could ever have going at the same time, or when two groups would end up waiting on each other and neither could ever start. If any single rule fails one of these checks, the whole run applies none of the file's `run-with` and `run-without` rules — not only the one that failed. Ordering rules are unaffected and keep applying. QA Wolf is alerted whenever this happens, so it shouldn't go unnoticed for long — but it does mean a rule you're expecting to apply may quietly not, for that run.
+- **Too many possible pairings has the same effect.** A tag-to-tag rule expands into every flow carrying the first tag paired with every flow carrying the second. If a run's `run-with` and `run-without` rules add up to more than 20,000 such pairings, QA Wolf applies none of the file's grouping rules to that run either.
+- **This is checked per run, so the same file can behave differently from one run to the next.** A run with a lower concurrency limit, or one that happens to include a flow another run leaves out, can end up with none of its grouping rules applied, while another run built from the exact same file applies them without issue.
+
+<Tip>
+  Keep `run-with` groups small, and avoid combining `run-with` with `run-without` or an ordering rule between the same two flows. Those are the most common reasons a run ends up applying none of its grouping rules — check them first if co-scheduling doesn't seem to be working.
+</Tip>
