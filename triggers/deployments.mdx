@@ -16,6 +16,9 @@ A deployment trigger fires on a deployment QA Wolf received. Deployments arrive 
 | Preview | `transient_environment: true` | Name starts with `review/` | `environment.ephemeral: true` |
 | Branch and commit | The deployed `ref` | The pipeline's commit | `metadata.ref`, `metadata.commitSha` |
 | Pull request | Resolved from the deployed commit | Resolved from the deployed commit | `metadata.repository` and `metadata.pullRequestNumber` |
+| Service | Not reported | Not reported | `service` |
+
+A deployment names a service when several applications deploy into one environment, or when one pipeline ships more than one build — an Android and an iOS build, say. `service` is what tells those deploys apart, and it is what a trigger's `servicePattern` matches on. A deployment that names no service never matches a trigger carrying a service pattern.
 
 ## Environment
 
