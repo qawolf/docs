@@ -2,7 +2,7 @@
 title: "Webhook"
 description: "Notify QA Wolf of a deploy straight from your pipeline, for a CI system QA Wolf's code host integrations do not cover."
 sidebarTitle: "Webhook"
-keywords: "reportStatus, notify QA Wolf on deploy, deployment status, CI notification, API key, self-hosted CI, ephemeral environment, preview environment, permanent environment"
+keywords: "reportStatus, notify QA Wolf on deploy, deployment status, CI notification, API key, self-hosted CI, ephemeral environment, preview environment, permanent environment, service, servicePattern"
 ---
 
 When your pipeline cannot create a GitHub or GitLab deployment, it can notify QA Wolf of the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/triggers/overview) evaluates it the same way.
@@ -26,6 +26,7 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `environment.baseEphemeralEnvironment` | The alias or name of the environment a created ephemeral environment copies from. Only valid alongside `ephemeral`. Defaults to the workspace's base environment. |
 | `deployTarget` | The URL the deployment serves. Required whenever the report creates an environment — without it the runs point at the base environment's URL instead of at what you deployed. |
 | `environmentVariables` | Overrides for the runs this deployment requests, as a flat map of string to string. A report that sends them replaces the stored values; one that omits them keeps them. |
+| `service` | Which application was deployed, such as `checkout-api`, when several applications deploy into one environment, or when one pipeline ships more than one build such as an Android and an iOS build. A trigger's `servicePattern` matches on it. A report that omits it keeps the stored value. |
 | `metadata` | Details about the deployed revision, such as the commit. |
 
 <Warning>

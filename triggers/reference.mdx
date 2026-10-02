@@ -2,7 +2,7 @@
 title: "Trigger fields"
 description: "The fields of a trigger: deployment conditions, schedule, and the action that selects flows."
 sidebarTitle: "Trigger fields"
-keywords: "trigger fields, environmentPattern, deployTargetPattern, branchPattern, cadence, generativeSuite, flowIds, tagNames, investigateFailures"
+keywords: "trigger fields, environmentPattern, deployTargetPattern, branchPattern, servicePattern, cadence, weekly, dayOfWeek, daysOfWeek, timezoneId, createSuite, generativeSuite, flowIds, tagNames, investigateFailures, runConcurrencyLimit"
 ---
 
 Every trigger has a name, a paused state, one occasion (deployment conditions or a schedule) and one action.
@@ -17,6 +17,7 @@ Every condition supplied must match. A trigger with no conditions fires on every
 | `environmentPattern` | Only fire for deployments to environments whose name matches this pattern, such as `preview/*`. Mutually exclusive with `environmentIds`. |
 | `deployTargetPattern` | Only fire for deployments whose deploy target URL matches this pattern. |
 | `branchPattern` | Only fire for deployments of a branch matching this pattern. |
+| `servicePattern` | Only fire for deployments whose service matches this pattern. A deployment that names no service never matches a trigger carrying one, so adding a service pattern to an existing trigger silently stops it firing until your pipeline sends the field. See [Deployments](/triggers/deployments#what-a-deployment-carries). |
 
 The environment name a deployment carries decides whether the trigger sees it. See [Deployments](/triggers/deployments#environment).
 
@@ -24,11 +25,17 @@ The environment name a deployment carries decides whether the trigger sees it. S
 
 | Field | Description |
 | --- | --- |
-| `cadence` | `hourly` or `daily`. |
+| `cadence` | `hourly`, `daily` or `weekly`. |
 | `environmentId` | The environment the runs happen in. |
-| `timeOfDay` | When a daily schedule fires, as `HH:mm`. Required when the cadence is daily. |
-| `timezoneId` | The IANA timezone `timeOfDay` is read in, such as `America/New_York`. Required when the cadence is daily. |
+| `timezoneId` | The IANA timezone the schedule is read in, such as `America/New_York`. Required for every cadence, `hourly` included. It sets the wall clock `timeOfDay` is read against, and the day boundaries `dayOfWeek` and `daysOfWeek` are read against. |
+| `timeOfDay` | When a daily or weekly schedule fires, as `HH:mm`. Required when the cadence is daily or weekly. |
+| `dayOfWeek` | The one day a weekly schedule fires on, named in lower case: `monday` through `sunday`. Required when the cadence is weekly. |
+| `daysOfWeek` | The only days an hourly or daily schedule fires on, as an array of lower-case day names. Name each day at most once; a repeated day is refused. Omitting it fires on every day. |
 | `minuteOfHour` | Minutes past the hour an hourly schedule fires. Defaults to 0. |
+
+<Note>
+  `dayOfWeek` and `daysOfWeek` are different fields for different cadences. `dayOfWeek` is a single day and belongs to a weekly cadence, which fires on that one day. `daysOfWeek` is a list and belongs to an hourly or daily cadence, where it narrows an otherwise every-day schedule to the days you name. Neither field is accepted by the other's cadence.
+</Note>
 
 A created schedule reports `nextScheduledAt`.
 
@@ -38,9 +45,10 @@ A created schedule reports `nextScheduledAt`.
 | --- | --- |
 | `flowIds` | Flows named one by one. |
 | `tagNames` | Every flow carrying one of these tags. Combines with `flowIds`. |
-| `kind` | `generativeSuite` makes the trigger a [Smart Smoke Suite](/smart-smoke-suites): QA Wolf selects the flows from the pull request the deploy belongs to. |
+| `kind` | `createSuite`, the default, runs the flows named by `flowIds` and `tagNames`. `generativeSuite` makes the trigger a [Smart Smoke Suite](/smart-smoke-suites): QA Wolf selects the flows from the pull request the deploy belongs to. |
 | `instructions` | Optional guidance for a `generativeSuite` selection. |
 | `investigateFailures` | Whether QA Wolf investigates failures in the runs the trigger creates. Defaults to `true`. |
+| `runConcurrencyLimit` | How many runs of the resulting suite may execute at once. Sent as a string: a whole number from 1 to 1000 such as `"40"`, the literal `"unlimited"`, or a concurrency expression such as `"max(2, 4)"`. It replaces the environment's limit rather than capping below it, so it can raise the limit as well as lower it. Omit it to leave the environment's limit in charge. |
 
 An action names at least one flow or tag, or is a `generativeSuite`. A `generativeSuite` action:
 
