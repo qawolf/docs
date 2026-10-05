@@ -48,3 +48,13 @@ keywords:
     </Tip>
   </Step>
 </Steps>
+
+## Custom fields format
+
+The **Custom Fields** setting takes a JSON object. Each key is a Jira field, and each value is an object holding the `value` to set:
+
+```json
+{"custom_field": {"value": "new required field"}}
+```
+
+Replace `custom_field` with your Jira field and `new required field` with the value QA Wolf should set on it.
