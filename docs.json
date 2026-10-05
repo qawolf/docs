@@ -1019,6 +1019,7 @@
                   "deployment-testing/github",
                   "deployment-testing/gitlab",
                   "deployment-testing/webhook",
+                  "deployment-testing/ci-sdk",
                   "deployment-testing/circle-ci"
                 ]
               },

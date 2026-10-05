@@ -1,10 +1,15 @@
 ---
 title: "SDK Reference"
-description: "Reference for the @qawolf/ci-sdk TypeScript package, including installation, initialization, and functions for triggering and polling test runs from CI."
+description: "Reference for the @qawolf/ci-sdk package: report a deployment, wait for QA Wolf's verdict, upload run inputs, and the legacy deploy_success functions."
 sidebarTitle: "SDK Reference"
+keywords: "ci-sdk, reportStatus, waitForVerdict, detectProviderDeploymentId, providerDeploymentId, deployment verdict, CI gate, Node.js, Jenkins, Buildkite, Bitbucket Pipelines"
 ---
 
-`@qawolf/ci-sdk` provides a TypeScript SDK (CJS and ESM compatible) for interacting with the QA Wolf API from your CI pipeline.
+`@qawolf/ci-sdk` is a TypeScript package for notifying QA Wolf of a deploy from your CI pipeline and gating the pipeline on the result. It calls the same public API the [Webhook](/deployment-testing/webhook) page documents, with typed inputs taken from the published API contract.
+
+SDK functions do not throw. Each returns a result object with an `outcome` field, and your pipeline branches on it to decide whether the step passes or fails.
+
+The guide for wiring it into a pipeline is [Node.js SDK](/deployment-testing/ci-sdk). This page is the function-by-function reference.
 
 ## Installation
 
@@ -13,110 +18,426 @@ npm install @qawolf/ci-sdk
 ```
 
 <Check>
-  Requires Node.js 18 or later.
+  Requires Node.js 24.14.1 or later, below 25. The package is published as ESM only: import it with `import`, or from CommonJS with `await import("@qawolf/ci-sdk")`. `require("@qawolf/ci-sdk")` does not resolve.
 </Check>
-
-```javascript
-import { fetch } from "undici";
-
-const sdk = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY }, { fetch });
-```
 
 ## makeQaWolfSdk
 
-The entry point for all SDK functions. Pass your `QAWOLF_API_KEY` to initialize.
+The entry point for every function. Pass your API key to initialize.
 
 ```javascript
 import { makeQaWolfSdk } from "@qawolf/ci-sdk";
 
-const {
-  attemptNotifyDeploy,
-  pollCiGreenlightStatus,
-  makePollCiGreenlightStatusIterator,
-  notifyTerminatedEphemeralEnvironment,
-  generateSignedUrlForRunInputsExecutablesStorage,
-} = makeQaWolfSdk({
-  apiKey: process.env.QAWOLF_API_KEY,
-});
+const { deployment } = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
 ```
 
-<Note>
-  SDK functions do not throw. They return a result object with an `outcome` field. Always inspect the outcome to determine whether your CI step should pass or fail.
-</Note>
-
-## attemptNotifyDeploy
-
-Notifies QA Wolf of a successful deployment, which starts a run if one is configured. See [webhooks/deploy\_success](/deploy-success) for the underlying endpoint.
-
-```javascript
-import { type DeployConfig, makeQaWolfSdk } from "@qawolf/ci-sdk";
-
-const { attemptNotifyDeploy } = makeQaWolfSdk({
-  apiKey: process.env.QAWOLF_API_KEY,
-});
-
-const deployConfig: DeployConfig = {
-  branch: undefined,
-  sha: undefined,
-  deploymentType: "staging",
-  deploymentUrl: undefined,
-  hostingService: undefined,
-  commitUrl: undefined,
-  deduplicationKey: undefined,
-  variables: undefined,
-  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
-};
-
-const result = await attemptNotifyDeploy(deployConfig);
-if (result.outcome !== "success") {
-  process.exit(1);
-}
-
-const runId = result.runId;
-// Store runId as a CI job output to pass to pollCiGreenlightStatus.
-```
-
-### DeployConfig fields
+### Options
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `branch` | string | VCS branch name. |
-| `sha` | string | VCS commit SHA. |
-| `deploymentType` | string | Required if the target trigger matches on deployment type. |
-| `deploymentUrl` | string | Overrides the environment URL. Available in tests as `process.env.URL`. |
-| `hostingService` | string | `"GitHub"` or `"GitLab"`. Defaults to `"GitHub"`. |
-| `commitUrl` | string | Pass with `sha` if no hosting service repo is configured. Makes the commit ID a clickable link in the QA Wolf UI. |
-| `pullRequestNumber` | number | VCS PR number, for PR testing. |
-| `mergeRequestNumber` | number | VCS MR number, for MR testing. |
-| `repository.name` | string | Repository name. |
-| `repository.owner` | string | Repository owner or organization (VCS). |
-| `repository.namespace` | string | Repository namespace or group (VCS). |
-| `ephemeralEnvironment` | boolean | Pass with `deploymentUrl` for ephemeral environments without a code-hosting integration. |
-| `deduplicationKey` | string | Custom key controlling run cancellation behavior. |
-| `variables` | object | Key/value pairs that override environment variables for triggered runs. |
-| `workspaceId` | string | Workspace to create runs in — same semantics as the [`deploy_success` webhook's `workspaceId`](/deploy-success#request-body). |
+| `apiKey` | string | A QA Wolf API key, created under **Workspace Settings → API Keys**. |
+| `serviceBase` | string | Base URL of the QA Wolf API. Defaults to `https://app.qawolf.com/`. |
+| `userAgent` | string | `User-Agent` header sent on every request. |
+
+A second argument injects dependencies. Each is optional:
+
+| Field | Description |
+| --- | --- |
+| `fetch` | A `fetch` implementation. Defaults to the global `fetch`. Every request has a two-minute timeout. |
+| `log` | A `LogDriver` from `@qawolf/ci-utils`, for routing the SDK's log lines into your CI's own logger. |
+| `clock` | `{ now, sleep }`, used by `deployment.waitForVerdict`. |
+
+Returns an object with these functions:
+
+- **`deployment.reportStatus`** — reports a deployment. A deployment's first `success` report is what evaluates triggers and starts a run.
+- **`deployment.waitForVerdict`** — blocks until QA Wolf can say whether the deployment's tests passed.
+- **`notifyTerminatedEphemeralEnvironment`** — tells QA Wolf an ephemeral environment is gone.
+- **`generateSignedUrlForRunInputsExecutablesStorage`** and **`generateSignedUrlForTempTeamStorage`** — signed upload URLs for files a run needs.
+- **`attemptNotifyDeploy`**, **`pollCiGreenlightStatus`** and **`makePollCiGreenlightStatusIterator`** — the [legacy functions](#legacy-functions). They report through the `deploy_success` webhook, which triggers do not see.
+
+`detectProviderDeploymentId` is a standalone export rather than a method; see [below](#detectproviderdeploymentid).
+
+## API keys and `workspaceId`
+
+Every call acts on exactly one workspace.
+
+- A **workspace API key** belongs to one workspace. `deployment.reportStatus` still requires `workspaceId`, and it has to name that workspace; naming another fails with `unauthorized`.
+- An **organization API key** or a **user API key** can reach several workspaces, so `workspaceId` picks one.
+
+Find the id under **Workspace Settings → API Keys**. The legacy functions and the signed URL functions take `workspaceId` as an optional field; see each function for what happens when it is omitted.
+
+## deployment.reportStatus
+
+Reports a deployment to QA Wolf through the public `deployment.reportStatus` API. The parameters are the API's own input, so [Webhook](/deployment-testing/webhook) and [Deployments](/triggers/deployments) describe how each field is read.
+
+Example:
+
+```javascript
+import { detectProviderDeploymentId, makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+const { deployment } = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
+
+const detected = detectProviderDeploymentId();
+if (detected.outcome !== "detected") process.exit(1);
+
+const result = await deployment.reportStatus({
+  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+  providerDeploymentId: detected.id,
+  status: "success",
+  environment: { name: "staging" },
+  deployTarget: "https://staging.example.com",
+  metadata: {
+    commitSha: process.env.GIT_COMMIT,
+    ref: process.env.GIT_BRANCH,
+  },
+});
+
+if (result.outcome !== "reported") process.exit(1);
+console.log(result.deployment.url);
+```
+
+### Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `workspaceId` | string | The workspace to report into. Required. |
+| `providerDeploymentId` | string | Your identifier for the deployment. Reports carrying the same one update a single deployment. Required. See [`detectProviderDeploymentId`](#detectproviderdeploymentid). |
+| `status` | `"pending"`, `"success"`, `"failure"` or `"inactive"` | The deployment's lifecycle status. Only the first `success` report evaluates triggers. Required. |
+| `environment` | object | `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. Required on the first report; later reports may omit it. |
+| `environment.ephemeral` | boolean | With `{ name }` only. `true` for a preview deploy. Defaults to `false`, which creates a permanent environment. |
+| `environment.baseEphemeralEnvironment` | string | With `{ name }` and `ephemeral: true` only. Alias or name of the environment a created ephemeral environment copies from. |
+| `deployTarget` | string | The URL the deployment serves. Required whenever the report creates an environment. |
+| `environmentVariables` | object | String-to-string overrides for the runs this deployment requests. Sending it replaces the stored values; omitting it keeps them. |
+| `service` | string | Which application was deployed, when several deploy into one environment. A trigger's `servicePattern` matches on it. |
+| `metadata` | object | Details about the deployed revision. Every field is optional. |
+| `metadata.commitSha` | string | The deployed commit. |
+| `metadata.ref` | string | The branch or ref that was deployed. |
+| `metadata.repository` | string | The `owner/name` of the repository, such as `acme/web`. |
+| `metadata.pullRequestNumber` | number | The pull request the deployment belongs to. Requires `metadata.repository` and a connected integration covering that repository. |
+| `metadata.commitUrl` | string | A link to the commit, for when QA Wolf cannot resolve the commit itself. |
+| `metadata.commitMessage` | string | The deployed commit's message. |
+| `metadata.commitAuthorName` | string | The display name of the commit's author. |
+
+The input is validated strictly: a field the contract does not know, or `environment` carrying both `id` and `name`, is an `invalid-request`. `ReportDeploymentParams` is the exported type.
+
+<Warning>
+  Send `environment.ephemeral: true` for every preview deploy. A report that omits it is accepted and creates a permanent environment, one per pull request, that is never torn down.
+</Warning>
+
+### Result
+
+Branch on `outcome`:
+
+| `outcome` | Description |
+| --- | --- |
+| `"reported"` | Carries `deployment` with `id`, `status` and `url`, the environment's runs page. |
+| `"invalid-request"` | The report did not satisfy the contract. Carries `message`. |
+| `"unauthorized"` | The API key is unknown, or may not act on this workspace. Carries `message`. |
+| `"not-found"` | The workspace or environment named in the report does not exist. Carries `message`. |
+| `"conflict"` | The `providerDeploymentId` is already bound to a different environment. Carries `message`. |
+| `"server-error"` | QA Wolf failed to record the report. Carries `httpStatus`. Retrying is reasonable. |
+| `"unexpected-status"` | An HTTP status this SDK version does not map. Carries `httpStatus` and `message`. |
+| `"network-error"` | The request never reached QA Wolf, or the connection dropped. |
+| `"invalid-response-body"` | QA Wolf answered with a body the contract rejects. |
+
+The response carries the deployment only, never the resulting runs. `deployment.waitForVerdict` is how a pipeline learns what the runs decided.
+
+<Note>
+  `outcome: "reported"` means QA Wolf recorded the deployment, not that a trigger matched it. Whether a run starts is decided afterwards, by your [triggers](/triggers/overview).
+</Note>
+
+## detectProviderDeploymentId
+
+Composes a `providerDeploymentId` from the variables your CI system already sets. The id is distinct for every job definition and every re-run, so a retried job or a second job deploying alongside the first gets its own deployment rather than reporting into one whose first `success` already evaluated triggers.
+
+Example:
+
+```javascript
+import { detectProviderDeploymentId } from "@qawolf/ci-sdk";
+
+const detected = detectProviderDeploymentId();
+if (detected.outcome !== "detected") process.exit(1);
+// detected.ci is "jenkins", detected.id is the value of BUILD_TAG
+```
+
+| CI system | Detected on | Id |
+| --- | --- | --- |
+| GitHub Actions | `GITHUB_ACTIONS` | `GITHUB_RUN_ID`-`GITHUB_RUN_ATTEMPT`-`GITHUB_JOB` |
+| GitLab CI | `GITLAB_CI` | `CI_PIPELINE_ID`-`CI_JOB_ID` |
+| CircleCI | `CIRCLECI` | `CIRCLE_WORKFLOW_ID`-`CIRCLE_BUILD_NUM` |
+| Buildkite | `BUILDKITE` | `BUILDKITE_BUILD_ID`-`BUILDKITE_JOB_ID`-`BUILDKITE_RETRY_COUNT` |
+| Jenkins | `JENKINS_URL` or `JENKINS_HOME` | `BUILD_TAG` |
+| Bitbucket Pipelines | `BITBUCKET_WORKSPACE` or `BITBUCKET_BUILD_NUMBER` | `BITBUCKET_BUILD_NUMBER`-`BITBUCKET_STEP_UUID`-`BITBUCKET_STEP_RUN_NUMBER` |
+
+### Options
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `discriminator` | string | Appended to the id after a colon. Required when one job definition deploys more than once at a time: a GitHub Actions or Jenkins `matrix`, a Jenkins `parallel` block, a CircleCI job with `parallelism`, or a loop over environments. Pass the value that tells the deployments apart. |
+| `env` | object | The variables to read. Defaults to `process.env`. |
+
+### Result
+
+| `outcome` | Description |
+| --- | --- |
+| `"detected"` | Carries `ci` and `id`. |
+| `"missing-variables"` | The CI system was recognized but a variable it composes the id from is unset. Carries `ci` and `missingVariables`. |
+| `"unsupported"` | No recognized CI system. Compose the id from your own CI's variables instead. |
+
+The helper is optional. `providerDeploymentId` is always required on the report, and any value that changes on every re-run and differs between concurrent deploys works.
+
+## deployment.waitForVerdict
+
+Blocks until QA Wolf can say whether a deployment's tests passed. Give it the `deployment.id` the report returned; resolving that to the runs the triggers created, and those runs to a status, happens inside.
+
+Example:
+
+```javascript
+const report = await deployment.reportStatus({ /* ... */ status: "success" });
+if (report.outcome !== "reported") process.exit(1);
+
+const verdict = await deployment.waitForVerdict({
+  deploymentId: report.deployment.id,
+  timeout: 45 * 60 * 1000,
+});
+
+process.exit(["passed", "not-tested"].includes(verdict.outcome) ? 0 : 1);
+```
+
+<Warning>
+  Set `timeout` below your CI job's own time limit. When the job's limit fires first, the job is killed with no run link and no explanation. When `timeout` fires first, the result is `timed-out` with the stage, the elapsed time and every run URL the wait knew about.
+</Warning>
+
+### Options
+
+Every field except `deploymentId` is optional. Durations are in milliseconds.
+
+| Field | Default | Description |
+| --- | --- | --- |
+| `deploymentId` | — | The `deployment.id` from `deployment.reportStatus`. Required. |
+| `timeout` | 2 hours | Whole-operation budget. |
+| `runAppearanceTimeout` | 5 minutes | Gives up if no trigger has produced a run by then. Runs that did appear are still waited on. |
+| `triggerPollInterval` | 3 seconds | Between polls while a trigger is still producing a run. |
+| `runPollInterval` | 30 seconds | Between polls while a run executes. |
+| `maxRetries` | 10 | Network and server-error retries before giving up. |
+| `retryInterval` | 10 seconds | Between those retries. |
+| `onProgress` | — | Called on every stage change with a `VerdictStage`, for your build log. |
+| `signal` | — | An `AbortSignal`. Aborting it yields `canceled-by-caller`. |
+
+The stages `onProgress` receives, in order:
+
+- **`waiting-for-evaluation`** — QA Wolf has not yet evaluated the deployment's triggers.
+- **`waiting-for-run`** — triggers matched and at least one is still creating a run. Carries `matchedTriggerCount`.
+- **`waiting-for-verdict`** — every run is known and at least one is still executing. Carries `runs`.
+
+### Result
+
+Branch on `outcome`:
+
+| `outcome` | Description |
+| --- | --- |
+| `"passed"` | Every run QA Wolf started passed. Carries `runs`. |
+| `"failed"` | A run failed, or found a bug that is still open and serious enough to block. Carries `runs` and `blockingBugCount`. |
+| `"not-tested"` | Nothing tested this deployment. Carries `reason` and `triggers`, one note per trigger saying why. |
+| `"run-canceled"` | A run was canceled, so there is no verdict. Not a pass. Carries `runs`. |
+| `"superseded"` | A newer deployment to the same branch and environment replaced the run before it finished, so there is no verdict for this deployment. Not a pass. Carries `runs` and `supersededBy` with the replacement's `runId` and `url`. |
+| `"timed-out"` | The budget ran out. Carries `elapsedMs`, `lastStage` and the `runs` it had already found. |
+| `"canceled-by-caller"` | The `signal` was aborted. |
+| `"unauthorized"` | The API key is unknown, or may not read this deployment. Carries `message`. |
+| `"not-found"` | No such deployment. Carries `message`. |
+| `"server-error"` | QA Wolf kept failing after every retry. Carries `httpStatus`. |
+| `"unexpected-status"` | An HTTP status this SDK version does not map. Carries `httpStatus` and `message`. |
+| `"network-error"` | The connection never came back within the retries. |
+| `"invalid-response-body"` | QA Wolf answered with a body the contract rejects. |
+
+`not-tested` is a separate answer from `passed`. A deployment no trigger matched was not tested, which is a different fact from tests passing, and your pipeline decides what it is worth. `reason` is `"no-trigger-matched"` when every trigger was evaluated and none matched, or `"no-run-created"` when a trigger matched and something stopped it from creating a run; each entry in `triggers` then carries `triggerName`, a `message` for the log and, for `no-run-created`, a stable `reason` code to branch on.
+
+`superseded` is what a cancel-in-progress pipeline looks like from the older job: the newer deployment's job carries the verdict. Reserve a distinct exit code for it when your CI should treat the job as skipped rather than failed.
+
+Each entry in `runs`:
+
+| Field | Description |
+| --- | --- |
+| `runId` | The run's id. |
+| `runUrl` | Absolute URL of the run page. |
+| `status` | `"queued"`, `"running"`, `"passed"`, `"failed"`, `"canceled"` or `"superseded"`. Terminal on every outcome except `timed-out`. |
+| `blockingBugCount` | Open bugs serious enough to block the build. |
+| `supersededBy` | The replacing run's `runId` and `url`. Present only when `status` is `"superseded"`. |
+| `triggerName` | The trigger that created the run. |
+
+`DeploymentVerdict`, `VerdictRun`, `VerdictStage`, `TriggerNote` and `NotTestedReason` are the exported types. The same shape is published as `deploymentVerdictSchema` in `@qawolf/api-contracts`.
+
+## notifyTerminatedEphemeralEnvironment
+
+Tells QA Wolf that an ephemeral environment has been terminated. QA Wolf stops the runs targeting it and promotes any flow changes to the base environment. See [webhooks/environment\_terminated](/environment_terminated) for the underlying endpoint.
+
+With a connected GitHub or GitLab integration, QA Wolf hears about the pull request closing from the code host, and this call is redundant.
+
+Example:
+
+```javascript
+const { notifyTerminatedEphemeralEnvironment } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const result = await notifyTerminatedEphemeralEnvironment({
+  environmentAlias: "preview/pr-42",
+  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+});
+
+if (result.outcome !== "success") process.exit(1);
+```
+
+### Input fields
+
+Pass exactly one of the following to identify the environment:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `environmentId` | string | Id of the ephemeral environment. |
+| `environmentAlias` | string | Alias of the ephemeral environment. |
+| `deploymentUrl` | string | The URL the environment was created with. |
+
+`environmentAlias` and `deploymentUrl` also take `workspaceId`. It is optional; an organization or user key that omits it acts on the organization's first-created workspace, and the result carries a `warning` naming it. `NotifyTerminatedEphemeralEnvironmentInput` is the exported type.
 
 ### Result fields
 
 | Field | Description |
 | --- | --- |
-| `outcome` | `"success"`, `"failed"`, or `"aborted"`. |
-| `runId` | ID of the triggered run. Pass to `pollCiGreenlightStatus`. |
-| `failReason` | Present when `outcome` is `"failed"`. Reason the notification failed. |
-| `abortReason` | Present when `outcome` is `"aborted"`. Reason the notification was aborted. |
-| `httpStatus` | HTTP status code if the notification failed or was aborted due to a network error. |
+| `outcome` | `"success"` or `"aborted"`. |
+| `environmentId` | Id of the terminated environment. Present on `"success"`. |
+| `abortReason` | Present on `"aborted"`: `"401-unauthorized"`, `"403-forbidden"`, `"409-conflict"`, `"4XX-client-error"`, `"5XX-server-error"` or `"network-error"`. |
+| `httpStatus` | HTTP status code on an HTTP abort. |
 
-<Note>
-  A run is only created if there is a matching trigger in your QA Wolf configuration. `outcome: "success"` means the notification was accepted, not that a run was created. Check `runId` to know whether a run was created.
-</Note>
+## generateSignedUrlForRunInputsExecutablesStorage
 
-## pollCiGreenlightStatus
+Generates a signed URL for uploading a run input executable (APK, AAB, DEB, IPA, ZIP, CSV, PDF) to QA Wolf. See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the underlying endpoint, and [Mobile build testing](/mobile-build-testing) for the pipeline it belongs to.
 
-Polls the [CI greenlight endpoint](/v0-ci-greenlight) until the run completes. Returns whether it is safe to release.
+Example:
 
 ```javascript
-import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+import fs from "fs/promises";
 
+const { generateSignedUrlForRunInputsExecutablesStorage } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const signed = await generateSignedUrlForRunInputsExecutablesStorage({
+  destinationFilePath: "app-staging.apk",
+  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+});
+
+if (!signed.success || !signed.uploadUrl || !signed.interactiveRunFileLocation) {
+  throw new Error("No upload URL received from QA Wolf");
+}
+
+await fetch(signed.uploadUrl, {
+  method: "PUT",
+  body: await fs.readFile("./path/to/build.apk"),
+  headers: { "Content-Type": "application/octet-stream" },
+});
+```
+
+### Input fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `destinationFilePath` | string | Filename and extension, optionally including directories. Your QA Wolf representative provides the value. |
+| `workspaceId` | string | Required with an organization or user API key. Without it the request fails. |
+
+### Response fields
+
+| Field | Description |
+| --- | --- |
+| `success` | `true` when the signed URL was generated. |
+| `uploadUrl` | Pre-signed URL for uploading the file with `PUT`. |
+| `interactiveRunFileLocation` | File path without the workspace id. Pass it to the run as an environment variable. |
+| `playgroundFileLocation` | Deprecated alias of `interactiveRunFileLocation`. Removed in a future major version. |
+| `abortReason` | Present on `success: false`: `"400-invalid-request"`, `"401-invalid-credentials"`, `"403-forbidden"`, `"5XX-server-error"`, `"XXX-other-http-code"`, `"client-network-error"` or `"sdk-argument-validation-failed"`. |
+
+<Note>
+  A failed request from this function reports `abortReason: "client-network-error"` and `httpStatus: 0` whatever the real status was. The SDK logs the real status on the line above, so read the log rather than branching on `abortReason`. A `400` from an organization or user key most often means `workspaceId` was not sent.
+</Note>
+
+`generateSignedUrlForTempTeamStorage` takes the same input and returns the same fields, for files that are not executables.
+
+## Legacy functions
+
+<Warning>
+  `attemptNotifyDeploy` and `pollCiGreenlightStatus` report through the legacy `deploy_success` webhook, which feeds [legacy triggers](/legacy-triggers/overview) only. A [trigger](/triggers/overview) never sees a deployment they send. They are deprecated, keep working unchanged, and have no removal date. A new integration uses `deployment.reportStatus` and `deployment.waitForVerdict`.
+</Warning>
+
+Moving a pipeline off them: `deploymentType` becomes `environment.name`; `branch` and `sha` move into `metadata`; `providerDeploymentId` is new and required, and subsumes `deduplicationKey`; `hostingService` disappears, since the code host comes from your integration; `variables` becomes `environmentVariables`. There is no `skipped` outcome, because whether a trigger matched is not known at report time; `deployment.waitForVerdict` answers `not-tested` instead.
+
+### attemptNotifyDeploy
+
+Notifies QA Wolf of a successful deployment through [webhooks/deploy\_success](/deploy-success).
+
+Example:
+
+```javascript
+const { attemptNotifyDeploy } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const result = await attemptNotifyDeploy({
+  branch: process.env.GIT_BRANCH,
+  sha: process.env.GIT_COMMIT,
+  deploymentType: "staging",
+  hostingService: "GitHub",
+  repository: { name: "web", owner: "acme" },
+  commitUrl: undefined,
+  deduplicationKey: undefined,
+  deploymentUrl: undefined,
+  pullRequestNumber: undefined,
+  variables: undefined,
+});
+
+if (result.outcome === "skipped") process.exit(0);
+if (result.outcome !== "success") process.exit(1);
+const runId = result.runId;
+```
+
+#### DeployConfig fields
+
+`DeployConfig` is a union of `GitHubDeployConfig`, `GitLabDeployConfig` and `EphemeralDeployConfig`. Every field is declared on the type, so pass `undefined` for the ones you do not use.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `branch` | string | VCS branch name. |
+| `sha` | string | VCS commit SHA. |
+| `deploymentType` | string | The label the legacy trigger matches on. |
+| `deploymentUrl` | string | Overrides the environment URL. Available in flows as `process.env.URL`. |
+| `hostingService` | `"GitHub"` or `"GitLab"` | Where your code is hosted. Decides the shape of `repository`. |
+| `commitUrl` | string | Makes the commit a clickable link in the QA Wolf UI when no repository is configured. |
+| `pullRequestNumber` | number | GitHub pull request number, for PR testing. |
+| `mergeRequestNumber` | number | GitLab merge request number, for MR testing. |
+| `repository` | object | `{ name, owner }` for GitHub, `{ name, namespace }` for GitLab. |
+| `ephemeralEnvironment` | `true` | With `deploymentUrl`, for a preview without a code host integration. |
+| `deduplicationKey` | string | Custom key controlling run cancellation. |
+| `variables` | object | Environment variable overrides for the triggered runs. |
+| `workspaceId` | string | Optional. An organization or user key that omits it acts on the organization's first-created workspace, and the result carries a `warning` naming it. |
+
+#### Result fields
+
+| Field | Description |
+| --- | --- |
+| `outcome` | `"success"`, `"skipped"`, `"failed"` or `"aborted"`. |
+| `runId` | Id of the created run. Present on `"success"`; `undefined` for a preview deployment. |
+| `environmentId` | The environment the deployment resolved to. Present on `"success"`. |
+| `skippedDeployment` | Present on `"skipped"`: no trigger matched. Carries the server's `reason` and `message` when sent. |
+| `failReason` | Present on `"failed"`: `"no-environment"`, `"run-could-not-be-created"`, `"trigger-skipped"` or `"unknown-result"`. |
+| `skippedTriggers` | Present with `failReason: "trigger-skipped"`: the triggers that matched but could not run, each with `reason` and `message`. |
+| `abortReason` | Present on `"aborted"`: `"401-unauthorized"`, `"403-forbidden"`, `"4XX-client-error"`, `"5XX-server-error"`, `"network-error"` or `"invalid-response-body"`. |
+| `httpStatus` | HTTP status code on an HTTP abort. |
+
+### pollCiGreenlightStatus
+
+Polls [v0/ci-greenlight](/v0-ci-greenlight) for a run id until the run completes. The run id comes from `attemptNotifyDeploy`, so this function only works for pipelines on the legacy path.
+
+Example:
+
+```javascript
 const { pollCiGreenlightStatus } = makeQaWolfSdk({
   apiKey: process.env.QAWOLF_API_KEY,
 });
@@ -124,69 +445,60 @@ const { pollCiGreenlightStatus } = makeQaWolfSdk({
 const { outcome } = await pollCiGreenlightStatus({
   runId,
   onRunStageChanged: (current, previous) => {
-    console.log(current, previous);
+    console.log(current.runStage, previous?.runStage);
   },
-  abortOnSuperseded: false,
 });
 
-if (outcome !== "success") {
-  process.exit(1);
-}
+if (outcome !== "success") process.exit(1);
 ```
 
-### Options
+#### Options
 
-| Field | Type | Description |
+| Field | Default | Description |
 | --- | --- | --- |
-| `runId` | string | The run ID returned by `attemptNotifyDeploy`. |
-| `onRunStageChanged` | function | Optional callback fired when the run stage changes. |
-| `abortOnSuperseded` | boolean | Defaults to `false`. When `true`, polling aborts if the run is superseded. |
-| `pollTimeout` | number | Timeout in milliseconds. Defaults to two hours. |
+| `runId` | — | The run id returned by `attemptNotifyDeploy`. Required. |
+| `onRunStageChanged` | — | Called with the current and previous `CiGreenlightStatus` when the run stage changes. |
+| `pollTimeout` | 2 hours | Milliseconds before the poll aborts with `"poll-timed-out"`. |
+| `abortOnSuperseded` | `false` | When `true`, aborts with `"superseded-run"` when a newer run supersedes this one. |
+| `runInProgressInterval` | 30 seconds | Between polls while the run is in progress. |
+| `runUnderReviewInterval` | 60 seconds | Between polls while the run is under review. |
+| `maxRetries` | 10 | Network retries before aborting. |
+| `retryInterval` | 10 seconds | Between those retries. |
 
-### Result fields
+#### Result fields
 
 | Field | Description |
 | --- | --- |
-| `outcome` | `"success"`, `"failed"`, or `"aborted"`. Only `"failed"` indicates bugs were found. |
-| `abortReason` | Present when `outcome` is `"aborted"`. Reason polling stopped. |
-| `httpStatus` | HTTP status code if polling was aborted due to a network error. |
+| `outcome` | `"success"`, `"failed"` or `"aborted"`. Only `"failed"` means blocking bugs were found. |
+| `greenlightStatus` | The final `CiGreenlightStatus`. Present on `"success"` and `"failed"`. |
+| `abortReason` | Present on `"aborted"`: `"poll-timed-out"`, `"run-canceled"`, `"superseded-run"`, `"network-error"`, `"404-run-not-found"`, `"4XX-client-error"`, `"5XX-server-error"` or `"XXX-other-http-code"`. |
+| `httpStatus` | HTTP status code on an HTTP abort. |
 
-### Advanced: makePollCiGreenlightStatusIterator
+### makePollCiGreenlightStatusIterator
 
-An async generator for fine-grained control over the polling lifecycle. Use this when you need custom early-exit logic — for example, proceeding after a time limit or when bug counts are within an acceptable threshold.
+An async generator over the same poll, for a pipeline that needs to stop early on its own criteria. Takes the same options as `pollCiGreenlightStatus` except `onRunStageChanged`.
 
-```javascript
-import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+Example:
 
+```javascript expandable
 const { makePollCiGreenlightStatusIterator } = makeQaWolfSdk({
   apiKey: process.env.QAWOLF_API_KEY,
 });
 
-let underReviewStartTime: number | null = null;
-
-const iterator = makePollCiGreenlightStatusIterator({ runId: "your-run-id" });
-
-for await (const iteration of iterator) {
+for await (const iteration of makePollCiGreenlightStatusIterator({ runId })) {
   if (iteration.isAborted) {
     console.error(`Poll aborted: ${iteration.abortReason}`);
     process.exit(1);
   }
 
-  const { status, stageChanged } = iteration;
-
+  const { status } = iteration;
   switch (status.runStage) {
     case "initializing":
-      break;
     case "underReview":
-      if (stageChanged) underReviewStartTime = Date.now();
-      const timeInReview = underReviewStartTime ? Date.now() - underReviewStartTime : 0;
-      if (timeInReview > 10 * 60 * 1000) {
-        if (status.blockingBugsCount > 5) process.exit(1);
-      }
       break;
     case "completed":
       if (!status.greenlight) process.exit(1);
-      return;
+      process.exit(0);
     case "canceled":
       process.exit(1);
     default:
@@ -196,123 +508,40 @@ for await (const iteration of iterator) {
 }
 ```
 
-Each iteration yields either a status update or an abort notification:
+Each iteration is either a status update or an abort:
 
 | Field | Present when | Description |
 | --- | --- | --- |
-| `isAborted` | always | `false` for status updates, `true` for abort notifications. |
-| `status` | `isAborted: false` | Current `CiGreenlightStatus` from the API. |
-| `previousStatus` | `isAborted: false` | Status from the previous iteration. `undefined` on first iteration. |
-| `stageChanged` | `isAborted: false` | `true` if the run stage changed from the previous iteration. |
-| `elapsedMs` | always | Milliseconds elapsed since polling started. |
-| `abortReason` | `isAborted: true` | Why polling was aborted. |
-| `httpStatus` | `isAborted: true` | HTTP status code if applicable. |
+| `isAborted` | always | `false` for a status update, `true` for an abort. |
+| `elapsedMs` | always | Milliseconds since polling started. |
+| `status` | `isAborted: false` | The current `CiGreenlightStatus`. |
+| `previousStatus` | `isAborted: false` | The status from the previous iteration. `undefined` on the first. |
+| `stageChanged` | `isAborted: false` | `true` when the run stage changed since the previous iteration. |
+| `isFailedTerminalStage` | `isAborted: false` | `true` when the run completed without a greenlight or was canceled. |
+| `abortReason` | `isAborted: true` | Why polling stopped. The iterator never aborts with `"superseded-run"`. |
+| `httpStatus` | `isAborted: true` | HTTP status code on an HTTP abort, otherwise `undefined`. |
+| `message`, `reason` | `abortReason: "run-canceled"` | QA Wolf's explanation of the cancellation, when sent. `reason` is an open set of codes. |
 
 <Warning>
-  Handle all run stages in your `switch` statement. The `default: status.runStage satisfies never` pattern provides compile-time safety — TypeScript will error if a new stage is added and your code doesn't handle it.
+  Handle every run stage in the `switch`. The `default: status.runStage satisfies never` arm makes TypeScript error when a stage is added and the code does not handle it, instead of silently passing the job.
 </Warning>
-
-## notifyTerminatedEphemeralEnvironment
-
-Notifies QA Wolf that an ephemeral environment has been terminated. Stops all runs targeting the environment and triggers flow promotion. See [webhooks/environment\_terminated](/environment_terminated) for the underlying endpoint.
-
-```javascript
-import {
-  type NotifyTerminatedEphemeralEnvironmentInput,
-  makeQaWolfSdk,
-} from "@qawolf/ci-sdk";
-
-const { notifyTerminatedEphemeralEnvironment } = makeQaWolfSdk({
-  apiKey: process.env.QAWOLF_API_KEY,
-});
-
-const terminateConfig: NotifyTerminatedEphemeralEnvironmentInput = {
-  deploymentUrl: "https://preview-123.example.com",
-};
-
-const result = await notifyTerminatedEphemeralEnvironment(terminateConfig);
-if (result.outcome !== "success") {
-  process.exit(1);
-}
-
-const environmentId = result.environmentId;
-```
-
-### Input fields
-
-Pass one of the following to identify the environment:
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `environmentId` | string | ID of the ephemeral environment. |
-| `environmentAlias` | string | Alias of the ephemeral environment. |
-| `deploymentUrl` | string | Preview URL used when the environment was created — must match the `deploymentUrl` passed to `attemptNotifyDeploy` along with `ephemeralEnvironment: true` when originally notifying QA Wolf. |
-
-You may also pass `workspaceId`:
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `workspaceId` | string | Workspace that owns the environment — same semantics as the [`environment_terminated` webhook's `workspaceId`](/environment_terminated#request-body). |
-
-### Result fields
-
-| Field | Description |
-| --- | --- |
-| `outcome` | `"success"`, `"failed"`, or `"aborted"`. |
-| `environmentId` | ID of the terminated environment. |
-
-## generateSignedUrlForRunInputsExecutablesStorage
-
-Generates a signed URL for uploading a run input executable (APK, AAB, DEB, IPA, ZIP, CSV, PDF) to QA Wolf. See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the underlying endpoint.
-
-```javascript
-import { makeQaWolfSdk } from "@qawolf/ci-sdk";
-import fs from "fs/promises";
-
-const { generateSignedUrlForRunInputsExecutablesStorage } = makeQaWolfSdk({
-  apiKey: process.env.QAWOLF_API_KEY,
-});
-
-const signedUrlResponse = await generateSignedUrlForRunInputsExecutablesStorage({
-  destinationFilePath: "app-staging",
-});
-
-if (
-  !signedUrlResponse?.success ||
-  !signedUrlResponse.uploadUrl ||
-  !signedUrlResponse.playgroundFileLocation
-) {
-  throw new Error("No upload URL received from QA Wolf");
-}
-
-const fileBuffer = await fs.readFile("./path/to/build.apk");
-
-await fetch(signedUrlResponse.uploadUrl, {
-  method: "PUT",
-  body: fileBuffer,
-  headers: { "Content-Type": "application/octet-stream" },
-});
-```
-
-### Input fields
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `destinationFilePath` | string | Filename and extension, optionally including directories. Reach out to your QA Wolf representative for the correct value. |
-
-### Response fields
-
-| Field | Description |
-| --- | --- |
-| `success` | `true` if the signed URL was generated successfully. |
-| `uploadUrl` | Pre-signed URL for uploading the file via `PUT`. |
-| `playgroundFileLocation` | File path without workspace ID. Use as a `variables` value in `attemptNotifyDeploy`. |
 
 ## Versioning
 
-This package follows SemVer. Notes:
+The package follows SemVer.
 
-- Use the `^` range operator — patch and minor updates will not introduce breaking changes.
-- Major version bumps indicate a breaking API change. QA Wolf will give advance notice.
-- Only top-level exports are covered by SemVer.
-- New fields in API response types are not considered breaking changes.
+- Depend on it with the `^` range operator. Patch and minor releases do not introduce breaking changes.
+- A major version bump marks a breaking change, announced in advance.
+- Only top-level exports are covered. New fields in response types, and changes to log output, are not breaking changes.
+
+Minimum versions for the functions on this page:
+
+| Function | Since |
+| --- | --- |
+| `deployment.reportStatus`, `detectProviderDeploymentId` | 3.1.0 |
+| `deployment.waitForVerdict` | 3.2.0 |
+| `deployment.waitForVerdict` answering `superseded` | 3.3.0 |
+| ESM-only package, Node.js 24.14.1 or later | 3.0.0 |
+| `workspaceId` on the signed URL functions | 2.2.0 |
+
+The changelog is in the package's README on [npm](https://www.npmjs.com/package/@qawolf/ci-sdk).

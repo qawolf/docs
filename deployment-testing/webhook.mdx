@@ -7,7 +7,7 @@ keywords: "reportStatus, notify QA Wolf on deploy, deployment status, CI notific
 
 When your pipeline cannot create a GitHub or GitLab deployment, it can notify QA Wolf of the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/triggers/overview) evaluates it the same way.
 
-Pick this path when your code host is not GitHub or GitLab, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees.
+Pick this path when your code host is not GitHub or GitLab, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees. A pipeline that runs Node.js can make the same report through the [Node.js SDK](/deployment-testing/ci-sdk), which also waits for the verdict.
 
 ## Requirements
 
