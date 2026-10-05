@@ -106,6 +106,8 @@ Check:
 
 ## Legacy functions
 
+`attemptNotifyDeploy` and `pollCiGreenlightStatus` were deprecated in 3.1.0 and are still exported in 3.3.0, so these symptoms apply on every version, current releases included. They report through the legacy `deploy_success` webhook, which [triggers](/triggers/overview) never see.
+
 ### `outcome` is `"skipped"` on `attemptNotifyDeploy`
 
 Cause: The notification was accepted and no legacy trigger matched it.

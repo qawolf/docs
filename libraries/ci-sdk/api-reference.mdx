@@ -11,6 +11,8 @@ SDK functions do not throw. Each returns a result object with an `outcome` field
 
 The guide for wiring it into a pipeline is [Node.js SDK](/deployment-testing/ci-sdk). This page is the function-by-function reference.
 
+This page documents 3.3.0. `deployment.reportStatus` and `deployment.waitForVerdict` need 3.1.0 or later, so a pipeline on an earlier version has only the [legacy functions](#legacy-functions) and upgrades before wiring one up.
+
 ## Installation
 
 ```bash
@@ -364,7 +366,7 @@ await fetch(signed.uploadUrl, {
 ## Legacy functions
 
 <Warning>
-  `attemptNotifyDeploy` and `pollCiGreenlightStatus` report through the legacy `deploy_success` webhook, which feeds [legacy triggers](/legacy-triggers/overview) only. A [trigger](/triggers/overview) never sees a deployment they send. They are deprecated, keep working unchanged, and have no removal date. A new integration uses `deployment.reportStatus` and `deployment.waitForVerdict`.
+  `attemptNotifyDeploy` and `pollCiGreenlightStatus` report through the legacy `deploy_success` webhook, which feeds [legacy triggers](/legacy-triggers/overview) only. A [trigger](/triggers/overview) never sees a deployment they send. They were deprecated in 3.1.0 and are still exported in 3.3.0: legacy describes the path they report through, not an old version of the package. They keep working unchanged, print no warning, and have no removal date. A new integration uses `deployment.reportStatus` and `deployment.waitForVerdict`.
 </Warning>
 
 Moving a pipeline off them: `deploymentType` becomes `environment.name`; `branch` and `sha` move into `metadata`; `providerDeploymentId` is new and required, and subsumes `deduplicationKey`; `hostingService` disappears, since the code host comes from your integration; `variables` becomes `environmentVariables`. There is no `skipped` outcome, because whether a trigger matched is not known at report time; `deployment.waitForVerdict` answers `not-tested` instead.
@@ -543,5 +545,6 @@ Minimum versions for the functions on this page:
 | `deployment.waitForVerdict` answering `superseded` | 3.3.0 |
 | ESM-only package, Node.js 24.14.1 or later | 3.0.0 |
 | `workspaceId` on the signed URL functions | 2.2.0 |
+| `attemptNotifyDeploy` and `pollCiGreenlightStatus` deprecated, still exported | 3.1.0 |
 
 The changelog is in the package's README on [npm](https://www.npmjs.com/package/@qawolf/ci-sdk).
