@@ -1,0 +1,154 @@
+---
+title: "Node.js SDK"
+description: "Notify QA Wolf of a deploy from any CI system that runs Node.js, and gate the pipeline on the verdict, with @qawolf/ci-sdk."
+sidebarTitle: "Node.js SDK"
+keywords: "ci-sdk, Jenkins, Jenkinsfile, Buildkite, Bitbucket Pipelines, TeamCity, Azure Pipelines, notify QA Wolf on deploy, CI gate, wait for test results, reportStatus, waitForVerdict"
+---
+
+When your pipeline runs Node.js, `@qawolf/ci-sdk` reports the deploy and, if you want the pipeline to block on the result, waits for QA Wolf's verdict. It calls the same `deployment.reportStatus` route as the [Webhook](/deployment-testing/webhook) page, with typed inputs and a result object instead of a raw HTTP response.
+
+Pick this path for a CI system QA Wolf's code host integrations do not cover, such as Jenkins, Buildkite, Bitbucket Pipelines, TeamCity or Azure Pipelines, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees. A pipeline that cannot run Node.js uses the [Webhook](/deployment-testing/webhook) instead.
+
+## Requirements
+
+- An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work.
+- The workspace id, shown on the same page.
+- Node.js 24.14.1 or later, below 25, on the agent that runs the step.
+
+## Add the notify script
+
+<Steps>
+  <Step title="Store the API key and workspace id">
+    Store the API key as a secret named `QAWOLF_API_KEY` in your CI system, and the workspace id as `QAWOLF_WORKSPACE_ID`.
+  </Step>
+
+  <Step title="Add the script to the deploying repository">
+    Create `.ci/notifyQaWolf.mjs`.
+
+    ```javascript expandable
+    import assert from "assert";
+    import { detectProviderDeploymentId, makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+    const apiKey = process.env.QAWOLF_API_KEY;
+    assert(apiKey, "QAWOLF_API_KEY is required");
+
+    const workspaceId = process.env.QAWOLF_WORKSPACE_ID;
+    assert(workspaceId, "QAWOLF_WORKSPACE_ID is required");
+
+    const detected = detectProviderDeploymentId();
+    if (detected.outcome !== "detected") {
+      throw new Error(`Could not identify this deployment: ${JSON.stringify(detected)}`);
+    }
+
+    const { deployment } = makeQaWolfSdk({ apiKey });
+
+    const report = await deployment.reportStatus({
+      workspaceId,
+      providerDeploymentId: detected.id,
+      status: "success",
+      environment: { name: "staging" },
+      deployTarget: "https://staging.example.com",
+      metadata: {
+        commitSha: process.env.GIT_COMMIT,
+        ref: process.env.GIT_BRANCH,
+      },
+    });
+
+    if (report.outcome !== "reported") {
+      throw new Error(`Failed to report the deployment: ${JSON.stringify(report)}`);
+    }
+    console.log(`Reported deployment ${report.deployment.id}: ${report.deployment.url}`);
+
+    const verdict = await deployment.waitForVerdict({
+      deploymentId: report.deployment.id,
+      timeout: 45 * 60 * 1000,
+    });
+
+    if (verdict.outcome === "superseded") process.exit(3);
+    process.exit(["passed", "not-tested"].includes(verdict.outcome) ? 0 : 1);
+    ```
+
+    - `environment.name` is the QA Wolf environment the deploy belongs to. Send the environment's name or one of its aliases; a name nothing matches creates a new environment that no trigger targets.
+    - `deployTarget` is the URL the deploy serves and the address the flows run against.
+    - `GIT_COMMIT` and `GIT_BRANCH` are the variables Jenkins sets through the Git plugin. Replace them with the ones your CI system provides.
+    - `detectProviderDeploymentId()` reads the CI system's own variables, so a re-run of the job reports a new deployment rather than updating one that already ran. On Jenkins it uses `BUILD_TAG`. On a CI system it does not recognize, compose `providerDeploymentId` yourself from a value that changes on every re-run.
+    - Drop the `waitForVerdict` call when the pipeline should not block on the result. Reporting alone is what starts the run.
+  </Step>
+
+  <Step title="Run the script after the deploy is live">
+    Add a step that runs once the deployment is healthy.
+
+    ```bash
+    npm install @qawolf/ci-sdk
+    node .ci/notifyQaWolf.mjs
+    ```
+
+    On Jenkins, as a stage in a declarative `Jenkinsfile`:
+
+    ```groovy
+    stage('Test with QA Wolf') {
+      environment {
+        QAWOLF_API_KEY = credentials('qawolf-api-key')
+        QAWOLF_WORKSPACE_ID = credentials('qawolf-workspace-id')
+      }
+      steps {
+        sh 'npm install @qawolf/ci-sdk'
+        sh 'node .ci/notifyQaWolf.mjs'
+      }
+    }
+    ```
+
+    `credentials('qawolf-api-key')` reads a Secret text credential with that id. Give the stage a `timeout` longer than the script's own `timeout`, so the script ends with a verdict and a run URL instead of the stage being killed.
+  </Step>
+
+  <Step title="Verify the integration">
+    Run the pipeline with a new deployment. The step logs the deployment's URL, and the deployment appears on the workspace's deployments page. Once a trigger matches it, a run appears under the environment, and the step waits for the run.
+  </Step>
+</Steps>
+
+## What the step exits with
+
+`deployment.waitForVerdict` never throws. The script above maps its outcomes to exit codes:
+
+- **`passed`** — every run passed. Exit `0`.
+- **`not-tested`** — no trigger matched the deployment, or a trigger matched and created no run. The result says which, per trigger. The script exits `0`; change that when you expect a run on every deploy.
+- **`superseded`** — a newer deploy to the same branch and environment replaced the run, and that deploy's step carries the verdict. The script exits `3`, so the stage can be marked as skipped rather than failed.
+- **`failed`**, **`run-canceled`**, **`timed-out`** and the transport outcomes — exit `1`. The log carries the run URLs.
+
+The full list of outcomes and the options that bound the wait are in the [SDK reference](/libraries/ci-sdk/api-reference).
+
+## Preview deploys
+
+For a preview deploy per pull request, give each one its own environment name and URL, mark it ephemeral, and name the pull request:
+
+```javascript
+await deployment.reportStatus({
+  workspaceId,
+  providerDeploymentId: detected.id,
+  status: "success",
+  environment: { name: `preview/pr-${pullRequestNumber}`, ephemeral: true },
+  deployTarget: previewUrl,
+  metadata: {
+    commitSha: process.env.GIT_COMMIT,
+    ref: process.env.GIT_BRANCH,
+    repository: "acme/web",
+    pullRequestNumber,
+  },
+});
+```
+
+<Warning>
+  Send `environment.ephemeral: true` for every preview deploy. A report that omits it is accepted and creates a permanent environment, one per pull request, that is never torn down.
+</Warning>
+
+`metadata.repository` and `metadata.pullRequestNumber` link the deployment to its pull request only when a connected GitHub or GitLab integration covers that repository. See [PR testing](/deployment-testing/pr-testing).
+
+## Create a trigger
+
+Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report. See [Triggers](/triggers/overview).
+
+## Related
+
+- [SDK reference](/libraries/ci-sdk/api-reference) — every function, parameter and outcome.
+- [Troubleshooting](/libraries/ci-sdk/troubleshooting) — when the step reports but nothing runs.
+- [Deployments](/triggers/deployments) — how the environment name and preview flag resolve.

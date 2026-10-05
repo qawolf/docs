@@ -1,76 +1,149 @@
 ---
 title: "Troubleshooting"
 description: "Common issues when integrating with @qawolf/ci-sdk."
+keywords: "ci-sdk, reportStatus, waitForVerdict, not-tested, timed-out, providerDeploymentId, ERR_REQUIRE_ESM, no run for my deploy"
 ---
 
-Common issues when integrating `@qawolf/ci-sdk` into your CI pipeline.
+Common issues when integrating `@qawolf/ci-sdk` into your CI pipeline. The legacy `attemptNotifyDeploy` and `pollCiGreenlightStatus` functions are at the [end](#legacy-functions).
 
-## `outcome` is `"success"` but no run was created
+## `outcome` is `"reported"` but no run was created
 
-Cause: The deployment notification was accepted but no trigger matched the request.
-
-Check:
-
-- `deploymentType` matches the value configured in your QA Wolf trigger
-- `hostingService` matches where your code is hosted, not where your pipeline runs
-- At least one trigger is configured for the target environment in QA Wolf
-- Contact your QA Wolf representative to confirm trigger configuration
-
-## `outcome` is `"failed"` or `"aborted"` on `attemptNotifyDeploy`
-
-Cause: The notification request was rejected or timed out.
+Cause: QA Wolf recorded the deployment and no trigger created a run from it.
 
 Check:
 
-- `QAWOLF_API_KEY` is set correctly in your CI environment
-- The key belongs to the correct QA Wolf workspace
-- Your CI runner has outbound HTTPS access to `app.qawolf.com`
+- Only a deployment's first `success` report evaluates triggers. A re-run that reuses the same `providerDeploymentId` reports into a deployment that already evaluated, and creates nothing. Use [`detectProviderDeploymentId`](/libraries/ci-sdk/api-reference#detectproviderdeploymentid), or compose an id that changes on every re-run.
+- `environment.name` resolves against the workspace's environments by alias or slugified name, and a name nothing matches creates a new environment that no trigger targets. Send the QA Wolf environment's name, or add the name you send as an alias.
+- A deployment trigger exists whose conditions match this deployment. See [Triggers](/triggers/overview).
+- Call `deployment.waitForVerdict` with the deployment id: a `not-tested` result carries one note per trigger saying what it did with the deployment. `deployment.listTriggerEvaluations` in the public API returns the same verdicts. See [Deployments](/triggers/deployments#evaluation).
 
-## `pollCiGreenlightStatus` times out
+## `outcome` is `"invalid-request"` on `deployment.reportStatus`
 
-Cause: The run did not complete within the polling timeout (default: two hours).
-
-Check:
-
-- The run is visible in the QA Wolf UI and has not stalled
-- The `pollTimeout` option is set appropriately for your expected run duration
-- The `runId` passed to `pollCiGreenlightStatus` matches the run you intend to poll
-
-## `pollCiGreenlightStatus` aborts with `"run-canceled"`
-
-Cause: The run was canceled, typically because a newer run superseded it.
+Cause: The report did not satisfy the contract. `message` carries the server's explanation.
 
 Check:
 
-- Whether a newer deployment notification was sent before this run completed
-- Whether `deduplicationKey` is configured correctly in `attemptNotifyDeploy`
-- A canceled run cannot be recovered — submit a new deployment notification if needed
+- `environment` is either `{ id }` or `{ name }`, not both.
+- `environment.baseEphemeralEnvironment` is only sent together with `environment.ephemeral: true`.
+- `metadata.pullRequestNumber` is only sent together with `metadata.repository`.
+- `deployTarget` and `metadata.commitUrl` are absolute `http` or `https` URLs.
+- No field outside the contract is sent. The input is validated strictly.
+
+## `outcome` is `"unauthorized"` on `deployment.reportStatus`
+
+Cause: The API key is unknown, or may not act on the workspace named in `workspaceId`.
+
+Check:
+
+- `QAWOLF_API_KEY` is set in your CI environment and copied in full.
+- `workspaceId` names the workspace the key belongs to. A workspace API key naming another workspace is refused.
+
+## `outcome` is `"conflict"` on `deployment.reportStatus`
+
+Cause: The `providerDeploymentId` is already bound to a different environment. A deployment stays with the environment its first report resolved.
+
+Check:
+
+- The id is distinct per environment when one job deploys to several. Pass a `discriminator` to `detectProviderDeploymentId`, or include the environment in the id you compose.
+- A promotion from one environment to another is reported as a new deployment under a new `providerDeploymentId`.
+
+## `deployment.waitForVerdict` returns `"timed-out"`
+
+Cause: The budget ran out before every run reached a terminal status. `lastStage` says what the wait was waiting on, and `runs` lists the runs it had found.
+
+Check:
+
+- `lastStage.stage` is `"waiting-for-evaluation"` or `"waiting-for-run"`: no trigger produced a run within `runAppearanceTimeout`, five minutes by default. Treat it as the "no run was created" case above.
+- `lastStage.stage` is `"waiting-for-verdict"`: a run is still executing or under investigation. Open the run from `runs[].runUrl`, and raise `timeout` if the suite legitimately takes longer than the budget.
+- `timeout` is below your CI job's own time limit. When the job is killed first, there is no verdict at all.
+
+## `deployment.waitForVerdict` returns `"not-tested"`
+
+Cause: No run tested the deployment. This is distinct from `passed`.
+
+Check:
+
+- `reason` is `"no-trigger-matched"`: every trigger was evaluated and none matched. Each entry in `triggers` says which condition failed.
+- `reason` is `"no-run-created"`: a trigger matched and something stopped the run. Each entry in `triggers` carries a stable `reason` code, such as `no-flows-to-run` or `environment-not-ready`, and a `message`.
+- Decide in the pipeline whether `not-tested` passes the step. A pipeline that expects a run every time should fail on it.
+
+## `deployment.waitForVerdict` returns `"superseded"`
+
+Cause: A newer deployment to the same branch and environment replaced the run before it finished. The verdict belongs to that deployment, and the wait does not follow it.
+
+Check:
+
+- This is expected under a cancel-in-progress pipeline, where the newer job carries the verdict. Reserve a distinct exit code for `superseded` when the CI should treat the job as skipped rather than failed.
+- `supersededBy.url` is the replacement run.
+
+## `require("@qawolf/ci-sdk")` fails with `ERR_REQUIRE_ESM`
+
+Cause: Version 3 is published as ESM only.
+
+Check:
+
+- Import the package from an ESM module, or from CommonJS with `await import("@qawolf/ci-sdk")`.
+- A `.mjs` script, or `"type": "module"` in `package.json`, makes the script ESM.
+
+## `QA Wolf CI-SDK requires fetch to be defined`
+
+Cause: `makeQaWolfSdk` throws this when no `fetch` function is available.
+
+Check:
+
+- Node.js 24.14.1 or later, below 25, is available in your CI environment.
+- Otherwise pass a `fetch` implementation as the second argument to `makeQaWolfSdk`.
 
 ## Artifact upload succeeds but the run cannot find the file
 
-Cause: The file path passed to `attemptNotifyDeploy` via `variables` does not match the uploaded location.
+Cause: The path the run reads does not match the uploaded location.
 
 Check:
 
-- Use `playgroundFileLocation` from the `generateSignedUrlForRunInputsExecutablesStorage` response as the variable value
-- For mobile apps, prefix the path with `/home/wolf/run-inputs-executables/`
-- The variable name (`RUN_INPUT_PATH`, `ANDROID_APP`, etc.) matches what your QA Wolf trigger expects
+- Use `interactiveRunFileLocation` from the signed URL response as the variable's value.
+- The variable name matches what your flows read. See [Mobile build testing](/mobile-build-testing).
+- The upload step completes before the deployment is reported.
 
-## `fetch is not defined` error
+## Legacy functions
 
-Cause: The SDK requires `fetch`, which is only available natively in Node.js 18 or later.
+`attemptNotifyDeploy` and `pollCiGreenlightStatus` were deprecated in 3.1.0 and are still exported in 3.3.0, so these symptoms apply on every version, current releases included. They report through the legacy `deploy_success` webhook, which [triggers](/triggers/overview) never see.
 
-Check:
+### `outcome` is `"skipped"` on `attemptNotifyDeploy`
 
-- Node.js 18 or later is available in your CI environment
-- If you can't upgrade, pass the `undici` polyfill shown in [Installation](/libraries/ci-sdk/api-reference#installation)
-
-## Mobile triggers are enabled but runs are not starting
-
-Cause: Mobile triggers require additional platform configuration by QA Wolf before they activate.
+Cause: The notification was accepted and no legacy trigger matched it.
 
 Check:
 
-- Contact your QA Wolf representative to confirm mobile triggers have been enabled for your workspace
-- Artifact naming conventions match what was agreed with QA Wolf
-- The artifact upload step is completing successfully before `attemptNotifyDeploy` is called
+- `deploymentType` matches the value configured on the legacy trigger.
+- `hostingService` matches where your code is hosted, not where your pipeline runs.
+- A legacy deployment trigger exists on the target environment. Your QA Wolf representative configures it.
+
+### `outcome` is `"failed"` or `"aborted"` on `attemptNotifyDeploy`
+
+Cause: `"failed"` means QA Wolf accepted the notification but could not create the run; `failReason` says why. `"aborted"` means the request was refused or never completed; `abortReason` says why.
+
+Check:
+
+- `QAWOLF_API_KEY` is set correctly in your CI environment and belongs to the intended workspace.
+- Your CI runner has outbound HTTPS access to `app.qawolf.com`.
+- The SDK's log line prints the server's explanation of a `"failed"` result.
+
+### `pollCiGreenlightStatus` aborts with `"poll-timed-out"`
+
+Cause: The run did not complete within `pollTimeout`, two hours by default.
+
+Check:
+
+- The run is visible in QA Wolf and has not stalled.
+- `pollTimeout` covers your expected run duration.
+- `runId` is the one `attemptNotifyDeploy` returned.
+
+### `pollCiGreenlightStatus` aborts with `"run-canceled"`
+
+Cause: The run was canceled, usually because a newer deployment superseded it. The SDK prints QA Wolf's explanation when one was sent.
+
+Check:
+
+- Whether a newer deployment notification was sent before this run completed.
+- Whether `deduplicationKey` in `attemptNotifyDeploy` is set as intended.
+- A canceled run cannot be recovered; send a new deployment notification.

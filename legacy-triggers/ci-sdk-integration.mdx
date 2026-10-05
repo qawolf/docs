@@ -5,7 +5,7 @@ sidebarTitle: "Node.js SDK"
 ---
 
 <Note>
-  This page describes [legacy triggers](/legacy-triggers/overview). See [Triggers](/triggers/overview) for the current documentation.
+  This page describes [legacy triggers](/legacy-triggers/overview). A new integration follows [Node.js SDK](/deployment-testing/ci-sdk), which reports through `deployment.reportStatus` to the current [triggers](/triggers/overview).
 </Note>
 
 Use this guide if your CI system supports Node.js. If it can't run Node.js, use [Webhook](/legacy-triggers/webhook-integration) instead.
@@ -13,7 +13,7 @@ Use this guide if your CI system supports Node.js. If it can't run Node.js, use 
 ## Requirements
 
 - Access to a QA Wolf workspace with at least one environment configured
-- Node.js 18 or later in your CI environment
+- Node.js 24.14.1 or later, below 25, in your CI environment
 - Admin access to your CI system's secret or environment variable storage
 
 ## How to connect QA Wolf to your CI system
@@ -50,9 +50,16 @@ Use this guide if your CI system supports Node.js. If it can't run Node.js, use 
         name: "your-repo-name",
         owner: "your-org-name",
       },
+      commitUrl: undefined,
+      deduplicationKey: undefined,
+      deploymentUrl: undefined,
+      pullRequestNumber: undefined,
+      variables: undefined,
     });
 
-    if (result.outcome !== "success") {
+    if (result.outcome === "skipped") {
+      console.log("No legacy trigger matched this deployment");
+    } else if (result.outcome !== "success") {
       throw new Error(`Failed to notify QA Wolf: ${JSON.stringify(result)}`);
     }
     ```
@@ -76,4 +83,4 @@ Use this guide if your CI system supports Node.js. If it can't run Node.js, use 
 
 ## Related
 
-- [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
+- [`attemptNotifyDeploy`](/libraries/ci-sdk/api-reference#attemptnotifydeploy) in the SDK reference
