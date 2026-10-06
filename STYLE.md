@@ -50,7 +50,7 @@ Passive is fine only when the actor is genuinely irrelevant (e.g., "the file is 
 
 ## 5. Address the reader directly
 
-Reference pages (API signatures, field tables) can stay impersonal — that's normal for a dictionary entry. But guide-shaped content (troubleshooting, walkthroughs, anything telling someone what to do next) should consistently say "you," not switch between "you" and impersonal fragments mid-file the way `emails/troubleshooting.mdx` and `pom/troubleshooting.mdx` currently do. If a Troubleshooting page's Check bullets are written as impersonal fragments ("the workspace's `register-pages` module is side-effect imported..."), keep that style for the whole file rather than dropping into "you" for one entry and back out for the next.
+Reference pages (API signatures, field tables) can stay impersonal — that's normal for a dictionary entry. But guide-shaped content (troubleshooting, walkthroughs, anything telling someone what to do next) should consistently say "you," not switch between "you" and impersonal fragments mid-file the way `emails/troubleshooting.mdx` and `pom/troubleshooting.mdx` currently do. If a Troubleshooting page's Check bullets are written as impersonal fragments ("the calling file imports the class with a value import..."), keep that style for the whole file rather than dropping into "you" for one entry and back out for the next.
 
 ## 6. `<Note>` / `<Tip>` / `<Warning>` / `<Check>` — one job each
 

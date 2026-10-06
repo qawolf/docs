@@ -1,29 +1,20 @@
 ---
 title: "Troubleshooting"
-description: "Troubleshoot common issues when using @qawolf/pom, including unregistered pages, duplicate registrations, and stale page-hook flags."
+description: "Troubleshoot common issues when using @qawolf/pom, including unresolved page names, import cycles, and page hooks that never run."
 sidebarTitle: "Troubleshooting"
 ---
 
 ## `Unknown page: <name>` when calling `create`
 
-Cause: The module that calls `registerPage` for that name has not been imported,
-so the registry is empty for it.
+Cause: `this.create("<name>")` resolves the name through the calling file's own
+imports, and no value import in that file binds it.
 
 Check:
 
-- the workspace's `register-pages` module is side-effect imported before any
-  `create(name)` / `createPage(name, ...)` call
-- the name passed to `create` exactly matches the name passed to `registerPage`
-
-## `Page "<name>" is already registered.`
-
-Cause: `registerPage` was called twice for the same name. The registry throws on
-a duplicate key rather than silently overwriting.
-
-Check:
-
-- the name is registered in exactly one place
-- two page objects are not registered under the same name
+- the calling file imports the class with a value import, not `import type` —
+  compilation erases a type-only import, so there is nothing to resolve through
+- the name passed to `create` exactly matches the exported class name
+- or pass the class instead of its name: `this.create(<name>)`
 
 ## `Cannot access '<name>' before initialization`
 
@@ -42,51 +33,22 @@ Check:
 
 ## A page object's popup or route hook never runs
 
-Cause: The page object is not registered, or its hook override isn't detected — see [Entry points and page hooks](/libraries/pom/api-reference/index#entry-points-and-page-hooks) for how hook collection actually works.
+Cause: The hook is not declared where `initializeBrowser()` reads it, or the
+flow let it through — see [Entry points and page hooks](/libraries/pom/api-reference/index#entry-points-and-page-hooks).
 
 Check:
 
-- the page object is passed to `registerPage`, even if your code only ever
-  constructs it from a direct import — `installPageHooks()` walks the registry
-  and cannot see an unregistered class
-- `popupHandlers()` / `routeInterceptors()` is declared directly on the class
-  passed to `registerPage`, not only on a base class it extends
-- the entry point calls `installPageHooks()` before navigating
-
-## `providesPageHooks: false` contradicts the class
-
-Cause: A page object registered with `{ providesPageHooks: false }` declares a
-`popupHandlers()` / `routeInterceptors()` override. The registry throws so the
-stale flag surfaces instead of silently skipping hook installation — at
-`registerPage` time for an eagerly registered class, on first load for a lazy
-one.
-
-Check:
-
-- drop `{ providesPageHooks: false }` from that registration so its hooks are
-  installed
+- `popupHandlers()` / `routeInterceptors()` is declared as a `static` method on
+  the entry point, not on another page object
+- the entry point's `create()` launches the browser through `initializeBrowser()`
+- the flow does not pass the hook's name in `allowPopups` / `allowRoutes`
 
 ## `this.create("X")` returns `BasePageObject` instead of `X`
 
-Cause: The name is not present in the `RegisteredPages` map, so `create` falls
-back to its default return type of `BasePageObject` and `X`'s own methods are
-not visible.
+Cause: The name form has no way to know which class comes back, so its return
+type defaults to `BasePageObject` and `X`'s own methods are not visible.
 
 Check:
 
-- the workspace augments `RegisteredPages` (via `declare module "@qawolf/pom"`)
-  with an `X: X` entry
-- the augmentation module is included in the TypeScript program
-
-## Two registries / pages invisible to each other
-
-Cause: More than one copy of `@qawolf/pom` resolved at runtime. The registry is
-module-level state, so each copy has its own — a page registered through one is
-invisible to the other.
-
-Check:
-
-- a single installed copy of `@qawolf/pom` resolves at runtime (no duplicate in
-  a nested `node_modules`)
-- workspace code does not mix `@qawolf/pom` with a locally vendored copy of the
-  POM library
+- pass the class instead of its name: `this.create(X)`
+- or annotate the call: `this.create<X>("X")`
