@@ -2,9 +2,12 @@
 title: "Android barcode and QR code scanning"
 description: "Test barcode and QR code scanning features in Android apps using the emulator's virtual camera scene."
 sidebarTitle: "Android"
+tag: "Emulator only"
 ---
 
 Use `device.setVirtualSceneImage()` and `device.playAutomation()` to place a barcode or QR code image in the emulator's virtual camera scene and animate the camera toward it — simulating a real scan without a physical device. See the [Android Device Controls](/libraries/flows/api-reference/android-device-reference) for the full API.
+
+The virtual camera scene works on emulators only, not on [real Android phones](/libraries/flows/api-reference/android#real-phones).
 
 The sequence is: store the barcode image in team storage → place it on the virtual scene (`table` or `wall`) → play the `Walk_to_image_room` macro to animate the camera toward it → wait for your app to detect and process the scan.
 

@@ -2,9 +2,12 @@
 title: "Mock device location (Android)"
 description: "Set a custom GPS location on the Android emulator to test location-aware features in your app."
 sidebarTitle: "Android"
+tag: "Emulator only"
 ---
 
 Use `device.setGeoLocation()` to override the emulator's GPS coordinates during a flow. This lets you test location-aware features — such as store finders, delivery zones, or region-specific content — without physically moving a device.
+
+Location mocking works on emulators only, not on [real Android phones](/libraries/flows/api-reference/android#real-phones).
 
 See the [Android Device Controls](/libraries/flows/api-reference/android-device-reference) for the full `setGeoLocation` API.
 
