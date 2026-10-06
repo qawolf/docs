@@ -2,6 +2,7 @@
 title: "Mock hardware sensors (Android)"
 description: "Simulate accelerometer, gyroscope, light, and pressure sensor input on the Android emulator."
 sidebarTitle: "Android"
+tag: "Emulator only"
 ---
 
 Use `device.adb(...)` to send `adb emu sensor set` commands during a flow. This lets you simulate hardware sensor input and test how your app responds.
@@ -13,7 +14,7 @@ import { device } from "@qawolf/flows/android";
 See the [Android emulator sensor documentation](https://developer.android.com/studio/run/emulator-console#sensor-set) for available sensor names and value formats.
 
 <Note>
-  Sensor commands affect the emulator's sensor state directly. They work on emulators only — not physical devices.
+  Sensor commands affect the emulator's sensor state directly. They work on emulators only, not on [real Android phones](/libraries/flows/api-reference/android#real-phones).
 </Note>
 
 ## Examples

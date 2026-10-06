@@ -7,11 +7,15 @@ description: "Reference notes for the `device` object from `@qawolf/flows/androi
 
 `device` is only available while a flow is running.
 
+On a [real phone](/libraries/flows/api-reference/android#real-phones), only [`adb`](#adb) works. The methods marked **Emulator only** drive the emulator and don't work on a real phone.
+
 ```typescript
 import { device, flow } from "@qawolf/flows/android";
 ```
 
 ## `setGeoLocation`
+
+<Badge color="orange">Emulator only</Badge>
 
 Sets the emulator's GPS location.
 
@@ -45,6 +49,8 @@ export default flow("Set device location", "Android - Pixel", async () => {
 </Note>
 
 ## `setVirtualSceneImage`
+
+<Badge color="orange">Emulator only</Badge>
 
 Places an image into the Android emulator's virtual camera scene. Use this to test features that require the camera to see a specific image — such as barcode or QR code scanning.
 
@@ -83,6 +89,8 @@ export default flow(
 </Note>
 
 ## `playAutomation`
+
+<Badge color="orange">Emulator only</Badge>
 
 Triggers an automation macro on the Android emulator. Use this in combination with `setVirtualSceneImage` to animate the virtual camera toward a placed image.
 
@@ -131,6 +139,8 @@ export default flow(
 
 ## `setProxy`
 
+<Badge color="orange">Emulator only</Badge>
+
 Configures a proxy for the Android emulator's network traffic.
 
 ```typescript
@@ -156,6 +166,8 @@ export default flow("Set proxy", "Android - Pixel", async () => {
 
 ## `clearProxy`
 
+<Badge color="orange">Emulator only</Badge>
+
 Removes any proxy configuration from the Android emulator.
 
 ```typescript
@@ -177,6 +189,8 @@ export default flow("Clear proxy", "Android - Pixel", async () => {
 </Note>
 
 ## `passAudioAsMicrophoneInput`
+
+<Badge color="orange">Emulator only</Badge>
 
 Plays an audio file on the runner host so the emulator receives it as microphone input. Use this to test recording, voice, or speech-recognition features with known audio.
 
@@ -240,7 +254,7 @@ await playback;
 
 ## `adb`
 
-Runs an `adb` command against the emulator and returns its combined stdout/stderr. Use this as an escape hatch for emulator or device operations not covered by a dedicated `device` method — such as `dumpsys`, `emu sensor set`, or `pull`.
+Runs an `adb` command against the emulator or real phone and returns its combined stdout/stderr. Use this as an escape hatch for emulator or device operations not covered by a dedicated `device` method — such as `dumpsys`, `emu sensor set`, or `pull`. `emu` commands work on emulators only.
 
 Pass the arguments either as a single string (split on whitespace; quote a single value that contains spaces) or as an array (preferred when building arguments programmatically). The command does not go through a host shell, so it does not expand variables or run pipes.
 
