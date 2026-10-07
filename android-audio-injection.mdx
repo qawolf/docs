@@ -2,9 +2,12 @@
 title: "Microphone injection (Android)"
 description: "Inject audio into the Android emulator's microphone input to test recording and voice features."
 sidebarTitle: "Android"
+tag: "Emulator only"
 ---
 
 The Android emulator routes audio played on the runner host through to the emulator's microphone input. Use `device.passAudioAsMicrophoneInput(...)` to play an audio file during a flow, and your app will receive it as microphone input.
+
+Microphone injection and audio capture work on emulators only, not on [real Android phones](/libraries/flows/api-reference/android#real-phones).
 
 <Warning>
   **Start your app recording before you call this.** `passAudioAsMicrophoneInput` plays the file and resolves only once playback has finished, so awaiting it first plays the whole file into a microphone nobody is listening to, and the recording that follows captures silence. `delaySeconds` does not work around this either, since it is awaited inline as well.

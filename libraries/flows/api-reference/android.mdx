@@ -6,7 +6,9 @@ sidebarTitle: "Android"
 
 `@qawolf/flows/android` defines Android flows and advanced device controls.
 
-QA Wolf runs Android flows on ephemeral emulators. A fresh one is provisioned for each run and discarded when it finishes, so nothing carries over from a previous run. Because emulators are created on demand, you don't reserve or configure devices yourself: choose a target and QA Wolf allocates an emulator for it.
+QA Wolf runs Android flows on ephemeral emulators by default. A fresh one is provisioned for each run and discarded when it finishes, so nothing carries over from a previous run. Because emulators are created on demand, you don't reserve or configure devices yourself: choose a target and QA Wolf allocates an emulator for it.
+
+QA Wolf can also run Android flows on real phones. See [Real phones](#real-phones).
 
 ## Primary exports
 
@@ -97,6 +99,73 @@ export const launchedFlow = flow(
   },
 );
 ```
+
+## Real phones
+
+<Note>
+  Contact your QA Wolf representative to enable real Android phones for your team.
+</Note>
+
+QA Wolf runs Android flows on real Samsung Galaxy A37 phones running Android 16. Target one with the `Android - Samsung Galaxy A37 (Android 16)` preset.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open Android app on a real phone",
+  { target: "Android - Samsung Galaxy A37 (Android 16)", launch: true },
+  async ({ driver, test }) => {
+    await test("app launches", async () => {
+      await driver.pause(1000);
+    });
+  },
+);
+```
+
+Real phones are shared across customers. QA Wolf resets a phone between runs: it uninstalls the apps the previous run left, clears Chrome, empties shared storage, and re-applies the device settings.
+
+### Dedicated phones
+
+QA Wolf can also dedicate real phones to your team. No preset targets a dedicated phone. Pass a target object with `targetDevices` set to `Team Dedicated Device` instead. The default, `Any Device`, uses the shared phones. `androidVersion` takes the API level, so Android 16 is `"36"`.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/android";
+
+export default flow(
+  "Open Android app on a dedicated phone",
+  {
+    target: {
+      platform: "android",
+      schemaVersion: 1,
+      meta: {
+        androidVersion: "36",
+        deviceModel: "Samsung Galaxy A37",
+        targetDevices: "Team Dedicated Device",
+      },
+    },
+    launch: true,
+  },
+  async ({ driver, test }) => {
+    await test("app launches", async () => {
+      await driver.pause(1000);
+    });
+  },
+);
+```
+
+A dedicated phone gets the same reset between runs as a shared one. Emulators are always shared, so QA Wolf rejects a target that combines `Team Dedicated Device` with an emulator model.
+
+### Device controls on real phones
+
+On a real phone, only [`device.adb(...)`](/libraries/flows/api-reference/android-device-reference#adb) works. The other `device` methods drive the emulator, and [Android Device Controls](/libraries/flows/api-reference/android-device-reference) marks each of them **Emulator only**.
+
+### App builds for real phones
+
+Real phones use the `arm64-v8a` architecture. Include `arm64-v8a` native libraries in any build you run on them: an APK that ships native libraries only for `x86_64` doesn't install.
 
 ## `flow(...)`
 
@@ -353,7 +422,7 @@ export default flow(
 
 ## `device`
 
-`device` is a runtime proxy over the Android emulator API. Use it for device-level operations — such as setting location, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself. See [Android Device Controls](/libraries/flows/api-reference/android-device-reference) for the full method list.
+`device` is a runtime proxy over the Android emulator API. Use it for device-level operations — such as setting location, simulating sensors, or managing device state — that sit outside app UI interactions. Use `driver` for interacting with the app itself. See [Android Device Controls](/libraries/flows/api-reference/android-device-reference) for the full method list. On a real phone, only `device.adb(...)` works.
 
 ## `expect`
 

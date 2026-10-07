@@ -1,13 +1,13 @@
 ---
 title: "POM Reference"
-description: "API reference for @qawolf/pom: page object base classes, the page registry, typed construction, and page hooks."
+description: "API reference for @qawolf/pom: page object base classes, constructing sibling page objects, and page hooks."
 sidebarTitle: "POM Reference"
 ---
 
 `@qawolf/pom` provides Page Object Model (POM) infrastructure for
-[Playwright](https://playwright.dev): base classes for page objects, a registry
-that constructs page objects by name and collects their page hooks, and
-automatic installation of popup and route-interception hooks.
+[Playwright](https://playwright.dev): base classes for page objects,
+construction of sibling page objects by class or by name, and automatic
+installation of popup and route-interception hooks.
 
 QA Wolf can enforce conventions on the page objects you and its AI write — see
 [Lint rules](/lint-rules).
@@ -31,8 +31,8 @@ npm install @qawolf/pom
 
 Extend `BasePageObject`. It stores the Playwright `Page` (available as
 `this.page`) and provides two ways to construct another page object: the static
-`createFromPage(page)` factory on a class you imported, and `this.create(name)`
-for a registered name. Keep selectors in a private `locators` getter.
+`createFromPage(page)` factory on a class you imported, and `this.create(...)`.
+Keep selectors in a private `locators` getter.
 
 ```ts
 import { BasePageObject } from "@qawolf/pom";
@@ -62,176 +62,149 @@ navigate to each other can both expose the trip. What Node cannot load is a page
 object that `extend`s a class in a file importing it back — see
 [Troubleshooting](/libraries/pom/troubleshooting).
 
-## The page registry
+## Constructing a sibling
 
-The registry does two things: it constructs a page object from a name, and it is
-the list `installPageHooks()` walks to collect popup handlers and route
-interceptors. A direct import replaces the first job but not the second, so a
-page object that declares `popupHandlers()` or `routeInterceptors()` needs a
-registry entry however its instances get built.
-
-Constructing by name also keeps a page object's module out of the calling file's
-import graph until the first construction, which is worth having when a
-workspace holds many page objects.
-
-### Registering
-
-Create one module that registers every page object, and import it for its side
-effects **before** you construct any page object. Register lazily with a module
-loader so a page object's module is only loaded when it is first used:
-
-```ts
-// register-pages.ts
-import { registerPage } from "@qawolf/pom";
-
-registerPage("LoginPage", () => import("./pages/login-page.js"));
-registerPage("DashboardPage", () => import("./pages/dashboard-page.js"));
-```
-
-The loader must resolve to a module that exports the class under the **same
-name** it was registered with. Eager registration also works when you already
-hold the class value:
-
-```ts
-import { LoginPage } from "./pages/login-page.js";
-
-registerPage("LoginPage", LoginPage);
-```
-
-### Constructing
-
-`createPage` builds a registered page object for a given `Page`. Import the
-registration module first so the registry is populated:
-
-```ts
-import "./register-pages.js";
-import { createPage } from "@qawolf/pom";
-
-const loginPage = await createPage("LoginPage", page);
-await loginPage.signIn("user@example.com", "hunter2");
-```
-
-Inside a page object, use the protected `this.create(...)` instead — it shares
-the current `Page` and goes through the same registry. Import the sibling's type
-for the return annotation:
+Inside a page object, pass the sibling's class to the protected
+`this.create(...)`. It shares the current `Page`:
 
 ```ts
 import { BasePageObject } from "@qawolf/pom";
-import type { SettingsPage } from "./settings-page.js";
+
+import { SettingsPage } from "./settings-page.js";
 
 export class DashboardPage extends BasePageObject {
-  async openSettings(): Promise<SettingsPage> {
+  async openSettings() {
     await this.page.getByRole("link", { name: "Settings" }).click();
-    return this.create("SettingsPage");
+    return this.create(SettingsPage);
   }
 }
 ```
 
-`create` / `createPage` are async because lazily registered modules load on
-first use. Importing `SettingsPage` and calling
-`SettingsPage.createFromPage(this.page)` is the synchronous alternative, and
-needs no registry entry and no separate return-type annotation.
+The return type is inferred from the class, so there is no name to repeat and
+no annotation to drift from it. Passing a type-only import is a compile error:
+the class must be a value.
 
-### Typing `this.create(...)`
+### Constructing by name
 
-By default `this.create("LoginPage")` resolves to `BasePageObject` — the name is
-just a string, so nothing tells TypeScript which class comes back. Augment the
-`RegisteredPages` interface — declared for exactly this purpose — to make the
-name-to-type mapping known, and `create` becomes fully typed. This is
-incremental: names you don't list still come back as `BasePageObject`.
+`this.create("Name")` also accepts a class name, resolved through the calling
+file's own imports:
 
 ```ts
-import type { LoginPage } from "./pages/login-page.js";
-import type { DashboardPage } from "./pages/dashboard-page.js";
+import { BasePageObject } from "@qawolf/pom";
 
-declare module "@qawolf/pom" {
-  interface RegisteredPages {
-    LoginPage: LoginPage;
-    DashboardPage: DashboardPage;
+import { SettingsPage } from "./settings-page.js";
+
+export class DashboardPage extends BasePageObject {
+  async openSettings() {
+    await this.page.getByRole("link", { name: "Settings" }).click();
+    return this.create<SettingsPage>("SettingsPage");
   }
 }
 ```
 
-Now `await this.create("LoginPage")` is typed as `LoginPage`.
+The import must be a value import: the specifier is read from the executing
+file's source, and compilation erases a type-only import. A name that no import
+binds does not resolve. The module must export the class under that name.
+Without the generic, the return type is `BasePageObject`, and nothing checks
+that the generic and the name agree — another reason to prefer passing the
+class.
+
+`create` is async so both forms are interchangeable at a call site. Flow code
+never holds a `Page`, so it gets its first page object from an entry point's
+static `create()` and every later one from methods on page objects it already
+has.
 
 ## Entry points and page hooks
 
 An **entry point** is the page object that owns browser startup. Extend
-`EntryPointPageObject` and expose a `create()` that launches the browser
-(`initializeBrowser`), builds the instance (`createFromPage`), and installs
-page hooks:
+`EntryPointPageObject` and expose a static `create()` that launches the browser
+with `initializeBrowser` and builds the instance:
 
 ```ts
-import { EntryPointPageObject } from "@qawolf/pom";
+import { EntryPointPageObject, type PageSetupOptions } from "@qawolf/pom";
+
+import { LoginPage } from "./login-page.js";
 
 export class AppEntryPoint extends EntryPointPageObject {
-  static async create(): Promise<AppEntryPoint> {
-    const page = await AppEntryPoint.initializeBrowser();
-    const entryPoint = AppEntryPoint.createFromPage(page);
-    await entryPoint.installPageHooks();
-    return entryPoint;
+  static async create(options?: PageSetupOptions): Promise<AppEntryPoint> {
+    const page = await this.initializeBrowser(options);
+    return new this(page);
   }
 
   async openLogin() {
     await this.goto("/login");
-    return this.create("LoginPage");
+    return this.create(LoginPage);
   }
 }
 ```
 
-A page object can own popups to auto-dismiss or routes to intercept by
-overriding `popupHandlers()` / `routeInterceptors()` on its class:
+The entry point declares the popups to dismiss and the routes to intercept by
+overriding the static `popupHandlers()` / `routeInterceptors()`. Other page
+objects declare none. The declarations are static because they are installed
+on the browser context before its first page exists, so `trigger` and `dismiss`
+take the page they apply to:
 
 ```ts
-import { BasePageObject, type PopupHandlerDef } from "@qawolf/pom";
+import {
+  EntryPointPageObject,
+  type PopupHandlerDef,
+  type RouteInterceptorDef,
+} from "@qawolf/pom";
 
-export class CookieBannerPage extends BasePageObject {
-  override popupHandlers(): PopupHandlerDef[] {
+export class AppEntryPoint extends EntryPointPageObject {
+  protected static override popupHandlers(): PopupHandlerDef[] {
     return [
       {
+        cssSelector: "#cookie-consent",
+        dismiss: (page) => page.locator("#cookie-consent .accept").click(),
         name: "cookie-banner",
-        trigger: this.page.getByRole("button", { name: "Accept cookies" }),
-        dismiss: async () => {
-          await this.page
-            .getByRole("button", { name: "Accept cookies" })
-            .click();
-        },
+        trigger: (page) => page.locator("#cookie-consent"),
+      },
+    ];
+  }
+
+  protected static override routeInterceptors(): RouteInterceptorDef[] {
+    return [
+      {
+        handler: (route) => route.abort(),
+        name: "block-analytics",
+        pattern: "**/analytics/**",
       },
     ];
   }
 }
 ```
 
-`installPageHooks()` collects these across **every** registered page object, not
-just the entry point — so register a page object that owns popups or routes even
-when your code only ever constructs it from a direct import. Its hooks never
-install otherwise. The registry detects overrides with an own-property check on
-the registered class's prototype, so declare `popupHandlers()` /
-`routeInterceptors()` directly on the class you register — it does not pick up
-an override inherited from a base class.
+`initializeBrowser()` installs these on the browser context, so a second tab or
+a popup window the app opens carries them too. A popup with a `cssSelector` is
+hidden by a `<style>` tag injected before any navigation; one without falls
+back to `addLocatorHandler` on each page. `super.popupHandlers()` extends a
+parent entry point's list.
 
-When registering lazily, pass `{ providesPageHooks: false }` for page objects
-you know declare no hooks, so hook installation can skip loading their modules:
+A flow adjusts the declared hooks through the options it passes to `create()`:
 
 ```ts
-registerPage("StaticPage", () => import("./pages/static-page.js"), {
-  providesPageHooks: false,
+// Test the cookie banner itself, and let analytics through.
+await AppEntryPoint.create({
+  allowPopups: ["cookie-banner"],
+  allowRoutes: "all",
 });
 ```
+
+`allowPopups` / `allowRoutes` skip declared hooks by name, or all of them with
+`"all"`; `popupHandlers` / `routeInterceptors` add the flow's own, a same-named
+one replacing the declared one.
 
 ## Exports
 
 | Export | Description |
 | --- | --- |
-| `BasePageObject` | Base class for page objects. Holds `this.page`; provides `this.create(name)` and the static `createFromPage(page)` factory. |
+| `BasePageObject` | Base class for page objects. Holds `this.page`; provides `this.create(classOrName)` and the static `createFromPage(page)` factory. |
 | `SubPageObject` | Base class for a page object scoped to a parent region/component. |
-| `EntryPointPageObject` | Base class for the entry point; owns browser launch (`initializeBrowser`), `goto`, and `installPageHooks`. |
-| `registerPage(name, classOrLoader, options?)` | Register a page object by name, eagerly (class) or lazily (`() => import(...)`). |
-| `createPage(name, page)` | Construct a registered page object for a `Page`. Returns a promise. |
+| `EntryPointPageObject` | Base class for the entry point; owns browser launch and page hooks (`initializeBrowser`), `goto`, `networkMonitor`, and `closeBrowser`. |
 | `PopupHandler` | Manages add/remove of popup handlers on a page. |
 | `NetworkMonitor` | Observes network activity and surfaces `NetworkError`s. |
-| `RegisteredPages` | Empty interface you augment to type `create(name)`. |
-| `PopupHandlerDef`, `RouteInterceptorDef`, `PageSetupOptions` | Hook and setup types. |
+| `PopupHandlerDef`, `RouteInterceptorDef`, `PageHookOptions`, `PageSetupOptions`, `InitializeBrowserOptions` | Hook and setup types. |
 | `callPlatformAPI` | Client for the QA Wolf platform API. |
 | `assertPricesClose`, `moneyToNumber`, `numberToMoney` | Money/price test-data helpers. |
 | `reportCleanupFailed`, `reportCleanupFailure` | Report failures from test cleanup steps. |
