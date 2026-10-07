@@ -38,8 +38,8 @@ This page describes [legacy triggers](/legacy-triggers/overview). See [Triggers]
       script:
         - npm install @qawolf/ci-sdk
         - |
-          node -e "
-          const { makeQaWolfSdk } = require('@qawolf/ci-sdk');
+          node --input-type=module -e "
+          import { makeQaWolfSdk } from '@qawolf/ci-sdk';
           const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
           attemptNotifyDeploy({
             sha: process.env.CI_COMMIT_SHA,

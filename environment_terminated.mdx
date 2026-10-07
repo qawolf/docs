@@ -34,7 +34,9 @@ Pass one of the following to identify the environment.
 | --- | --- | --- |
 | `environmentId` | string | ID of the ephemeral environment to terminate. |
 | `environmentAlias` | string | Alias of the ephemeral environment to terminate. |
-| `deploymentUrl` | string | Preview URL used when the environment was created via `deploy_success` with `ephemeral_environment: true`. |
+| `deploymentUrl` | string | Preview URL used when the environment was created via the legacy [`deploy_success`](/deploy-success) webhook with `ephemeral_environment: true`, which names the environment after that URL. |
+
+An environment created by [`deployment.reportStatus`](/deployment-testing/webhook) is named by `environment.name`, not by its deploy target, so name it here by `environmentId` or `environmentAlias`.
 
 You may also pass `workspaceId`.
 
@@ -69,4 +71,4 @@ Plus the [common response codes](/rest-overview#common-response-codes).
 ## Related
 
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
-- [Notify deploy](/deploy-success)
+- [Webhook](/deployment-testing/webhook) — reporting a deploy into an ephemeral environment.
