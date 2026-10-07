@@ -19,7 +19,7 @@ This endpoint accepts app builds only: `.aab`, `.apk`, `.appimage`, `.deb`, `.ip
       -H "Authorization: Bearer $QAWOLF_API_KEY"
     ```
 
-    Returns a `signedUrl` for the next step, plus `fileLocation` and `playgroundFileLocation` — see below for the full parameter and response reference.
+    Returns a `signedUrl` for the next step, plus `fileLocation` and `interactiveRunFileLocation` — see below for the full parameter and response reference.
   </Step>
   <Step title="Upload the file">
     `PUT {signedUrl}`
@@ -46,7 +46,8 @@ This endpoint accepts app builds only: `.aab`, `.apk`, `.appimage`, `.deb`, `.ip
 
 ```json
 {
-  "fileLocation": "$TEAM_ID/$DESTINATION_FILE_PATH",
+  "fileLocation": "$WORKSPACE_ID/$DESTINATION_FILE_PATH",
+  "interactiveRunFileLocation": "$DESTINATION_FILE_PATH",
   "playgroundFileLocation": "$DESTINATION_FILE_PATH",
   "signedUrl": "https://..."
 }
@@ -54,8 +55,9 @@ This endpoint accepts app builds only: `.aab`, `.apk`, `.appimage`, `.deb`, `.ip
 
 | Field | Description |
 | --- | --- |
-| `fileLocation` | Full path including team ID. Use this to reference the file in run configurations. |
-| `playgroundFileLocation` | Path without team ID. Use this to reference the file in the playground. |
+| `fileLocation` | Full path including the workspace id. Use this to reference the file in run configurations. |
+| `interactiveRunFileLocation` | Path without the workspace id. Pass it to the run as an environment variable, and use it to reference the file in an interactive run. |
+| `playgroundFileLocation` | Deprecated alias of `interactiveRunFileLocation`. Removed in a future major version. |
 | `signedUrl` | Pre-signed URL for uploading the file. Use in the next step. |
 
 ## Response codes
@@ -71,4 +73,4 @@ Plus the [common response codes](/rest-overview#common-response-codes).
 
 - [Mobile build testing](/mobile-build-testing)
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
-- [Notify deploy](/deploy-success)
+- [Webhook](/deployment-testing/webhook) — reporting the deploy that starts the runs.

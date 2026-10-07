@@ -308,7 +308,7 @@ await launch({ appPackage: "com.example.app", appActivity: ".MainActivity" });
 
 ### App resolution
 
-When your CI pipeline uploads an Android build, QA Wolf sets `RUN_INPUT_PATH` to the uploaded file before the flow runs. Omit `app` in your launch call and QA Wolf will use that path automatically — you only need to provide the `appPackage`.
+When your CI pipeline reports the deploy, it carries the uploaded build's path as `RUN_INPUT_PATH`. Omit `app` in your launch call and QA Wolf will use that path automatically — you only need to provide the `appPackage`. See [Mobile build testing](/mobile-build-testing).
 
 When `app` is provided, the resolution order is:
 
@@ -318,7 +318,7 @@ When `app` is provided, the resolution order is:
 
 When `app` is omitted, launch falls back to `RUN_INPUT_PATH`.
 
-QA Wolf resolves relative paths against `RUN_INPUTS_EXECUTABLES_DIR` when that environment variable is present.
+Every path must be absolute. An uploaded build is mounted at `/home/wolf/run-inputs-executables/<filename>`; a relative path is passed to the device unchanged and will not find the build.
 
 Explicit app source examples:
 

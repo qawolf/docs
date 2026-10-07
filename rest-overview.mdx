@@ -45,9 +45,10 @@ https://app.qawolf.com
 
 | Endpoint | Method | Description |
 | --- | --- | --- |
-| [`/api/webhooks/deploy_success`](/deploy-success) | `POST` | Notify QA Wolf of a successful deployment to trigger a run. |
+| [`/api/trpc/public.deployment.reportStatus`](/deployment-testing/webhook) | `POST` | Report a deployment, which [triggers](/triggers/overview) evaluate. |
 | [`/api/webhooks/environment_terminated`](/environment_terminated) | `POST` | Notify QA Wolf that an ephemeral environment has been terminated. |
-| [`/api/v0/ci-greenlight/{root-run-id}`](/v0-ci-greenlight) | `GET` | Poll for the outcome of a run to gate a pipeline. |
+| [`/api/webhooks/deploy_success`](/deploy-success) | `POST` | Legacy. Notify QA Wolf of a successful deployment, which only [legacy triggers](/legacy-triggers/overview) see. |
+| [`/api/v0/ci-greenlight/{root-run-id}`](/v0-ci-greenlight) | `GET` | Legacy. Poll for the outcome of a run started by `deploy_success`. |
 | [`/api/v0/run-inputs-executables-signed-urls`](/run-inputs-executables-signed-urls) | `GET` \+ `PUT` | Generate a signed URL and upload an executable file. |
 | [`/api/v0/team-storage-signed-url`](/use-files-in-flows#upload-a-file) | `GET` \+ `PUT` | Generate a signed URL and upload a file your flows read. |
 

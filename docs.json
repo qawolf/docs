@@ -1068,7 +1068,8 @@
               "legacy-triggers/PR-testing-for-GitLab-Integrations",
               "legacy-triggers/ci-sdk-integration",
               "legacy-triggers/webhook-integration",
-              "legacy-triggers/circle-ci"
+              "legacy-triggers/circle-ci",
+              "legacy-triggers/mobile-build-testing"
             ]
           }
         ]
