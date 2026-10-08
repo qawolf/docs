@@ -131,7 +131,7 @@ rules:
 Two boolean keys fine-tune how a rule behaves. Each is only valid next to the rule kind it modifies — setting one without a matching rule makes the file invalid.
 
 - **`fail-if-priors-fail`** (next to `run-after` or `run-before`, default `true`) — controls whether flows in the later group are skipped when a flow in the earlier group fails. See [Ordering](#ordering) for what this looks like in a run. Set it to `false` to let the later flows run anyway.
-- **`fail-together`** (next to `run-with`, default `false`) — when `true`, every flow in the group fails if any one of them does. See [What isn't visible in the file](#what-isnt-visible-in-the-file) for how groups are built.
+- **`fail-together`** (next to `run-with`, default `false`) — when `true`, a flow in the group failing its final attempt stops every flow in the group that is still running. See [What isn't visible in the file](#what-isnt-visible-in-the-file) for how groups are built.
 
 Both defaults match what the Run Rules screen already does, so moving a rule from the screen into the file doesn't change how it behaves.
 
