@@ -14,7 +14,7 @@ import { flow } from "@qawolf/flows/ios";
 
 export default flow(
   "Open iOS app",
-  { target: "Latest iOS (iPhone)", launch: true },
+  { target: "iOS - Any iPhone (Latest)", launch: true },
   async ({ driver, test }) => {
     await test("app launches", async () => {
       await driver.pause(1000);

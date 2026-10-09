@@ -14,7 +14,7 @@ import { flow } from "@qawolf/flows/android";
 
 export default flow(
   "Open Android app",
-  { target: "Android - Pixel 9 (Android 16)", launch: true },
+  { target: "Android - Google Pixel 9 (Android 16 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("app launches", async () => {
       await driver.pause(1000);

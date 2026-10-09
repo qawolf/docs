@@ -36,7 +36,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Set location",
-  { target: "Android - Pixel 9", launch: true },
+  { target: "Android - Google Pixel 9 (Android 14 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("set device location", async () => {
       await device.setGeoLocation({ latitude: 37.7749, longitude: -122.4194 });

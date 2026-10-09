@@ -89,7 +89,7 @@ const audioPath = `${process.env.TEAM_STORAGE_DIR}/audio.mp3`;
 
 export default flow(
   "Test voice input",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Google Pixel 9 (Android 17 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("app transcribes the injected speech", async () => {
       // Arrange

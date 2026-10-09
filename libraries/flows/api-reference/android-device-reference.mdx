@@ -36,7 +36,7 @@ Example:
 ```typescript
 import { device, flow } from "@qawolf/flows/android";
 
-export default flow("Set device location", "Android - Pixel", async () => {
+export default flow("Set device location", "Android - Google Pixel 9 (Android 17 | Emulator)", async () => {
   await device.setGeoLocation({
     latitude: 37.7749,
     longitude: -122.4194,
@@ -72,7 +72,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Scan barcode",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Google Pixel 9 (Android 17 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("place barcode image", async () => {
       await device.setVirtualSceneImage({
@@ -117,7 +117,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Scan barcode",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Google Pixel 9 (Android 17 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("place barcode and animate camera", async () => {
       await device.setVirtualSceneImage({
@@ -157,7 +157,7 @@ Example:
 ```typescript
 import { device, flow } from "@qawolf/flows/android";
 
-export default flow("Set proxy", "Android - Pixel", async () => {
+export default flow("Set proxy", "Android - Google Pixel 9 (Android 17 | Emulator)", async () => {
   await device.setProxy({
     url: "http://proxy.example.com:8080",
   });
@@ -179,7 +179,7 @@ Example:
 ```typescript
 import { device, flow } from "@qawolf/flows/android";
 
-export default flow("Clear proxy", "Android - Pixel", async () => {
+export default flow("Clear proxy", "Android - Google Pixel 9 (Android 17 | Emulator)", async () => {
   await device.clearProxy();
 });
 ```
@@ -218,7 +218,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Inject microphone audio",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Google Pixel 9 (Android 17 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("play audio into the microphone", async () => {
       // Start the app listening first
@@ -269,7 +269,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Run adb commands",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Google Pixel 9 (Android 17 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("send a keyevent and pull a file", async () => {
       await device.adb("shell input keyevent 26");
@@ -292,7 +292,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Verify a time-gated feature can't be gamed",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Google Pixel 9 (Android 17 | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("jump the device clock forward", async () => {
       // Disable automatic time so the manual clock sticks
