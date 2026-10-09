@@ -74,7 +74,7 @@ import { flow } from "@qawolf/flows/android";
 
 export default flow(
   "Accessibility — login screen",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("verify login screen elements are accessible", async () => {
       // Arrange

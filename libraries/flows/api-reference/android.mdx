@@ -27,7 +27,7 @@ import { flow } from "@qawolf/flows/android";
 
 export default flow(
   "Open Android app",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("app launches", async () => {
       await driver.pause(1000);
@@ -83,7 +83,7 @@ import { flow } from "@qawolf/flows/android";
 
 export const targetOnlyFlow = flow(
   "Target-only path",
-  "Android - Pixel",
+  "Android - Any Phone (Latest | Emulator)",
   async () => {
     // call launch() explicitly when startup should happen in the callback
   },
@@ -91,7 +91,7 @@ export const targetOnlyFlow = flow(
 
 export const launchedFlow = flow(
   "Launch-enabled path",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("launch app", async () => {
       await driver.pause(1000);
@@ -106,7 +106,7 @@ export const launchedFlow = flow(
   Contact your QA Wolf representative to enable real Android phones for your team.
 </Note>
 
-QA Wolf runs Android flows on real Samsung Galaxy A37 phones running Android 16. Target one with the `Android - Samsung Galaxy A37 (Android 16)` preset.
+QA Wolf runs Android flows on real Samsung Galaxy A37 phones running Android 16. Target one with the `Android - Samsung Galaxy A37 (Android 16)` preset. A real-phone target has no `| Emulator` qualifier in its name.
 
 Example:
 
@@ -183,7 +183,7 @@ import { flow } from "@qawolf/flows/android";
 
 export default flow(
   "Launch in flow definition",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("launch app", async () => {
       await driver.pause(1000);
@@ -209,7 +209,7 @@ Example:
 ```ts
 import { flow, launch } from "@qawolf/flows/android";
 
-export default flow("Launch explicitly", "Android - Pixel", async () => {
+export default flow("Launch explicitly", "Android - Any Phone (Latest | Emulator)", async () => {
   const { driver } = await launch();
   await driver.pause(1000);
 });
@@ -240,7 +240,7 @@ Example:
 ```ts
 import { flow, launch } from "@qawolf/flows/android";
 
-export default flow("Launch apk", "Android - Pixel", async () => {
+export default flow("Launch apk", "Android - Any Phone (Latest | Emulator)", async () => {
   const { driver } = await launch({
     app: { path: "apps/mobile/android/app.apk" },
     appPackage: "com.example.android",
@@ -264,7 +264,7 @@ Example:
 ```ts
 import { flow, launch } from "@qawolf/flows/android";
 
-export default flow("Use Android defaults", "Android - Pixel", async () => {
+export default flow("Use Android defaults", "Android - Any Phone (Latest | Emulator)", async () => {
   const { driver } = await launch({
     appPackage: "com.example.android",
   });
@@ -355,7 +355,7 @@ import { flow, launch } from "@qawolf/flows/android";
 
 export default flow(
   "Launch with custom capabilities",
-  "Android - Pixel",
+  "Android - Any Phone (Latest | Emulator)",
   async () => {
     const { driver } = await launch({
       // Named options cover the common knobs:
@@ -399,7 +399,7 @@ import { flow } from "@qawolf/flows/android";
 export default flow(
   "Open Android app",
   {
-    target: "Android - Pixel",
+    target: "Android - Any Phone (Latest | Emulator)",
     launch: {
       app: { env: "ANDROID_PATH" },
       appPackage: "com.example.android",
@@ -437,7 +437,7 @@ import { expect, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Verify welcome screen",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("welcome heading is visible", async () => {
       const heading = driver.$("~welcome-heading");

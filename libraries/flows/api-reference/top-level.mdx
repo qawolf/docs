@@ -32,31 +32,40 @@ type Target =
   | "Web - Firefox (GPU)"
   | "Web - Safari"
   | "Web - Safari (GPU)"
-  | "Android - Pixel"
-  | "Android - Pixel 2 (Android 14)"
-  | "Android - Pixel 9"
-  | "Android - Pixel 9 (Android 14)"
-  | "Android - Pixel 9 (Android 15)"
-  | "Android - Pixel 9 (Android 16)"
-  | "Android - Pixel Tablet (Android 14)"
-  | "Android - Tablet"
-  | "iOS - Allowlisted iPhone"
-  | "iOS - iPad"
+  | "Android - Any Phone (Android 16 | Emulator)"
+  | "Android - Any Phone (Android 17 | Emulator)"
+  | "Android - Any Phone (Latest | Emulator)"
+  | "Android - Any Tablet (Android 17 | Emulator)"
+  | "Android - Any Tablet (Latest | Emulator)"
+  | "Android - Google Pixel 2 (Android 14 | Emulator)"
+  | "Android - Google Pixel 9 (Android 14 | Emulator)"
+  | "Android - Google Pixel 9 (Android 15 | Emulator)"
+  | "Android - Google Pixel 9 (Android 16 | Emulator)"
+  | "Android - Google Pixel 9 (Android 17 | Emulator)"
+  | "Android - Google Pixel Tablet (Android 14 | Emulator)"
+  | "Android - Google Pixel Tablet (Android 17 | Emulator)"
+  | "Android - Samsung Galaxy A37 (Android 16)"
+  | "iOS - Any iPad (iOS 26)"
+  | "iOS - Any iPad (Latest)"
+  | "iOS - Any iPhone (iOS 18)"
+  | "iOS - Any iPhone (iOS 26)"
+  | "iOS - Any iPhone (iOS 27)"
+  | "iOS - Any iPhone (Latest)"
   | "iOS - iPad 11 (iOS 18)"
+  | "iOS - iPad 11 (iOS 18 | Apple ID)"
   | "iOS - iPad 11 (iOS 26)"
-  | "iOS - iPhone 15 (iOS 17)"
   | "iOS - iPhone 15 (iOS 18)"
   | "iOS - iPhone 15 (iOS 26)"
-  | "iOS - iPhone 15 (iOS 26) (allowlisted)"
-  | "iOS - iPhone 15 (iOS 26) (private)"
+  | "iOS - iPhone 15 (iOS 26 | Allowlisted)"
+  | "iOS - iPhone 15 (iOS 26 | Apple ID)"
+  | "iOS - iPhone 15 (iOS 26 | Private)"
+  | "iOS - iPhone 16 (iOS 26)"
+  | "iOS - iPhone 16 (iOS 27)"
   | "iOS - iPhone 17 (iOS 26)"
-  | "iOS 26 - Any iPad"
-  | "iOS 26 - Any iPhone"
-  | "Latest iOS (iPad)"
-  | "Latest iOS (iPhone)";
+  | "iOS - iPhone 17 (iOS 27)";
 ```
 
-See [iOS Device Pools](/libraries/flows/api-reference/ios-device-pools) for when to use the iOS allowlisted/private targets above and how to set them up — Android has no equivalent.
+See [Target names](#target-names) for how to read a target name, and [Renamed and retired targets](#renamed-and-retired-targets) for the old names that flows can still use.
 
 Example:
 
@@ -83,6 +92,59 @@ if (!currentScope) {
 
 resetTarget();
 ```
+
+### Target names
+
+Android and iOS target names follow the pattern `<Platform> - <Model> (<Version> | <Qualifier>)`. The qualifier is optional.
+
+- **Model** — a device model, such as `Google Pixel 9` or `iPhone 15`. `Any Phone`, `Any Tablet`, `Any iPhone` and `Any iPad` accept any model of that kind.
+- **Version** — the OS marketing version, such as `Android 16` or `iOS 26`. `Latest` points to a version that QA Wolf chooses and moves forward over time. Flows that use `Latest` follow it with no edit.
+- **`Emulator`** — the flow runs on an Android emulator. An Android target without it runs on a real phone. iOS targets always run on real devices.
+- **`Allowlisted` and `Private`** — the flow runs on allowlisted or private iOS devices. See [iOS Device Pools](/libraries/flows/api-reference/ios-device-pools) for when to use them and how to set them up. For dedicated Android phones, see [Dedicated phones](/libraries/flows/api-reference/android#dedicated-phones).
+- **`Apple ID`** — the flow runs on an iOS device that is signed in to an Apple ID.
+
+### Renamed and retired targets
+
+In October 2026, QA Wolf renamed its Android and iOS targets to follow the pattern above. A flow that uses an old name keeps working and runs on the same devices. The editor suggests only the new names.
+
+| Old name | New name |
+| --- | --- |
+| `Latest Android (Phone)` | `Android - Any Phone (Latest \| Emulator)` |
+| `Latest Android (Tablet)` | `Android - Any Tablet (Latest \| Emulator)` |
+| `Android 36 - Any Phone` | `Android - Any Phone (Android 16 \| Emulator)` |
+| `Android 37 - Any Phone` | `Android - Any Phone (Android 17 \| Emulator)` |
+| `Android 37 - Any Tablet` | `Android - Any Tablet (Android 17 \| Emulator)` |
+| `Android - Pixel` | `Android - Google Pixel 2 (Android 14 \| Emulator)` |
+| `Android - Pixel 2 (Android 14)` | `Android - Google Pixel 2 (Android 14 \| Emulator)` |
+| `Android - Pixel 9` | `Android - Google Pixel 9 (Android 14 \| Emulator)` |
+| `Android - Pixel 9 (Android 14)` | `Android - Google Pixel 9 (Android 14 \| Emulator)` |
+| `Android - Pixel 9 (Android 15)` | `Android - Google Pixel 9 (Android 15 \| Emulator)` |
+| `Android - Pixel 9 (Android 16)` | `Android - Google Pixel 9 (Android 16 \| Emulator)` |
+| `Android - Pixel 9 (Android 17)` | `Android - Google Pixel 9 (Android 17 \| Emulator)` |
+| `Android - Tablet` | `Android - Google Pixel Tablet (Android 14 \| Emulator)` |
+| `Android - Pixel Tablet (Android 14)` | `Android - Google Pixel Tablet (Android 14 \| Emulator)` |
+| `Android - Pixel Tablet (Android 17)` | `Android - Google Pixel Tablet (Android 17 \| Emulator)` |
+| `Latest iOS (iPhone)` | `iOS - Any iPhone (Latest)` |
+| `Latest iOS (iPad)` | `iOS - Any iPad (Latest)` |
+| `iOS 18 - Any iPhone` | `iOS - Any iPhone (iOS 18)` |
+| `iOS 26 - Any iPhone` | `iOS - Any iPhone (iOS 26)` |
+| `iOS 27 - Any iPhone` | `iOS - Any iPhone (iOS 27)` |
+| `iOS 26 - Any iPad` | `iOS - Any iPad (iOS 26)` |
+| `iOS - iPad` | `iOS - iPad 11 (iOS 26)` |
+| `iOS - Allowlisted iPhone` | `iOS - iPhone 15 (iOS 26 \| Allowlisted)` |
+| `iOS - iPhone 15 (iOS 26) (allowlisted)` | `iOS - iPhone 15 (iOS 26 \| Allowlisted)` |
+| `iOS - iPhone 15 (iOS 26) (private)` | `iOS - iPhone 15 (iOS 26 \| Private)` |
+| `iOS - Apple ID Enabled iPhone` | `iOS - iPhone 15 (iOS 26 \| Apple ID)` |
+| `iOS - iPhone 15 (iOS 26) (Apple ID)` | `iOS - iPhone 15 (iOS 26 \| Apple ID)` |
+| `iOS - Apple ID Enabled iPad` | `iOS - iPad 11 (iOS 18 \| Apple ID)` |
+| `iOS - iPad 11 (iOS 18) (Apple ID)` | `iOS - iPad 11 (iOS 18 \| Apple ID)` |
+
+QA Wolf no longer runs flows on iOS 17. A run of a flow that uses a retired name fails, and the error names the replacement.
+
+| Retired name | Replacement |
+| --- | --- |
+| `iOS 17 - Any iPhone` | `iOS - Any iPhone (iOS 18)` |
+| `iOS - iPhone 15 (iOS 17)` | `iOS - iPhone 15 (iOS 18)` |
 
 ## `platform.target`
 

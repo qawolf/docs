@@ -99,7 +99,7 @@ import { device, flow, launch } from "@qawolf/flows/android";
 
 export default flow(
   "Test location feature",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("set location and verify location-based content", async () => {
       // Arrange

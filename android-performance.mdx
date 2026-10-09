@@ -57,7 +57,7 @@ import { device, flow } from "@qawolf/flows/android";
 
 export default flow(
   "Measure performance",
-  { target: "Android - Pixel", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("assert FPS", async () => {
       await device.adb("shell dumpsys SurfaceFlinger --timestats -clear -enable");
