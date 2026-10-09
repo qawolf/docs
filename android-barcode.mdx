@@ -59,7 +59,7 @@ const barcodeImagePath = `${process.env.TEAM_STORAGE_DIR}/barcode.jpg`;
 
 export default flow(
   "Scan barcode",
-  { target: "Android - Google Pixel 9 (Android 17 | Emulator)", launch: true },
+  { target: "Android - Any Phone (Latest | Emulator)", launch: true },
   async ({ driver, test }) => {
     await test("scan barcode and verify value", async () => {
       // Arrange
