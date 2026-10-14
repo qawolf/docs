@@ -1,6 +1,6 @@
 ---
 title: "Run Rules"
-description: "Run Rules let you sequence the order of flows in your suite."
+description: "Order and co-schedule the flows in a run with a rules.yaml file in your flows repository."
 keywords:
   - "rules.yaml"
   - "file based rules"
@@ -16,41 +16,37 @@ By default all flows run in parallel on the QA Wolf run infrastructure, but ther
 - Multi-user flows where state is shared between flows.
 - When the environment can't handle the load of an entire test suite.
 
-Run Rules act on the flows inside a run. They apply whether a [trigger](/triggers/overview) started the run or you did, and they never start a run themselves.
+You define Run Rules in a [`rules.yaml` file](#rules-file) in your flows repository. There is no Run Rules screen.
 
-<Note>
-  You can also define Run Rules as code in a [rules file](#rules-file) committed to your repository. Once a branch has one, this screen becomes read-only for the environments that read from it.
-</Note>
+Run Rules act on the flows inside a run. They apply whether a [trigger](/triggers/overview) started the run or you did, and they never start a run themselves.
 
 ## How Run Rules work
 
 ### Configuring groups
 
-Run Rules execute one group of flows before another group of flows. Groups can be constructed by flow name or by tag. 
+A rule names flows or tags. A tag stands for every flow carrying it, so one rule can order or group many flows at once.
 
-Only **active** flows execute in a run. Drafts are ignored even if they're part of a rule.
+A rule never adds a draft or in-maintenance flow to a run, and triggers skip them. A draft runs only when you select it yourself.
 
 ### Ordering
 
-To run flows in a sequence like **A → B → C**, create two rules: run **A** before **B**, and run **B** before **C**.
+`run-after` and `run-before` put flows in sequence. To run flows in a sequence like **A → B → C**, give **B** both: `run-after: [A]` and `run-before: [C]`.
 
-For each rule, indicate whether flows in the second group should be allowed to run if any flows in the first group fail. 
+By default, when a flow in the earlier group fails, the flows in the later group are marked failed without running. Set `fail-if-priors-fail: false` on the subject to let them run anyway. The setting covers both `run-after` and `run-before` on that subject.
 
 ## Runs you start yourself
 
 Runs a trigger starts always follow the rules. Runs you start yourself follow them by default, and you can choose to skip them.
 
-If you select a flow that a rule runs after other flows, the rule requires those earlier flows too. When you start a run in the platform and your selection leaves any out, QA Wolf asks whether to add them. Choose **Yes, apply rules** to add them, or **No, skip rules** to run your selection without the rules.
+If you select a flow that a rule runs after other flows, the rule requires those earlier flows too. When you start a run in the platform and your selection leaves any out, QA Wolf asks whether to add them. Choose **Yes, apply rules** to add them, or **No, skip rules** to run your selection without the rules. If a required flow is a draft, in maintenance or bugged, only **No, skip rules** is available.
+
+Rerunning a run keeps its original choice.
 
 From the CLI, `qawolf run create` adds the required flows automatically. Pass `--ignore-rules` to skip the rules.
 
 ## Rules file
 
-A `rules.yaml` file lets you define Run Rules as code instead of using the Run Rules screen. Add it to the root of your repository, alongside `package.json`, and QA Wolf reads your run rules from it instead of the screen. It can express everything the screen can, plus two grouping rules the screen doesn't offer.
-
-<Note>
-  This feature is rolling out gradually and may not be available in your workspace yet.
-</Note>
+Add a `rules.yaml` file to the root of your repository, alongside `package.json`. QA Wolf reads every run rule from it.
 
 ### Where the file lives and what it contains
 
@@ -88,27 +84,17 @@ rules:
     fail-together: true
 ```
 
-<Note>
-  If a branch has no `rules.yaml` file, QA Wolf uses whatever rules you've saved on the Run Rules screen for that environment, exactly as before. A `rules.yaml` file with an empty rules map is different — it means this branch deliberately has no run rules, and QA Wolf does not fall back to the screen's rules.
-</Note>
-
-Example of an intentionally empty file:
-
-```yaml
-# A migrated branch with no ordering rules yet.
-version: 1
-rules: {}
-```
+A branch with no `rules.yaml` file runs with no run rules. So does a file whose `rules` map is empty (`rules: {}`).
 
 <Warning>
-  A `rules.yaml` file larger than 1 MB can't be read, and is treated the same as an invalid file. See [When the file can't be used](#when-the-file-cant-be-used).
+  A `rules.yaml` file larger than 10 MB can't be read, and is treated the same as an invalid file. See [When the file can't be used](#when-the-file-cant-be-used).
 </Warning>
 
 ### Naming a flow or a tag
 
-Every name — a subject, or a name inside `run-after`, `run-before`, `run-with`, or `run-without` — is checked against your flows first and your tags second.
+Every name — a subject, or a name inside `run-after`, `run-before`, `run-with`, or `run-without` — is matched against both your flow names and your tag names.
 
-If a name matches both a flow and a tag, that's a collision QA Wolf can't resolve on its own. The rule is invalid until you disambiguate it by writing `flow:<name>` or `tag:<name>` instead of the bare name.
+If a name matches both a flow and a tag, QA Wolf can't tell which you mean. Write `flow:<name>` or `tag:<name>` instead of the bare name. Until you do, the whole file is invalid.
 
 Example:
 
@@ -130,10 +116,8 @@ rules:
 
 Two boolean keys fine-tune how a rule behaves. Each is only valid next to the rule kind it modifies — setting one without a matching rule makes the file invalid.
 
-- **`fail-if-priors-fail`** (next to `run-after` or `run-before`, default `true`) — controls whether flows in the later group are skipped when a flow in the earlier group fails. See [Ordering](#ordering) for what this looks like in a run. Set it to `false` to let the later flows run anyway.
+- **`fail-if-priors-fail`** (next to `run-after` or `run-before`, default `true`) — controls whether flows in the later group are marked failed, without running, when a flow in the earlier group fails. See [Ordering](#ordering) for what this looks like in a run. Set it to `false` to let the later flows run anyway.
 - **`fail-together`** (next to `run-with`, default `false`) — when `true`, a flow in the group failing its final attempt stops every flow in the group that is still running. See [What isn't visible in the file](#what-isnt-visible-in-the-file) for how groups are built.
-
-Both defaults match what the Run Rules screen already does, so moving a rule from the screen into the file doesn't change how it behaves.
 
 ### Rules apply per branch
 
@@ -145,10 +129,14 @@ This means a rules change for production only takes effect once it reaches your 
 
 QA Wolf checks `rules.yaml` for problems as you write it. Invalid YAML, an unrecognized key, a modifier without its matching rule kind, and a few other mistakes all show up as violations against the file, the same way any other problem in your project would.
 
-Even so, a run can need rules from a file that has a problem at that moment — an existing file that's briefly unreachable, or a valid file that a later edit broke. What happens next depends on whether you still have rules saved on the Run Rules screen:
+One problem makes the whole file invalid, and every rule on that branch stops applying. That includes a name that matches no flow or tag, a name that matches both, a flow name two flows share, and ordering rules that form a loop.
 
-- **You still have rules saved on the screen:** QA Wolf falls back to those rules for that run. Fix `rules.yaml`, and future runs use it again.
-- **You've already removed your Run Rules screen rules:** QA Wolf has nothing to fall back to. A file it couldn't reach is retried for a short time in case the problem clears up on its own. A file that was reached but is invalid is not retried. Either way, once QA Wolf gives up, no run is created until you fix the file.
+A run on a branch whose `rules.yaml` can't be used is refused. There is no fallback:
+
+- **The file is invalid or larger than 10 MB:** the run is refused right away and isn't retried. In the platform, the Run button is disabled until you fix the file.
+- **The file couldn't be read from GitHub:** a run a trigger starts is retried for up to 30 minutes before it's refused. A run you start yourself is refused right away, so try again.
+
+The platform won't let you delete or rename a flow that `rules.yaml` names. Renaming or deleting a tag the file names isn't blocked, and leaves the file invalid. Update `rules.yaml` first.
 
 ### What isn't visible in the file
 

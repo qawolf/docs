@@ -7,7 +7,7 @@ keywords: "automatic test runs, run on deploy, PR testing, nightly runs, deploym
 
 A trigger runs a set of flows when your application deploys, or on a schedule. Triggers belong to the workspace, so one trigger can cover staging, production and every preview environment.
 
-You create and edit triggers on the workspace's triggers page.
+You create and edit triggers on the workspace's triggers page, or through the public API and CLI. The triggers page runs flows by tag or as a Smart Smoke Suite. Naming flows one by one takes the API or CLI.
 
 ## Trigger kinds
 
@@ -18,13 +18,13 @@ You create and edit triggers on the workspace's triggers page.
 
 - **A tag** — every flow carrying it. Flows tagged later join automatically.
 - **Named flows** — a fixed set.
-- **A [Smart Smoke Suite](/smart-smoke-suites)** — flows QA Wolf selects from the pull request behind the deploy. Deployment triggers only, and only for deploys tied to a pull request. See [PR testing](/deployment-testing/pr-testing).
+- **A [Smart Smoke Suite](/smart-smoke-suites)**, labeled **Generative suite** on the triggers page — flows QA Wolf selects from the pull request behind the deploy. Deployment triggers only, and only for deploys tied to a pull request. See [PR testing](/deployment-testing/pr-testing).
 
 Give preview deploys their own trigger rather than widening the one that covers staging. A pull request rarely needs everything staging runs, and a Smart Smoke Suite skips every deploy that has no pull request.
 
 ## Pausing
 
-A paused trigger never fires. Resuming brings it back unchanged.
+A paused trigger never fires. Resuming brings back the same configuration. A resumed schedule picks up at its next slot, and slots it missed while paused don't run.
 
 ## Reference
 

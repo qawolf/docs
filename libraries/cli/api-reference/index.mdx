@@ -47,7 +47,7 @@ Every qawolf CLI command exits with one of the codes below.
 | --- | --- | --- |
 | `0` | `success` | The command completed successfully. |
 | `1` | `testFailure` | One or more flows failed, a `qawolf runner run --follow` run did not pass, or a runner action did not take effect. |
-| `2` | `invalidArgs` | A Commander parse error, an unknown subcommand, a bad flag value, or a runner asked for something it can't do, such as a screenshot before its first run. |
+| `2` | `invalidArgs` | A Commander parse error, an unknown subcommand, a bad flag value, or a runner asked for something it can't do, such as a screenshot of an Android or iOS runner before its first run. |
 | `3` | `auth` | `QAWOLF_API_KEY` is missing or invalid. |
 | `4` | `network` | The QA Wolf API was unreachable, a download from storage failed, a registry was unreachable, or a runner could not serve the request yet. |
 | `5` | `config` | `qawolf.config.ts` is invalid, or a file collision occurred during `qawolf init`. |

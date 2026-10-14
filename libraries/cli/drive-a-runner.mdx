@@ -9,7 +9,7 @@ sidebarTitle: "Drive a runner"
 You launch a runner, run a flow on it, then act on its screen and read what it shows. Unlike `qawolf flows run`, this works for iOS flows.
 
 <Check>
-You need an API key, set in `QAWOLF_API_KEY` or stored with `qawolf auth login`. See [Authenticate](/local-execution/authenticate). Run the commands from a directory that holds a flow file and a `package.json`.
+Sign in with `qawolf auth login`, or set `QAWOLF_API_KEY`. See [Authenticate](/local-execution/authenticate). Run the commands from a directory that holds a flow file and a `package.json`.
 </Check>
 
 ## Launch a runner
@@ -22,9 +22,9 @@ You need an API key, set in `QAWOLF_API_KEY` or stored with `qawolf auth login`.
     qawolf runner launch --id my-runner --name ios
     ```
 
-    The id is yours to pick. Launching an id that is already running reconnects to that runner instead of starting a second one. Launching it with a different `--name` fails. The CLI stores the runner as this directory's default, so later commands reach it without `--runner`.
+    The id is yours to pick. Launching an id that is already running reconnects to that runner instead of starting a second one. Launching it with a different `--name` still attaches to the existing runner. To change what it runs, terminate it first or use a new id. The CLI stores the runner as this directory's default, so later commands reach it without `--runner`.
 
-    The command prints a URL. The page shows the runner's screen live to anyone in your workspace, starting with the first run.
+    The command prints a URL. The page shows the runner's screen live to anyone in your workspace.
   </Step>
   <Step>
     Run a flow on the runner:
@@ -33,7 +33,7 @@ You need an API key, set in `QAWOLF_API_KEY` or stored with `qawolf auth login`.
     qawolf runner run flows/login.flow.ts --follow
     ```
 
-    The first run is what starts the runner's screen, so this step is required even if you only want to drive the device by hand. Until then, `screenshot` and `act` exit with code `2`. `run` sends the flow file, the files it imports, and your `package.json`. `--follow` waits for the run to finish and exits with code `1` if it did not pass.
+    On an Android or iOS runner, the first run starts the device session, so this step is required even if you only want to drive the device by hand. Until then, `screenshot`, `act` and `inspect` exit with code `2`. A browser runner's screen starts at launch. The flow's `target` has to match what the runner runs. `run` sends the flow file, the files it imports, and your `package.json`. `--follow` waits for the run to finish and exits with code `1` if it did not pass.
   </Step>
   <Step>
     Drive and inspect the runner with the commands in the sections below. When you're done, terminate it:
@@ -111,6 +111,5 @@ qawolf runner act tap --x 540 --y 1200 --screenshot step-2.jpg
 ```
 
 <Info>
-A runner bills while it's up, so terminate it when you're done. iOS devices must be turned on for your workspace before you can launch an `ios` runner.
-{/* TODO TECH-0000 Pending: confirm whether iOS is still enabled per workspace by feature flag before merging. */}
+A runner bills while it's up, so terminate it when you're done. Android and iOS runners need mobile testing on your plan. Without it, `launch` exits with code `7`.
 </Info>

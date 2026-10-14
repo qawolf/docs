@@ -116,3 +116,12 @@ Check:
 
 - the runner was launched with `--name android` or `--name ios`
 - `--runner` or `QAWOLF_RUNNER_ID` names the runner you meant to inspect
+
+## `runner-target-mismatch`
+
+Cause: `qawolf runner run` sent a flow whose `target` doesn't match what the runner runs, such as an iOS flow to an Android runner.
+
+Check:
+
+- the runner was launched with the `--name` that matches the flow's `target`
+- `--runner` or `QAWOLF_RUNNER_ID` names the runner you meant to use

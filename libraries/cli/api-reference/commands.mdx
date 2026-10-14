@@ -152,7 +152,7 @@ Options:
 
 Launches and drives a browser, an Android device, or an iOS device hosted by QA Wolf. Nothing runs on your machine. For a walkthrough, see [Drive a runner](/libraries/cli/drive-a-runner).
 
-Every subcommand except `launch` and `list` targets a runner in this order: `--runner <id>`, then the `QAWOLF_RUNNER_ID` environment variable, then the runner that `qawolf runner launch` stored for the current directory.
+Every subcommand except `launch` and `list` targets a runner in this order: `--runner <id>`, then the `QAWOLF_RUNNER_ID` environment variable, then the runner that `qawolf runner launch` stored for the current directory. If none of these names a runner, `run`, `act` and `actions` launch a new browser runner, which bills while it's up, and say so on stderr.
 
 ### `runner launch`
 
@@ -166,7 +166,7 @@ qawolf runner launch --id my-runner --name ios
 Options:
 
 - `--id <id>` — the runner's id, chosen by you. Launching an id that is already running reconnects to that runner instead of starting a second one. Without `--id`, the CLI generates a random id.
-- `--name <family>` — what the runner runs: `playwright` for a browser, `android`, or `ios`.
+- `--name <family>` — what the runner runs: `playwright` for a browser, `android`, or `ios`. Default: `playwright`.
 
 ### `runner list`
 
@@ -192,7 +192,7 @@ qawolf runner terminate --runner my-runner
 
 ### `runner run <flowFile>`
 
-Runs a flow on a runner. Sends the flow file, the files it imports, and your `package.json` and `tsconfig.json`. A runner's first run starts its screen, so run a flow before you take screenshots or act on it.
+Runs a flow on a runner. Sends the flow file, the files it imports, and your `package.json` and `tsconfig.json`. On an Android or iOS runner, the first run starts the device session, so run a flow before you take screenshots or act on it. The flow's `target` has to match what the runner runs.
 
 ```bash
 qawolf runner run flows/checkout.flow.ts --follow
@@ -280,7 +280,7 @@ Subcommands:
 
 ### `runner record`
 
-Controls video recording on a browser runner. Start a flow first, so the runner has a screen.
+Controls video recording on a browser runner.
 
 ```bash
 qawolf runner record start --json

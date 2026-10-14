@@ -6,9 +6,9 @@ keywords: "Smart Smoke Suite, smoke tests, smoke suite, generativeSuite, PR test
 
 A Smart Smoke Suite is one way for a [trigger](/triggers/overview) to choose its flows. Instead of running flows you name in advance, the QA Wolf agent selects the flows affected by the pull request behind each deploy. This gives engineers a faster release signal in the review cycle.
 
-Smart Smoke Suites are designed to layer onto your existing coverage strategies. Combined with tags and branch rules, Smart Smoke Suites provide another way to customize your runs in a way that balances speed and coverage. 
+Smart Smoke Suites are designed to layer onto your existing coverage strategies.
 
-The suite has no fixed size. The agent selects the flows it judges affected by the change, so a wide-ranging PR selects more flows than a narrow one.
+The suite has no fixed size. The agent selects the flows it judges affected by the change, so a wide-ranging PR selects more flows than a narrow one. It can also be empty: when the agent judges a change low-risk, or finds no flow that covers it, no run starts.
 
 <Note>
   Smart Smoke Suites are currently in alpha and not available to all customers. Early customers running it in production work closely with QA Wolf to validate the experience and tune selection quality.
@@ -16,17 +16,18 @@ The suite has no fixed size. The agent selects the flows it judges affected by t
 
 ## How it works
 
-1. QA Wolf reads the PR title and description from GitHub.
-2. The agent determines which of your flows to run based on the features affected. 
-3. Selected flows are run in a preview environment.
-4. Results post back through the platform, CLI, Slack, etc. 
+1. QA Wolf reads the pull request behind the deploy: its title and description, plus its changed files and diff on GitHub. On GitLab it reads the merge request's title and description only.
+2. The agent compares the change with your existing flows, along with any instructions on the trigger, and picks the flows the change affects.
+3. The selected flows run against the deploy's URL.
+4. QA Wolf posts the agent's analysis as a comment on the pull request, and reports the result on the pull request as described in [PR testing](/deployment-testing/pr-testing#checks-on-the-pull-request). When no run starts, GitHub gets a passing **QA Wolf Test Results** check.
 
 ## Requirements
 
-- **QA Wolf GitHub App** installed in the target repository.
-- **Stable preview environments** for PRs, with deployments registered as GitHub Deployments or notified to QA Wolf from your pipeline.
+- **A connected GitHub or GitLab integration** covering the deploying repository, so each deploy links to its pull request. See [PR testing](/deployment-testing/pr-testing).
+- **A preview deploy per pull request**, reported through GitHub deployments, a GitLab deployment job, or `deployment.reportStatus`.
+- **A deployment trigger** whose flows are set to **Generative suite** on the triggers page.
 
-Once configured, every new preview deployment automatically starts a targeted test run. Enabling and disabling is a single toggle on the trigger, so you can turn it off instantly to revert to standard PR testing.
+Once it's set up, each preview deploy linked to a pull request gets its own selection. To stop, switch the trigger back to **Flows with selected tags**, or pause it. The change applies to deploys that arrive afterwards.
 
 A Smart Smoke Suite is a [deployment trigger](/triggers/overview) whose action kind is `generativeSuite`; see [Trigger fields](/triggers/reference#action). It needs [PR testing](/deployment-testing/pr-testing): a deploy that is not linked to a pull request is skipped.
 
@@ -34,12 +35,12 @@ A Smart Smoke Suite is a [deployment trigger](/triggers/overview) whose action k
 
 ### How does QA Wolf decide which flows to run?
 
-The QA Wolf agent builds Smart Smoke Suites based on the PR title and description.
+The agent reads the pull request (its title and description, and on GitHub its changed files and diff), your existing flows, and any instructions on the trigger. It picks the flows it judges the change affects.
 
 ### Can we add specific tests to always run on PRs?
 
-Yes. If you've configured your run settings to include specific flows whenever a PR is merged, those will run concurrently alongside any others selected by the agent as part of your Smart Smoke Suite. 
+Name them in the trigger's instructions. Instructions guide the agent's selection; they don't guarantee a flow runs.
 
 ### Do we have to write new flows specifically for Smart Smoke Suites?
 
-No. The agent will select from the flows you already have. 
+No. The agent selects from the flows you already have.
