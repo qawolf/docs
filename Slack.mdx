@@ -1,6 +1,6 @@
 ---
 title: "Integrate with Slack"
-description: "Connect Slack so your team can ask the QA Wolf agent for help in a channel or a direct message."
+description: "Connect Slack to add the QA Wolf agent to your Slack workspace, then mention it in a channel or message it directly."
 sidebarTitle: "Slack"
 keywords:
   - "chat"
@@ -10,14 +10,14 @@ keywords:
   - "QA Wolf agent"
 ---
 
-Connecting Slack lets anyone in your Slack workspace talk to the [QA Wolf agent](/agent-in-your-tools). Mention it in a channel or send it a direct message, and it answers in a thread.
+Connecting Slack installs the QA Wolf app in your Slack workspace. That app is the [QA Wolf agent](/agent-in-your-tools), so there's nothing else to turn on. Once Slack is connected, anyone in your Slack workspace can message the agent directly, or mention **@QA Wolf** in any channel the app has been added to.
 
 ## Requirements
 
 - Access to a QA Wolf workspace
 - Permission to add apps to your Slack workspace
 
-## Connect Slack
+## Add the agent to Slack
 
 <Steps>
   <Step>
@@ -27,16 +27,22 @@ Connecting Slack lets anyone in your Slack workspace talk to the [QA Wolf agent]
     Follow the prompts to sign in to Slack and allow the QA Wolf app in your Slack workspace.
   </Step>
   <Step>
-    Back in QA Wolf, confirm the Slack card reads **Connected**.
+    Back in QA Wolf, confirm the Slack card reads **Connected**. The QA Wolf app is now in your Slack workspace.
   </Step>
 </Steps>
 
 A Slack workspace connects to one QA Wolf workspace at a time.
 
+## Add the agent to a channel
+
+The agent answers only in channels where the QA Wolf app is a member. Connecting Slack doesn't add it to any channel.
+
+To add it, send `/invite @QA Wolf` in the channel. This works in public and private channels. Direct messages need no invite.
+
 ## Talk to the agent
 
-- **In a channel** — invite the QA Wolf app to the channel, then mention **@QA Wolf** in a message.
-- **In a direct message** — open the QA Wolf app in Slack and message it. A direct message doesn't need a mention. The app's **Messages** tab suggests three ways to start: **Report a bug**, **Investigate a failure**, and **Check run status**.
+- **In a channel** — mention **@QA Wolf** in a message, in a channel the app has been added to.
+- **In a direct message** — search Slack for **QA Wolf**, open the app, and message it. A direct message doesn't need a mention. The app's **Messages** tab suggests three ways to start: **Report a bug**, **Investigate a failure**, and **Check run status**.
 
 The agent always replies in a thread, and the thread is the conversation. Later messages there don't need a mention. It answers the ones meant for it and stays quiet when people are talking to each other. If someone in the thread asks it to stop replying, it waits until someone addresses it again.
 
@@ -54,7 +60,7 @@ QA Wolf posts run alerts and bug reports to the Slack channels it has set up for
 
 ## If the agent doesn't answer
 
-- **It isn't in the channel.** Invite the QA Wolf app, then mention it again.
+- **The app isn't in the channel.** Send `/invite @QA Wolf` in the channel, then mention it again.
 - **Slack isn't connected.** The agent ignores messages from a Slack workspace that isn't connected, without replying. Check the Slack card under **Workspace settings → Integrations**.
 - **You edited your message.** The agent reads new messages, not edits. Post the request again.
 
