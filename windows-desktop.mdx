@@ -1,0 +1,209 @@
+---
+title: "Testing Windows desktop apps"
+description: "Run flows against native Windows apps, alone or alongside Chrome, on a fresh Windows VM for every run."
+sidebarTitle: "Windows apps"
+keywords: "Windows, desktop app, native app, WinAppDriver, Appium Windows driver, Win32, MSI, installer, UI Automation"
+---
+
+QA Wolf runs Windows flows on a Windows desktop VM. A flow drives native apps through the Appium Windows driver and Chrome through Playwright, and one flow can use both.
+
+Each run gets a fresh VM, and QA Wolf discards it when the run ends. Nothing a run installs or changes carries over to the next one.
+
+<Check>
+  Windows desktop testing is turned on per workspace. Ask your QA Wolf representative to enable it. Until then, a Windows flow fails to start with `Windows desktop testing is not enabled for your team.`
+</Check>
+
+## What the VM comes with
+
+- **The desktop** — 1920×1080, signed in as the user `qawolf`.
+- **Chrome** — what `launch()` connects to. Its version is pinned and updates are off.
+- **Adobe Acrobat Reader** — pinned the same way.
+- **The Appium Windows driver** — what `startApp()` drives native apps through.
+
+A flow installs your own app during the run, as [Start your app](#start-your-app) describes. A private pool can have it installed already.
+
+## Choose a target
+
+| Target | Runs on |
+| --- | --- |
+| `Windows 11 - Desktop` | The shared pool of VMs, with the software above. |
+| `Windows 11 - Desktop (private)` | A pool QA Wolf sets up for your workspace alone. Its VMs can come with software a flow can't install during a run, such as licensed apps. |
+
+Ask your QA Wolf representative for a private pool. A flow on the private target fails to start until the pool exists.
+
+## Start your app
+
+`startApp()` opens an app and returns a WebdriverIO driver for it. What you pass decides how the app gets onto the VM:
+
+| You pass | What happens |
+| --- | --- |
+| A path on the VM, such as `C:\Program Files\MyApp\MyApp.exe` | The app at that path launches. |
+| An app user model ID, such as `Microsoft.WindowsCalculator_8wekyb3d8bbwe!App` | The installed app launches. |
+| A file name, such as `MyApp.msi` | QA Wolf finds the file among your [uploaded builds](/run-inputs-executables-signed-urls), then in [team storage](/use-files-in-flows), and copies it to the VM. |
+| An `http` or `https` URL | The VM downloads the file. |
+| Nothing | A session opens over the whole desktop rather than one app. |
+
+QA Wolf installs an `.msi` before the session opens, and the session starts the program it installed. Any other file launches as it is.
+
+Example:
+
+```ts
+import { expect, flow, startApp } from "@qawolf/flows/windows";
+
+export default flow(
+  "Sign in to the desktop app",
+  "Windows 11 - Desktop",
+  async ({ test }) => {
+    const app = await startApp("MyApp.msi");
+
+    await test("sign in", async () => {
+      await app.$("~UsernameField").setValue(process.env.APP_USERNAME);
+      await app.$("~PasswordField").setValue(process.env.APP_PASSWORD);
+      await app.$("~SignInButton").click();
+    });
+
+    await test("dashboard opens", async () => {
+      await expect(app.$("~DashboardTitle")).toBeDisplayed();
+    });
+  },
+);
+```
+
+### When an installer leaves several programs
+
+If the `.msi` installs more than one program, name the one to start with `qawolf:launch`. Without it, the start fails and the error lists the programs the installer left.
+
+```ts
+const app = await startApp({
+  "appium:app": "MyApp.msi",
+  "qawolf:launch": "C:\\Program Files\\MyApp\\MyApp.exe",
+});
+```
+
+An install that runs longer than 15 minutes fails, and the run log shows the end of the installer's log.
+
+## Use the browser and apps together
+
+`launch: true` in the flow configuration connects to Chrome on the VM and passes `page`, `context` and `browser` to the callback. On Android and iOS, `launch: true` starts the app instead. On Windows, call `startApp()` for each native app. Each call returns its own driver, and apps started earlier stay open.
+
+Example:
+
+```ts
+import { expect, flow, startApp } from "@qawolf/flows/windows";
+
+export default flow(
+  "Order placed in the desktop app appears on the dashboard",
+  { target: "Windows 11 - Desktop", launch: true },
+  async ({ page, test }) => {
+    const app = await startApp("MyApp.msi");
+
+    await test("place an order in the desktop app", async () => {
+      await app.$("~NewOrderButton").click();
+      await app.$("~SubmitOrderButton").click();
+      await expect(app.$("~OrderConfirmation")).toBeDisplayed();
+    });
+
+    await test("the order appears on the dashboard", async () => {
+      await page.goto(`${process.env.BASE_URL}/orders`);
+      await expect(page.getByText("Order submitted")).toBeVisible();
+    });
+  },
+);
+```
+
+`expect` from `@qawolf/flows/windows` takes either kind of subject. A WebdriverIO driver or element gets the WebdriverIO matchers, and a Playwright `page` or locator gets the Playwright ones.
+
+## Find elements
+
+Prefer an element's `AutomationId`. `app.$("~SubmitButton")` finds the element whose AutomationId is `SubmitButton`.
+
+Skip numeric AutomationIds. Win32 and Delphi apps put window handles there, and those change every launch. Match on `Name` with XPath over the UI Automation tree instead:
+
+```ts
+await app.$('//Button[@Name="Submit"]').click();
+```
+
+In the flow editor, the **Elements** tab shows the UI Automation tree of a window you choose from its toolbar. It works while no flow is running.
+
+### Legacy Win32 apps
+
+- Delphi and other VCL apps often leave edit fields without a `Name`, and list them in creation order rather than screen order. Find the fields by class inside a named pane, and sort them by `getLocation()`.
+- Some custom edit fields reject `setValue()`. Click the field, then type with `app.execute("windows: keys", { actions: [{ text: "..." }] })`.
+- Window titles often carry app state. Wait on `getTitle()` before driving a window.
+
+Example:
+
+```ts
+await app.waitUntil(async () => (await app.getTitle()).includes("Connected"));
+```
+
+## Move files on and off the VM
+
+Team storage and uploaded builds are mounted on the runner, not on the VM. To open a file in a desktop app, copy it onto the VM with the driver's `pushFile()`, which takes the contents as base64. Read a file back with `pullFile()`, which returns base64.
+
+Example:
+
+```ts
+import fs from "node:fs/promises";
+import { flow, startApp } from "@qawolf/flows/windows";
+
+export default flow("Open a PDF", "Windows 11 - Desktop", async () => {
+  const desktop = await startApp();
+  const pdf = await fs.readFile(`${process.env.TEAM_STORAGE_DIR}/sample.pdf`);
+
+  await desktop.pushFile(
+    "C:\\Users\\qawolf\\Desktop\\sample.pdf",
+    pdf.toString("base64"),
+  );
+});
+```
+
+## Keep screenshots stable
+
+An app's window can open at a different size from one run to the next, which breaks screenshot comparisons and coordinates. Pin it with `qawolf:windowSize`:
+
+```ts
+const app = await startApp({
+  "appium:app": "MyApp.msi",
+  "qawolf:windowSize": { width: 1280, height: 800 },
+});
+
+await expect(app).toHaveScreenshot("home", { maxMisMatchPercentage: 1 });
+```
+
+The start fails if the app won't take that size. A baseline doesn't record the window size, so an unpinned window that opens at another size fails the comparison rather than saving a new baseline. See [Native mobile screenshots](/visual-diffing-native-app) for the `toHaveScreenshot` options, which are the same on Windows.
+
+## Test every new build from CI
+
+A Windows build takes the same path as [Mobile build testing](/mobile-build-testing). Your pipeline uploads the build, reports a deployment that carries the build's path as `RUN_INPUT_PATH`, and a trigger starts the runs. Follow that page with your `.msi` in place of the `.apk`, through the GitHub Actions, Node.js or Webhook steps. If Android or iOS builds report into the same environment, give the Windows build its own `service` and its own trigger.
+
+The difference is in the flow. `startApp()` doesn't fall back to `RUN_INPUT_PATH` the way the mobile `launch()` does, so pass it in. Falling back to the build's file name lets a run started by hand use the latest upload:
+
+```ts
+const app = await startApp(process.env.RUN_INPUT_PATH ?? "app-staging.msi");
+```
+
+`startApp()` takes either the absolute path under `/home/wolf/run-inputs-executables/` that Mobile build testing uses, or the bare file name.
+
+## Drive a Windows desktop from a coding agent
+
+A coding agent connected through the [QA Wolf MCP](/qawolf-mcp) launches a Windows runner with `runner_launch` and `runnerName: "windows"`. The runner has no screen until its first flow run claims a VM, and until then the screen tools answer `screen-needs-a-run`.
+
+After that, `runner_takeScreenshot`, `runner_performAction` and `runner_inspectMobile` work on the whole desktop. `tap` and `fill` also take a UI Automation XPath selector. `navigate` is refused, so open pages from a flow.
+
+## Troubleshooting
+
+- **`Windows desktop testing is not enabled for your team.`** — Windows isn't turned on for the workspace. Ask your QA Wolf representative to enable it.
+- **`Device claim is unfulfillable: no devices exist matching the requested selector.`** — no pool serves the flow's target. Usually the flow is on `Windows 11 - Desktop (private)` and the workspace has no private pool. The run fails about 30 seconds after it starts.
+- **`Timeout while waiting for device allocation`** — every VM in the pool stayed busy for 30 minutes. While it waits, the run log shows `Waiting for device allocation. Queue position: N`.
+- **The run lost its VM while paused at a breakpoint** — QA Wolf reclaims a VM after 60 seconds with no activity from the run.
+- **`installed several programs, so name the one to start with "qawolf:launch"`** — the `.msi` left more than one program. See [When an installer leaves several programs](#when-an-installer-leaves-several-programs).
+- **`"qawolf:windowSize" needs an app to size`** — a session over the whole desktop has no window to size. Pass `appium:app` or `appium:appTopLevelWindow` with it.
+- **A selector matched once and then stopped** — it probably uses a numeric AutomationId. See [Find elements](#find-elements).
+
+## Related
+
+- [`@qawolf/flows/windows`](/libraries/flows/api-reference/windows) — every export, capability and default.
+- [Mobile build testing](/mobile-build-testing) — upload a build and report it as a deployment.
+- [Use files in flows](/use-files-in-flows) — upload a file to team storage.
+- [Native mobile screenshots](/visual-diffing-native-app) — `toHaveScreenshot` options.

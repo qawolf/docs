@@ -1,6 +1,6 @@
 ---
 title: "Anatomy of a flow"
-description: "What each part of a QA Wolf flow does, and how the same structure carries across web, iOS, and Android."
+description: "What each part of a QA Wolf flow does, and how the same structure carries across web, iOS, Android, and Windows."
 ---
 
 If the agent generated a flow for you and you want to understand what it produced, here's what each part does — and how those same parts extend once you're testing the same behavior on more than one platform.
@@ -69,6 +69,10 @@ import { flow, expect } from "@qawolf/flows/ios";
 import { flow, expect } from "@qawolf/flows/android";
 ```
 
+```typescript Windows
+import { flow, expect, startApp } from "@qawolf/flows/windows";
+```
+
 ```typescript Node
 import { flow } from "@qawolf/flows/cli";
 ```
@@ -76,7 +80,7 @@ import { flow } from "@qawolf/flows/cli";
 </CodeGroup>
 
 <Warning>
-  For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`, which causes assertions to bypass QA Wolf's reporting. iOS, Android, and Node flows don't have this pitfall: `expect` is wired to the QA Wolf runner automatically.
+  For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`, which causes assertions to bypass QA Wolf's reporting. Windows flows import it from `@qawolf/flows/windows` for the same reason. iOS, Android, and Node flows don't have this pitfall: `expect` is wired to the QA Wolf runner automatically.
 </Warning>
 
 ## Flow wrapper
@@ -223,9 +227,10 @@ A launch-enabled flow also receives the platform object, which differs by platfo
 | Web (Electron) | `page` |
 | iOS | `driver` — the Appium/WebdriverIO session for the device |
 | Android | `driver` — the Appium/WebdriverIO session for the device |
+| Windows | `page`, `context`, `browser` — Chrome on the Windows VM. Native apps come from [`startApp()`](/libraries/flows/api-reference/windows#startapp), not from the callback. |
 | Node | nothing additional — only `inputs`, `setOutput`, and `test` |
 
-For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), and [iOS](/libraries/flows/api-reference/ios#flow-callback-context).
+For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), [iOS](/libraries/flows/api-reference/ios#flow-callback-context), and [Windows](/libraries/flows/api-reference/windows#flow-callback-context).
 
 ## Environment variables
 
