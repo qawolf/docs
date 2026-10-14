@@ -1,6 +1,6 @@
 ---
 title: "The agent in Slack, Linear, and GitHub"
-description: "Ask the QA Wolf agent for help from a Slack thread, a Linear issue, or a GitHub pull request, and get the answer in the same place."
+description: "Set up the QA Wolf agent in Slack, Linear, and GitHub pull requests, and see what you can ask it there."
 sidebarTitle: "Agent in your tools"
 keywords:
   - "QA Wolf agent"
@@ -11,30 +11,36 @@ keywords:
   - "delegate"
 ---
 
-The QA Wolf agent you work with inside QA Wolf also answers in the tools your team already uses. Mention it in a Slack thread, a Linear issue, or a GitHub pull request, and it replies there.
+The QA Wolf agent you work with inside QA Wolf also answers in Slack, Linear, and GitHub pull requests. In each tool you connect it once, then choose where it can answer.
 
-| Where | How you start a conversation | Setup |
+| Tool | What to set up | Guide |
 |---|---|---|
-| Slack | Mention **@QA Wolf** in a channel, or send it a direct message. | [Slack](/Slack) |
-| Linear | Mention **QA Wolf** in an issue comment, or delegate the issue to it. | [Linear](/Linear#work-with-the-agent-in-linear) |
-| GitHub | Comment `@qawolf` on a pull request. | [GitHub pull requests](/github-pull-requests) |
-| Coding agents | Ask from Claude Code, Codex, or another coding agent. | [QA Wolf MCP](/qawolf-mcp) |
+| Slack | Connect Slack, then add the agent to each channel. | [Slack](/Slack) |
+| Linear | Connect Linear, then give the agent access to each team. | [Linear](/Linear) |
+| GitHub | Have your QA Wolf representative activate `@qawolf` comments, then give the QA Wolf GitHub App access to each repository. | [GitHub pull requests](/github-pull-requests) |
+| Coding agents | Install the QA Wolf MCP in Claude Code, Codex, or another coding agent. | [QA Wolf MCP](/qawolf-mcp) |
 
-## What you can ask for
+## What you can ask the agent
 
-The agent works in your QA Wolf workspace: its flows, runs, environments, and bug reports. From any of these tools you can ask it to:
+The agent works from your QA Wolf workspace: its flows, runs, environments, and bug reports. From any of these tools you can ask it to:
 
 - Explain why a run failed, or what changed since the last one.
 - Check the status of your latest runs.
 - Report a bug in your application.
 - Create a flow, fix a failing one, or run flows.
 
-Everything it changes, it changes in QA Wolf. It reads the thread, issue, or pull request you asked from, and the only thing it adds there is its replies. It never builds, runs, or edits your application's code.
+Each guide has example requests for its tool.
 
-## How a conversation works
+Everything the agent changes, it changes in QA Wolf. It reads the thread, issue, or pull request you asked from, and the only thing it adds there is its replies. It never builds, runs, or edits your application's code.
 
-- **A thread is a conversation.** A Slack thread, a Linear agent session, a pull request's Conversation tab, and each inline review thread each hold their own conversation.
-- **Follow-ups don't need another mention.** Once the agent is in a thread, reply there as you would to a colleague. It answers messages meant for it and stays quiet when people are talking to each other.
-- **It reads what came before.** When you mention it, the agent sees the thread's earlier messages, or the issue or pull request it belongs to. You can bring it into a discussion partway through.
-- **The person asking doesn't need a QA Wolf account.** Anyone in a connected Slack workspace or Linear team can ask. In GitHub, members of the organization and collaborators on the repository can ask.
-- **Choices are buttons where the tool supports them.** In Slack and Linear, the agent offers options you select. In GitHub, it asks in plain text.
+## Who can ask
+
+Anyone who can reach the agent in a connected tool can ask it for any of the above. They don't need a QA Wolf account.
+
+- **Slack** — anyone in your Slack workspace, in a direct message or in a channel the agent is in.
+- **Linear** — anyone in a Linear team the agent has access to.
+- **GitHub** — owners and members of the repository's organization, collaborators, and contributors with write access.
+
+## If the agent doesn't answer
+
+Each guide lists the reasons the agent stays quiet in that tool, and what each of its "can't help" replies means: [Slack](/Slack#if-the-agent-doesnt-answer), [Linear](/Linear#if-the-agent-doesnt-answer), and [GitHub pull requests](/github-pull-requests#if-the-agent-doesnt-answer).
