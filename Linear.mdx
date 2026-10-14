@@ -61,14 +61,14 @@ Anyone in a Linear team the agent has access to can ask. They don't need a QA Wo
 - **Linear was connected before the agent was available.** The session stays pending with no reply, because the agent was never added. Disconnect Linear under **Workspace settings → Integrations**, then connect it again.
 - **A different QA Wolf workspace answers.** A Linear workspace answers to one QA Wolf workspace: the one in your organization that connected Linear most recently. Connect Linear again from the workspace that should answer.
 
-If the agent replies that it can't help, the reply says why:
+If the agent replies with one of these messages, here's what to do:
 
-- **"QA Wolf isn't available for this Linear team."** Add the issue's team to QA Wolf's access, as in [Choose which teams can use the agent](#choose-which-teams-can-use-the-agent), then try again.
-- **"QA Wolf couldn't verify which Linear team this issue belongs to."** Try again, and contact QA Wolf support if it keeps happening.
-- **"…its QA Wolf team doesn't have a default environment."** Set a default environment for your QA Wolf workspace, then try again.
-- **"…I can't determine which QA Wolf user should own this conversation."** Create a [trigger](/triggers/overview) on your default environment, then try again.
-- **"QA Wolf reviewed this but didn't produce a response."** Reply in the session with what you'd like the agent to do.
-- **"QA Wolf couldn't continue working on this request."** Mention QA Wolf again to start a new session, and contact QA Wolf support if it keeps happening.
+| Message | What to do |
+|---|---|
+| "QA Wolf isn't available for this Linear team." | Add the issue's team to QA Wolf's access. See [Choose which teams can use the agent](#choose-which-teams-can-use-the-agent). |
+| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then mention QA Wolf again. |
+| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then mention QA Wolf again. |
+| "QA Wolf reviewed this but didn't produce a response." | Reply in the session with what you'd like the agent to do. |
 
 ## Bug reports and coverage requests
 

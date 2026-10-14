@@ -66,10 +66,12 @@ Anyone in your Slack workspace can ask for any of these, in a direct message or 
 - **You edited your message.** The agent reads new messages, not edits. Post the request again.
 - **Someone told it to stop.** If someone in the thread asked the agent to stop replying, it stays quiet there until someone asks it something new.
 
-If the agent replies that it can't answer yet, the reply names what's missing in your QA Wolf workspace:
+If the agent replies with one of these messages, here's what to do:
 
-- **"…its QA Wolf team doesn't have a default environment."** Set a default environment for your QA Wolf workspace, then ask again.
-- **"…I can't determine which QA Wolf user should own this conversation."** Create a [trigger](/triggers/overview) on your default environment, then ask again.
+| Message | What to do |
+|---|---|
+| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then ask again. |
+| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then ask again. |
 
 ## Disconnect Slack
 
