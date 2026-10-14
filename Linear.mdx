@@ -35,6 +35,8 @@ The same connection can also sync QA Wolf bug reports with a Linear team. That's
   </Step>
 </Steps>
 
+A Linear workspace answers to one QA Wolf workspace: the one in your organization that connected Linear most recently.
+
 ## Choose which teams can use the agent
 
 When a Linear admin approves the QA Wolf app, Linear asks which teams it can access. The agent only works on issues in those teams.
@@ -55,25 +57,26 @@ The agent reads the issue's title, description, status, labels, and earlier comm
 
 Anyone in a Linear team the agent has access to can ask. They don't need a QA Wolf account.
 
-## If the agent doesn't answer
+## Agent notices
 
-If the agent doesn't reply as expected, check these:
+If the agent posts one of these notices, here's what to do:
+
+| Notice | What to do |
+|---|---|
+| "QA Wolf isn't available for this Linear team." | Add the issue's team to QA Wolf's access. See [Choose which teams can use the agent](#choose-which-teams-can-use-the-agent). |
+| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then mention QA Wolf again. |
+| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then mention QA Wolf again. |
+| "QA Wolf reviewed this but didn't produce a response." | Reply in the session with what you'd like the agent to do. |
+
+## Agent doesn't respond
+
+If the agent doesn't reply at all, check these:
 
 | Cause | What to do |
 |---|---|
 | The Linear card in QA Wolf shows **Linear is connected, but QA Wolf couldn't finish setting up the agent**. | Select **Retry setup** on the card. |
 | The Linear card in QA Wolf shows **Linear is connected, but QA Wolf couldn't enable the agent**. | Contact QA Wolf support. |
 | Linear was connected before the agent was available, so the session stays pending with no reply. | Disconnect Linear under **Workspace settings → Integrations**, then connect it again. |
-| A different QA Wolf workspace answers. | Connect Linear again from the workspace that should answer. A Linear workspace answers to the QA Wolf workspace in your organization that connected it most recently. |
-
-If the agent replies with one of these messages, here's what to do:
-
-| Message | What to do |
-|---|---|
-| "QA Wolf isn't available for this Linear team." | Add the issue's team to QA Wolf's access. See [Choose which teams can use the agent](#choose-which-teams-can-use-the-agent). |
-| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then mention QA Wolf again. |
-| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then mention QA Wolf again. |
-| "QA Wolf reviewed this but didn't produce a response." | Reply in the session with what you'd like the agent to do. |
 
 ## Bug reports and coverage requests
 

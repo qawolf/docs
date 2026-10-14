@@ -58,7 +58,16 @@ Attach screenshots to show what you mean. The agent reads up to five images per 
 
 Anyone in your Slack workspace can ask for any of these, in a direct message or in a channel the agent is in. They don't need a QA Wolf account.
 
-## If the agent doesn't answer
+## Agent notices
+
+If the agent posts one of these notices, here's what to do:
+
+| Notice | What to do |
+|---|---|
+| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then ask again. |
+| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then ask again. |
+
+## Agent doesn't respond
 
 If the agent doesn't reply at all, check these:
 
@@ -69,13 +78,6 @@ If the agent doesn't reply at all, check these:
 | A bot, an app, or a Slack workflow posted the message. | Post the request yourself. The agent answers people only. |
 | The message was edited. | Post the request again as a new message. The agent doesn't read edits. |
 | Someone in the thread told the agent to stop replying. | Ask it something new in the thread. |
-
-If the agent replies with one of these messages, here's what to do:
-
-| Message | What to do |
-|---|---|
-| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then ask again. |
-| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then ask again. |
 
 ## Disconnect Slack
 

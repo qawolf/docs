@@ -56,9 +56,19 @@ The agent reads the pull request's title, description, and changed files. It als
 
 The agent answers the owners and members of the repository's organization, and the repository's collaborators. Other contributors need write access to the repository. People asking don't need a QA Wolf account.
 
-## If the agent doesn't answer
+## Agent notices
 
-The agent doesn't reply to a comment it ignores, so check these:
+If the agent posts this notice, here's what to do:
+
+| Notice | What to do |
+|---|---|
+| "QA Wolf can't answer `@qawolf` comments for this GitHub organization because more than one QA Wolf workspace is connected." | In the QA Wolf workspace that should answer, open **Workspace settings → Integrations**, open the GitHub card's menu, and select **Configure**. Check **Answer @qawolf comments for this GitHub organization**, then mention `@qawolf` again. |
+
+Checking the box in another workspace in your organization moves the answering to that workspace.
+
+## Agent doesn't respond
+
+The agent doesn't post anything when it ignores a comment, so check these:
 
 | Cause | What to do |
 |---|---|
@@ -70,11 +80,3 @@ The agent doesn't reply to a comment it ignores, so check these:
 | The commenter isn't an organization owner or member, a collaborator, or a contributor with write access. | Ask someone with write access to the repository to comment instead. |
 | A bot posted the comment. | Post the request yourself. The agent answers people only. |
 | Your QA Wolf workspace has no default environment. | Set a default environment for your QA Wolf workspace, then comment again. |
-
-If the agent replies with this message, here's what to do:
-
-| Message | What to do |
-|---|---|
-| "QA Wolf can't answer `@qawolf` comments for this GitHub organization because more than one QA Wolf workspace is connected." | In the QA Wolf workspace that should answer, open **Workspace settings → Integrations**, open the GitHub card's menu, and select **Configure**. Check **Answer @qawolf comments for this GitHub organization**, then mention `@qawolf` again. |
-
-Checking the box in another workspace in your organization moves the answering to that workspace.
