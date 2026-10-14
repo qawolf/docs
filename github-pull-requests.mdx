@@ -24,11 +24,11 @@ Comment `@qawolf` on a pull request and the [QA Wolf agent](/agent-in-your-tools
 
 The agent marks each comment it reads with 👀 and answers with a comment of its own. Follow-ups in the same thread don't need another mention. It answers the comments meant for it and stays quiet when people are talking to each other.
 
-`@qawolf` counts anywhere in a comment, in any case, except inside code, a code block or a link. `@qawolf-team`, `@qawolf/…` and email addresses don't count.
+`@qawolf` counts anywhere in a comment, in any case, except inside code, a code block, or a link. `@qawolf-team`, `@qawolf/…`, and email addresses don't count.
 
 ## What the agent reads and does
 
-When you mention it, the agent sees the pull request's title, description and changed files, and the earlier comments in the thread. For a large pull request it receives up to 200 changed files and reads the rest from GitHub when it needs them.
+When you mention it, the agent sees the pull request's title, description, and changed files. It also sees the earlier comments in the thread. For a large pull request it receives up to 200 changed files and reads the rest from GitHub when it needs them.
 
 It never writes to your repository and never runs the pull request's code. Its work happens in your QA Wolf workspace, in the environment that matches the pull request:
 
@@ -40,7 +40,7 @@ A flow you ask it to create is finished only once it passes and is active. The a
 
 ## Who can ask
 
-The agent answers owners and members of the repository's organization and collaborators on the repository. Other contributors need write access to the repository. It ignores everyone else. People asking don't need a QA Wolf account.
+The agent answers the owners and members of the repository's organization, and the repository's collaborators. Other contributors need write access to the repository. It ignores everyone else. People asking don't need a QA Wolf account.
 
 ## More than one QA Wolf workspace on one GitHub organization
 

@@ -1,6 +1,6 @@
 ---
-title: "The agent in Slack, Linear and GitHub"
-description: "Ask the QA Wolf agent for help from a Slack thread, a Linear issue or a GitHub pull request, and get the answer in the same place."
+title: "The agent in Slack, Linear, and GitHub"
+description: "Ask the QA Wolf agent for help from a Slack thread, a Linear issue, or a GitHub pull request, and get the answer in the same place."
 sidebarTitle: "Agent in your tools"
 keywords:
   - "QA Wolf agent"
@@ -11,29 +11,29 @@ keywords:
   - "delegate"
 ---
 
-The QA Wolf agent you work with inside QA Wolf also answers in the tools your team already uses. Mention it in a Slack thread, a Linear issue or a GitHub pull request, and it replies there.
+The QA Wolf agent you work with inside QA Wolf also answers in the tools your team already uses. Mention it in a Slack thread, a Linear issue, or a GitHub pull request, and it replies there.
 
 | Where | How you start a conversation | Setup |
 |---|---|---|
 | Slack | Mention **@QA Wolf** in a channel, or send it a direct message. | [Slack](/Slack) |
 | Linear | Mention **QA Wolf** in an issue comment, or delegate the issue to it. | [Linear](/Linear#work-with-the-agent-in-linear) |
 | GitHub | Comment `@qawolf` on a pull request. | [GitHub pull requests](/github-pull-requests) |
-| Coding agents | Ask from Claude Code, Codex or another coding agent. | [QA Wolf MCP](/qawolf-mcp) |
+| Coding agents | Ask from Claude Code, Codex, or another coding agent. | [QA Wolf MCP](/qawolf-mcp) |
 
 ## What you can ask for
 
-The agent works in your QA Wolf workspace: its flows, runs, environments and bug reports. From any of these tools you can ask it to:
+The agent works in your QA Wolf workspace: its flows, runs, environments, and bug reports. From any of these tools you can ask it to:
 
 - Explain why a run failed, or what changed since the last one.
 - Check the status of your latest runs.
 - Report a bug in your application.
 - Create a flow, fix a failing one, or run flows.
 
-Everything it changes, it changes in QA Wolf. It reads the thread, issue or pull request you asked from, and the only thing it adds there is its replies. It never builds, runs or edits your application's code.
+Everything it changes, it changes in QA Wolf. It reads the thread, issue, or pull request you asked from, and the only thing it adds there is its replies. It never builds, runs, or edits your application's code.
 
 ## How a conversation works
 
-- **A thread is a conversation.** A Slack thread, a Linear agent session, a pull request's Conversation tab and each inline review thread each hold their own conversation.
+- **A thread is a conversation.** A Slack thread, a Linear agent session, a pull request's Conversation tab, and each inline review thread each hold their own conversation.
 - **Follow-ups don't need another mention.** Once the agent is in a thread, reply there as you would to a colleague. It answers messages meant for it and stays quiet when people are talking to each other.
 - **It reads what came before.** When you mention it, the agent sees the thread's earlier messages, or the issue or pull request it belongs to. You can bring it into a discussion partway through.
 - **The person asking doesn't need a QA Wolf account.** Anyone in a connected Slack workspace or Linear team can ask. In GitHub, members of the organization and collaborators on the repository can ask.
