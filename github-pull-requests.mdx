@@ -58,31 +58,23 @@ The agent answers the owners and members of the repository's organization, and t
 
 ## If the agent doesn't answer
 
-The agent doesn't reply to a comment it ignores, so check each of these:
+The agent doesn't reply to a comment it ignores, so check these:
 
-- **`@qawolf` comments aren't activated.** Ask your QA Wolf representative to activate them for your workspace.
-- **The GitHub App can't access the repository.** Give it access, as in [Give the agent access to each repository](#give-the-agent-access-to-each-repository).
-- **The comment is on an issue.** The agent answers on pull requests only.
-- **The mention is in code or a link.** `@qawolf` inside code, a code block, or a link doesn't count. Neither do `@qawolf-team`, `@qawolf/…`, or email addresses.
-- **The comment was edited, or is a review summary.** The agent reads new comments on the pull request and on lines of its diff. It doesn't read edits or the summary you submit with a review. Post a new comment instead.
-- **The commenter can't ask.** Only organization owners and members, collaborators, and contributors with write access can ask.
-- **A bot posted the comment.** The agent answers people only.
-- **Your workspace has no default environment.** Set a default environment for your QA Wolf workspace, then comment again.
+| Cause | What to do |
+|---|---|
+| `@qawolf` comments aren't activated. | Ask your QA Wolf representative to activate them for your workspace. |
+| The GitHub App can't access the repository. | Give it access. See [Give the agent access to each repository](#give-the-agent-access-to-each-repository). |
+| The comment is on an issue. | Ask on a pull request. The agent answers on pull requests only. |
+| The mention is in code or a link. | Mention `@qawolf` in plain text. `@qawolf-team`, `@qawolf/…`, and email addresses don't count. |
+| The comment was edited, or is the summary of a review. | Post a new comment on the pull request or on a line of its diff. |
+| The commenter isn't an organization owner or member, a collaborator, or a contributor with write access. | Ask someone with write access to the repository to comment instead. |
+| A bot posted the comment. | Post the request yourself. The agent answers people only. |
+| Your QA Wolf workspace has no default environment. | Set a default environment for your QA Wolf workspace, then comment again. |
 
-### The agent says more than one QA Wolf workspace is connected
+If the agent replies with this message, here's what to do:
 
-If several QA Wolf workspaces connect repositories through the same GitHub App installation, one of them has to answer. Until one is chosen, the agent replies that it can't answer `@qawolf` comments because more than one QA Wolf workspace is connected.
-
-<Steps>
-  <Step>
-    In the QA Wolf workspace that should answer, open **Workspace settings → Integrations**. Under **Code hosting**, open the GitHub card's menu and select **Configure**.
-  </Step>
-  <Step>
-    Check **Answer @qawolf comments for this GitHub organization**.
-  </Step>
-  <Step>
-    Mention `@qawolf` again on the pull request.
-  </Step>
-</Steps>
+| Message | What to do |
+|---|---|
+| "QA Wolf can't answer `@qawolf` comments for this GitHub organization because more than one QA Wolf workspace is connected." | In the QA Wolf workspace that should answer, open **Workspace settings → Integrations**, open the GitHub card's menu, and select **Configure**. Check **Answer @qawolf comments for this GitHub organization**, then mention `@qawolf` again. |
 
 Checking the box in another workspace in your organization moves the answering to that workspace.

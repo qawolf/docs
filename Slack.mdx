@@ -60,11 +60,15 @@ Anyone in your Slack workspace can ask for any of these, in a direct message or 
 
 ## If the agent doesn't answer
 
-- **It isn't in the channel.** Send `/invite @QA Wolf` in the channel, then ask again.
-- **Slack isn't connected.** The agent ignores messages from a Slack workspace that isn't connected, without replying. Check the Slack card under **Workspace settings → Integrations**.
-- **A bot or workflow posted the message.** The agent answers people only. It ignores messages from bots, apps, and Slack workflows.
-- **You edited your message.** The agent reads new messages, not edits. Post the request again.
-- **Someone told it to stop.** If someone in the thread asked the agent to stop replying, it stays quiet there until someone asks it something new.
+If the agent doesn't reply at all, check these:
+
+| Cause | What to do |
+|---|---|
+| The agent isn't in the channel. | Send `/invite @QA Wolf` in the channel, then ask again. |
+| Slack isn't connected. | Check that the Slack card under **Workspace settings → Integrations** reads **Connected**. |
+| A bot, an app, or a Slack workflow posted the message. | Post the request yourself. The agent answers people only. |
+| The message was edited. | Post the request again as a new message. The agent doesn't read edits. |
+| Someone in the thread told the agent to stop replying. | Ask it something new in the thread. |
 
 If the agent replies with one of these messages, here's what to do:
 
