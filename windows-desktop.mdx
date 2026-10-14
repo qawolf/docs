@@ -1,11 +1,11 @@
 ---
 title: "Testing Windows desktop apps"
-description: "Run flows against native Windows apps, alone or alongside Chrome, on a fresh Windows VM for every run."
+description: "Run flows against native Windows apps, alone or alongside Chrome, on a fresh Windows 11 VM for every run."
 sidebarTitle: "Windows apps"
 keywords: "Windows, desktop app, native app, WinAppDriver, Appium Windows driver, Win32, MSI, installer, UI Automation"
 ---
 
-QA Wolf runs Windows flows on a Windows desktop VM. A flow drives native apps through the Appium Windows driver and Chrome through Playwright, and one flow can use both.
+QA Wolf runs Windows flows on a Windows 11 desktop VM. A flow drives native apps through the Appium Windows driver and Chrome through Playwright, and one flow can use both.
 
 Each run gets a fresh VM, and QA Wolf discards it when the run ends. Nothing a run installs or changes carries over to the next one.
 
@@ -15,7 +15,7 @@ Each run gets a fresh VM, and QA Wolf discards it when the run ends. Nothing a r
 
 ## What the VM comes with
 
-- **The desktop** — 1920×1080, signed in as the user `qawolf`.
+- **The desktop** — Windows 11 at 1920×1080, signed in as the user `qawolf`.
 - **Chrome** — what `launch()` connects to. Its version is pinned and updates are off.
 - **Adobe Acrobat Reader** — pinned the same way.
 - **The Appium Windows driver** — what `startApp()` drives native apps through.
