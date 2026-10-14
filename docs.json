@@ -967,6 +967,7 @@
             "pages": [
               "libraries/cli/api-reference/index",
               "libraries/cli/api-reference/commands",
+              "libraries/cli/drive-a-runner",
               "libraries/cli/api-reference/environment-variables",
               "libraries/cli/troubleshooting"
             ]

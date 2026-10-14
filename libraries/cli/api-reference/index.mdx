@@ -1,6 +1,6 @@
 ---
 title: "Overview"
-description: "Overview of qawolf CLI commands, flags, configuration, environment variables, and exit codes for running flows locally."
+description: "Overview of qawolf CLI commands, flags, configuration, environment variables, and exit codes."
 sidebarTitle: "Overview"
 ---
 
@@ -13,6 +13,7 @@ Use this section for stable command descriptions, flags, configuration, environm
 - [`qawolf install`](/libraries/cli/api-reference/commands#install) — install runtime dependencies for the project.
 - [`qawolf init`](/libraries/cli/api-reference/commands#init) — scaffold a project in the current directory.
 - [`qawolf doctor`](/libraries/cli/api-reference/commands#doctor) — diagnose problems running flows locally.
+- [`qawolf runner`](/libraries/cli/api-reference/commands#runner) — launch and drive a QA Wolf-hosted browser, Android device, or iOS device.
 - [`qawolf run`](/libraries/cli/api-reference/commands#run) — trigger and manage QA Wolf runs on the platform.
 
 Example invocation:
@@ -45,10 +46,11 @@ Every qawolf CLI command exits with one of the codes below.
 | Code | Name | Meaning |
 | --- | --- | --- |
 | `0` | `success` | The command completed successfully. |
-| `1` | `testFailure` | One or more flows failed. |
-| `2` | `invalidArgs` | A Commander parse error, an unknown subcommand, or a bad flag value. |
+| `1` | `testFailure` | One or more flows failed, a `qawolf runner run --follow` run did not pass, or a runner action did not take effect. |
+| `2` | `invalidArgs` | A Commander parse error, an unknown subcommand, a bad flag value, or a runner asked for something it can't do, such as a screenshot before its first run. |
 | `3` | `auth` | `QAWOLF_API_KEY` is missing or invalid. |
-| `4` | `network` | The QA Wolf API was unreachable, a download from storage failed, or a registry was unreachable. |
+| `4` | `network` | The QA Wolf API was unreachable, a download from storage failed, a registry was unreachable, or a runner could not serve the request yet. |
 | `5` | `config` | `qawolf.config.ts` is invalid, or a file collision occurred during `qawolf init`. |
 | `6` | `timeout` | A command exceeded its timeout. |
 | `7` | `payment` | The workspace's billing state prevented the command. |
+| `8` | `notFound` | The command named a runner, run, or other resource that does not exist. A runner with that id was never launched, was terminated, or timed out from inactivity. |

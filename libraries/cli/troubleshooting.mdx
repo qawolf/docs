@@ -62,14 +62,15 @@ Check:
 - the SDK is installed via Android Studio or via the standalone `cmdline-tools` package
 - `sdkmanager` exists at `$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager`
 
-## iOS targets are not supported
+## iOS flows are skipped locally
 
-Cause: The selected flow targets an iOS device. The CLI does not yet support iOS execution.
+Cause: The selected flow targets an iOS device. `qawolf flows run` and `qawolf install` do not run iOS flows on your machine.
 
 Check:
 
 - the flow's `target` is set to a web or Android value
 - iOS flows are filtered out of the run with a pattern argument
+- iOS flows run on a device hosted by QA Wolf, launched with `qawolf runner launch --name ios` — see [Drive a runner](/libraries/cli/drive-a-runner)
 
 ## Could not load `@qawolf/testkit`
 
@@ -97,3 +98,21 @@ Check:
 
 - the flow has been ported to a supported target, or
 - the flow is excluded from the run with a pattern argument
+
+## `action-not-supported-on-mobile`
+
+Cause: A browser action, such as `click`, `drag`, `scroll`, or `navigate`, was sent to a mobile runner.
+
+Check:
+
+- the action is `tap`, `swipe`, `fill`, or `type` — see [Drive a mobile device](/libraries/cli/drive-a-runner#drive-a-mobile-device)
+- `--runner` or `QAWOLF_RUNNER_ID` names the runner you meant to drive
+
+## `runner-is-not-mobile`
+
+Cause: A mobile inspect command (`inspect session`, `contexts`, `page-source`, or `elements`) was sent to a browser runner.
+
+Check:
+
+- the runner was launched with `--name android` or `--name ios`
+- `--runner` or `QAWOLF_RUNNER_ID` names the runner you meant to inspect

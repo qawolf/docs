@@ -4,7 +4,7 @@ description: "Reference notes for every qawolf CLI command and flag."
 sidebarTitle: "Commands"
 ---
 
-The qawolf CLI exposes six top-level commands.
+These are the commands most workflows use. Run `qawolf help` to list all of them.
 
 ## `auth`
 
@@ -147,6 +147,154 @@ qawolf doctor --all
 Options:
 
 - `--all` — run every platform check, including platforms the project does not use. Default: `false`.
+
+## `runner`
+
+Launches and drives a browser, an Android device, or an iOS device hosted by QA Wolf. Nothing runs on your machine. For a walkthrough, see [Drive a runner](/libraries/cli/drive-a-runner).
+
+Every subcommand except `launch` and `list` targets a runner in this order: `--runner <id>`, then the `QAWOLF_RUNNER_ID` environment variable, then the runner that `qawolf runner launch` stored for the current directory.
+
+### `runner launch`
+
+Launches a runner and stores it as the current directory's default.
+
+```bash
+qawolf runner launch --id my-runner --name android
+qawolf runner launch --id my-runner --name ios
+```
+
+Options:
+
+- `--id <id>` — the runner's id, chosen by you. Launching an id that is already running reconnects to that runner instead of starting a second one. Without `--id`, the CLI generates a random id.
+- `--name <family>` — what the runner runs: `playwright` for a browser, `android`, or `ios`.
+
+### `runner list`
+
+Lists the runners running in your workspace.
+
+```bash
+qawolf runner list
+qawolf runner list --here
+```
+
+Options:
+
+- `--here` — list only the runners launched from the current directory. Default: `false`.
+
+### `runner terminate`
+
+Ends a runner and the pod it runs on.
+
+```bash
+qawolf runner terminate
+qawolf runner terminate --runner my-runner
+```
+
+### `runner run <flowFile>`
+
+Runs a flow on a runner. Sends the flow file, the files it imports, and your `package.json` and `tsconfig.json`. A runner's first run starts its screen, so run a flow before you take screenshots or act on it.
+
+```bash
+qawolf runner run flows/checkout.flow.ts --follow
+qawolf runner run flows/checkout.flow.ts --lines 12-40 --follow
+qawolf runner run flows/checkout.flow.ts --env-id <env_id>
+```
+
+Options:
+
+- `--follow` — wait for the run to finish and report its status. Exits `1` if the run did not pass. Default: `false`.
+- `--logs` — stream the run's log lines while following. Implies `--follow`.
+- `--env-id <env>` — the id or alias of the environment whose variables the run gets. Defaults to `QAWOLF_ENVIRONMENT`.
+- `--env-file <path>` — a dotenv file whose variables the run gets. Pass this or `--env-id`, not both.
+- `--lines <start-end>` — run only these lines against the runner's current page, instead of the whole flow.
+- `--lines-file <path>` — the file `--lines` refers to, such as a page object. Defaults to `<flowFile>`.
+- `--timeout <seconds>` — stop following after this long. Default: `3600`.
+
+### `runner screenshot`
+
+Saves a JPEG of the runner's screen.
+
+```bash
+qawolf runner screenshot --out step-1.jpg
+```
+
+Options:
+
+- `--out <path>` — the file to write. `-` writes the image to stdout. Default: `screenshot.jpg`.
+
+### `runner act <action>`
+
+Performs one action on the runner's screen. A browser runner takes `click`, `double_click`, `scroll`, `move`, `drag`, `keypress`, `navigate`, and `type`. A mobile runner takes `tap`, `swipe`, `fill`, and `type`.
+
+```bash
+qawolf runner act click --button left --x 480 --y 260 --screenshot step-2.jpg
+qawolf runner act tap --selector '//*[@content-desc="Continue"]'
+qawolf runner act swipe --from 540,1600 --to 540,600 --duration-ms 1500
+```
+
+Options:
+
+- `--x <pixels>`, `--y <pixels>` — the point to act on, in screenshot pixels.
+- `--selector <selector>` — `tap` or `fill`: the element to act on. `tap` takes it in place of `--x` and `--y`.
+- `--strategy <strategy>` — how `--selector` is resolved: `xpath`, `ios-predicate`, or `shadow`. Default: `xpath`.
+- `--text <text>` — `type`: the text to type. `fill`: the field's new value.
+- `--from <x,y>`, `--to <x,y>` — `swipe`: the start and end points.
+- `--duration-ms <ms>` — `swipe`: how long it takes, up to `10000`.
+- `--button <button>` — `click`: `left`, `right`, `wheel`, `back`, or `forward`.
+- `--keys <keys...>` — `keypress`: modifiers and the key, for example `Control a`.
+- `--url <url>` — `navigate`: the URL to go to.
+- `--screenshot <path>` — also save a screenshot taken after the action.
+
+### `runner actions <sequence>`
+
+Performs up to ten actions in one request, as a JSON array of the actions `runner act` takes. Use `-` to read the array from stdin.
+
+```bash
+qawolf runner actions '[{"type":"tap","x":540,"y":900},{"type":"type","text":"someone@example.com"}]' --screenshot after.jpg
+```
+
+Options:
+
+- `--screenshot <path>` — save a screenshot taken after the last action.
+- `--continue-on-failure` — carry on past an action that did not take effect. Default: `false`.
+
+### `runner inspect`
+
+Reads one thing off the runner's live page or Appium session and prints it to stdout.
+
+```bash
+qawolf runner inspect element-html --selector "#email"
+qawolf runner inspect variable --name cart
+qawolf runner inspect elements --text "Sign in" --partial
+```
+
+Subcommands:
+
+- `element-html` — browser only. The HTML of the first element `--selector` matches.
+- `page-html` — browser only. The page's HTML, simplified.
+- `variable` — a top-level variable from the running flow, named by `--name`.
+- `session` — mobile only. Whether the Appium session is ready.
+- `contexts` — mobile only. The WebView contexts available, and which one is current.
+- `page-source` — mobile only. The current context's page source.
+- `elements` — mobile only. The elements at `--x` and `--y`, carrying `--text`, or matching `--selector`.
+
+### `runner record`
+
+Controls video recording on a browser runner. Start a flow first, so the runner has a screen.
+
+```bash
+qawolf runner record start --json
+qawolf runner record stop <recording-id>
+qawolf runner record status
+qawolf runner record auto on
+```
+
+Subcommands:
+
+- `start` — start recording across runs. Returns the recording's id.
+- `stop <recording-id>` — stop that recording and publish it.
+- `status` — show the active recording and the automatic recording setting.
+- `auto <on|off>` — turn automatic recording of later full runs on or off.
 
 ## `run`
 

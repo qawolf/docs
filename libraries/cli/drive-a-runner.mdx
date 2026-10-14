@@ -1,0 +1,116 @@
+---
+title: "Drive a runner"
+description: "Launch a QA Wolf-hosted browser, Android device, or iOS device from the qawolf CLI, run flows on it, and drive it by hand."
+sidebarTitle: "Drive a runner"
+---
+
+`qawolf runner` drives a browser, an Android device, or an iOS device hosted by QA Wolf. Nothing runs on your machine.
+
+You launch a runner, run a flow on it, then act on its screen and read what it shows. Unlike `qawolf flows run`, this works for iOS flows.
+
+<Check>
+You need an API key, set in `QAWOLF_API_KEY` or stored with `qawolf auth login`. See [Authenticate](/local-execution/authenticate). Run the commands from a directory that holds a flow file and a `package.json`.
+</Check>
+
+## Launch a runner
+
+<Steps>
+  <Step>
+    Launch a runner under an id you choose, and pick what it runs with `--name`: `ios`, `android`, or `playwright` for a browser.
+
+    ```bash
+    qawolf runner launch --id my-runner --name ios
+    ```
+
+    The id is yours to pick. Launching an id that is already running reconnects to that runner instead of starting a second one. Launching it with a different `--name` fails. The CLI stores the runner as this directory's default, so later commands reach it without `--runner`.
+
+    The command prints a URL. The page shows the runner's screen live to anyone in your workspace, starting with the first run.
+  </Step>
+  <Step>
+    Run a flow on the runner:
+
+    ```bash
+    qawolf runner run flows/login.flow.ts --follow
+    ```
+
+    The first run is what starts the runner's screen, so this step is required even if you only want to drive the device by hand. Until then, `screenshot` and `act` exit with code `2`. `run` sends the flow file, the files it imports, and your `package.json`. `--follow` waits for the run to finish and exits with code `1` if it did not pass.
+  </Step>
+  <Step>
+    Drive and inspect the runner with the commands in the sections below. When you're done, terminate it:
+
+    ```bash
+    qawolf runner terminate
+    ```
+  </Step>
+</Steps>
+
+`qawolf runner list` shows the runners running in your workspace. A runner that sits idle for too long times out, and commands that target it exit with code `8`.
+
+## Drive a mobile device
+
+A mobile runner has a touchscreen, so it takes its own actions through `qawolf runner act`:
+
+- **`tap`** — touches a point (`--x`, `--y`) or the element `--selector` names.
+- **`swipe`** — moves in a straight line from `--from x,y` to `--to x,y`. `--duration-ms` sets how long it takes, up to `10000`. A slow swipe scrolls and a fast one flings.
+- **`fill`** — replaces the value of the field `--selector` names with `--text`. `--text ""` clears it.
+- **`type`** — types `--text` into whatever the last tap focused.
+
+`--selector` takes XPath by default. Pass `--strategy ios-predicate` or `--strategy shadow` for the other selector types. Coordinates are pixels on the runner's screenshot.
+
+Examples:
+
+```bash
+qawolf runner act tap --x 540 --y 1200
+qawolf runner act tap --selector '//*[@content-desc="Continue"]'
+qawolf runner act fill --selector 'name == "Postal code"' --strategy ios-predicate --text 94107
+qawolf runner act swipe --from 540,1600 --to 540,600 --duration-ms 1500
+qawolf runner act type --text "someone@example.com"
+```
+
+Browser actions such as `click`, `drag`, `scroll`, and `navigate` fail on a mobile runner with `action-not-supported-on-mobile`. Use `tap` and `swipe` instead.
+
+To send up to ten steps in one request, pass them to `qawolf runner actions` as a JSON array. The steps run back to back, so batch only steps whose targets are on the screen you last saw.
+
+```bash
+qawolf runner actions '[{"type":"tap","selector":"//*[@content-desc=\"Email\"]"},{"type":"type","text":"someone@example.com"},{"type":"tap","x":540,"y":1650}]'
+```
+
+## Inspect a mobile device
+
+`qawolf runner inspect` reads one thing off the device's Appium session and prints it to stdout:
+
+- **`session`** — whether the Appium session is ready, and why not if it isn't.
+- **`contexts`** — the WebView contexts available, and which one is current.
+- **`page-source`** — the current context's page source, as a tree. `--context` reads another context.
+- **`elements`** — the elements at a point (`--x`, `--y`), carrying some text (`--text`, with `--partial` for a partial match), or matching a selector (`--selector`, with `--strategy`).
+
+Examples:
+
+```bash
+qawolf runner inspect session
+qawolf runner inspect page-source --context WEBVIEW_1
+qawolf runner inspect elements --selector "//android.widget.Button[@text='Sign in']"
+```
+
+Check a selector with `inspect elements --selector` before you `tap` or `fill` with it.
+
+`inspect element-html` and `inspect page-html` work on a browser runner only. `inspect variable --name <name>` prints a top-level variable from the running flow on either kind of runner.
+
+## Take a screenshot
+
+`qawolf runner screenshot` saves a JPEG of the runner's screen:
+
+```bash
+qawolf runner screenshot --out step-1.jpg
+```
+
+To act and capture the result in one call, pass `--screenshot` to `act` or `actions`:
+
+```bash
+qawolf runner act tap --x 540 --y 1200 --screenshot step-2.jpg
+```
+
+<Info>
+A runner bills while it's up, so terminate it when you're done. iOS devices must be turned on for your workspace before you can launch an `ios` runner.
+{/* TODO TECH-0000 Pending: confirm whether iOS is still enabled per workspace by feature flag before merging. */}
+</Info>

@@ -227,7 +227,7 @@ The command installs the Appium uiautomator2 driver, downloads the Android syste
 
 ### iOS support
 
-The CLI cannot yet execute iOS flows. `qawolf install` skips them with a warning. iOS support requires macOS with Xcode when it ships.
+`qawolf flows run` and `qawolf install` skip iOS flows with a warning. To run or drive an iOS flow from the CLI, use a device hosted by QA Wolf. See [Drive a runner](/libraries/cli/drive-a-runner).
 
 ## Exit codes
 
@@ -236,6 +236,6 @@ The CLI cannot yet execute iOS flows. `qawolf install` skips them with a warning
 ## Limitations
 
 - Android flows must run with `--workers 1`. Only web flows run in parallel.
-- The CLI does not execute iOS flows. It skips them with a warning.
+- iOS flows don't run locally. They can run on a [runner hosted by QA Wolf](/libraries/cli/drive-a-runner).
 - Flows that target the legacy `"Basic"` platform pull successfully, but the CLI cannot execute them.
 - The CLI skips flows where `target` is a computed value rather than a string literal, because it cannot determine the platform ahead of time.
