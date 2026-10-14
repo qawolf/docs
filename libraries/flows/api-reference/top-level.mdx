@@ -62,7 +62,9 @@ type Target =
   | "iOS - iPhone 16 (iOS 26)"
   | "iOS - iPhone 16 (iOS 27)"
   | "iOS - iPhone 17 (iOS 26)"
-  | "iOS - iPhone 17 (iOS 27)";
+  | "iOS - iPhone 17 (iOS 27)"
+  | "Windows 11 - Desktop"
+  | "Windows 11 - Desktop (private)";
 ```
 
 See [Target names](#target-names) for how to read a target name, and [Renamed and retired targets](#renamed-and-retired-targets) for the old names that flows can still use.
@@ -102,6 +104,8 @@ Android and iOS target names follow the pattern `<Platform> - <Model> (<Version>
 - **`Emulator`** — the flow runs on an Android emulator. An Android target without it runs on a real phone. iOS targets always run on real devices.
 - **`Allowlisted` and `Private`** — the flow runs on allowlisted or private iOS devices. See [iOS Device Pools](/libraries/flows/api-reference/ios-device-pools) for when to use them and how to set them up. For dedicated Android phones, see [Dedicated phones](/libraries/flows/api-reference/android#dedicated-phones).
 - **`Apple ID`** — the flow runs on an iOS device that is signed in to an Apple ID.
+
+Windows has two targets. `Windows 11 - Desktop` runs on the shared pool of Windows VMs, and `Windows 11 - Desktop (private)` on a pool for your workspace alone. See [Windows](/libraries/flows/api-reference/windows#targets).
 
 ### Renamed and retired targets
 

@@ -888,6 +888,7 @@
           {
             "group": "Desktop",
             "pages": [
+              "windows-desktop",
               "electron",
               "browser-extensions"
             ]
@@ -932,6 +933,7 @@
               "libraries/flows/api-reference/ios",
               "libraries/flows/api-reference/ios-device-reference",
               "libraries/flows/api-reference/ios-device-pools",
+              "libraries/flows/api-reference/windows",
               "libraries/flows/troubleshooting"
             ]
           },

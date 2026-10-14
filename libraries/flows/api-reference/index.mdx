@@ -13,6 +13,7 @@ Use this section for stable API descriptions, defaults, and runtime behaviors.
 - [Web](/libraries/flows/api-reference/web)
 - [Android](/libraries/flows/api-reference/android)
 - [iOS](/libraries/flows/api-reference/ios)
+- [Windows](/libraries/flows/api-reference/windows)
 - [Node](/libraries/flows/api-reference/cli)
 
 Example imports:
@@ -22,6 +23,7 @@ import { platform } from "@qawolf/flows";
 import { flow } from "@qawolf/flows/web";
 import { flow } from "@qawolf/flows/android";
 import { flow } from "@qawolf/flows/ios";
+import { flow } from "@qawolf/flows/windows";
 import { flow } from "@qawolf/flows/cli";
 ```
 
@@ -72,7 +74,9 @@ type Target =
   | "iOS - iPhone 16 (iOS 26)"
   | "iOS - iPhone 16 (iOS 27)"
   | "iOS - iPhone 17 (iOS 26)"
-  | "iOS - iPhone 17 (iOS 27)";
+  | "iOS - iPhone 17 (iOS 27)"
+  | "Windows 11 - Desktop"
+  | "Windows 11 - Desktop (private)";
 ```
 
 See [Target names](/libraries/flows/api-reference/top-level#target-names) for how to read a target name, and [Renamed and retired targets](/libraries/flows/api-reference/top-level#renamed-and-retired-targets) for the old names that flows can still use.

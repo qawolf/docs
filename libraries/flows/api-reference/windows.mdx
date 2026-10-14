@@ -1,0 +1,264 @@
+---
+title: "Windows"
+description: "Reference for @qawolf/flows/windows, the entry point for flows that drive native apps and Chrome on a Windows 11 desktop VM."
+sidebarTitle: "Windows"
+---
+
+`@qawolf/flows/windows` defines flows that run on a Windows 11 desktop VM. A flow drives Chrome through Playwright and native apps through the Appium Windows driver.
+
+For a walkthrough, see [Testing Windows desktop apps](/windows-desktop).
+
+## Primary exports
+
+- `flow(...)`
+- `launch()`
+- `startApp(...)`
+- `expect`
+- `testContextDependencies`
+
+It also exports the `LaunchResult`, `NativeDriver`, `StartAppOptions`, `NativeSubject` and `WindowsExpect` types, plus Windows-specific target, callback context and flow definition types.
+
+Example:
+
+```ts
+import { flow, startApp } from "@qawolf/flows/windows";
+
+export default flow(
+  "Open the desktop app",
+  "Windows 11 - Desktop",
+  async ({ test }) => {
+    const app = await startApp("MyApp.msi");
+
+    await test("app opens", async () => {
+      await app.$("~MainWindow").waitForDisplayed();
+    });
+  },
+);
+```
+
+## Targets
+
+| Target | Runs on |
+| --- | --- |
+| `"Windows 11 - Desktop"` | The shared pool of Windows VMs. |
+| `"Windows 11 - Desktop (private)"` | A pool for your workspace alone, which QA Wolf sets up on request. |
+
+Every run gets a fresh VM, which QA Wolf discards when the run ends.
+
+## Flow callback context
+
+All Windows flow callbacks receive:
+
+- `inputs`
+- `setOutput(...)`
+- `test(...)`
+
+Launch-enabled Windows flows also receive `browser`, `context` and `page`, connected to Chrome on the VM.
+
+<Note>
+  On Windows, `launch: true` starts the browser, not an app. On Android and iOS it starts the app. Start a native app with [`startApp(...)`](#startapp).
+</Note>
+
+## Target model
+
+The target input model is:
+
+```ts
+type WindowsFlowTargetInput =
+  | WindowsFlowTarget
+  | {
+      target: WindowsFlowTarget;
+      launch?: false | undefined;
+    }
+  | {
+      target: WindowsFlowTarget;
+      launch: true;
+    };
+```
+
+`launch` takes only `true`. Windows flows have no launch options.
+
+## `flow(...)`
+
+Use `flow(...)` for Windows authoring.
+
+- without launch, the callback receives `inputs`, `setOutput(...)`, and `test(...)`
+- with `launch: true`, the flow calls `launch()` before the callback, and the callback also receives `browser`, `context`, and `page`
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/windows";
+
+export default flow(
+  "Sign in on the web",
+  { target: "Windows 11 - Desktop", launch: true },
+  async ({ page, test }) => {
+    await test("open sign in", async () => {
+      await page.goto(process.env.BASE_URL);
+    });
+  },
+);
+```
+
+## `launch()`
+
+Connects to Chrome on the VM over the Chrome DevTools Protocol. Takes no options. Returns:
+
+```ts
+type LaunchResult = {
+  browser: Browser;
+  context: BrowserContext;
+  page: Page;
+};
+```
+
+The three are the usual Playwright objects. This API is only available while a flow is running.
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/windows";
+
+export default flow("Launch explicitly", "Windows 11 - Desktop", async () => {
+  const { page } = await launch();
+  await page.goto(process.env.BASE_URL);
+});
+```
+
+## `startApp(...)`
+
+Opens an Appium Windows driver session and returns its WebdriverIO driver, typed `NativeDriver`. This API is only available while a flow is running.
+
+```ts
+type StartAppOptions = string | WindowsCapabilities;
+```
+
+A string is shorthand for `{ "appium:app": string }`. With no argument, the session covers the whole desktop.
+
+Example:
+
+```ts
+import { flow, startApp } from "@qawolf/flows/windows";
+
+export default flow("Use Calculator", "Windows 11 - Desktop", async () => {
+  const calculator = await startApp(
+    "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App",
+  );
+  await calculator.$("~num7Button").click();
+});
+```
+
+### Capabilities
+
+| Capability | Description |
+| --- | --- |
+| `appium:app` | The app to start. See [App resolution](#app-resolution). Defaults to `Root`, a session over the whole desktop. |
+| `appium:appArguments` | Command-line arguments for the app. |
+| `appium:appTopLevelWindow` | Handle of an existing top-level window to attach to, instead of starting an app. |
+| `appium:appWorkingDir` | Working directory for the app. Needed by apps that read files relative to their own folder. |
+| `qawolf:launch` | Program to start after an `.msi` installs, when the installer leaves more than one. QA Wolf reads it and doesn't send it to Appium. |
+| `qawolf:windowSize` | `{ width, height }` in pixels. Sizes the app's window before `startApp()` returns. QA Wolf reads it and doesn't send it to Appium. |
+
+Any other key passes to the driver unchanged. See the [Appium Windows driver capabilities](https://github.com/appium/appium-windows-driver#usage) for the full list.
+
+QA Wolf always sets `platformName` and `appium:automationName` to `Windows`. It defaults `appium:deviceName` to `WindowsPC` and `appium:newCommandTimeout` to `3600`.
+
+### App resolution
+
+QA Wolf decides where the `appium:app` value lives in this order:
+
+1. An `http` or `https` URL — the VM downloads it.
+2. A drive-letter or UNC path, such as `C:\...` or `\\server\share\...` — a location on the VM, used as is.
+3. An absolute path, or one starting with `./` or `../` — a file on the runner, copied to the VM.
+4. A bare file name — looked up in uploaded builds (`RUN_INPUTS_EXECUTABLES_DIR`), then team storage (`TEAM_STORAGE_DIR`), and copied to the VM when found.
+5. Anything else, such as an app user model ID — passed to the driver to resolve on the VM.
+
+QA Wolf then installs an `.msi` before the session opens. When the installer leaves exactly one program, the session starts it. Otherwise the start fails until `qawolf:launch` names the program. An install gets 15 minutes.
+
+`startApp(...)` does not read `RUN_INPUT_PATH`. A flow that tests an uploaded build passes it in:
+
+```ts
+const app = await startApp(process.env.RUN_INPUT_PATH ?? "app-staging.msi");
+```
+
+### Several apps
+
+Each call returns its own driver, so a flow can drive several apps and the browser at once. Apps started earlier in the run stay open. Calls run one at a time.
+
+When a flow runs again on the same runner, `startApp(...)` first closes the sessions the previous run left, along with their apps.
+
+Example:
+
+```ts
+import { flow, launch, startApp } from "@qawolf/flows/windows";
+
+export default flow(
+  "Send a message between two apps",
+  "Windows 11 - Desktop",
+  async () => {
+    const client = await startApp({
+      "appium:app": "C:\\Program Files\\MyApp\\Client.exe",
+      "appium:appWorkingDir": "C:\\Program Files\\MyApp",
+    });
+    const simulator = await startApp("Simulator.exe");
+    const { page } = await launch();
+
+    await simulator.$("~SendButton").click();
+    await client.waitUntil(async () =>
+      (await client.getTitle()).includes("Connected"),
+    );
+    await page.goto(`${process.env.BASE_URL}/messages`);
+  },
+);
+```
+
+### Window size
+
+`qawolf:windowSize` makes screenshots and coordinates match across runs. The start fails if the window doesn't take the size. A session over the whole desktop has no window to size, so `qawolf:windowSize` needs `appium:app` or `appium:appTopLevelWindow` with it.
+
+## Files on the VM
+
+Team storage and uploaded builds are mounted on the runner, not the VM. Move files with the driver:
+
+- **`pushFile(path, base64Data)`** — writes a file on the VM.
+- **`pullFile(path)`** — returns a file's contents as base64.
+- **`pullFolder(path)`** — returns a folder as a base64 zip.
+- **`execute("windows: deleteFile", { remotePath })`** — deletes a file. `windows: deleteFolder` deletes a folder.
+
+The VM's user is `qawolf`, so `C:\Users\qawolf\Desktop` is its desktop.
+
+## `expect`
+
+The exported `expect` dispatches on its subject:
+
+- **A WebdriverIO driver, element, or element query not yet awaited** — the [`expect-webdriverio`](https://webdriver.io/docs/api/expect-webdriverio) matchers, including `toHaveScreenshot`.
+- **Anything else, including a Playwright `page` or locator** — the Playwright matchers.
+
+`expect.soft` dispatches the same way. Import `expect` from `@qawolf/flows/windows` rather than from `expect-webdriverio` or `@playwright/test`, so QA Wolf's defaults stay in effect.
+
+Example:
+
+```ts
+import { expect, flow, startApp } from "@qawolf/flows/windows";
+
+export default flow(
+  "Verify the desktop app and the web",
+  { target: "Windows 11 - Desktop", launch: true },
+  async ({ page }) => {
+    const app = await startApp("MyApp.msi");
+
+    await expect(app.$("~WelcomeBanner")).toBeDisplayed();
+    await expect(app).toHaveScreenshot("home", { maxMisMatchPercentage: 1 });
+
+    await page.goto(process.env.BASE_URL);
+    await expect(page.getByRole("heading", { name: "Welcome" })).toBeVisible();
+  },
+);
+```
+
+For screenshot options, see [Native mobile screenshots](/visual-diffing-native-app).
+
+## `testContextDependencies`
+
+`testContextDependencies` is exported for runner and tooling integration. Flow authors should usually use the public callback parameters above instead of depending on the raw runner dependency list.

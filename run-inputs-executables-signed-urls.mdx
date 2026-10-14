@@ -10,7 +10,7 @@ sidebarTitle: "Upload a build"
   If your build server supports `node`, use [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.
 </Tip>
 
-This endpoint accepts app builds only: `.aab`, `.apk`, `.appimage`, `.deb`, `.ipa`, `.rpm`, and `.zip`. Any other extension returns a `400`. To upload a file your flows read, such as a `.csv` or `.pdf`, use [team storage](/use-files-in-flows#upload-a-file) instead.
+This endpoint accepts app builds only: `.aab`, `.apk`, `.appimage`, `.deb`, `.exe`, `.ipa`, `.msi`, `.rpm`, and `.zip`. A file your flows read, such as a `.csv` or `.pdf`, returns a `400`. Upload it to [team storage](/use-files-in-flows#upload-a-file) instead.
 
 <Steps>
   <Step title="Generate a signed URL">
@@ -72,5 +72,6 @@ Plus the [common response codes](/rest-overview#common-response-codes).
 ## Related
 
 - [Mobile build testing](/mobile-build-testing)
+- [Testing Windows desktop apps](/windows-desktop#test-every-new-build-from-ci)
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
 - [Webhook](/deployment-testing/webhook) — reporting the deploy that starts the runs.
