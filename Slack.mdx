@@ -1,0 +1,68 @@
+---
+title: "Integrate with Slack"
+description: "Connect Slack so your team can ask the QA Wolf agent for help in a channel or a direct message."
+sidebarTitle: "Slack"
+keywords:
+  - "chat"
+  - "Slack app"
+  - "Slack bot"
+  - "Slack Connect"
+  - "QA Wolf agent"
+---
+
+Connecting Slack lets anyone in your Slack workspace talk to the [QA Wolf agent](/agent-in-your-tools). Mention it in a channel or send it a direct message, and it answers in a thread.
+
+## Requirements
+
+- Access to a QA Wolf workspace
+- Permission to add apps to your Slack workspace
+
+## Connect Slack
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Integrations**. Under **Notifications**, select **Connect** on the **Slack** card.
+  </Step>
+  <Step>
+    Follow the prompts to sign in to Slack and allow the QA Wolf app in your Slack workspace.
+  </Step>
+  <Step>
+    Back in QA Wolf, confirm the Slack card reads **Connected**.
+  </Step>
+</Steps>
+
+A Slack workspace connects to one QA Wolf workspace at a time.
+
+## Talk to the agent
+
+- **In a channel** — invite the QA Wolf app to the channel, then mention **@QA Wolf** in a message.
+- **In a direct message** — open the QA Wolf app in Slack and message it. A direct message doesn't need a mention. The app's **Messages** tab suggests three ways to start: **Report a bug**, **Investigate a failure** and **Check run status**.
+
+The agent always replies in a thread, and the thread is the conversation. Later messages there don't need a mention. It answers the ones meant for it and stays quiet when people are talking to each other. If someone in the thread asks it to stop replying, it waits until someone addresses it again.
+
+When you mention it, the agent reads the thread's earlier messages, so you can bring it into a discussion partway through. It also reads up to five images attached to your message.
+
+## Shared channels with QA Wolf
+
+If your team works with QA Wolf in a Slack Connect channel, the agent can answer there without you connecting Slack. Ask your QA Wolf representative to turn it on for the channel.
+
+Your QA Wolf representative can also set the agent to answer each new thread your team starts in that channel, without a mention.
+
+## Run alerts and bug reports
+
+QA Wolf posts run alerts and bug reports to the Slack channels it has set up for your workspace. Ask your QA Wolf representative to add or change those channels. Connecting or disconnecting Slack doesn't affect them.
+
+## If the agent doesn't answer
+
+- **It isn't in the channel.** Invite the QA Wolf app, then mention it again.
+- **Slack isn't connected.** The agent ignores messages from a Slack workspace that isn't connected, without replying. Check the Slack card under **Workspace settings → Integrations**.
+- **You edited your message.** The agent reads new messages, not edits. Post the request again.
+
+If the agent replies that it can't answer yet, the reply names what's missing in your QA Wolf workspace:
+
+- **"…its QA Wolf team doesn't have a default environment."** Set a default environment for your QA Wolf workspace, then mention the agent again.
+- **"…I can't determine which QA Wolf user should own this conversation."** Create a [trigger](/triggers/overview) on your default environment, then mention the agent again.
+
+## Disconnect Slack
+
+Under **Workspace settings → Integrations**, open the Slack card's menu and select **Disconnect**. The agent stops answering in your Slack workspace.

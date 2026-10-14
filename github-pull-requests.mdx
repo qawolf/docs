@@ -1,0 +1,74 @@
+---
+title: "Ask the agent in GitHub pull requests"
+description: "Comment @qawolf on a pull request to have the QA Wolf agent cover the change, run flows against it, or explain a failure."
+sidebarTitle: "GitHub pull requests"
+keywords:
+  - "@qawolf"
+  - "pull request comments"
+  - "PR comments"
+  - "code review"
+  - "QA Wolf agent"
+---
+
+Comment `@qawolf` on a pull request and the [QA Wolf agent](/agent-in-your-tools) answers in the pull request. It reads the change, so you can ask it to create a flow that covers it, run flows against it, or explain why a run on it failed.
+
+## Requirements
+
+- The QA Wolf GitHub App [installed](/deployment-testing/github#install-the-github-app) on the repository, and the repository connected to your QA Wolf workspace
+- `@qawolf` comments turned on for your workspace. Ask your QA Wolf representative to turn them on.
+
+## Ask the agent
+
+- **On the Conversation tab** — comment `@qawolf` and what you need. The tab is one conversation.
+- **In a review thread** — comment `@qawolf` on a line of the diff. The agent sees the file and line you commented on, and the thread is its own conversation.
+
+The agent marks each comment it reads with 👀 and answers with a comment of its own. Follow-ups in the same thread don't need another mention. It answers the comments meant for it and stays quiet when people are talking to each other.
+
+`@qawolf` counts anywhere in a comment, in any case, except inside code, a code block or a link. `@qawolf-team`, `@qawolf/…` and email addresses don't count.
+
+## What the agent reads and does
+
+When you mention it, the agent sees the pull request's title, description and changed files, and the earlier comments in the thread. For a large pull request it receives up to 200 changed files and reads the rest from GitHub when it needs them.
+
+It never writes to your repository and never runs the pull request's code. Its work happens in your QA Wolf workspace, in the environment that matches the pull request:
+
+1. The ephemeral environment QA Wolf created for the pull request's branch.
+2. Otherwise, the environment of the pull request's latest deployment.
+3. Otherwise, your default environment.
+
+A flow you ask it to create is finished only once it passes and is active. The agent runs it, activates it, and replies with the run's result.
+
+## Who can ask
+
+The agent answers owners and members of the repository's organization and collaborators on the repository. Other contributors need write access to the repository. It ignores everyone else. People asking don't need a QA Wolf account.
+
+## More than one QA Wolf workspace on one GitHub organization
+
+If several QA Wolf workspaces connect repositories through the same GitHub App installation, one of them has to answer. Until one is chosen, the agent comments that it can't answer because more than one QA Wolf workspace is connected.
+
+<Steps>
+  <Step>
+    In the QA Wolf workspace that should answer, open **Workspace settings → Integrations**. Under **Code hosting**, open the GitHub card's menu and select **Configure**.
+  </Step>
+  <Step>
+    Check **Answer @qawolf comments for this GitHub organization**.
+  </Step>
+  <Step>
+    Mention `@qawolf` again on the pull request.
+  </Step>
+</Steps>
+
+Checking the box in another workspace in your organization moves the answering to that workspace.
+
+## If the agent doesn't answer
+
+The agent doesn't reply to a comment it ignores. Check that:
+
+- `@qawolf` comments are turned on for your workspace.
+- The repository is connected to your QA Wolf workspace.
+- Your workspace has a default environment.
+- The comment is on a pull request, not an issue.
+- The mention is in a new comment or a review comment on a line. The agent doesn't read edited comments or the summary you submit with a review.
+- You're a member of the organization, a collaborator, or have write access to the repository.
+
+GitLab merge request comments aren't supported.
