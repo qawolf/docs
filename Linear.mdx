@@ -12,7 +12,7 @@ keywords:
   - "delegate"
 ---
 
-Connecting Linear installs the QA Wolf app in your Linear workspace. That app is the [QA Wolf agent](/agent-in-your-tools), and there's nothing else to turn on. It answers only in the Linear teams you give it access to.
+Connecting Linear installs the QA Wolf app in your Linear workspace. That app is the [QA Wolf agent](/agent-in-your-tools), and there's nothing else to turn on. It answers only in the Linear teams you choose.
 
 The same connection can also sync QA Wolf bug reports with a Linear team. That's a separate feature with its own settings, covered in [Bug reports and coverage requests](#bug-reports-and-coverage-requests).
 
@@ -25,7 +25,7 @@ The same connection can also sync QA Wolf bug reports with a Linear team. That's
 
 <Steps>
   <Step title="Add the agent">
-    Open **Workspace settings → Integrations**. Under **Issue tracking**, select **Connect** on the **Linear** card, and follow the prompts to approve the QA Wolf app in Linear.
+    Open **Workspace settings → Integrations**. Under **Issue tracking**, select **Connect** on the **Linear** card. In Linear, approve the QA Wolf app and choose which teams it can access.
   </Step>
 
   <Step title="Set up bug report sync">
@@ -35,9 +35,11 @@ The same connection can also sync QA Wolf bug reports with a Linear team. That's
   </Step>
 </Steps>
 
-## Give the agent access to each team
+## Choose which teams can use the agent
 
-The agent works only in the Linear teams the QA Wolf app has access to. A Linear admin manages that access in Linear, in the QA Wolf app's settings. QA Wolf picks up changes automatically, so there's nothing to reconnect.
+When a Linear admin approves the QA Wolf app, Linear asks which teams it can access. The agent only works on issues in those teams. On an issue in any other team, it replies "QA Wolf isn't available for this Linear team."
+
+To change the teams later, a Linear admin opens Linear's **AI & Agents** settings and edits QA Wolf under **Installed Agents**. QA Wolf picks up the change automatically.
 
 ## What you can ask the agent
 
@@ -49,7 +51,7 @@ Mention **QA Wolf** in an issue comment, or delegate the issue to it. A delegate
 - **Where things stand** — "What's the status of the latest runs?"
 - **Run flows** — "Run the billing flows on staging."
 
-The agent reads the issue's title, description, status, labels, and earlier comments. It doesn't see attachments. Guidance you write for agents in Linear applies too, unless it conflicts with QA Wolf's own instructions. It never runs your application's source code.
+The agent reads the issue's title, description, status, labels, and earlier comments. It doesn't see attachments. Guidance you write in Linear under **Settings → Agents → Additional guidance** applies too, unless it conflicts with QA Wolf's own instructions. It never runs your application's source code.
 
 Anyone in a Linear team the agent has access to can ask. They don't need a QA Wolf account.
 
@@ -61,7 +63,7 @@ Anyone in a Linear team the agent has access to can ask. They don't need a QA Wo
 
 If the agent replies that it can't help, the reply says why:
 
-- **"QA Wolf isn't available for this Linear team."** Give the QA Wolf app access to the issue's team in Linear, then try again.
+- **"QA Wolf isn't available for this Linear team."** Add the issue's team to QA Wolf's access, as in [Choose which teams can use the agent](#choose-which-teams-can-use-the-agent), then try again.
 - **"QA Wolf couldn't verify which Linear team this issue belongs to."** Try again, and contact QA Wolf support if it keeps happening.
 - **"…its QA Wolf team doesn't have a default environment."** Set a default environment for your QA Wolf workspace, then try again.
 - **"…I can't determine which QA Wolf user should own this conversation."** Create a [trigger](/triggers/overview) on your default environment, then try again.
