@@ -21,10 +21,10 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `workspaceId` | The workspace to report the deployment into. |
 | `providerDeploymentId` | Your identifier for the deployment. Reports carrying the same one update a single deployment. |
 | `status` | `pending`, `success`, `failure` or `inactive`. |
-| `environment` | Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. A `{ name }` selector also takes `ephemeral` and `baseEphemeralEnvironment`. |
-| `environment.ephemeral` | `true` for a preview deploy. Defaults to `false`, which creates a permanent environment. |
-| `environment.baseEphemeralEnvironment` | The alias or name of the environment a created ephemeral environment copies from. Only valid alongside `ephemeral`. Defaults to the workspace's base environment. |
-| `deployTarget` | The URL the deployment serves. Required whenever the report creates an environment — without it the runs point at the base environment's URL instead of at what you deployed. |
+| `environment` | Required on the first report for a `providerDeploymentId`. Either `{ id }` for an existing environment, or `{ name }`, which resolves by alias or name and creates an environment when nothing matches. A `{ name }` selector also takes `ephemeral` and `baseEphemeralEnvironment`. |
+| `environment.ephemeral` | `true` for a preview deploy. Defaults to `false`, which creates a permanent environment. A name that matches an existing environment keeps that environment's kind. |
+| `environment.baseEphemeralEnvironment` | The alias or name of the environment a created ephemeral environment copies from. Only valid with `ephemeral: true`. Defaults to the environment for the pull request's base branch, then to the workspace's base environment. |
+| `deployTarget` | The URL the deployment serves, as an `http` or `https` URL. Required when `environment.name` names no existing environment; a report that would create one without it is refused. |
 | `environmentVariables` | Overrides for the runs this deployment requests, as a flat map of string to string. A report that sends them replaces the stored values; one that omits them keeps them. |
 | `service` | Which application was deployed, such as `checkout-api`, when several applications deploy into one environment, or when one pipeline ships more than one build such as an Android and an iOS build. A trigger's `servicePattern` matches on it. A report that omits it keeps the stored value. |
 | `metadata` | Details about the deployed revision, such as the commit. |
@@ -69,8 +69,9 @@ The input goes inside a `json` wrapper, and the reply carries the deployment und
 | --- | --- |
 | `commitSha` | The commit sha of the deployed revision. |
 | `ref` | The branch or ref that was deployed. |
-| `repository` | The `owner/name` of the repository, such as `acme/web`. |
-| `pullRequestNumber` | The pull request the deployment belongs to. Requires `repository`, and a connected integration covering that repository. |
+| `repository` | The `owner/name` of the repository, such as `acme/web`. A trigger's `repositoryPattern` matches it even when the repository isn't connected. |
+| `pullRequestNumber` | The pull request the deployment belongs to. Requires `repository`, and a connected integration covering that repository. Without it, `repository` and `commitSha` find the pull request from the commit. |
+| `commitUrl` | A link to the deployed commit, as an `http` or `https` URL. |
 | `commitMessage` | The deployed commit's message. The deployments list shows its first line. |
 | `commitAuthorName` | The display name of the commit's author. |
 

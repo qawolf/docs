@@ -71,19 +71,15 @@ QA Wolf will attempt to run a flow up to three times: the first attempt runs all
 
 ## Tag
 
-A **tag** groups flows so a trigger can run them together, and controls execution order in run rules. Tags are intended to express **run intent** (test type, expected duration) rather than application structure — QA Wolf runs with full concurrency by default, so organizing flows by feature area rarely adds value.
+A **tag** groups flows so a trigger can run them together, and so a Run Rule can order or co-schedule every flow carrying it. Tags are intended to express **run intent** (test type, expected duration) rather than application structure — QA Wolf runs with full concurrency by default, so organizing flows by feature area rarely adds value.
 
 ## Run Rule
 
-A **Run Rule** controls the order flows run in by defining a **before** set and an **after** set of flows, selected by name, group, or tag. By default, if a flow in the before set fails, flows in the after set are skipped rather than run, to keep the failure list focused on the root cause.
+A **Run Rule**, defined in your repository's `rules.yaml`, orders flows (`run-after`, `run-before`) or co-schedules them (`run-with`, `run-without`). A rule names flows or tags. By default, if an earlier flow fails, the later flows are marked failed without running, to keep the failure list focused on the root cause. See [Run Rules](/Run-Rules).
 
 ## Schedule
 
-A schedule defines when and how often runs occur automatically. Scheduling is limited to flows. Individual tests can be run manually for debugging, but they cannot be scheduled independently.
-
-<Note>
-  Use schedules to execute flows at specific times (midnight) or at recurring intervals (every hour), or when a build is deployed.
-</Note>
+A **schedule** is a trigger that runs a set of flows hourly, daily or weekly in one environment. Hourly and daily schedules can be limited to chosen days of the week. To run flows when a build deploys, use a deployment trigger instead. See [Triggers](/triggers/overview).
 
 ## Trigger
 
@@ -97,8 +93,8 @@ See [Triggers](/triggers/overview).
 
 ## PR testing
 
-**PR testing** runs your flows on every pull request, against its preview deploy, and reports the result as checks on the pull request. It requires a connected GitHub or GitLab integration covering the deploying repository. See [PR testing](/deployment-testing/pr-testing).
+**PR testing** runs your flows on every pull request, against its preview deploy, and reports the result on the pull request: as checks on GitHub, and as a commit status on GitLab. It requires a connected GitHub or GitLab integration covering the deploying repository. See [PR testing](/deployment-testing/pr-testing).
 
 ## Smart Smoke Suite
 
-A **Smart Smoke Suite** is a set of flows QA Wolf selects from the pull request behind a deploy, rather than a set you name in advance. See [Smart Smoke Suites](/smart-smoke-suites).
+A **Smart Smoke Suite** is a set of flows QA Wolf selects from the pull request behind a deploy, rather than a set you name in advance. When no flow is affected, no run starts. See [Smart Smoke Suites](/smart-smoke-suites).
