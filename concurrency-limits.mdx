@@ -38,7 +38,7 @@ An expression lets a run slow down when flows start failing, and speed back up w
 - **`failedAttemptsCount`** — the number of failed attempts in the run.
 - **`passedAttemptsCount`** — the number of passed attempts in the run.
 
-An attempt counts as finished once it passes, fails, aborts or is canceled. A flow that will run no more attempts counts as finished for every later round, so a flow that passed on its first attempt never holds back `secondAttemptsFinished`. A flow still waiting to start its first attempt holds back both.
+An attempt counts as finished once it passes or fails. QA Wolf replaces an aborted attempt without using up a retry, so the replacement takes the aborted attempt's place in the count. A flow that will run no more attempts counts as finished for every later round, so a flow that passed on its first attempt never holds back `secondAttemptsFinished`. A flow still waiting to start its first attempt holds back both.
 
 A failure rate counts only attempts that passed or failed. It is 0 until at least one attempt completes. In arithmetic, `true` counts as 1 and `false` as 0.
 
