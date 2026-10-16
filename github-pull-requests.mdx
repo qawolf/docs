@@ -1,0 +1,82 @@
+---
+title: "Ask the agent in GitHub pull requests"
+description: "Have the QA Wolf agent answer @qawolf comments on pull requests in the repositories the QA Wolf GitHub App can access."
+sidebarTitle: "GitHub pull requests"
+keywords:
+  - "@qawolf"
+  - "pull request comments"
+  - "PR comments"
+  - "code review"
+  - "QA Wolf agent"
+---
+
+The [QA Wolf agent](/agent-in-your-tools) answers `@qawolf` comments on pull requests through the QA Wolf GitHub App, the same app you install for [GitHub deployments](/deployment-testing/github). There's nothing new to install, but your QA Wolf representative has to activate `@qawolf` comments for your workspace. Once they're on, the agent answers in every repository the GitHub App can access.
+
+This is separate from [PR testing](/deployment-testing/pr-testing), which runs flows automatically when a pull request deploys. The agent acts only when someone asks it to.
+
+## Requirements
+
+- The QA Wolf GitHub App [installed](/deployment-testing/github#install-the-github-app)
+- `@qawolf` comments activated for your workspace by your QA Wolf representative
+
+GitLab merge request comments aren't supported.
+
+## Give the agent access to each repository
+
+The agent answers only on pull requests in repositories the QA Wolf GitHub App can access.
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Integrations**. Under **Code hosting**, open the GitHub card's menu and select **Configure**.
+  </Step>
+  <Step>
+    Select **Configure GitHub App**, and in GitHub, give the app access to each repository where the agent should answer.
+  </Step>
+  <Step>
+    Back in QA Wolf, select **Refresh repositories** and confirm the repositories are listed.
+  </Step>
+</Steps>
+
+## What you can ask the agent
+
+Comment `@qawolf` on the pull request, or on a line of its diff to ask about that line.
+
+- **Cover the change** — "@qawolf add a flow that covers the new coupon field."
+- **Run flows against it** — "@qawolf run the checkout flows against this pull request."
+- **Why a run failed** — "@qawolf why did the checkout flows fail on this pull request?"
+- **Update flows for an intended change** — "@qawolf this renames Sign up to Create account. Update the flows that use it."
+
+A flow you ask the agent to create is finished only once it passes and is active. The agent runs it, activates it, and replies with the run's result.
+
+The agent reads the pull request's title, description, and changed files. It also reads the earlier comments in the thread. It never writes to your repository and never runs the pull request's code. It runs flows in the environment that matches the pull request:
+
+1. The ephemeral environment QA Wolf created for the pull request's branch.
+2. Otherwise, the environment of the pull request's latest deployment.
+3. Otherwise, your default environment.
+
+The agent answers the owners and members of the repository's organization, and the repository's collaborators. Other contributors need write access to the repository. People asking don't need a QA Wolf account.
+
+## Agent notices
+
+If the agent posts this notice, here's what to do:
+
+| Notice | What to do |
+|---|---|
+| "QA Wolf can't answer `@qawolf` comments for this GitHub organization because more than one QA Wolf workspace is connected." | In the QA Wolf workspace that should answer, open **Workspace settings → Integrations**, open the GitHub card's menu, and select **Configure**. Check **Answer @qawolf comments for this GitHub organization**, then mention `@qawolf` again. |
+
+Checking the box in another workspace in your organization moves the answering to that workspace.
+
+## Agent doesn't respond
+
+The agent doesn't post anything when it ignores a comment, so check these:
+
+| Cause | What to do |
+|---|---|
+| `@qawolf` comments aren't activated. | Ask your QA Wolf representative to activate them for your workspace. |
+| The GitHub App can't access the repository. | Give it access. See [Give the agent access to each repository](#give-the-agent-access-to-each-repository). |
+| The comment is on an issue. | Ask on a pull request. The agent answers on pull requests only. |
+| The mention is in code or a link. | Mention `@qawolf` in plain text. `@qawolf-team`, `@qawolf/…`, and email addresses don't count. |
+| The comment was edited, or is the summary of a review. | Post a new comment on the pull request or on a line of its diff. |
+| The commenter isn't an organization owner or member, a collaborator, or a contributor with write access. | Ask someone with write access to the repository to comment instead. |
+| A bot posted the comment. | Post the request yourself. The agent answers people only. |
+| Your QA Wolf workspace has no default environment. | Set a default environment for your QA Wolf workspace, then comment again. |

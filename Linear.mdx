@@ -1,6 +1,6 @@
 ---
 title: "Integrate with Linear"
-description: "Connect QA Wolf to Linear to automatically create and sync bug report issues with your Linear team."
+description: "Connect Linear to add the QA Wolf agent to your Linear workspace and sync QA Wolf bug reports with a Linear team."
 sidebarTitle: "Linear"
 keywords:
   - "bug tracker"
@@ -8,29 +8,80 @@ keywords:
   - "defect tracking"
   - "two-way sync"
   - "Linear.app"
+  - "Linear agent"
+  - "delegate"
 ---
 
-## What this integration does
+Connecting Linear installs the QA Wolf app in your Linear workspace. That app is the [QA Wolf agent](/agent-in-your-tools), and there's nothing else to turn on. It answers only in the Linear teams you choose.
 
-- **Automatic issue handling.** Creates Linear issues automatically when new bug reports are generated in QA Wolf.
-- **Synchronization.** Closing a bug report in QA Wolf closes the linked Linear issue, and closing, reopening, or updating the Linear issue updates QA Wolf.
-- **Test creation requests.** Add a **QA Wolf** label to a Linear issue, or assign it to a QA Wolf user, to automatically create a coverage request in QA Wolf. Matching ignores case and accepts `qawolf` or `qa wolf`.
+The same connection can also sync QA Wolf bug reports with a Linear team. That's a separate feature with its own settings, covered in [Bug reports and coverage requests](#bug-reports-and-coverage-requests).
 
 ## Requirements
 
 - Access to a QA Wolf workspace
-- A Linear team to create issues in
+- A Linear workspace admin to approve the QA Wolf app
 
-## How to connect QA Wolf to Linear
+## Connect Linear
 
 <Steps>
-  <Step title="Start the connection">
-    Enable the Linear connection from **Workspace settings → Integrations**.
+  <Step title="Add the agent">
+    Open **Workspace settings → Integrations**. Under **Issue tracking**, select **Connect** on the **Linear** card. In Linear, approve the QA Wolf app and choose which teams it can access.
   </Step>
 
-  <Step title="Configure the integration">
-    Enter the **Team name** exactly as it appears in Linear. The team name is case sensitive.
+  <Step title="Set up bug report sync">
+    To have QA Wolf create Linear issues for bug reports, enter the **Team name** exactly as it appears in Linear. The team name is case sensitive.
 
     Enable **Create bug report issue**. Optionally set **Label UUID** and **Assignee UUID** to give newly created issues a default label and assignee.
   </Step>
 </Steps>
+
+A Linear workspace answers to one QA Wolf workspace: the one in your organization that connected Linear most recently.
+
+## Choose which teams can use the agent
+
+When a Linear admin approves the QA Wolf app, Linear asks which teams it can access. The agent only works on issues in those teams.
+
+To change the teams later, a Linear admin opens Linear's **AI & Agents** settings and edits QA Wolf under **Installed Agents**. QA Wolf picks up the change automatically.
+
+## What you can ask the agent
+
+Mention **QA Wolf** in an issue comment, or delegate the issue to it. A delegated issue's title and description are the request, so a comment is optional.
+
+- **Test what the issue describes** — "Add a flow that covers this."
+- **Fix a flow** — "The signup flow started failing after this change. Fix it."
+- **Why a run failed** — "Why did the checkout flows fail on staging this morning?"
+- **Where things stand** — "What's the status of the latest runs?"
+- **Run flows** — "Run the billing flows on staging."
+
+The agent reads the issue's title, description, status, labels, and earlier comments. It doesn't see attachments. Guidance you write in Linear under **Settings → Agents → Additional guidance** applies too, unless it conflicts with QA Wolf's own instructions. It never runs your application's source code.
+
+Anyone in a Linear team the agent has access to can ask. They don't need a QA Wolf account.
+
+## Agent notices
+
+If the agent posts one of these notices, here's what to do:
+
+| Notice | What to do |
+|---|---|
+| "QA Wolf isn't available for this Linear team." | Add the issue's team to QA Wolf's access. See [Choose which teams can use the agent](#choose-which-teams-can-use-the-agent). |
+| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then mention QA Wolf again. |
+| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then mention QA Wolf again. |
+| "QA Wolf reviewed this but didn't produce a response." | Reply in the session with what you'd like the agent to do. |
+
+## Agent doesn't respond
+
+If the agent doesn't reply at all, check these:
+
+| Cause | What to do |
+|---|---|
+| The Linear card in QA Wolf shows **Linear is connected, but QA Wolf couldn't finish setting up the agent**. | Select **Retry setup** on the card. |
+| The Linear card in QA Wolf shows **Linear is connected, but QA Wolf couldn't enable the agent**. | Contact QA Wolf support. |
+| Linear was connected before the agent was available, so the session stays pending with no reply. | Disconnect Linear under **Workspace settings → Integrations**, then connect it again. |
+
+## Bug reports and coverage requests
+
+These come from the Linear connection, not from the agent.
+
+- **Automatic issue handling.** Creates Linear issues automatically when new bug reports are generated in QA Wolf.
+- **Synchronization.** Closing a bug report in QA Wolf closes the linked Linear issue, and closing, reopening, or updating the Linear issue updates QA Wolf.
+- **Test creation requests.** Add a **QA Wolf** label to a Linear issue, or assign it to a QA Wolf user, to automatically create a coverage request in QA Wolf. Matching ignores case and accepts `qawolf` or `qa wolf`.

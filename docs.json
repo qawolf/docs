@@ -729,6 +729,7 @@
             "pages": [
               "product-mapping",
               "test-automation",
+              "agent-in-your-tools",
               "custom-skills",
               "qawolf-mcp"
             ]
@@ -1031,6 +1032,12 @@
             ]
           },
           {
+            "group": "Code review",
+            "pages": [
+              "github-pull-requests"
+            ]
+          },
+          {
             "group": "VPN",
             "pages": [
               "vpn"
@@ -1059,6 +1066,7 @@
           {
             "group": "Communication",
             "pages": [
+              "Slack",
               "MS-Teams"
             ]
           },
