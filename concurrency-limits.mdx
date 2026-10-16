@@ -33,8 +33,12 @@ An expression lets a run slow down when flows start failing, and speed back up w
 - **`thirdAttemptsFailureRate`** — the share of completed third attempts that failed.
 - **`secondAttemptsStarted`** — whether any flow has started a second attempt.
 - **`thirdAttemptsStarted`** — whether any flow has started a third attempt.
+- **`firstAttemptsFinished`** — whether every flow in the run has finished its first attempt or will run no more attempts.
+- **`secondAttemptsFinished`** — whether every flow in the run has finished its second attempt or will run no more attempts.
 - **`failedAttemptsCount`** — the number of failed attempts in the run.
 - **`passedAttemptsCount`** — the number of passed attempts in the run.
+
+An attempt counts as finished once it passes, fails, aborts or is canceled. A flow that will run no more attempts counts as finished for every later round, so a flow that passed on its first attempt never holds back `secondAttemptsFinished`. A flow still waiting to start its first attempt holds back both.
 
 A failure rate counts only attempts that passed or failed. It is 0 until at least one attempt completes. In arithmetic, `true` counts as 1 and `false` as 0.
 
@@ -67,6 +71,14 @@ Start at 50, drop to 20 once any flow starts a second attempt, and drop to 10 on
 ```javascript
 thirdAttemptsStarted ? 10 : secondAttemptsStarted ? 20 : 50
 ```
+
+Start at 50, drop to 20 once every first attempt has finished, and drop to 10 once every second attempt has finished:
+
+```javascript
+secondAttemptsFinished ? 10 : firstAttemptsFinished ? 20 : 50
+```
+
+The `Started` variables switch as soon as one flow is retried, while the `Finished` variables wait for the whole round of attempts to end.
 
 Start at 20 and lose one slot per failed attempt, never going below 5:
 
