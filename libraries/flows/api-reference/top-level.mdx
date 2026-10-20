@@ -67,7 +67,7 @@ type Target =
   | "Windows 11 - Desktop (private)";
 ```
 
-See [Target names](#target-names) for how to read a target name, and [Renamed and retired targets](#renamed-and-retired-targets) for the old names that flows can still use.
+See [Target names](#target-names) for how to read a target name, and [Renamed and retired targets](#renamed-and-retired-targets) for the old names and the names that replace them.
 
 Example:
 
@@ -109,7 +109,7 @@ Windows has two targets. `Windows 11 - Desktop` runs on the shared pool of Windo
 
 ### Renamed and retired targets
 
-In October 2026, QA Wolf renamed its Android and iOS targets to follow the pattern above. A flow that uses an old name keeps working and runs on the same devices. The editor suggests only the new names.
+In October 2026, QA Wolf renamed its Android and iOS targets to follow the pattern above. Since October 20, 2026, the old names are retired. The editor marks an old name, and a run of a flow that uses one fails before it starts. The error names the new name. Change the target to its new name in the table below. The new name runs on the same devices.
 
 | Old name | New name |
 | --- | --- |
@@ -143,7 +143,7 @@ In October 2026, QA Wolf renamed its Android and iOS targets to follow the patte
 | `iOS - Apple ID Enabled iPad` | `iOS - iPad 11 (iOS 18 \| Apple ID)` |
 | `iOS - iPad 11 (iOS 18) (Apple ID)` | `iOS - iPad 11 (iOS 18 \| Apple ID)` |
 
-QA Wolf no longer runs flows on iOS 17. A run of a flow that uses a retired name fails, and the error names the replacement.
+QA Wolf no longer runs flows on iOS 17. A run of a flow that uses one of these names fails in the same way, and the error names the replacement.
 
 | Retired name | Replacement |
 | --- | --- |
