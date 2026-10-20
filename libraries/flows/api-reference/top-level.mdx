@@ -67,7 +67,7 @@ type Target =
   | "Windows 11 - Desktop (private)";
 ```
 
-See [Target names](#target-names) for how to read a target name, and [Renamed and retired targets](#renamed-and-retired-targets) for the old names that flows can still use.
+See [Target names](#target-names) for how to read a target name.
 
 Example:
 
@@ -106,49 +106,6 @@ Android and iOS target names follow the pattern `<Platform> - <Model> (<Version>
 - **`Apple ID`** — the flow runs on an iOS device that is signed in to an Apple ID.
 
 Windows has two targets. `Windows 11 - Desktop` runs on the shared pool of Windows VMs, and `Windows 11 - Desktop (private)` on a pool for your workspace alone. See [Windows](/libraries/flows/api-reference/windows#targets).
-
-### Renamed and retired targets
-
-In October 2026, QA Wolf renamed its Android and iOS targets to follow the pattern above. A flow that uses an old name keeps working and runs on the same devices. The editor suggests only the new names.
-
-| Old name | New name |
-| --- | --- |
-| `Latest Android (Phone)` | `Android - Any Phone (Latest \| Emulator)` |
-| `Latest Android (Tablet)` | `Android - Any Tablet (Latest \| Emulator)` |
-| `Android 36 - Any Phone` | `Android - Any Phone (Android 16 \| Emulator)` |
-| `Android 37 - Any Phone` | `Android - Any Phone (Android 17 \| Emulator)` |
-| `Android 37 - Any Tablet` | `Android - Any Tablet (Android 17 \| Emulator)` |
-| `Android - Pixel` | `Android - Google Pixel 2 (Android 14 \| Emulator)` |
-| `Android - Pixel 2 (Android 14)` | `Android - Google Pixel 2 (Android 14 \| Emulator)` |
-| `Android - Pixel 9` | `Android - Google Pixel 9 (Android 14 \| Emulator)` |
-| `Android - Pixel 9 (Android 14)` | `Android - Google Pixel 9 (Android 14 \| Emulator)` |
-| `Android - Pixel 9 (Android 15)` | `Android - Google Pixel 9 (Android 15 \| Emulator)` |
-| `Android - Pixel 9 (Android 16)` | `Android - Google Pixel 9 (Android 16 \| Emulator)` |
-| `Android - Pixel 9 (Android 17)` | `Android - Google Pixel 9 (Android 17 \| Emulator)` |
-| `Android - Tablet` | `Android - Google Pixel Tablet (Android 14 \| Emulator)` |
-| `Android - Pixel Tablet (Android 14)` | `Android - Google Pixel Tablet (Android 14 \| Emulator)` |
-| `Android - Pixel Tablet (Android 17)` | `Android - Google Pixel Tablet (Android 17 \| Emulator)` |
-| `Latest iOS (iPhone)` | `iOS - Any iPhone (Latest)` |
-| `Latest iOS (iPad)` | `iOS - Any iPad (Latest)` |
-| `iOS 18 - Any iPhone` | `iOS - Any iPhone (iOS 18)` |
-| `iOS 26 - Any iPhone` | `iOS - Any iPhone (iOS 26)` |
-| `iOS 27 - Any iPhone` | `iOS - Any iPhone (iOS 27)` |
-| `iOS 26 - Any iPad` | `iOS - Any iPad (iOS 26)` |
-| `iOS - iPad` | `iOS - iPad 11 (iOS 26)` |
-| `iOS - Allowlisted iPhone` | `iOS - iPhone 15 (iOS 26 \| Allowlisted)` |
-| `iOS - iPhone 15 (iOS 26) (allowlisted)` | `iOS - iPhone 15 (iOS 26 \| Allowlisted)` |
-| `iOS - iPhone 15 (iOS 26) (private)` | `iOS - iPhone 15 (iOS 26 \| Private)` |
-| `iOS - Apple ID Enabled iPhone` | `iOS - iPhone 15 (iOS 26 \| Apple ID)` |
-| `iOS - iPhone 15 (iOS 26) (Apple ID)` | `iOS - iPhone 15 (iOS 26 \| Apple ID)` |
-| `iOS - Apple ID Enabled iPad` | `iOS - iPad 11 (iOS 18 \| Apple ID)` |
-| `iOS - iPad 11 (iOS 18) (Apple ID)` | `iOS - iPad 11 (iOS 18 \| Apple ID)` |
-
-QA Wolf no longer runs flows on iOS 17. A run of a flow that uses a retired name fails, and the error names the replacement.
-
-| Retired name | Replacement |
-| --- | --- |
-| `iOS 17 - Any iPhone` | `iOS - Any iPhone (iOS 18)` |
-| `iOS - iPhone 15 (iOS 17)` | `iOS - iPhone 15 (iOS 18)` |
 
 ## `platform.target`
 
