@@ -238,9 +238,9 @@ If your deploys already create GitHub or GitLab deployments, and QA Wolf's integ
 | Legacy schedule | Becomes |
 | --- | --- |
 | Every hour | Hourly, at the same minute past the hour. |
-| Every 2, 3, 4, 6, 8 or 12 hours | Hourly with that count, or one daily trigger per run time when the times would shift. |
-| Every day, or every few days | Daily, at the same time, with the same count. |
-| Every week, or every few weeks | Weekly, on the same weekday and time, with the same count. |
+| Twice a day | Two daily triggers, one for each run time. |
+| Every day | Daily, at the same time. |
+| Every week | Weekly, on the same weekday and time. |
 
 For any other interval, ask your QA Wolf team.
 
@@ -259,7 +259,7 @@ Both need a connected GitHub or GitLab integration covering the deploying reposi
 
 The agent stops and asks about these rather than guessing. Ask your QA Wolf team if you're not sure what a legacy trigger was for.
 
-- A schedule interval with no match above, such as every 90 minutes.
+- A schedule other than hourly, twice a day, daily or weekly.
 - A deployment type that mixes an environment with something else, such as `staging-smoke`.
 - A deployment trigger limited to more than one branch pattern.
 - A deployment trigger that ran when someone added a label to a pull request.
