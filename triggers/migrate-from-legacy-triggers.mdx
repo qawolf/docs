@@ -53,6 +53,25 @@ The recommended path is to let your coding agent do the migration through the [Q
 - **Pipeline changes.** Any change your deploy pipeline needs, and which legacy triggers stay on until that change ships. See [Move your deploy reporting first](#move-your-deploy-reporting-first).
 - **Behavior changes.** Anything that won't work exactly as before, such as on-demand pull request testing becoming automatic. See [What doesn't map one to one](#what-doesnt-map-one-to-one).
 
+## Migrate without a coding agent
+
+If you don't use a coding agent, you can follow the same steps by hand. You create and edit triggers on the **Triggers** page under **Workspace settings**, or your QA Wolf team can create the replacement triggers for you. Changing how your pipeline reports deploys is the one step only you can do. Do the steps in this order:
+
+<Steps>
+  <Step title="Create every replacement trigger">
+    Create one trigger for each legacy trigger, all in one go. See [How legacy setups map](#how-legacy-setups-map) and [The first trigger switches the whole workspace](#the-first-trigger-switches-the-whole-workspace).
+  </Step>
+  <Step title="Change how your pipeline reports deploys">
+    See [Move your deploy reporting first](#move-your-deploy-reporting-first).
+  </Step>
+  <Step title="Confirm a real deploy starts runs">
+    Deploy as usual and check that the new triggers start runs. Check that each schedule shows the right next run time.
+  </Step>
+  <Step title="Pause the legacy triggers">
+    Pause the legacy triggers you replaced, or ask your QA Wolf team to. Don't pause them before a real deploy has started runs through the new triggers.
+  </Step>
+</Steps>
+
 ## The first trigger switches the whole workspace
 
 <Warning>
@@ -70,14 +89,142 @@ That's why the agent creates every replacement first and only then pauses the le
 
 Triggers only see deploys reported through GitHub or GitLab deployment events, or through `deployment.reportStatus`. A deploy reported the legacy way, through [`deploy_success`](/deploy-success), never reaches a trigger. If your pipeline reports that way, it has to change.
 
-| Your pipeline uses | Change it to | See |
-| --- | --- | --- |
-| A direct `POST` to `/api/webhooks/deploy_success` | GitHub or GitLab deployment events, or `deployment.reportStatus` | [GitHub](/deployment-testing/github), [GitLab](/deployment-testing/gitlab), [Webhook](/deployment-testing/webhook) |
-| `qawolf/notify-qawolf-on-deploy-action@v1` or `@v2` | `@v3`, which takes a `workspace-id` | [notify-qawolf-on-deploy-action](https://github.com/qawolf/notify-qawolf-on-deploy-action) |
-| `@qawolf/ci-sdk` `attemptNotifyDeploy` | `deployment.reportStatus` on 3.1.0 or later. A pipeline that waits for the result moves to `deployment.waitForVerdict` on 3.5.1 or later. | [Node.js SDK](/deployment-testing/ci-sdk) |
-| `fastlane-plugin-qawolf` 0.x | 1.0.0 or later | [Mobile build testing](/mobile-build-testing) |
+Find which of the paths below your pipeline uses. Your agent finds it for you when it's open in that repository. A legacy trigger fed by `deploy_success` stays on until a real deploy through the new path has produced a run, so your flows keep running in the meantime.
 
-Your agent finds which of these your pipeline uses when it's open in that repository. A legacy trigger fed by `deploy_success` stays on until a real deploy through the new path has produced a run, so your flows keep running in the meantime.
+Where a change below replaces a deployment type with an `environment`, use the name or an alias of the QA Wolf environment the deploy belongs to, not the old deployment type. A name that matches no environment creates a new one that no trigger targets.
+
+### A direct `deploy_success` call
+
+Call `deployment.reportStatus` instead. It needs your workspace id, and a `providerDeploymentId` that is new for every deploy, such as your pipeline's build number. See [Webhook](/deployment-testing/webhook) for every field.
+
+<CodeGroup>
+```bash Before
+curl -X POST https://app.qawolf.com/api/webhooks/deploy_success \
+  -H "Authorization: Bearer $QAWOLF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "branch": "main",
+    "sha": "de12adda500f2bc5a29dbd89f4fb1b0e1a31de81",
+    "deployment_type": "staging",
+    "deployment_url": "https://staging.example.com"
+  }'
+```
+
+```bash After
+curl -X POST "https://app.qawolf.com/api/trpc/public.deployment.reportStatus" \
+  -H "Authorization: Bearer $QAWOLF_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"json\": {
+      \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
+      \"providerDeploymentId\": \"$DEPLOY_ID\",
+      \"status\": \"success\",
+      \"environment\": { \"name\": \"staging\" },
+      \"deployTarget\": \"https://staging.example.com\",
+      \"metadata\": { \"commitSha\": \"$GIT_COMMIT_SHA\", \"ref\": \"$GIT_BRANCH\" }
+    }
+  }"
+```
+</CodeGroup>
+
+If your repository is on GitHub or GitLab, you can create [GitHub](/deployment-testing/github) or [GitLab](/deployment-testing/gitlab) deployments instead.
+
+### The `notify-qawolf-on-deploy-action` GitHub Action
+
+Move from `@v1` or `@v2` to `@v3`. Add `workspace-id`, replace `deployment-type` with `environment`, and remove `deduplication-key` if you set it.
+
+```diff
+ - name: Notify QA Wolf
+-  uses: qawolf/notify-qawolf-on-deploy-action@v2
++  uses: qawolf/notify-qawolf-on-deploy-action@v3
+   with:
+     qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+-    deployment-type: "staging"
++    workspace-id: "YOUR_WORKSPACE_ID"
++    environment: "staging"
+     deployment-url: "https://staging.example.com"
+```
+
+- For a pull request preview, leave `environment` out. The action reports into the pull request's own environment.
+- The `run-id` output is gone. Use the `deployment-id` output instead.
+
+See the [action's README](https://github.com/qawolf/notify-qawolf-on-deploy-action) for every input. Creating [GitHub deployments](/deployment-testing/github) works too.
+
+### `@qawolf/ci-sdk` `attemptNotifyDeploy`
+
+Upgrade `@qawolf/ci-sdk` to 3.1.0 or later and call `deployment.reportStatus`. `detectProviderDeploymentId()` gives each deploy its own id from your CI system's variables.
+
+<CodeGroup>
+```javascript Before
+const { attemptNotifyDeploy } = makeQaWolfSdk({ apiKey });
+
+const result = await attemptNotifyDeploy({
+  branch,
+  sha,
+  deploymentType: "staging",
+  deploymentUrl: "https://staging.example.com",
+});
+```
+
+```javascript After
+const { deployment } = makeQaWolfSdk({ apiKey });
+
+const detected = detectProviderDeploymentId();
+if (detected.outcome !== "detected") {
+  throw new Error(`Could not identify this deployment: ${JSON.stringify(detected)}`);
+}
+
+const report = await deployment.reportStatus({
+  workspaceId,
+  providerDeploymentId: detected.id,
+  status: "success",
+  environment: { name: "staging" },
+  deployTarget: "https://staging.example.com",
+  metadata: { commitSha: sha, ref: branch },
+});
+```
+</CodeGroup>
+
+A pipeline that waits for the result with `pollCiGreenlightStatus` moves to `deployment.waitForVerdict`, which needs 3.5.1 or later. See [Node.js SDK](/deployment-testing/ci-sdk).
+
+### `fastlane-plugin-qawolf` below 1.0.0
+
+Move the plugin to the 1.1.0 tag and run `bundle install`. Then add `workspace_id`, replace `deployment_type` with `environment`, and rename `deployment_url` to `deploy_target`.
+
+<CodeGroup>
+```ruby Before
+gem "fastlane-plugin-qawolf", git: "https://github.com/qawolf/fastlane-plugin-qawolf", tag: "0.4.8"
+
+notify_deploy_qawolf(
+  deployment_type: "staging",
+  deployment_url: "https://staging.example.com"
+)
+```
+
+```ruby After
+gem "fastlane-plugin-qawolf", git: "https://github.com/qawolf/fastlane-plugin-qawolf", tag: "1.1.0"
+
+notify_deploy_qawolf(
+  workspace_id: ENV.fetch("QAWOLF_WORKSPACE_ID", nil),
+  environment: "Staging",
+  deploy_target: "https://staging.example.com"
+)
+```
+</CodeGroup>
+
+- Remove `deduplication_key`.
+- Replace `hosting_service`, `repository_name` and `repository_owner` with one `repository`, such as `"my-org/my-app"`.
+- A later step that reads `QAWOLF_RUN_ID` reads `QAWOLF_DEPLOYMENT_ID` instead. It holds a deployment id, not a run id.
+
+<Warning>
+  The plugin can't report both ways at once. Create every replacement trigger before the upgrade ships. On 1.0.0 and later, a deploy that matches no trigger starts nothing and the lane still passes.
+</Warning>
+
+See [Mobile build testing](/mobile-build-testing) and the [plugin's README](https://github.com/qawolf/fastlane-plugin-qawolf).
+
+### GitHub or GitLab deployment events
+
+If your deploys already create GitHub or GitLab deployments, and QA Wolf's integration covers the repository, there's nothing to change. Triggers see those deploys already.
 
 <Note>
   If you already send GitHub or GitLab deployment events and also call `deploy_success`, check what each one covers before dropping the legacy call. Deployment events often cover only long-lived environments, while previews go through `deploy_success`.
@@ -90,12 +237,11 @@ Your agent finds which of these your pipeline uses when it's open in that reposi
 | Legacy schedule | Becomes |
 | --- | --- |
 | Every hour | Hourly, at the same minute past the hour. |
-| Every 2, 3, 4, 6, 8 or 12 hours | Hourly, every that many hours. The count runs from midnight in your timezone, so the times can shift. When they would, the plan says so and offers one daily trigger per run time instead. |
-| Twice a day | Hourly every 12 hours when the times line up with midnight, otherwise two daily triggers. |
+| Twice a day | Two daily triggers, one for each run time. |
 | Every day | Daily, at the same time. |
-| Every N days, up to 31 | Daily, every N days, keeping the same start date so runs land on the same days. |
-| Every week, or every N weeks up to 12 | Weekly, on the same weekday, every N weeks. |
-| Every 30 or 31 days | Daily, every 30 or 31 days. If you meant monthly, it can become a monthly schedule on a day from 1 to 28 instead. |
+| Every week | Weekly, on the same weekday and time. |
+
+For any other interval, ask your QA Wolf team.
 
 ### Deployment triggers
 
@@ -112,11 +258,10 @@ Both need a connected GitHub or GitLab integration covering the deploying reposi
 
 The agent stops and asks about these rather than guessing. Ask your QA Wolf team if you're not sure what a legacy trigger was for.
 
-- A schedule interval with no equivalent, such as every 90 minutes or every 5 hours.
+- A schedule other than hourly, twice a day, daily or weekly.
 - A deployment type that mixes an environment with something else, such as `staging-smoke`.
 - A deployment trigger limited to more than one branch pattern.
 - A deployment trigger that ran when someone added a label to a pull request.
-- A daily schedule that runs every few days on weekdays only.
 
 ## FAQ
 
@@ -126,7 +271,7 @@ Your coding agent does the work. You review and approve the plan, and make any p
 
 ### What if I don't use a coding agent?
 
-Ask your QA Wolf team.
+You can create the triggers yourself on the **Triggers** page, or your QA Wolf team can create them for you. See [Migrate without a coding agent](#migrate-without-a-coding-agent).
 
 ### Will I lose runs or coverage during the switch?
 
