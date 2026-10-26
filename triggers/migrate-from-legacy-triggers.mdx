@@ -1,0 +1,145 @@
+---
+title: "Migrate from legacy triggers"
+description: "Move your workspace from legacy per-environment triggers to triggers, with your coding agent and the QA Wolf MCP."
+sidebarTitle: "Migrate from legacy triggers"
+keywords: "legacy triggers, trigger migration, move off legacy triggers, deploy_success, cutover, per-environment triggers, scheduled runs, PR testing"
+---
+
+[Legacy triggers](/legacy-triggers/overview) belong to one environment. [Triggers](/triggers/overview) belong to the workspace. Moving to triggers is a single planned switch for the whole workspace, and your coding agent can do most of the work for you.
+
+## What changes
+
+- **Where automation lives.** A legacy trigger sits on one environment, so covering staging and production takes one in each. A trigger sits on the workspace, so one trigger can cover staging, production and every preview environment.
+- **How deploys are matched.** A legacy deployment trigger matched an opaque deployment type your pipeline sent. A trigger matches what the deploy actually carries: its environment, URL, branch, repository and service. See [Trigger fields](/triggers/reference).
+- **Who manages it.** You create, edit and pause triggers yourself, on the workspace's triggers page, through the API and CLI, or through your coding agent.
+
+Triggers also add things legacy triggers can't express, such as schedules that run on weekdays only, and a Smart Smoke Suite for pull requests.
+
+## Migrate with your coding agent
+
+The recommended path is to let your coding agent do the migration through the [QA Wolf MCP](/qawolf-mcp). The MCP includes a trigger migration skill that knows how each legacy setup maps. The agent reads everything first, shows you a complete plan, and changes nothing until you approve it.
+
+<Check>
+  Your coding agent is connected to QA Wolf. Follow [QA Wolf MCP](/qawolf-mcp), or install the plugin for your agent from [qawolf/agent-plugins](https://github.com/qawolf/agent-plugins). For the pipeline review, open the agent in the repository that deploys your application.
+</Check>
+
+<Steps>
+  <Step title="Ask your agent to migrate your triggers">
+    Example:
+
+    ```text
+    Migrate my QA Wolf legacy triggers to triggers. First tell me which QA Wolf
+    workspace you're connected to, and confirm you've loaded QA Wolf's trigger
+    migration skill. Read everything and show me the full plan before you create
+    or pause anything.
+    ```
+  </Step>
+  <Step title="Review the plan">
+    The agent lists every legacy trigger in every environment and the trigger that replaces it. It also lists any pipeline change needed and any question it can't answer on its own. See [What to check in the plan](#what-to-check-in-the-plan).
+  </Step>
+  <Step title="Approve it">
+    The agent creates every replacement trigger, then pauses the legacy triggers they replace. Nothing is deleted.
+  </Step>
+  <Step title="Confirm the first runs">
+    Check that each schedule's next run time is right. For deployment triggers, the next real deploy should produce a run.
+  </Step>
+</Steps>
+
+### What to check in the plan
+
+- **Times and timezones.** Each schedule shows the time and timezone it will run in. Confirm them.
+- **Weekend runs.** The plan may suggest running hourly and daily schedules on weekdays only. It calls that change out, so say so if you want to keep weekend runs.
+- **What runs.** A legacy trigger with no tags ran every flow in its environment. A trigger has to name a tag or a list of flows, so pick one. A tag lets flows tagged later join.
+- **Pipeline changes.** Any change your deploy pipeline needs, and which legacy triggers stay on until that change ships. See [Move your deploy reporting first](#move-your-deploy-reporting-first).
+- **Behavior changes.** Anything that won't work exactly as before, such as on-demand pull request testing becoming automatic. See [What doesn't map one to one](#what-doesnt-map-one-to-one).
+
+## The first trigger switches the whole workspace
+
+<Warning>
+  The first active trigger moves the whole workspace off legacy deployment triggers at once, whatever kind it is. Create every replacement before any trigger is active, including schedules. Migrating one trigger at a time leaves gaps.
+</Warning>
+
+From that moment, legacy triggers behave in two different ways:
+
+- **Legacy deployment triggers fed by GitHub or GitLab deployment events stop running.** Any you haven't replaced leave a gap in your coverage.
+- **Legacy schedules, and legacy deployment triggers fed by `deploy_success`, keep running until they're paused.** Until then you get duplicate runs.
+
+That's why the agent creates every replacement first and only then pauses the legacy triggers. If one legacy trigger can't be mapped, resolve it before anything is created.
+
+## Move your deploy reporting first
+
+Triggers only see deploys reported through GitHub or GitLab deployment events, or through `deployment.reportStatus`. A deploy reported the legacy way, through [`deploy_success`](/deploy-success), never reaches a trigger. If your pipeline reports that way, it has to change.
+
+| Your pipeline uses | Change it to | See |
+| --- | --- | --- |
+| A direct `POST` to `/api/webhooks/deploy_success` | GitHub or GitLab deployment events, or `deployment.reportStatus` | [GitHub](/deployment-testing/github), [GitLab](/deployment-testing/gitlab), [Webhook](/deployment-testing/webhook) |
+| `qawolf/notify-qawolf-on-deploy-action@v1` or `@v2` | `@v3`, which takes a `workspace-id` | [notify-qawolf-on-deploy-action](https://github.com/qawolf/notify-qawolf-on-deploy-action) |
+| `@qawolf/ci-sdk` `attemptNotifyDeploy` | `deployment.reportStatus` on 3.1.0 or later. A pipeline that waits for the result moves to `deployment.waitForVerdict` on 3.5.1 or later. | [Node.js SDK](/deployment-testing/ci-sdk) |
+| `fastlane-plugin-qawolf` 0.x | 1.0.0 or later | [Mobile build testing](/mobile-build-testing) |
+
+Your agent finds which of these your pipeline uses when it's open in that repository. A legacy trigger fed by `deploy_success` stays on until a real deploy through the new path has produced a run, so your flows keep running in the meantime.
+
+<Note>
+  If you already send GitHub or GitLab deployment events and also call `deploy_success`, check what each one covers before dropping the legacy call. Deployment events often cover only long-lived environments, while previews go through `deploy_success`.
+</Note>
+
+## How legacy setups map
+
+### Schedules
+
+| Legacy schedule | Becomes |
+| --- | --- |
+| Every hour | Hourly, at the same minute past the hour. |
+| Every 2, 3, 4, 6, 8 or 12 hours | Hourly, every that many hours. The count runs from midnight in your timezone, so the times can shift. When they would, the plan says so and offers one daily trigger per run time instead. |
+| Twice a day | Hourly every 12 hours when the times line up with midnight, otherwise two daily triggers. |
+| Every day | Daily, at the same time. |
+| Every N days, up to 31 | Daily, every N days, keeping the same start date so runs land on the same days. |
+| Every week, or every N weeks up to 12 | Weekly, on the same weekday, every N weeks. |
+| Every 30 or 31 days | Daily, every 30 or 31 days. If you meant monthly, it can become a monthly schedule on a day from 1 to 28 instead. |
+
+### Deployment triggers
+
+Each legacy deployment trigger becomes a deployment trigger that matches the same deploys. Usually that means its environment, plus its repository when the legacy trigger was limited to one. Its tags, failure investigation setting and run concurrency limit carry across.
+
+### PR testing and adaptive flow selection
+
+- **The PR testing button** becomes automatic PR testing: a deployment trigger for your preview deploys that runs a [Smart Smoke Suite](/smart-smoke-suites). Tests run on every matching preview deploy instead of when someone presses the button.
+- **Adaptive flow selection** becomes a Smart Smoke Suite on a trigger for preview deploys. A tag limit on the legacy trigger becomes an instruction to the Smart Smoke Suite.
+
+Both need a connected GitHub or GitLab integration covering the deploying repository. See [PR testing](/deployment-testing/pr-testing).
+
+### What doesn't map one to one
+
+The agent stops and asks about these rather than guessing. Ask your QA Wolf team if you're not sure what a legacy trigger was for.
+
+- A schedule interval with no equivalent, such as every 90 minutes or every 5 hours.
+- A deployment type that mixes an environment with something else, such as `staging-smoke`.
+- A deployment trigger limited to more than one branch pattern.
+- A deployment trigger that ran when someone added a label to a pull request.
+- A daily schedule that runs every few days on weekdays only.
+
+## FAQ
+
+### Do I have to do the migration myself?
+
+Your coding agent does the work. You review and approve the plan, and make any pipeline change it calls for. For help, ask your QA Wolf team.
+
+### What if I don't use a coding agent?
+
+Ask your QA Wolf team.
+
+### Will I lose runs or coverage during the switch?
+
+Not when every replacement is created before the legacy triggers are paused, and deploy reporting moves first. A schedule can run twice in the short window between its replacement being created and the legacy schedule being paused.
+
+### What happens to my legacy triggers?
+
+They're paused, not deleted. A legacy trigger fed by `deploy_success` stays on until your pipeline's next deploy through the new path produces a run.
+
+### Can I undo the migration?
+
+Yes. Pause the new triggers, then resume the legacy ones. Pausing every new trigger is what moves the workspace back to legacy deployment triggers. A paused schedule doesn't make up runs it missed while paused.
+
+### How do I know it worked?
+
+Each schedule shows its next run time on the triggers page. For a deployment trigger, the next real deploy should produce a run. If it doesn't, [Deployments](/triggers/deployments#evaluation) explains how to see why the trigger didn't fire.

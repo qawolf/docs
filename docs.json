@@ -658,10 +658,6 @@
       "destination": "/legacy-triggers/GitLab"
     },
     {
-      "source": "/triggers/migrate-from-legacy-triggers",
-      "destination": "/triggers/overview"
-    },
-    {
       "source": "/anatomy-of-a-qa-wolf-test-mobile-edition",
       "destination": "/anatomy-of-a-flow"
     },
@@ -994,7 +990,8 @@
             "group": "Triggers",
             "pages": [
               "triggers/reference",
-              "triggers/deployments"
+              "triggers/deployments",
+              "triggers/migrate-from-legacy-triggers"
             ]
           },
           {
