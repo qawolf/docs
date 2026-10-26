@@ -5,7 +5,7 @@ sidebarTitle: "Migrate from legacy triggers"
 keywords: "legacy triggers, trigger migration, move off legacy triggers, deploy_success, cutover, per-environment triggers, scheduled runs, PR testing"
 ---
 
-[Legacy triggers](/legacy-triggers/overview) belong to one environment. [Triggers](/triggers/overview) belong to the workspace. Moving to triggers is a single planned switch for the whole workspace, and your coding agent can do most of the work for you.
+[Legacy triggers](/legacy-triggers/overview) belong to one environment. [Triggers](/triggers/overview) belong to the workspace. Your coding agent can do most of the move for you.
 
 ## What changes
 
@@ -38,7 +38,7 @@ The recommended path is to let your coding agent do the migration through the [Q
     The agent lists every legacy trigger in every environment and the trigger that replaces it. It also lists any pipeline change needed and any question it can't answer on its own. See [What to check in the plan](#what-to-check-in-the-plan).
   </Step>
   <Step title="Approve it">
-    The agent creates every replacement trigger, then pauses the legacy triggers they replace. Nothing is deleted.
+    The agent creates the replacement triggers, then pauses the legacy triggers they replace. Nothing is deleted. See [When legacy triggers stop](#when-legacy-triggers-stop) for the order.
   </Step>
   <Step title="Confirm the first runs">
     Check that each schedule's next run time is right. For deployment triggers, the next real deploy should produce a run.
@@ -50,6 +50,7 @@ The recommended path is to let your coding agent do the migration through the [Q
 - **Times and timezones.** Each schedule shows the time and timezone it will run in. Confirm them.
 - **Weekend runs.** The plan may suggest running hourly and daily schedules on weekdays only. It calls that change out, so say so if you want to keep weekend runs.
 - **What runs.** A legacy trigger with no tags ran every flow in its environment. A trigger has to name a tag or a list of flows, so pick one. A tag lets flows tagged later join.
+- **Deployment triggers created together.** Every legacy deployment trigger has a replacement in the plan, or a decision to drop it. See [When legacy triggers stop](#when-legacy-triggers-stop).
 - **Pipeline changes.** Any change your deploy pipeline needs, and which legacy triggers stay on until that change ships. See [Move your deploy reporting first](#move-your-deploy-reporting-first).
 - **Behavior changes.** Anything that won't work exactly as before, such as on-demand pull request testing becoming automatic. See [What doesn't map one to one](#what-doesnt-map-one-to-one).
 
@@ -58,32 +59,32 @@ The recommended path is to let your coding agent do the migration through the [Q
 If you don't use a coding agent, you can follow the same steps by hand. You create and edit triggers on the **Triggers** page under **Workspace settings**, or your QA Wolf team can create the replacement triggers for you. Changing how your pipeline reports deploys is the one step only you can do. Do the steps in this order:
 
 <Steps>
-  <Step title="Create every replacement trigger">
-    Create one trigger for each legacy trigger, all in one go. See [How legacy setups map](#how-legacy-setups-map) and [The first trigger switches the whole workspace](#the-first-trigger-switches-the-whole-workspace).
+  <Step title="Move your schedules">
+    For each legacy schedule, create the new schedule trigger, then pause the legacy schedule. You can do this one schedule at a time. See [Schedules](#schedules).
+  </Step>
+  <Step title="Create every replacement deployment trigger">
+    Create one deployment trigger for each legacy deployment trigger, all in one sitting. See [How legacy setups map](#how-legacy-setups-map) and [When legacy triggers stop](#when-legacy-triggers-stop).
   </Step>
   <Step title="Change how your pipeline reports deploys">
     See [Move your deploy reporting first](#move-your-deploy-reporting-first).
   </Step>
   <Step title="Confirm a real deploy starts runs">
-    Deploy as usual and check that the new triggers start runs. Check that each schedule shows the right next run time.
+    Deploy as usual and check that the new triggers start runs.
   </Step>
-  <Step title="Pause the legacy triggers">
-    Pause the legacy triggers you replaced, or ask your QA Wolf team to. Don't pause them before a real deploy has started runs through the new triggers.
+  <Step title="Pause the legacy deployment triggers">
+    Pause the legacy deployment triggers you replaced, or ask your QA Wolf team to. Don't pause one before a real deploy has started runs through the new triggers.
   </Step>
 </Steps>
 
-## The first trigger switches the whole workspace
+## When legacy triggers stop
 
-<Warning>
-  The first active trigger moves the whole workspace off legacy deployment triggers at once, whatever kind it is. Create every replacement before any trigger is active, including schedules. Migrating one trigger at a time leaves gaps.
-</Warning>
+Only one thing switches legacy triggers off on its own: the first active trigger that runs on deploys. From then on, GitHub deployment events for your workspace go to your triggers instead of to legacy deployment triggers and legacy PR testing. Pausing every trigger that runs on deploys switches them back.
 
-From that moment, legacy triggers behave in two different ways:
+- **Legacy deployment triggers fed by GitHub deployment events stop running** at that moment, replaced or not. Create every replacement deployment trigger in one sitting, so none is missing once the first is active. Any you haven't replaced leave a gap.
+- **Legacy schedules keep running until you pause them.** A schedule trigger doesn't switch anything, so you can move schedules one at a time. Create the new schedule, then pause the legacy one, or both run.
+- **Legacy deployment triggers fed by `deploy_success` keep running until you pause them.** Pause each one once your pipeline reports deploys the new way and a real deploy has started runs through the new triggers.
 
-- **Legacy deployment triggers fed by GitHub or GitLab deployment events stop running.** Any you haven't replaced leave a gap in your coverage.
-- **Legacy schedules, and legacy deployment triggers fed by `deploy_success`, keep running until they're paused.** Until then you get duplicate runs.
-
-That's why the agent creates every replacement first and only then pauses the legacy triggers. If one legacy trigger can't be mapped, resolve it before anything is created.
+If one legacy deployment trigger can't be mapped, resolve it before any deployment trigger is created.
 
 ## Move your deploy reporting first
 
@@ -152,7 +153,7 @@ See the [action's README](https://github.com/qawolf/notify-qawolf-on-deploy-acti
 
 ### `@qawolf/ci-sdk` `attemptNotifyDeploy`
 
-Upgrade `@qawolf/ci-sdk` to 3.1.0 or later and call `deployment.reportStatus`. `detectProviderDeploymentId()` gives each deploy its own id from your CI system's variables.
+Upgrade `@qawolf/ci-sdk` to 3.6.0 or later and call `deployment.reportStatus`. `detectProviderDeploymentId()` gives each deploy its own id from your CI system's variables.
 
 <CodeGroup>
 ```javascript Before
@@ -185,7 +186,7 @@ const report = await deployment.reportStatus({
 ```
 </CodeGroup>
 
-A pipeline that waits for the result with `pollCiGreenlightStatus` moves to `deployment.waitForVerdict`, which needs 3.5.1 or later. See [Node.js SDK](/deployment-testing/ci-sdk).
+A pipeline that waits for the result with `pollCiGreenlightStatus` moves to `deployment.waitForVerdict`, also in 3.6.0 or later. See [Node.js SDK](/deployment-testing/ci-sdk).
 
 ### `fastlane-plugin-qawolf` below 1.0.0
 
@@ -213,7 +214,7 @@ notify_deploy_qawolf(
 </CodeGroup>
 
 - Remove `deduplication_key`.
-- Replace `hosting_service`, `repository_name` and `repository_owner` with one `repository`, such as `"my-org/my-app"`.
+- Replace `hosting_service`, `repository_name`, `repository_owner` and `repository_namespace` with one `repository`, such as `"my-org/my-app"`.
 - A later step that reads `QAWOLF_RUN_ID` reads `QAWOLF_DEPLOYMENT_ID` instead. It holds a deployment id, not a run id.
 
 <Warning>
@@ -237,9 +238,9 @@ If your deploys already create GitHub or GitLab deployments, and QA Wolf's integ
 | Legacy schedule | Becomes |
 | --- | --- |
 | Every hour | Hourly, at the same minute past the hour. |
-| Twice a day | Two daily triggers, one for each run time. |
-| Every day | Daily, at the same time. |
-| Every week | Weekly, on the same weekday and time. |
+| Every 2, 3, 4, 6, 8 or 12 hours | Hourly with that count, or one daily trigger per run time when the times would shift. |
+| Every day, or every few days | Daily, at the same time, with the same count. |
+| Every week, or every few weeks | Weekly, on the same weekday and time, with the same count. |
 
 For any other interval, ask your QA Wolf team.
 
@@ -258,7 +259,7 @@ Both need a connected GitHub or GitLab integration covering the deploying reposi
 
 The agent stops and asks about these rather than guessing. Ask your QA Wolf team if you're not sure what a legacy trigger was for.
 
-- A schedule other than hourly, twice a day, daily or weekly.
+- A schedule interval with no match above, such as every 90 minutes.
 - A deployment type that mixes an environment with something else, such as `staging-smoke`.
 - A deployment trigger limited to more than one branch pattern.
 - A deployment trigger that ran when someone added a label to a pull request.
@@ -275,7 +276,7 @@ You can create the triggers yourself on the **Triggers** page, or your QA Wolf t
 
 ### Will I lose runs or coverage during the switch?
 
-Not when every replacement is created before the legacy triggers are paused, and deploy reporting moves first. A schedule can run twice in the short window between its replacement being created and the legacy schedule being paused.
+Not when every replacement deployment trigger is created in one sitting, and each legacy trigger is paused only after its replacement works. A schedule can run twice in the short window between its replacement being created and the legacy schedule being paused.
 
 ### What happens to my legacy triggers?
 
@@ -283,7 +284,7 @@ They're paused, not deleted. A legacy trigger fed by `deploy_success` stays on u
 
 ### Can I undo the migration?
 
-Yes. Pause the new triggers, then resume the legacy ones. Pausing every new trigger is what moves the workspace back to legacy deployment triggers. A paused schedule doesn't make up runs it missed while paused.
+Yes. Pause the new triggers, then resume the legacy ones. Pausing every trigger that runs on deploys is what sends GitHub deployment events back to legacy deployment triggers. A paused schedule doesn't make up runs it missed while paused.
 
 ### How do I know it worked?
 
