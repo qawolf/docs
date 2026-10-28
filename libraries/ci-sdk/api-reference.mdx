@@ -1,8 +1,8 @@
 ---
 title: "SDK Reference"
-description: "Reference for the @qawolf/ci-sdk package: report a deployment, wait for QA Wolf's verdict, upload run inputs, and the legacy deploy_success functions."
+description: "Reference for the @qawolf/ci-sdk package: report a deployment, wait for QA Wolf's verdict, close preview environments, upload app builds and run inputs, and the legacy deploy_success functions."
 sidebarTitle: "SDK Reference"
-keywords: "ci-sdk, reportStatus, waitForVerdict, detectProviderDeploymentId, providerDeploymentId, deployment verdict, CI gate, Node.js, Jenkins, Buildkite, Bitbucket Pipelines"
+keywords: "ci-sdk, reportStatus, waitForVerdict, detectProviderDeploymentId, providerDeploymentId, deployment verdict, needs-review, environment.promote, environment.terminate, promotion.get, uploadBuild, CI gate, Node.js, Jenkins, Buildkite, Bitbucket Pipelines"
 ---
 
 `@qawolf/ci-sdk` is a TypeScript package for notifying QA Wolf of a deploy from your CI pipeline and gating the pipeline on the result. It calls the same public API the [Webhook](/deployment-testing/webhook) page documents, with typed inputs taken from the published API contract.
@@ -11,7 +11,7 @@ SDK functions do not throw. Each returns a result object with an `outcome` field
 
 The guide for wiring it into a pipeline is [Node.js SDK](/deployment-testing/ci-sdk). This page is the function-by-function reference.
 
-This page documents 3.3.0. `deployment.reportStatus` and `deployment.waitForVerdict` need 3.1.0 or later, so a pipeline on an earlier version has only the [legacy functions](#legacy-functions) and upgrades before wiring one up.
+This page documents 3.6.0. `deployment.reportStatus` needs 3.1.0 or later, so a pipeline on an earlier version has only the [legacy functions](#legacy-functions) and upgrades before wiring one up. Use 3.6.0 or later for `deployment.waitForVerdict`: earlier versions fail on every call (before 3.4.1), fail while a run is still executing (before 3.5.1), or keep waiting until `timeout` on a run that needs a person (before 3.6.0).
 
 ## Installation
 
@@ -53,8 +53,11 @@ Returns an object with these functions:
 
 - **`deployment.reportStatus`** — reports a deployment. A deployment's first `success` report is what evaluates triggers and starts a run.
 - **`deployment.waitForVerdict`** — blocks until QA Wolf can say whether the deployment's tests passed.
-- **`notifyTerminatedEphemeralEnvironment`** — tells QA Wolf an ephemeral environment is gone.
+- **`environment.promote`** and **`environment.terminate`** — close a preview environment, keeping or discarding its flow changes.
+- **`promotion.get`** — reads how a promotion settled.
+- **`uploadBuild`** — uploads an Android or iOS app build.
 - **`generateSignedUrlForRunInputsExecutablesStorage`** and **`generateSignedUrlForTempTeamStorage`** — signed upload URLs for files a run needs.
+- **`notifyTerminatedEphemeralEnvironment`** — deprecated; performs a promote through the legacy webhook.
 - **`attemptNotifyDeploy`**, **`pollCiGreenlightStatus`** and **`makePollCiGreenlightStatusIterator`** — the [legacy functions](#legacy-functions). They report through the `deploy_success` webhook, which triggers do not see.
 
 `detectProviderDeploymentId` is a standalone export rather than a method; see [below](#detectproviderdeploymentid).
@@ -243,6 +246,7 @@ Branch on `outcome`:
 | `"not-tested"` | Nothing tested this deployment. Carries `reason` and `triggers`, one note per trigger saying why. |
 | `"run-canceled"` | A run was canceled, so there is no verdict. Not a pass. Carries `runs`. |
 | `"superseded"` | A newer deployment to the same branch and environment replaced the run before it finished, so there is no verdict for this deployment. Not a pass. Carries `runs` and `supersededBy` with the replacement's `runId` and `url`. |
+| `"needs-review"` | Every run finished, and its failures wait for a person on the run page. There is no verdict yet. Not a pass. Carries `runs`, where such a run reads `running`. |
 | `"timed-out"` | The budget ran out. Carries `elapsedMs`, `lastStage` and the `runs` it had already found. |
 | `"canceled-by-caller"` | The `signal` was aborted. |
 | `"unauthorized"` | The API key is unknown, or may not read this deployment. Carries `message`. |
@@ -254,6 +258,8 @@ Branch on `outcome`:
 
 `not-tested` is a separate answer from `passed`. A deployment no trigger matched was not tested, which is a different fact from tests passing, and your pipeline decides what it is worth. `reason` is `"no-trigger-matched"` when every trigger was evaluated and none matched, or `"no-run-created"` when a trigger matched and something stopped it from creating a run; each entry in `triggers` then carries `triggerName`, a `message` for the log and, for `no-run-created`, a stable `reason` code to branch on.
 
+`needs-review` means a person must answer before QA Wolf can decide: QA Wolf does not call a run passed or failed while a failure still waits for a diagnosis. The wait returns as soon as only a person can move the run, either because QA Wolf asked a question about each failure without a diagnosis or because the workspace does not investigate runs. Each run's `runUrl` takes your build log to the run page, where someone answers the questions. After that the run settles to `passed` or `failed`. The example above exits `1` on it.
+
 `superseded` is what a cancel-in-progress pipeline looks like from the older job: the newer deployment's job carries the verdict. Reserve a distinct exit code for it when your CI should treat the job as skipped rather than failed.
 
 Each entry in `runs`:
@@ -262,14 +268,144 @@ Each entry in `runs`:
 | --- | --- |
 | `runId` | The run's id. |
 | `runUrl` | Absolute URL of the run page. |
-| `status` | `"queued"`, `"running"`, `"passed"`, `"failed"`, `"canceled"` or `"superseded"`. Terminal on every outcome except `timed-out`. |
+| `status` | `"queued"`, `"running"`, `"passed"`, `"failed"`, `"canceled"` or `"superseded"`. Terminal on every outcome except `timed-out` and `needs-review`, where a run waiting for a person reads `"running"`. |
 | `blockingBugCount` | Open bugs serious enough to block the build. |
 | `supersededBy` | The replacing run's `runId` and `url`. Present only when `status` is `"superseded"`. |
 | `triggerName` | The trigger that created the run. |
 
 `DeploymentVerdict`, `VerdictRun`, `VerdictStage`, `TriggerNote` and `NotTestedReason` are the exported types. The same shape is published as `deploymentVerdictSchema` in `@qawolf/api-contracts`.
 
+## environment.promote and environment.terminate
+
+Close a preview environment that `deployment.reportStatus` created, once its pull request is done. The two are not interchangeable:
+
+- **`environment.promote`** — the work was accepted, typically on merge. The environment's flow changes are merged into its base environment, and the environment is terminated once they land.
+- **`environment.terminate`** — the work was abandoned, typically on a close without merge. The flow changes are discarded and the environment's runs are canceled.
+
+Terminating an accepted preview throws away the flow work done for that pull request. Promoting an abandoned one merges flows nobody kept into the base environment that every later preview copies from.
+
+With a connected GitHub or GitLab integration, QA Wolf hears about the pull request closing from the code host, and neither call is needed.
+
+Example:
+
+```javascript
+const { environment } = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
+
+if (pullRequestWasMerged) {
+  const result = await environment.promote({
+    environmentId: `preview/pr-${pullRequestNumber}`,
+    workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+  });
+  if (result.outcome !== "requested") process.exit(1);
+  console.log(result.promotion.id, result.promotion.status); // "pending"
+} else {
+  const result = await environment.terminate({
+    environmentId: `preview/pr-${pullRequestNumber}`,
+    workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+  });
+  if (result.outcome !== "terminated") process.exit(1);
+}
+```
+
+### Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `environmentId` | string | The environment's id or one of its aliases. Required. |
+| `workspaceId` | string | Required to look up an alias with an organization or user API key. A workspace API key implies it. |
+
+### Result
+
+`environment.promote` answers `"requested"` with `promotion`, in `pending`, because the merge runs in the background; read how it settled with `promotion.get`, below. `environment.terminate` answers `"terminated"` with `environment`, whose `terminatedAt` is set. Both share these refusals:
+
+| `outcome` | Description |
+| --- | --- |
+| `"invalid-request"` | The environment is already terminated, a promoted environment has no base environment to merge into, or an alias was sent without the `workspaceId` an organization or user key needs. Carries `message`. |
+| `"unauthorized"` | The API key is unknown, or may not act on this workspace. Carries `message`. |
+| `"not-found"` | No environment matches `environmentId`. Carries `message`. |
+| `"conflict"` | The call clashes with the environment's current state. Carries `message`. |
+| `"server-error"` | QA Wolf failed to answer. Carries `httpStatus`. Retrying is reasonable. |
+| `"unexpected-status"` | An HTTP status this SDK version does not map. Carries `httpStatus` and `message`. |
+| `"network-error"` | The request never reached QA Wolf, or the connection dropped. |
+| `"invalid-response-body"` | QA Wolf answered with a body the contract rejects. |
+
+Calling `environment.promote` again while a promotion is open returns that same promotion rather than opening a second one. An environment whose promotion is still being applied cannot be terminated until it settles; one whose promotion is `conflicted` can.
+
+## promotion.get
+
+Reads how a promotion that `environment.promote` requested settled.
+
+Example:
+
+```javascript
+const { promotion } = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
+
+const result = await promotion.get({ promotionId });
+if (result.outcome !== "found") process.exit(1);
+console.log(result.promotion.status);
+```
+
+`promotion.status` is one of:
+
+- **`pending`** and **`resolving`** — not settled yet. Poll again.
+- **`promoted`** — the flow changes landed in the base environment. Carries `promotedCommitHash`.
+- **`no-changes`** — there was nothing to merge.
+- **`conflicted`** — the flow changes clash with the base environment. `conflict.paths` names the files. A person resolves it in QA Wolf, and the environment stays until they do.
+- **`abandoned`** — the environment was terminated before the promotion settled.
+
+`conflict` is present while the status is `conflicted` or `resolving`, and `settledAt` once it is `promoted`, `no-changes` or `abandoned`. Refusals are the same as for `environment.promote`, with `not-found` meaning no promotion matches `promotionId`.
+
+A promotion usually settles within a minute or two. The SDK has no wait helper for it, so a pipeline that needs the settled status polls `promotion.get` while it reads `pending` or `resolving`.
+
+## uploadBuild
+
+Uploads an Android `.apk` or `.aab`, or an iOS `.ipa`, of up to 500 MB, and registers it as a QA Wolf build. QA Wolf reads the app id, version and build number from the file. The file is streamed from disk, so a large build is not held in memory.
+
+Example:
+
+```javascript
+const { uploadBuild } = makeQaWolfSdk({ apiKey: process.env.QAWOLF_API_KEY });
+
+const result = await uploadBuild({
+  filePath: "app/build/outputs/apk/release/app-release.apk",
+  environment: { name: "staging" },
+  branch: process.env.GIT_BRANCH,
+  commitSha: process.env.GIT_COMMIT,
+  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+});
+
+if (result.outcome !== "uploaded") process.exit(1);
+console.log(result.build.id, result.build.appId, result.build.version);
+```
+
+### Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `filePath` | string | Path to the build file. Required. |
+| `environment` | object | The environment whose runs install this build from now on, until a newer build of the same app and platform arrives. `{ id }`, or `{ name }` with the same `ephemeral` and `baseEphemeralEnvironment` options as `deployment.reportStatus`, which creates the environment when nothing matches. Omit it for a build that only the runs created with it install. |
+| `branch` | string | Shown with the build. |
+| `commitSha` | string | Shown with the build. |
+| `workspaceId` | string | Required with an organization or user API key. |
+
+### Result
+
+`"uploaded"` carries `build` with `id`, `appId`, `appName`, `platform`, `version`, `buildNumber`, `fileName`, `sizeBytes` and `url`. Otherwise:
+
+| `outcome` | Description |
+| --- | --- |
+| `"file-unreadable"` | `filePath` does not name a readable file. Nothing was sent. Carries `filePath`. |
+| `"upload-rejected"` | Storage refused the file, for example because the upload URL expired. Carries `buildId` and `httpStatus`. |
+| `"upload-network-error"` | The file never reached storage, or the connection dropped. Carries `buildId`. |
+| `"invalid-request"`, `"unauthorized"`, `"not-found"`, `"conflict"`, `"server-error"`, `"unexpected-status"`, `"network-error"`, `"invalid-response-body"` | QA Wolf refused or failed one of its two calls, with the same meanings as for `deployment.reportStatus`. `failedStep` says which: `"request-upload"`, where `invalid-request` means the file is not an `.apk`, `.aab` or `.ipa` or is over 500 MB, or `"create"`, where `invalid-request` means the file is not an app and also carries `buildId`. |
+
+A failed call creates no build. Each call uploads the file as a new build, so retrying is calling `uploadBuild` again.
+
 ## notifyTerminatedEphemeralEnvironment
+
+<Warning>
+  Deprecated since 3.4.0. Despite its name, this function performs a promote: the legacy `environment_terminated` webhook merges the environment's flow changes into its base and then terminates it. Use `environment.promote`, above, for accepted work and `environment.terminate` to discard abandoned work, which this function has never done. It keeps working, prints no warning and has no removal date.
+</Warning>
 
 Tells QA Wolf that an ephemeral environment has been terminated. QA Wolf stops the runs targeting it and promotes any flow changes to the base environment. See [webhooks/environment\_terminated](/environment_terminated) for the underlying endpoint.
 
@@ -366,7 +502,7 @@ await fetch(signed.uploadUrl, {
 ## Legacy functions
 
 <Warning>
-  `attemptNotifyDeploy` and `pollCiGreenlightStatus` report through the legacy `deploy_success` webhook, which feeds [legacy triggers](/legacy-triggers/overview) only. A [trigger](/triggers/overview) never sees a deployment they send. They were deprecated in 3.1.0 and are still exported in 3.3.0: legacy describes the path they report through, not an old version of the package. They keep working unchanged, print no warning, and have no removal date. A new integration uses `deployment.reportStatus` and `deployment.waitForVerdict`.
+  `attemptNotifyDeploy` and `pollCiGreenlightStatus` report through the legacy `deploy_success` webhook, which feeds [legacy triggers](/legacy-triggers/overview) only. A [trigger](/triggers/overview) never sees a deployment they send. They were deprecated in 3.1.0 and are still exported in 3.6.0: legacy describes the path they report through, not an old version of the package. They keep working unchanged, print no warning, and have no removal date. A new integration uses `deployment.reportStatus` and `deployment.waitForVerdict`.
 </Warning>
 
 Moving a pipeline off them: `deploymentType` becomes `environment.name`; `branch` and `sha` move into `metadata`; `providerDeploymentId` is new and required, and subsumes `deduplicationKey`; `hostingService` disappears, since the code host comes from your integration; `variables` becomes `environmentVariables`. There is no `skipped` outcome, because whether a trigger matched is not known at report time; `deployment.waitForVerdict` answers `not-tested` instead.
@@ -541,10 +677,14 @@ Minimum versions for the functions on this page:
 | Function | Since |
 | --- | --- |
 | `deployment.reportStatus`, `detectProviderDeploymentId` | 3.1.0 |
-| `deployment.waitForVerdict` | 3.2.0 |
+| `deployment.waitForVerdict` | 3.2.0, and 3.5.1 for a wait that completes |
 | `deployment.waitForVerdict` answering `superseded` | 3.3.0 |
+| `environment.promote`, `environment.terminate`, `promotion.get` | 3.4.0 |
+| `uploadBuild` | 3.5.0 |
+| `deployment.waitForVerdict` answering `needs-review` | 3.6.0 |
 | ESM-only package, Node.js 24.14.1 or later | 3.0.0 |
 | `workspaceId` on the signed URL functions | 2.2.0 |
 | `attemptNotifyDeploy` and `pollCiGreenlightStatus` deprecated, still exported | 3.1.0 |
+| `notifyTerminatedEphemeralEnvironment` deprecated, still exported | 3.4.0 |
 
 The changelog is in the package's README on [npm](https://www.npmjs.com/package/@qawolf/ci-sdk).
