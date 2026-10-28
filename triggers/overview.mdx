@@ -7,7 +7,7 @@ keywords: "automatic test runs, run on deploy, PR testing, nightly runs, deploym
 
 A trigger runs a set of flows when your application deploys, or on a schedule. Triggers belong to the workspace, so one trigger can cover staging, production and every preview environment.
 
-You create and edit triggers on the workspace's triggers page, or through the public API and CLI. The triggers page runs flows by tag or as a Smart Smoke Suite. Naming flows one by one takes the API or CLI.
+You create and edit triggers on the workspace's triggers page, or through the public API and CLI.
 
 ## Trigger kinds
 
@@ -33,6 +33,8 @@ On the triggers page, select **Create trigger**. The drawer asks what should sta
 A sentence at the top of the drawer describes what the trigger does and updates as you edit. For a deployment trigger, it also says how many of your recent deploys the trigger would have run on, and lists them.
 
 To narrow a deployment trigger, select **Only when…** and add a repository, service, branch or deploy URL condition. Each condition suggests the values your recent deploys reported, and you can type a name or [pattern](/triggers/reference#deployment-conditions) instead.
+
+To choose what runs, select **Add tags or flows**. One search finds both, and a trigger can combine tags with flows named one by one.
 
 **Run options** holds failure investigation and the number of flows that run in parallel.
 
