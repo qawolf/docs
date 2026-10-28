@@ -1,0 +1,164 @@
+---
+title: "Clone your workspace with Git"
+description: "Clone your QA Wolf flow repository, edit files locally, and push changes to your workspace."
+sidebarTitle: "Git access"
+---
+
+Clone your workspace's flow repository to edit flows, helpers, and [custom skills](/custom-skills) with your own tools.
+Your QA Wolf workspace access controls cloning and pushing.
+
+<Check>
+  Install Git before you start. Your workspace must have Git access.
+  If **Settings > Git** is missing, contact QA Wolf support.
+</Check>
+
+## Authenticate
+
+Choose one authentication method before cloning.
+
+<Tabs>
+  <Tab title="QA Wolf CLI">
+    <Steps>
+      <Step title="Install the CLI">
+        [Install the QA Wolf CLI](/local-execution/authenticate#install-the-cli) with npm or a standalone binary.
+
+        The Git credential helper requires a persistent installation.
+        Running login through `npx` does not configure it.
+      </Step>
+      <Step title="Sign in">
+        Run the login command:
+
+        ```bash
+        qawolf auth login
+        ```
+
+        Git uses your CLI sign-in for clone, fetch, and push.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="User API key">
+    Create a user API key under **Settings > API keys**.
+    If API keys are unavailable, use the CLI authentication method.
+
+    When Git asks for a username, enter `qawolf`.
+    When Git asks for a password, paste your user API key.
+    Git requires a non-empty username to send the key.
+
+    Organization API keys and legacy workspace API keys cannot authenticate Git requests.
+    Keep the key out of clone URLs and committed files.
+  </Tab>
+</Tabs>
+
+## Clone the repository
+
+<Steps>
+  <Step title="Copy the clone command">
+    Open **Settings > Git** in your workspace.
+    Under **Clone**, select **Copy clone command**.
+  </Step>
+  <Step title="Run the command">
+    Paste the copied command into your terminal.
+    It uses your workspace's slug:
+
+    ```bash
+    git clone https://app.qawolf.com/api/git/<workspace-slug>.git
+    ```
+
+    Use the copied host if your workspace uses a different QA Wolf deployment.
+  </Step>
+  <Step title="Open the clone">
+    Enter the directory that Git created:
+
+    ```bash
+    cd <workspace-slug>
+    ```
+  </Step>
+</Steps>
+
+The repository's `origin` points to QA Wolf.
+Later fetches and pushes use the same authentication method.
+Git access uses HTTPS. QA Wolf does not support SSH, Git LFS, or submodule authentication.
+
+## Edit and push files
+
+<Warning>
+  A push to an environment branch changes the flows that its scheduled runs use.
+  Confirm the target branch before pushing.
+</Warning>
+
+<Steps>
+  <Step title="Choose the target branch">
+    Use the branch that your QA Wolf environment or investigation uses:
+
+    ```bash
+    git fetch origin
+    git switch <branch-name>
+    ```
+
+    Replace `<branch-name>` with the existing branch's name.
+    Cloning alone does not select your investigation's branch.
+  </Step>
+  <Step title="Edit the files">
+    Make your changes in your editor.
+    For reusable investigation guidance, [add a skill file](/custom-skills#add-a-skill-through-git).
+  </Step>
+  <Step title="Review the changes">
+    Inspect the target branch and changed files:
+
+    ```bash
+    git status
+    git diff
+    ```
+  </Step>
+  <Step title="Commit and push">
+    Stage only the files you intend to publish:
+
+    ```bash
+    git add <file-path>
+    git commit -m "docs(skills): add investigation guidance"
+    git push
+    ```
+  </Step>
+</Steps>
+
+QA Wolf imports pushed changes into your workspace.
+Changes can appear after Git reports a successful push.
+Git pushes support branches. QA Wolf rejects tags and other non-branch writes.
+
+### Associate a new branch with an environment
+
+A branch created through Git has no environment until you associate it.
+This makes it available under that environment on the **Flows** page.
+
+<Steps>
+  <Step title="Find the branch">
+    Open **Settings > Git** and find your pushed branch under **Branches**.
+  </Step>
+  <Step title="Choose the environment">
+    Select **Associate…** for the branch, then choose its environment.
+  </Step>
+  <Step title="Confirm the association">
+    Select **Associate** in the dialog.
+  </Step>
+</Steps>
+
+<Warning>
+  You cannot change a branch's environment association later.
+  Check the selected environment before confirming.
+</Warning>
+
+## Troubleshoot Git access
+
+| Symptom | Action |
+| --- | --- |
+| **Git** is missing from Settings | Contact QA Wolf support to confirm that Git access is enabled. |
+| Authentication fails | Run `qawolf auth login` again, or use a valid user API key. |
+| A user API key fails | Confirm that the key belongs to the workspace's organization and that your user still has access. |
+| Git asks for the key on every command | Configure a Git credential helper, or use CLI sign-in. |
+| The repository returns `404` | Copy the command from Settings again and confirm your workspace access. |
+| A pushed branch is missing from Flows | Associate it with an environment under **Settings > Git > Branches**. |
+| A push fails or its connection closes | Fetch and inspect the remote branch before repeating the push. |
+
+Each workspace member can push to every branch, subject to the repository's existing GitHub rules.
+Revoke a user API key under **Settings > API keys** to stop its access.
+Run `qawolf auth logout` to remove CLI sign-in and its Git credential helper.
