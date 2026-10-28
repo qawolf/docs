@@ -12,15 +12,29 @@ You create and edit triggers on the workspace's triggers page, or through the pu
 ## Trigger kinds
 
 - **Deployment** — fires when your pipeline notifies QA Wolf of a successful deploy that matches the trigger's conditions. The flows run against that deploy. See [PR testing](/deployment-testing/pr-testing) and the deployment testing guides for how the notification reaches QA Wolf.
-- **Schedule** — fires hourly, daily or weekly in one environment, and an hourly or daily schedule can be restricted to chosen days of the week. Needs nothing from your pipeline.
+- **Schedule** — fires in one environment every few hours, days, weeks or months. An hourly or daily schedule can be restricted to chosen days of the week. Needs nothing from your pipeline.
 
 ## What a trigger runs
 
 - **A tag** — every flow carrying it. Flows tagged later join automatically.
 - **Named flows** — a fixed set.
-- **A [Smart Smoke Suite](/smart-smoke-suites)**, labeled **Generative suite** on the triggers page — flows QA Wolf selects from the pull request behind the deploy. Deployment triggers only, and only for deploys tied to a pull request. See [PR testing](/deployment-testing/pr-testing).
+- **A [Smart Smoke Suite](/smart-smoke-suites)**, labeled **Let QA Wolf choose from the pull request's changes** on the triggers page — flows QA Wolf selects from the pull request behind the deploy. Deployment triggers only, and only for deploys tied to a pull request. See [PR testing](/deployment-testing/pr-testing).
 
 Give preview deploys their own trigger rather than widening the one that covers staging. A pull request rarely needs everything staging runs, and a Smart Smoke Suite skips every deploy that has no pull request.
+
+## Create a trigger
+
+On the triggers page, select **Create trigger**. The drawer asks what should start the runs:
+
+- **Deploys to an environment** — a deployment trigger for staging, production or any long-lived environment.
+- **A schedule** — runs in one environment on a repeating schedule. Pick a shortcut such as **Hourly**, **Weekdays** or **Every 2 weeks**, or set **Every [N] [unit] at [time]**.
+- **Pull request previews** — a deployment trigger for preview environments named like a pattern, such as `pr-*`. It can let QA Wolf choose the flows from each pull request's changes, or always run the same flows.
+
+A sentence at the top of the drawer describes what the trigger does and updates as you edit. For a deployment trigger, it also says how many of your recent deploys the trigger would have run on, and lists them.
+
+To narrow a deployment trigger, select **Only when…** and add a repository, service, branch or deploy URL condition. Each condition suggests the values your recent deploys reported, and you can type a name or [pattern](/triggers/reference#deployment-conditions) instead.
+
+**Run options** holds failure investigation and the number of flows that run in parallel.
 
 ## Pausing
 

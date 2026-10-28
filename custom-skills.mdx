@@ -80,6 +80,10 @@ Anything you would otherwise repeat across many prompts:
 
 Keep each skill to one topic. The agent opens the whole file once it selects a skill, so a file covering several unrelated subjects spends context on the parts that don't apply. Knowledge that matters to a single flow belongs in that flow's prompt or header instead.
 
+## Point the agent at a skill
+
+To make sure the agent uses a particular skill, type `/` in the chat and pick it from the list, or type `/` followed by the skill's name. The agent reads that skill before it works on your message.
+
 ## Where skills live
 
 A `SKILL.md` file works anywhere in your workspace. Giving each one its own folder keeps them easy to find:
@@ -104,7 +108,7 @@ Skills take effect as soon as you save — there's no restart or reindex step. T
 
 ### The agent isn't following a convention I documented.
 
-The agent names the skill it read as it works, so check whether yours came up. If it didn't, revise the description: name the work it should shape and the specific terms your team uses. Selection happens on the description alone, so that's where it's decided.
+The agent names the skill it read as it works, so check whether yours came up. If it didn't, revise the description: name the work it should shape and the specific terms your team uses. Selection happens on the description alone, so that's where it's decided. To use the skill for one message regardless, [point the agent at it](#point-the-agent-at-a-skill).
 
 ### My skill isn't showing up at all.
 

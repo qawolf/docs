@@ -2,7 +2,7 @@
 title: "Trigger fields"
 description: "The fields of a trigger: deployment conditions, schedule, and the action that selects flows."
 sidebarTitle: "Trigger fields"
-keywords: "trigger fields, environmentPattern, deployTargetPattern, branchPattern, servicePattern, repositoryPattern, cadence, weekly, dayOfWeek, daysOfWeek, timezoneId, createSuite, generativeSuite, flowIds, tagNames, investigateFailures, runConcurrencyLimit"
+keywords: "trigger fields, environmentPattern, deployTargetPattern, branchPattern, servicePattern, repositoryPattern, pattern syntax, brace list, cadence, weekly, monthly, every, startDate, dayOfMonth, dayOfWeek, daysOfWeek, timezoneId, createSuite, generativeSuite, flowIds, tagNames, investigateFailures, runConcurrencyLimit"
 ---
 
 Every trigger has a name, a paused state, deployment conditions or a schedule, and one action.
@@ -20,7 +20,14 @@ Every condition supplied must match. A trigger with no conditions fires on every
 | `repositoryPattern` | Only fire for deployments from a repository whose `owner/name` matches this pattern, such as `acme/web` or `acme/*`. A deployment that names no repository never matches. |
 | `servicePattern` | Only fire for deployments whose service matches this pattern. A deployment that names no service never matches a trigger carrying one, so adding a service pattern to an existing trigger silently stops it firing until your pipeline sends the field. See [Deployments](/triggers/deployments#what-a-deployment-carries). |
 
-Patterns are case-insensitive, and `*` matches any run of characters. A deployment with no deploy target, branch, repository or service never matches a pattern on that field.
+Patterns ignore case. In a pattern:
+
+- `*` matches any run of characters, `/` included. `release/*` matches `release/1.2` and `release/1.2/hotfix`.
+- `{a,b}` matches any one of its comma-separated options. `{main,hotfix}` matches either branch, and an option can hold `*`, as in `{release/*,hotfix/*}`.
+- A leading `!` matches every value the rest of the pattern doesn't. `!{main,hotfix}` matches every other branch.
+- Every other character matches only itself, `?`, `[`, `]`, `(`, `)` and `.` included. A brace with no comma, such as `{owner}`, is literal too.
+
+A deployment with no deploy target, branch, repository or service never matches a pattern on that field, with or without `!`.
 
 `environmentPattern` matches the name of the QA Wolf environment the deployment resolved to, not the name your pipeline sent. See [Deployments](/triggers/deployments#environment).
 
@@ -28,12 +35,15 @@ Patterns are case-insensitive, and `*` matches any run of characters. A deployme
 
 | Field | Description |
 | --- | --- |
-| `cadence` | `hourly`, `daily` or `weekly`. |
+| `cadence` | `hourly`, `daily`, `weekly` or `monthly`. |
 | `environmentId` | The environment the runs happen in, by id or alias. |
 | `timezoneId` | The IANA timezone the schedule is read in, such as `America/New_York`. Required for every cadence, `hourly` included. It sets the wall clock `timeOfDay` is read against, and the day boundaries `dayOfWeek` and `daysOfWeek` are read against. |
-| `timeOfDay` | When a daily or weekly schedule fires, as `HH:mm`. Required when the cadence is daily or weekly. |
+| `timeOfDay` | When a daily, weekly or monthly schedule fires, as `HH:mm`. Required for those cadences. |
 | `dayOfWeek` | The one day a weekly schedule fires on, named in lower case: `monday` through `sunday`. Required when the cadence is weekly. |
-| `daysOfWeek` | The only days an hourly or daily schedule fires on, as an array of lower-case day names. Name each day at most once; a repeated day is refused. An empty list is refused. Omitting it fires on every day. |
+| `dayOfMonth` | The day of the month a monthly schedule fires on, from 1 to 28. Required when the cadence is monthly. |
+| `daysOfWeek` | The only days an hourly or daily schedule fires on, as an array of lower-case day names. Name each day at most once; a repeated day is refused. An empty list is refused. Omitting it fires on every day. Refused on a daily schedule whose `every` is more than 1. |
+| `every` | How many units pass between runs. Defaults to 1. An hourly schedule takes 1, 2, 3, 4, 6, 8 or 12, counted from midnight in `timezoneId`. A daily schedule takes up to 31, a weekly one up to 12, and a monthly one up to 12. |
+| `startDate` | The date of the first run, as `YYYY-MM-DD`, for a daily, weekly or monthly schedule whose `every` is more than 1. Required then, and refused otherwise. Later runs repeat from it, so it decides which weeks or months are run weeks. It must fall on `dayOfWeek` or `dayOfMonth`. A past date is accepted. |
 | `minuteOfHour` | Minutes past the hour an hourly schedule fires. Defaults to 0. |
 
 <Note>

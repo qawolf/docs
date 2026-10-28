@@ -238,15 +238,20 @@ If your deploys already create GitHub or GitLab deployments, and QA Wolf's integ
 | Legacy schedule | Becomes |
 | --- | --- |
 | Every hour | Hourly, at the same minute past the hour. |
+| Every 2, 3, 4, 6, 8 or 12 hours | Hourly, repeating every that many hours. The hours count from midnight, so the run times can move. The plan shows the old and new times when they do. |
 | Twice a day | Two daily triggers, one for each run time. |
 | Every day | Daily, at the same time. |
+| Every few days, up to 31 | Daily, repeating every that many days, from the same start date. |
 | Every week | Weekly, on the same weekday and time. |
+| Every few weeks, up to 12 | Weekly, repeating every that many weeks, from the same start date. |
 
 For any other interval, ask your QA Wolf team.
 
 ### Deployment triggers
 
 Each legacy deployment trigger becomes a deployment trigger that matches the same deploys. Usually that means its environment, plus its repository when the legacy trigger was limited to one. Its tags, failure investigation setting and run concurrency limit carry across.
+
+A legacy trigger limited to several branch patterns becomes one brace list, such as `{main,hotfix/*}`. Legacy branch patterns were case-sensitive, and trigger patterns ignore case. See [Trigger fields](/triggers/reference#deployment-conditions).
 
 ### PR testing and adaptive flow selection
 
@@ -259,9 +264,9 @@ Both need a connected GitHub or GitLab integration covering the deploying reposi
 
 The agent stops and asks about these rather than guessing. Ask your QA Wolf team if you're not sure what a legacy trigger was for.
 
-- A schedule other than hourly, twice a day, daily or weekly.
+- A schedule interval none of the above covers, such as every 90 minutes or every 5 hours.
 - A deployment type that mixes an environment with something else, such as `staging-smoke`.
-- A deployment trigger limited to more than one branch pattern.
+- A deployment trigger whose branch patterns mix branches to include with branches to exclude.
 - A deployment trigger that ran when someone added a label to a pull request.
 
 ## FAQ
