@@ -14,6 +14,7 @@ Pick this path for a CI system QA Wolf's code host integrations do not cover, su
 - An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work.
 - The workspace id, shown on the same page.
 - Node.js 24.14.1 or later, below 25, on the agent that runs the step.
+- `@qawolf/ci-sdk` 3.6.0 or later. Earlier versions of `deployment.waitForVerdict` fail before a run finishes, or wait until `timeout` on a run that needs a person.
 
 ## Add the notify script
 
@@ -113,6 +114,7 @@ Pick this path for a CI system QA Wolf's code host integrations do not cover, su
 - **`passed`** — every run passed. Exit `0`.
 - **`not-tested`** — no trigger matched the deployment, or a trigger matched and created no run. The result says which, per trigger. The script exits `0`; change that when you expect a run on every deploy.
 - **`superseded`** — a newer deploy to the same branch and environment replaced the run, and that deploy's step carries the verdict. The script exits `3`, so the stage can be marked as skipped rather than failed.
+- **`needs-review`** — every run finished, and its failures wait for a person to answer QA Wolf's questions on the run page. There is no verdict yet, and it is not a pass. The script exits `1`, and the log carries the run URLs. Once someone answers, the run settles to `passed` or `failed`.
 - **`failed`**, **`run-canceled`**, **`timed-out`** and the transport outcomes — exit `1`. The log carries the run URLs.
 
 The full list of outcomes and the options that bound the wait are in the [SDK reference](/libraries/ci-sdk/api-reference).

@@ -1,7 +1,7 @@
 ---
 title: "Troubleshooting"
 description: "Common issues when integrating with @qawolf/ci-sdk."
-keywords: "ci-sdk, reportStatus, waitForVerdict, not-tested, timed-out, providerDeploymentId, ERR_REQUIRE_ESM, no run for my deploy"
+keywords: "ci-sdk, reportStatus, waitForVerdict, not-tested, timed-out, needs-review, providerDeploymentId, ERR_REQUIRE_ESM, no run for my deploy"
 ---
 
 Common issues when integrating `@qawolf/ci-sdk` into your CI pipeline. The legacy `attemptNotifyDeploy` and `pollCiGreenlightStatus` functions are at the [end](#legacy-functions).
@@ -55,6 +55,7 @@ Check:
 
 - `lastStage.stage` is `"waiting-for-evaluation"` or `"waiting-for-run"`: no trigger produced a run within `runAppearanceTimeout`, five minutes by default. Treat it as the "no run was created" case above.
 - `lastStage.stage` is `"waiting-for-verdict"`: a run is still executing or under investigation. Open the run from `runs[].runUrl`, and raise `timeout` if the suite legitimately takes longer than the budget.
+- The package is 3.6.0 or later. Earlier versions keep waiting on a run whose failures need a person, until `timeout` fires, instead of answering `needs-review`.
 - `timeout` is below your CI job's own time limit. When the job is killed first, there is no verdict at all.
 
 ## `deployment.waitForVerdict` returns `"not-tested"`
@@ -66,6 +67,22 @@ Check:
 - `reason` is `"no-trigger-matched"`: every trigger was evaluated and none matched. Each entry in `triggers` says which condition failed.
 - `reason` is `"no-run-created"`: a trigger matched and something stopped the run. Each entry in `triggers` carries a stable `reason` code, such as `no-flows-to-run` or `environment-not-ready`, and a `message`.
 - Decide in the pipeline whether `not-tested` passes the step. A pipeline that expects a run every time should fail on it.
+
+## `deployment.waitForVerdict` returns `"needs-review"`
+
+Cause: Every run finished, and its failures wait for a person. QA Wolf asked a question about each failure it could not diagnose, or the workspace does not investigate runs. There is no verdict yet, and it is not a pass.
+
+Check:
+
+- Open each run from `runs[].runUrl` and answer the questions on the run page. The run then settles to `passed` or `failed`.
+
+## `deployment.waitForVerdict` returns `"unexpected-status"` or `"invalid-response-body"`
+
+Cause: Usually, the package is older than 3.5.1. Before 3.4.1, every call answered `unexpected-status` with `httpStatus` `405`. Before 3.5.1, a wait answered `invalid-response-body` while a run was still executing.
+
+Check:
+
+- Upgrade `@qawolf/ci-sdk` to 3.6.0 or later.
 
 ## `deployment.waitForVerdict` returns `"superseded"`
 

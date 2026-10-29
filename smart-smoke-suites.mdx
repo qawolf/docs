@@ -11,7 +11,7 @@ Smart Smoke Suites are designed to layer onto your existing coverage strategies.
 The suite has no fixed size. The agent selects the flows it judges affected by the change, so a wide-ranging PR selects more flows than a narrow one. It can also be empty: when the agent judges a change low-risk, or finds no flow that covers it, no run starts.
 
 <Note>
-  Smart Smoke Suites are currently in alpha and not available to all customers. Early customers running it in production work closely with QA Wolf to validate the experience and tune selection quality.
+  **Full Service customers:** Smart Smoke Suites run as part of PR testing. Talk to your QA Wolf team to turn them on.
 </Note>
 
 ## How it works
@@ -24,12 +24,12 @@ The suite has no fixed size. The agent selects the flows it judges affected by t
 ## Requirements
 
 - **A connected GitHub or GitLab integration** covering the deploying repository, so each deploy links to its pull request. See [PR testing](/deployment-testing/pr-testing).
-- **A preview deploy per pull request**, reported through GitHub deployments, a GitLab deployment job, or `deployment.reportStatus`.
-- **A deployment trigger** whose flows are set to **Generative suite** on the triggers page.
+- **A deploy tied to a pull request.** It can go to any environment, not only a preview. GitHub deployments and GitLab deployment jobs are tied automatically. A `deployment.reportStatus` report is tied when it sends `metadata.repository` with `metadata.pullRequestNumber`, or with `metadata.commitSha` while that pull request is still open. See [Deployments](/triggers/deployments#pull-request).
+- **A deployment trigger** matching those deploys. On the triggers page, start it from **Pull request previews**, enter the environment name pattern, such as `pr-*`, and pick **Let QA Wolf choose from the pull request's changes**. The pattern isn't limited to previews, so `dev-*` covers several static dev environments. The triggers table shows the trigger as **Smart smoke suite**.
 
-Once it's set up, each preview deploy linked to a pull request gets its own selection. To stop, switch the trigger back to **Flows with selected tags**, or pause it. The change applies to deploys that arrive afterwards.
+Once it's set up, each matching deploy tied to a pull request gets its own selection. To stop, switch the trigger to **Always run the same flows**, or pause it. The change applies to deploys that arrive afterwards.
 
-A Smart Smoke Suite is a [deployment trigger](/triggers/overview) whose action kind is `generativeSuite`; see [Trigger fields](/triggers/reference#action). It needs [PR testing](/deployment-testing/pr-testing): a deploy that is not linked to a pull request is skipped.
+A Smart Smoke Suite is a [deployment trigger](/triggers/overview) whose action kind is `generativeSuite`; see [Trigger fields](/triggers/reference#action). It needs [PR testing](/deployment-testing/pr-testing): a deploy with no pull request behind it, such as a merge to `main` deployed to staging, is skipped.
 
 ## FAQ
 
