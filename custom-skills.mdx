@@ -100,6 +100,83 @@ your-workspace/
 
 Skills take effect as soon as you save — there's no restart or reindex step. They're ordinary files in your workspace, so they're versioned alongside your flows and travel with your branches.
 
+## Add a skill through Git
+
+<Steps>
+  <Step title="Clone the workspace">
+    [Clone your workspace with Git](/clone-with-git) and select the branch that your environment or investigation uses.
+  </Step>
+  <Step title="Create the skill file">
+    Create `skills/checkout-investigation/SKILL.md` in your clone.
+    Use the investigation example below, or write your own skill with a unique `name` and a `description`.
+  </Step>
+  <Step title="Commit and push the file">
+    Review and publish the skill:
+
+    ```bash
+    git status
+    git diff
+    git add skills/checkout-investigation/SKILL.md
+    git commit -m "docs(skills): add checkout investigation guidance"
+    git push
+    ```
+  </Step>
+  <Step title="Verify the skill in QA Wolf">
+    Wait for the pushed file to appear on the same branch in QA Wolf.
+    Ask the agent to list the workspace skills and confirm your skill's name.
+  </Step>
+</Steps>
+
+Saving a file in your local clone does not update QA Wolf until you push it.
+Skills apply on branches that contain the file.
+Merge or copy the skill into other branches where you need it.
+
+## Guide investigations with a skill
+
+A skill can describe expected behavior, environment setup, and bug report requirements for investigations.
+Include investigation tasks and failure symptoms in its `description` so the agent can select it.
+
+Example:
+
+```markdown
+---
+name: checkout-investigation
+description: >
+  Investigate checkout failures, payment declines, and missing order confirmations in Acme's sandbox.
+  Read before investigating or repairing a checkout flow, or preparing a checkout bug report.
+---
+
+## Expected behavior
+
+The sandbox rejects expired payment cards.
+A declined payment must not create an order.
+A successful payment must show an order confirmation and an order number.
+
+## Investigation steps
+
+1. Compare the failure with the flow's expected behavior.
+2. Check whether the payment card is valid for the sandbox.
+3. Reproduce the failure before changing the flow.
+
+## Bug reports
+
+Include the environment, reproduction steps, expected result, actual result, and run link.
+```
+
+Replace the example's app details with verified behavior from your own application.
+Keep credentials in environment variables.
+Put context for one investigation in its chat; put reusable conventions in a skill.
+
+Example prompt after publishing the skill:
+
+```text
+Investigate this checkout failure: <run-or-flow-link>.
+Read the checkout-investigation skill before diagnosing the failure.
+```
+
+The agent does not automatically save every investigation detail as a skill.
+If you want it to save reusable guidance, explicitly ask it to create or update a `SKILL.md` file.
+
 ## FAQ
 
 ### The agent isn't following a convention I documented.
@@ -108,7 +185,9 @@ The agent names the skill it read as it works, so check whether yours came up. I
 
 ### My skill isn't showing up at all.
 
-Check the frontmatter. A file missing `name` or `description`, or with malformed frontmatter, is skipped silently rather than reported. Also confirm no other skill shares the same `name`.
+Check the frontmatter. A skill needs a non-empty `name` and a `description`.
+Files with missing or invalid frontmatter do not enter the skill index.
+Also confirm no other skill shares the same `name`.
 
 ### How long should a skill be?
 
