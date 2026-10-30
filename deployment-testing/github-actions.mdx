@@ -5,6 +5,10 @@ sidebarTitle: "Actions"
 keywords: "GitHub Actions, workflow, notify-qawolf-on-deploy-action, wait-for-verdict-action, notify QA Wolf on deploy, CI gate, wait for test results, release gate, deployment verdict"
 ---
 
+<Tip>
+  This page is for reporting deploys from your own workflow, whoever hosts them, and it is the only GitHub path that can hold a release job until QA Wolf's verdict. If your deploys already create GitHub deployments, such as Vercel's, QA Wolf's GitHub App picks them up with no workflow changes. See [GitHub deployments](/deployment-testing/github). Pick one per deploy: using both reports it twice and runs the flows twice.
+</Tip>
+
 Two actions cover a GitHub Actions workflow. [`qawolf/notify-qawolf-on-deploy-action`](https://github.com/qawolf/notify-qawolf-on-deploy-action) reports the deploy, and a [trigger](/triggers/overview) decides which flows run. [`qawolf/wait-for-verdict-action`](https://github.com/marketplace/actions/wait-for-qa-wolf-verdict) waits for those runs and passes or fails on QA Wolf's verdict, so a release job that depends on it ships only a deployment QA Wolf says is good.
 
 The wait is optional. Reporting alone is what starts the runs.
