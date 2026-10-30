@@ -6,7 +6,7 @@ keywords: "GitHub App, GitHub Deployments, deployment status, notify QA Wolf on 
 ---
 
 <Tip>
-  This page is for deploys that already create GitHub deployments, such as Vercel's. QA Wolf's GitHub App picks them up with no change to your workflows, but a workflow job can't wait on QA Wolf's result. To report deploys from a workflow yourself, or to hold a release job until QA Wolf's verdict, use [GitHub Actions](/deployment-testing/github-actions) instead. Pick one per deploy: using both reports it twice and runs the flows twice.
+  Use this page if you already create GitHub deployments, such as Vercel's, and release through pull requests or required checks. QA Wolf's GitHub App picks them up with no workflow changes and reports the result as a check on the deployed commit, which branch protection can require. If you release straight from a pipeline and want a job to pass or fail on QA Wolf's verdict, use [GitHub Actions](/deployment-testing/github-actions) instead. Pick one per deploy: using both reports it twice and runs the flows twice.
 </Tip>
 
 A [GitHub deployment](https://docs.github.com/en/rest/deployments/deployments) is a request to deploy a specific ref — a branch, SHA or tag. Creating one fires a webhook event that external services act on, and that is how QA Wolf hears about your deploys. A [deployment status](https://docs.github.com/en/rest/deployments/statuses) is how the service doing the deploying marks what became of it; QA Wolf acts on a status of `success`.
