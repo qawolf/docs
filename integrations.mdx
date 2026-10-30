@@ -13,6 +13,7 @@ Pick the one that matches where your code lives and how you deploy.
 
 - **[PR testing](/deployment-testing/pr-testing)** — what testing every pull request needs, on any of the paths below.
 - **[GitHub](/deployment-testing/github)** — your repositories are on GitHub and something creates a deployment for each deploy, whether your own workflow or a provider such as Vercel.
+- **[GitHub Actions](/deployment-testing/github-actions)** — you deploy from a GitHub Actions workflow and want it to report the deploy, with the option to hold release jobs until the verdict.
 - **[GitLab](/deployment-testing/gitlab)** — your repositories are on GitLab and your pipeline's deploy job declares an `environment:`.
 - **[Webhook](/deployment-testing/webhook)** — your code host is not GitHub or GitLab, or the deploy happens somewhere your code host never sees, so the pipeline notifies QA Wolf directly.
 - **[Node.js SDK](/deployment-testing/ci-sdk)** — the same notification from a pipeline that runs Node.js, such as Jenkins, with the option to block the pipeline on the verdict.

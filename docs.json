@@ -1019,6 +1019,7 @@
                 "pages": [
                   "deployment-testing/pr-testing",
                   "deployment-testing/github",
+                  "deployment-testing/github-actions",
                   "deployment-testing/gitlab",
                   "deployment-testing/webhook",
                   "deployment-testing/ci-sdk",

@@ -6,7 +6,7 @@ sidebarTitle: "Check run results"
 
 `GET https://app.qawolf.com/api/v0/ci-greenlight/{root-run-id}`
 
-This endpoint takes a run id, and the only path that hands your pipeline one is the legacy [`deploy_success`](/deploy-success) webhook. A deployment reported through [`deployment.reportStatus`](/deployment-testing/webhook) starts its runs asynchronously and returns none, so a pipeline on the current path gates on [`deployment.waitForVerdict`](/libraries/ci-sdk/api-reference#deploymentwaitforverdict) instead.
+This endpoint takes a run id, and the only path that hands your pipeline one is the legacy [`deploy_success`](/deploy-success) webhook. A deployment reported through [`deployment.reportStatus`](/deployment-testing/webhook) starts its runs asynchronously and returns none, so a pipeline on the current path gates on [`deployment.waitForVerdict`](/libraries/ci-sdk/api-reference#deploymentwaitforverdict) instead, or on GitHub Actions on [`qawolf/wait-for-verdict-action`](/deployment-testing/github-actions).
 
 <Tip>
   If your build server supports `node`, use [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.

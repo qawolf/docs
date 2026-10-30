@@ -1,0 +1,114 @@
+---
+title: "GitHub Actions"
+description: "Report a deploy from a GitHub Actions workflow, and hold your release jobs until QA Wolf's verdict."
+sidebarTitle: "GitHub Actions"
+keywords: "GitHub Actions, workflow, notify-qawolf-on-deploy-action, wait-for-verdict-action, notify QA Wolf on deploy, CI gate, wait for test results, release gate, deployment verdict"
+---
+
+Two actions cover a GitHub Actions workflow. [`qawolf/notify-qawolf-on-deploy-action`](https://github.com/qawolf/notify-qawolf-on-deploy-action) reports the deploy, and a [trigger](/triggers/overview) decides which flows run. [`qawolf/wait-for-verdict-action`](https://github.com/marketplace/actions/wait-for-qa-wolf-verdict) waits for those runs and passes or fails on QA Wolf's verdict, so a release job that depends on it ships only a deployment QA Wolf says is good.
+
+The wait is optional. Reporting alone is what starts the runs.
+
+## Requirements
+
+- An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work.
+- The workspace id, shown on the same page.
+- A deployment trigger whose conditions match the deployments the workflow reports. See [Triggers](/triggers/overview).
+
+## Report the deploy and wait for the verdict
+
+<Steps>
+  <Step title="Store the API key and workspace id">
+    Add the API key as a repository secret named `QAWOLF_API_KEY`, and the workspace id as `QAWOLF_WORKSPACE_ID`.
+  </Step>
+
+  <Step title="Report the deploy from the deploy job">
+    Add the notify action as the last step of the job that deploys, once the deploy is live, and expose its `deployment-id` output as a job output.
+  </Step>
+
+  <Step title="Wait for the verdict in its own job">
+    Add a job that `needs:` the deploy job and runs the wait action with that deployment id. Make every job that releases the deployment `needs:` the wait job.
+  </Step>
+</Steps>
+
+Example:
+
+```yaml expandable
+name: Deploy staging
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      qawolf-deployment-id: ${{ steps.notify.outputs.deployment-id }}
+    steps:
+      # ... deploy, and wait until the deployment is live
+      - name: Notify QA Wolf
+        id: notify
+        uses: qawolf/notify-qawolf-on-deploy-action@v3
+        with:
+          qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+          workspace-id: ${{ secrets.QAWOLF_WORKSPACE_ID }}
+          environment: staging
+          deployment-url: https://staging.example.com
+
+  qa-wolf-gate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - name: Wait for QA Wolf verdict
+        id: wait
+        uses: qawolf/wait-for-verdict-action@v1
+        with:
+          qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+          deployment-id: ${{ needs.deploy.outputs.qawolf-deployment-id }}
+
+  release:
+    needs: qa-wolf-gate
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Release the build QA Wolf tested"
+```
+
+- `environment` is the name or alias of the QA Wolf environment the deploy belongs to. On a pull request event, leave it out and the notify action reports into the pull request's own ephemeral environment. See [PR testing](/deployment-testing/pr-testing).
+- `deployment-id` on the wait action is the notify action's `deployment-id` **output**. It is not the `deployment-id` input you may pass to the notify action, which is your own id for the deploy and one QA Wolf does not look deployments up by.
+- The wait action's `timeout` defaults to `2h`. Set the wait job's `timeout-minutes` above it, so the step ends with a summary and a link to each run instead of being canceled by GitHub.
+
+While it waits, the step logs each change. When it ends, it writes a job summary with the outcome and a link to each run.
+
+If the deploy job reports through [`@qawolf/ci-sdk`](/deployment-testing/ci-sdk) instead, pass the deployment id `deployment.reportStatus` returned to `deployment-id`.
+
+## What the step does
+
+`passed` means QA Wolf found no open blocking bug after triaging the runs, not that every flow was green. A flow that failed for a reason QA Wolf triaged as non-blocking, or as test maintenance, does not fail the step.
+
+| Outcome | Step |
+| --- | --- |
+| `passed` | Passes. |
+| `failed` | Fails. QA Wolf found at least one open blocking bug. |
+| `not-tested` | Fails by default. No trigger matched the deployment, or one matched and started no run. Set `on-not-tested: pass` when some deploys are expected to match no trigger. |
+| `superseded` | Fails by default. A newer deploy to the same branch and environment replaced the run before it finished. |
+| `needs-review` | Fails by default, with a link to the run whose failures wait for a person. Set `on-needs-review: wait` to keep waiting until someone answers on the run page. |
+| `run-canceled`, `timed-out` | Fails. |
+
+Any answer the step could not get from QA Wolf also fails it, so the gate never passes by accident. The `outcome`, `run-urls` and `verdict` outputs tell later steps what happened.
+
+<Warning>
+  Keep `on-superseded` at `fail` whenever a later job ships the commit. With `pass`, the job ships a commit QA Wolf never finished testing.
+</Warning>
+
+When the step fails on `needs-review` or `timed-out`, you don't need to deploy again. Answer the questions on the run page, then use **Re-run failed jobs** on the workflow run. GitHub re-runs the wait job with the same deployment id, and the step picks up the run QA Wolf already started.
+
+To report the verdict without blocking the workflow, set `continue-on-error: true` on the wait step and read its `outcome` output in a later step.
+
+The action's [README](https://github.com/qawolf/wait-for-verdict-action) lists every input and output, and covers matrix deploys and workflow concurrency.
+
+## Related
+
+- [Node.js SDK](/deployment-testing/ci-sdk) — the same report and wait from any CI system that runs Node.js.
+- [PR testing](/deployment-testing/pr-testing) — testing every pull request's preview deploy.
+- [Deployments](/triggers/deployments) — how the environment name and preview flag resolve.
