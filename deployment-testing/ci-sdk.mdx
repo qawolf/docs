@@ -7,7 +7,7 @@ keywords: "ci-sdk, Jenkins, Jenkinsfile, Buildkite, Bitbucket Pipelines, TeamCit
 
 When your pipeline runs Node.js, `@qawolf/ci-sdk` reports the deploy and, if you want the pipeline to block on the result, waits for QA Wolf's verdict. It calls the same `deployment.reportStatus` route as the [Webhook](/deployment-testing/webhook) page, with typed inputs and a result object instead of a raw HTTP response.
 
-Pick this path for a CI system QA Wolf's code host integrations do not cover, such as Jenkins, Buildkite, Bitbucket Pipelines, TeamCity or Azure Pipelines, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees. A pipeline that cannot run Node.js uses the [Webhook](/deployment-testing/webhook) instead.
+Pick this path for a CI system QA Wolf's code host integrations do not cover, such as Jenkins, Buildkite, Bitbucket Pipelines, TeamCity or Azure Pipelines, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees. A pipeline that cannot run Node.js uses the [Webhook](/deployment-testing/webhook) instead. On GitHub Actions, the [GitHub Actions](/deployment-testing/github-actions) page does the same with two actions and no script.
 
 ## Requirements
 

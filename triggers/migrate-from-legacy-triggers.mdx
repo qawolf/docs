@@ -147,7 +147,7 @@ Move from `@v1` or `@v2` to `@v3`. Add `workspace-id`, replace `deployment-type`
 ```
 
 - For a pull request preview, leave `environment` out. The action reports into the pull request's own environment.
-- The `run-id` output is gone. Use the `deployment-id` output instead.
+- The `run-id` output is gone. Use the `deployment-id` output instead. A workflow that waited on the run passes that output to `qawolf/wait-for-verdict-action`. See [GitHub Actions](/deployment-testing/github-actions).
 
 See the [action's README](https://github.com/qawolf/notify-qawolf-on-deploy-action) for every input. Creating [GitHub deployments](/deployment-testing/github) works too.
 

@@ -195,6 +195,8 @@ The helper is optional. `providerDeploymentId` is always required on the report,
 
 Blocks until QA Wolf can say whether a deployment's tests passed. Give it the `deployment.id` the report returned; resolving that to the runs the triggers created, and those runs to a status, happens inside.
 
+On GitHub Actions, `qawolf/wait-for-verdict-action` runs this wait as a workflow step. See [GitHub Actions](/deployment-testing/github-actions).
+
 Example:
 
 ```javascript
