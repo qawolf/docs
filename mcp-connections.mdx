@@ -66,10 +66,10 @@ Connections don't carry across workspaces. Connect the server in each workspace 
 
 ## What the agent can access
 
-- **Only read-only tools:** the agent only uses tools the server marks as read-only and not destructive. QA Wolf checks this on every call, but the server decides how its tools are marked.
-- **Read permissions when possible:** if a server offers read-only permissions (OAuth scopes), QA Wolf asks for those, plus basic sign-in permissions like `openid` and `offline_access`. If it doesn't, QA Wolf doesn't ask for specific permissions, so the tool check above is the only read-only limit.
-- **What the signed-in account can see:** the agent can reach what that account can see on the server, through the read-only tools above.
-- **Shared across the workspace:** everyone in the workspace, and its API keys, can use the connection through the agent. That means anyone who can talk to the agent can ask about data the connection can reach.
+- **Only read-only tools** — the agent only uses tools the server marks as read-only and not destructive. QA Wolf checks this on every call, but the server decides how its tools are marked.
+- **Read permissions when possible** — if a server offers read-only permissions (OAuth scopes), QA Wolf asks for those, plus basic sign-in permissions like `openid` and `offline_access`. If it doesn't, QA Wolf doesn't ask for specific permissions, so the tool check above is the only read-only limit.
+- **What the signed-in account can see** — the agent can reach what that account can see on the server, through the read-only tools above.
+- **Shared across the workspace** — everyone in the workspace, and its API keys, can use the connection through the agent. That means anyone who can talk to the agent can ask about data the connection can reach.
 
 QA Wolf encrypts the sign-in tokens it stores for each connection.
 
@@ -81,15 +81,15 @@ The agent treats answers from a server as information, not commands. It's told t
 
 Select a connection on the **MCPs** page to see its server URL, who connected it, and when the agent last used it. You can also:
 
-- **Turn off tools:** stop the agent from using specific tools. New tools the server adds later are on by default.
-- **Reconnect:** sign in again when the connection needs it.
-- **Disconnect:** stop the agent from reading the server for the whole workspace, and delete the saved sign-in tokens. This doesn't remove access on the server's side, so also remove QA Wolf from the server's authorized apps.
+- **Turn off tools** — stop the agent from using specific tools. New tools the server adds later are on by default.
+- **Reconnect** — sign in again when the connection needs it.
+- **Disconnect** — stop the agent from reading the server for the whole workspace, and delete the saved sign-in tokens. This doesn't remove access on the server's side, so also remove QA Wolf from the server's authorized apps.
 
 ## Troubleshooting
 
-- **A connection shows Needs reauthorization:** the server stopped accepting QA Wolf's sign-in, so the agent can't read from it. Open the connection and select **Reconnect**.
-- **`does not offer OAuth sign-in`:** QA Wolf can't connect to servers that only use an API key or a fixed token.
-- **`Could not start sign-in`:** check the server URL and try again. If the URL is right, make sure the server meets the [requirements](#requirements).
-- **`already connects to this server`:** your workspace is already connected to this server. Use that connection, or disconnect it first to sign in with a different account.
-- **`already points at another server`:** another connection already uses this name with a different server URL. Disconnect it first.
-- **The agent has no tools from a server:** the server doesn't mark any tools as read-only, or they're turned off for this connection. Open the connection to check.
+- **A connection shows Needs reauthorization** — the server stopped accepting QA Wolf's sign-in, so the agent can't read from it. Open the connection and select **Reconnect**.
+- **`does not offer OAuth sign-in`** — QA Wolf can't connect to servers that only use an API key or a fixed token.
+- **`Could not start sign-in`** — check the server URL and try again. If the URL is right, make sure the server meets the [requirements](#requirements).
+- **`already connects to this server`** — your workspace is already connected to this server. Use that connection, or disconnect it first to sign in with a different account.
+- **`already points at another server`** — another connection already uses this name with a different server URL. Disconnect it first.
+- **The agent has no tools from a server** — the server doesn't mark any tools as read-only, or they're turned off for this connection. Open the connection to check.
