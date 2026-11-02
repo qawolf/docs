@@ -1,0 +1,95 @@
+---
+title: "MCP connections"
+description: "Connect your issue tracker, analytics, and other tools so the QA Wolf agent can look things up while it creates and fixes flows."
+sidebarTitle: "MCP connections"
+keywords:
+  - "model context protocol"
+  - "MCP servers"
+  - "connected tools"
+  - "OAuth"
+---
+
+An MCP connection lets the QA Wolf agent look things up in the tools your team already uses, like your issue tracker or analytics. MCP (Model Context Protocol) is a standard way for AI agents to talk to other tools.
+
+For example, when a flow breaks because your app changed, the agent can check your issue tracker to see if the change was on purpose. That tells it whether to fix the flow or retire it. The agent shares what it found. If your tools don't have the answer, it asks a person.
+
+<Note>
+  To control QA Wolf from a coding agent like Claude Code or Codex, see the [QA Wolf MCP guide](/qawolf-mcp).
+</Note>
+
+## Available servers
+
+Each tool connects through its MCP server. You can connect these:
+
+| Category | Servers | What the agent looks up |
+|---|---|---|
+| Issue trackers | Linear, Atlassian (Jira and Confluence), Shortcut, ClickUp | Was this change planned? Is this failure already known? |
+| Docs and specs | Notion, Coda | Was this change planned? |
+| Feature flags | LaunchDarkly, Statsig | Is something different for one user because of a rollout, or because of a bug? |
+| Errors and monitoring | Sentry, Datadog, Honeycomb, Bugsnag, New Relic | Is this error known? How often does it happen? When did it start? |
+| Product analytics | PostHog, Amplitude, Mixpanel, Pendo | What do real users do most? This helps choose what to cover. |
+
+You can also connect another remote MCP server if it meets the [requirements](#requirements).
+
+## Requirements
+
+- Access to a QA Wolf workspace
+- An account on the tool you want to connect
+- For a server that isn't listed above, the server must:
+  - Be reachable on the public internet
+  - Use HTTPS with Streamable HTTP
+  - Support OAuth sign-in with dynamic client registration
+
+## Connect a server
+
+Anyone in your workspace can connect a server. Your workspace can have one connection to each server.
+
+<Steps>
+  <Step title="Open the MCPs page">
+    Open **Workspace settings → MCPs**.
+  </Step>
+  <Step title="Choose a server">
+    Select **Connect** on the server you want. If it isn't listed, select **Connect** on **Another server**, then enter a name and the server URL.
+  </Step>
+  <Step title="Approve access">
+    Sign in to the server and approve access. The connection shows **Awaiting authorization** until you finish. Nothing is shared before then.
+  </Step>
+</Steps>
+
+You can also ask the agent in chat to connect a listed server, or use `mcpServer_connect` from the [QA Wolf MCP](/qawolf-mcp). Both give you a sign-in link. Whoever starts the connection must finish signing in, so don't forward the link to someone else.
+
+Connections don't carry across workspaces. Connect the server in each workspace that needs it.
+
+<Tip>
+  Sign in with an account that can only see what the agent needs, like a dedicated read-only account.
+</Tip>
+
+## What the agent can access
+
+- **Only read-only tools:** the agent only uses tools the server marks as read-only and not destructive. QA Wolf checks this on every call, but the server decides how its tools are marked.
+- **Read permissions when possible:** if a server offers read-only permissions (OAuth scopes), QA Wolf asks for those, plus basic sign-in permissions like `openid` and `offline_access`. If it doesn't, QA Wolf doesn't ask for specific permissions, so the tool check above is the only read-only limit.
+- **What the signed-in account can see:** the agent can reach what that account can see on the server, through the read-only tools above.
+- **Shared across the workspace:** everyone in the workspace, and its API keys, can use the connection through the agent. That means anyone who can talk to the agent can ask about data the connection can reach.
+
+QA Wolf encrypts the sign-in tokens it stores for each connection.
+
+Your organization's audit log shows when someone connects, disconnects, or changes tools. It doesn't show each time the agent reads something. A connection only shows the last time the agent used it.
+
+The agent treats answers from a server as information, not commands. It's told to ignore any instructions inside them, and not to copy personal data like names and email addresses into flows, reports, or chat.
+
+## Manage a connection
+
+Select a connection on the **MCPs** page to see its server URL, who connected it, and when the agent last used it. You can also:
+
+- **Turn off tools:** stop the agent from using specific tools. New tools the server adds later are on by default.
+- **Reconnect:** sign in again when the connection needs it.
+- **Disconnect:** stop the agent from reading the server for the whole workspace, and delete the saved sign-in tokens. This doesn't remove access on the server's side, so also remove QA Wolf from the server's authorized apps.
+
+## Troubleshooting
+
+- **A connection shows Needs reauthorization:** the server stopped accepting QA Wolf's sign-in, so the agent can't read from it. Open the connection and select **Reconnect**.
+- **`does not offer OAuth sign-in`:** QA Wolf can't connect to servers that only use an API key or a fixed token.
+- **`Could not start sign-in`:** check the server URL and try again. If the URL is right, make sure the server meets the [requirements](#requirements).
+- **`already connects to this server`:** your workspace is already connected to this server. Use that connection, or disconnect it first to sign in with a different account.
+- **`already points at another server`:** another connection already uses this name with a different server URL. Disconnect it first.
+- **The agent has no tools from a server:** the server doesn't mark any tools as read-only, or they're turned off for this connection. Open the connection to check.
