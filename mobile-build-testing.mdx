@@ -150,7 +150,7 @@ QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for And
 
     const uploaded = await uploadBuild({
       filePath: "./path/to/app-release.apk",
-      environment: { name: "staging" },
+      environment: { name: "Staging" },
       workspaceId,
     });
     if (uploaded.outcome !== "uploaded") {
@@ -166,7 +166,7 @@ QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for And
       workspaceId,
       providerDeploymentId: detected.id,
       status: "success",
-      environment: { name: "staging" },
+      environment: { name: "Staging" },
       service: "android",
       builds: [uploaded.build.id],
     });
@@ -198,7 +198,7 @@ QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for And
               \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
               \"providerDeploymentId\": \"$CI_BUILD_ID-android\",
               \"status\": \"success\",
-              \"environment\": { \"name\": \"staging\" },
+              \"environment\": { \"name\": \"Staging\" },
               \"service\": \"android\",
               \"builds\": [\"$BUILD_ID\"]
             }

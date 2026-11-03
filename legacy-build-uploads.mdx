@@ -129,7 +129,7 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
       uses: qawolf/notify-qawolf-on-deploy-action@v3
       with:
         qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
-        workspace-id: ${{ secrets.QAWOLF_WORKSPACE_ID }}
+        workspace-id: ${{ vars.QAWOLF_WORKSPACE_ID }}
         environment: Staging
         variables: >
           { "RUN_INPUT_PATH": "/home/wolf/run-inputs-executables/${{ steps.upload.outputs.destination-file-path }}" }
@@ -298,7 +298,7 @@ A flow that names no app launches whatever `RUN_INPUT_PATH` points at, so the ru
 await launch({ appPackage: "com.example.app" });
 ```
 
-Naming `app` at all stops the fallback: `launch({ app: ... })` resolves `app.path`, then `app.env`, then `app.url`, and never falls back to `RUN_INPUT_PATH`. On Android and iOS these paths must be absolute too. See App resolution for [Android](/libraries/flows/api-reference/android#app-resolution) or [iOS](/libraries/flows/api-reference/ios#app-resolution).
+Naming `app` at all stops the fallback: `launch({ app: ... })` resolves `app.path`, then `app.env`, then `app.url`, then `app.id`, and never falls back to `RUN_INPUT_PATH`. On Android and iOS these paths must be absolute too. See App resolution for [Android](/libraries/flows/api-reference/android#app-resolution) or [iOS](/libraries/flows/api-reference/ios#app-resolution).
 
 ## Verify the integration
 
