@@ -14,7 +14,7 @@ A build is an Android `.apk` or `.aab`, or an iOS `.ipa`, that you upload to QA 
 ## What you can upload
 
 - **File types** — `.apk` and `.aab` for Android, `.ipa` for iOS. Any other file is refused, including a `.zip`.
-- **Size** — at most 500 MB.
+- **Size** — at most 1 GB.
 - **File name** — letters, digits, `.`, `_` and `-`, at most 255 characters. The Builds page and the CLI replace other characters with `-`, and the Fastlane plugin replaces spaces with `-`. Every other way refuses the file.
 - **Zipped apps** — not accepted. Upload the `.apk`, `.aab` or `.ipa` inside the zip. A zip that holds `Payload/<App>.app/` is already an `.ipa`, so rename it to `.ipa`. Any other zipped app stays on [legacy build uploads](/legacy-build-uploads) for now.
 - **Retention** — 180 days after upload, except the latest build of each app and platform in a static environment, which stays until a later upload replaces it.
