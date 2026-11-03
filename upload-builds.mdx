@@ -31,7 +31,7 @@ A build reaches runs in three ways:
 
 For each app and platform, a run installs the first build it finds in this order:
 
-1. The builds named in `run.create`.
+1. The builds named when the run was created. See [Test a build in one run](#test-a-build-in-one-run).
 2. The builds the deployment that started the run reported.
 3. The environment's latest build.
 4. The base environment's latest build, for an environment that has one.
@@ -144,7 +144,7 @@ if (uploaded.outcome !== "uploaded") {
 
 const report = await deployment.reportStatus({
   workspaceId: process.env.QAWOLF_WORKSPACE_ID,
-  providerDeploymentId: `${process.env.BUILD_ID}-android`,
+  providerDeploymentId: `${process.env.CI_BUILD_ID}-android`,
   status: "success",
   environment: { name: "Staging" },
   service: "android",
@@ -177,26 +177,29 @@ For a pipeline that cannot run Node.js. Each call is a `POST` to `https://app.qa
 <Steps>
   <Step title="Request an upload URL">
     ```bash
-    curl -X POST "https://app.qawolf.com/api/trpc/public.build.requestUpload" \
+    UPLOAD=$(curl -sf -X POST "https://app.qawolf.com/api/trpc/public.build.requestUpload" \
       -H "Authorization: Bearer $QAWOLF_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{ \"json\": {
         \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
         \"fileName\": \"app-release.apk\",
         \"fileSizeBytes\": $(wc -c < app-release.apk)
-      } }"
+      } }")
+    QAWOLF_BUILD_ID=$(echo "$UPLOAD" | jq -r .result.data.json.buildId)
+    UPLOAD_URL=$(echo "$UPLOAD" | jq -r .result.data.json.uploadUrl)
     ```
 
-    Read `buildId`, `uploadUrl` and `uploadHeaders` from `result.data.json` in the response.
+    The response holds `buildId`, `uploadUrl` and `uploadHeaders` under `result.data.json`.
   </Step>
   <Step title="Upload the file">
-    `PUT` the file to `uploadUrl`, with every header in `uploadHeaders` exactly as returned. The URL expires after one hour, and accepts only a file of exactly `fileSizeBytes`. For example:
+    `PUT` the file to `uploadUrl`, with every header in `uploadHeaders` exactly as returned. The URL expires after one hour, and accepts only a file of exactly `fileSizeBytes`.
 
     ```bash
-    curl -X PUT --upload-file app-release.apk \
-      -H "Content-Type: application/octet-stream" \
-      -H "x-goog-if-generation-match: 0" \
-      "$UPLOAD_URL"
+    HEADERS=()
+    while IFS= read -r header; do HEADERS+=(-H "$header"); done < <(
+      echo "$UPLOAD" | jq -r '.result.data.json.uploadHeaders | to_entries[] | "\(.key): \(.value)"'
+    )
+    curl -sf -X PUT --upload-file app-release.apk "${HEADERS[@]}" "$UPLOAD_URL"
     ```
   </Step>
   <Step title="Create the build">
@@ -206,7 +209,7 @@ For a pipeline that cannot run Node.js. Each call is a `POST` to `https://app.qa
       -H "Content-Type: application/json" \
       -d "{ \"json\": {
         \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
-        \"buildId\": \"$BUILD_ID\",
+        \"buildId\": \"$QAWOLF_BUILD_ID\",
         \"environment\": { \"name\": \"Staging\" }
       } }"
     ```
@@ -236,7 +239,13 @@ This needs `@qawolf/flows` 0.4.0 or later. When the run has no build of that app
 
 ## Test a build in one run
 
-Pass `builds` to `run.create` to test a build without changing what the environment's other runs install. Each build replaces the environment's latest build of its app and platform, for that run only. A run takes at most 20 builds.
+Pass the build ids as `builds` when you create the run, to test a build without changing what the environment's other runs install. To leave the environment's latest build unchanged, upload the build with no environment. Then create the run with one of these:
+
+- **CLI** — `qawolf run create --environment-id <env> --builds <build_id>`.
+- **[QA Wolf MCP](/qawolf-mcp)** — `run_create` with `builds`.
+- **HTTP** — `POST https://app.qawolf.com/api/trpc/public.run.create` with `{ "json": { "workspaceId": "…", "environmentId": "…", "flowIds": ["…"], "builds": ["<build_id>"] } }`.
+
+The Node.js SDK cannot create runs. Each build replaces the environment's latest build of its app and platform, for that run only. A run takes at most 20 builds.
 
 ## Move from legacy uploads
 
