@@ -5,9 +5,9 @@ sidebarTitle: "Legacy build uploads"
 keywords: "RUN_INPUT_PATH, run input, run inputs executables, upload_to_qawolf, upload-run-inputs-executable-action, generateSignedUrlForRunInputsExecutablesStorage, Windows, msi, exe"
 ---
 
-<Note>
-  Upload Android and iOS builds as described in [Upload builds](/upload-builds), so your runs record which build they tested. To switch an existing pipeline, see [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). This page covers the legacy path, which Windows and Linux app files still take.
-</Note>
+<Warning>
+  Deprecated for Android and iOS builds. Upload them as [builds](/upload-builds) instead, so every run records which build it tested. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). Legacy uploads keep working, and Windows and Linux app files still take this path.
+</Warning>
 
 Your pipeline uploads each new app file to run inputs storage and reports it as a deployment, and a [trigger](/triggers/overview) you create starts the runs. The flow reads the file's path from `RUN_INPUT_PATH`.
 
