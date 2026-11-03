@@ -114,6 +114,7 @@ console.log(result.deployment.url);
 | `deployTarget` | string | The URL the deployment serves. Required whenever the report creates an environment. |
 | `environmentVariables` | object | String-to-string overrides for the runs this deployment requests. Sending it replaces the stored values; omitting it keeps them. |
 | `service` | string | Which application was deployed, when several deploy into one environment. A trigger's `servicePattern` matches on it. |
+| `builds` | string[] | The ids of the builds this deployment ships, at most 20, such as the `build.id` that [`uploadBuild`](#uploadbuild) returns. The runs this deployment starts install them. Omitting it keeps the stored builds. Requires 3.5.0. |
 | `metadata` | object | Details about the deployed revision. Every field is optional. |
 | `metadata.commitSha` | string | The deployed commit. |
 | `metadata.ref` | string | The branch or ref that was deployed. |
@@ -403,6 +404,8 @@ console.log(result.build.id, result.build.appId, result.build.version);
 
 A failed call creates no build. Each call uploads the file as a new build, so retrying is calling `uploadBuild` again.
 
+To start runs that install the build, pass `result.build.id` to `deployment.reportStatus` as `builds`. See [Upload builds](/upload-builds).
+
 ## notifyTerminatedEphemeralEnvironment
 
 <Warning>
@@ -451,7 +454,7 @@ Pass exactly one of the following to identify the environment:
 
 ## generateSignedUrlForRunInputsExecutablesStorage
 
-Generates a signed URL for uploading a run input executable (APK, AAB, DEB, IPA, ZIP, CSV, PDF) to QA Wolf. See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the underlying endpoint, and [Mobile build testing](/mobile-build-testing) for the pipeline it belongs to.
+Generates a signed URL for uploading a run input executable (APK, AAB, DEB, IPA, ZIP, CSV, PDF) to QA Wolf. See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the underlying endpoint, and [Legacy build uploads](/legacy-build-uploads) for the pipeline it belongs to. To upload an Android or iOS build, use [`uploadBuild`](#uploadbuild).
 
 Example:
 
@@ -482,7 +485,7 @@ await fetch(signed.uploadUrl, {
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `destinationFilePath` | string | Filename and extension, optionally including directories. You choose it; your flows resolve the build by the same name. See [Mobile build testing](/mobile-build-testing). |
+| `destinationFilePath` | string | Filename and extension, optionally including directories. You choose it; your flows resolve the build by the same name. See [Legacy build uploads](/legacy-build-uploads). |
 | `workspaceId` | string | Required with an organization or user API key. Without it the request fails. |
 
 ### Response fields

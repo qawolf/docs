@@ -311,7 +311,33 @@ qawolf run create --environment-id <env_id> --flow-ids <flow_id>... --environmen
 
 Options:
 
+- `--builds <build_id>...` — builds to install in this run only, in place of the environment's latest build of the same app and platform. See [Test a build in one run](/upload-builds#test-a-build-in-one-run).
 - `--environment-id <env>` — the id or alias of the environment to run. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
 - `--environment-variables <KEY=VALUE...>` — environment variables to set for the run.
 - `--flow-ids <flow_id>...` — limit the run to specific flow IDs.
 - `--ignore-rules` — ignore the workspace's sequencing rules. By default they're honored: the flows your selection depends on are added to the run, and flows run in the order the rules require.
+
+## `build`
+
+Manages app builds. See [Upload builds](/upload-builds).
+
+### `build upload <file>`
+
+Uploads an `.apk`, `.aab` or `.ipa` of up to 500 MB and creates a build from it. Requires CLI 2.8.0 or later.
+
+```bash
+qawolf build upload app-release.apk --environment-name Staging
+qawolf build upload app-release.apk --environment-name pr-42 --environment-ephemeral --environment-base-ephemeral-environment Staging
+```
+
+Options:
+
+- `--environment-id <id>` — put the build on this existing environment. Its runs install the build until a newer build of the same app and platform arrives.
+- `--environment-name <name>` — put the build on the environment with this alias or name. Creates the environment when none matches.
+- `--environment-ephemeral` — with `--environment-name`, create an ephemeral environment when the name creates one.
+- `--environment-base-ephemeral-environment <name>` — with `--environment-ephemeral`, the environment a created ephemeral environment copies from.
+- `--branch <branch>` — the branch the build came from.
+- `--commit-sha <sha>` — the commit the build came from.
+- `--workspace-id <id>` — the workspace to upload into. Required with an organization or user API key.
+
+Without an environment option, only the runs created with the build install it.

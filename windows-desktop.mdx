@@ -175,7 +175,7 @@ The start fails if the app won't take that size. A baseline doesn't record the w
 
 ## Test every new build from CI
 
-A Windows build takes the same path as [Mobile build testing](/mobile-build-testing). Your pipeline uploads the build, reports a deployment that carries the build's path as `RUN_INPUT_PATH`, and a trigger starts the runs. Follow that page with your `.msi` in place of the `.apk`, through the GitHub Actions, Node.js or Webhook steps. If Android or iOS builds report into the same environment, give the Windows build its own `service` and its own trigger.
+A Windows build takes the same path as [Legacy build uploads](/legacy-build-uploads). Your pipeline uploads the build, reports a deployment that carries the build's path as `RUN_INPUT_PATH`, and a trigger starts the runs. Follow that page with your `.msi` in place of the `.apk`, through the GitHub Actions, Node.js or Webhook steps. If Android or iOS builds report into the same environment, give the Windows build its own `service` and its own trigger.
 
 The difference is in the flow. `startApp()` doesn't fall back to `RUN_INPUT_PATH` the way the mobile `launch()` does, so pass it in. Falling back to the build's file name lets a run started by hand use the latest upload:
 
@@ -183,7 +183,7 @@ The difference is in the flow. `startApp()` doesn't fall back to `RUN_INPUT_PATH
 const app = await startApp(process.env.RUN_INPUT_PATH ?? "app-staging.msi");
 ```
 
-`startApp()` takes either the absolute path under `/home/wolf/run-inputs-executables/` that Mobile build testing uses, or the bare file name.
+`startApp()` takes either the absolute path under `/home/wolf/run-inputs-executables/` that legacy uploads use, or the bare file name.
 
 ## Drive a Windows desktop from a coding agent
 
@@ -204,6 +204,6 @@ After that, `runner_takeScreenshot`, `runner_performAction` and `runner_inspectM
 ## Related
 
 - [`@qawolf/flows/windows`](/libraries/flows/api-reference/windows) — every export, capability and default.
-- [Mobile build testing](/mobile-build-testing) — upload a build and report it as a deployment.
+- [Legacy build uploads](/legacy-build-uploads) — upload a build and report it as a deployment.
 - [Use files in flows](/use-files-in-flows) — upload a file to team storage.
 - [Native mobile screenshots](/visual-diffing-native-app) — `toHaveScreenshot` options.
