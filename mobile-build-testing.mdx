@@ -117,7 +117,7 @@ QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for And
         builds: ${{ steps.upload-build.outputs.build-id }}
     ```
 
-    To report an Android and an iOS build in one deployment, list both ids in `builds`, one per line.
+    Report each platform as its own deployment, with its own `service` and build, so each platform's trigger matches only its own build.
 
     <Warning>
       The action derives one deployment per workflow run, attempt, job and environment. Two legs of one matrix deploying the same environment therefore share a deployment, and only the first starts runs. Set `deployment-id` per leg to separate them.
@@ -223,7 +223,7 @@ A deployment starts nothing until a trigger matches it. Create one on the worksp
 | `servicePattern` | `android` or `ios`, when both platforms report into one environment. A deployment that names no service never matches a trigger carrying a service pattern. |
 | `branchPattern` | Narrow to the branch the build came from, when you report `metadata.ref`. |
 
-Shipping both platforms into one environment needs two triggers, one per `servicePattern`, each selecting that platform's flows. Without the service condition both triggers fire on both builds, and the Android flows run against the iOS build.
+Shipping both platforms into one environment needs two triggers, one per `servicePattern`, each selecting that platform's flows. Without the service condition both triggers fire on every deployment, so a new Android build also reruns the iOS flows on the environment's last iOS build.
 
 `deployTargetPattern` matches on the deploy target URL, which a mobile build has none of, so it is not a way to tell builds apart.
 
@@ -266,7 +266,7 @@ The flow installs the run's build of that app: the deployment's build, or else t
 - **The upload is refused** — the file is not an `.apk`, `.aab` or `.ipa`, or is over 500 MB. If your pipeline zips the app, upload the file inside the zip.
 - **The build uploads, the deployment is recorded, and nothing runs** — no trigger matched. Open the deployment and read the per-trigger verdicts. The usual causes are an environment name that created a new environment instead of resolving an existing one, and a `servicePattern` on the trigger that the report does not send a `service` for.
 - **Only one of the two platforms runs** — both legs reported under the same `providerDeploymentId`, so the second updated the first deployment instead of creating one, and only a deployment's first `success` report evaluates triggers. Give each leg its own identity: `provider_deployment_discriminator` on Fastlane, `discriminator` on `detectProviderDeploymentId`, `deployment-id` on the GitHub Action.
-- **The Android flows ran against the iOS build** — the triggers have no `servicePattern`, so both fired on both deployments.
+- **One platform's build also reran the other platform's flows** — the triggers have no `servicePattern`, so both fire on every deployment. The other platform's flows install that environment's last build of their own platform.
 - **`launch` fails with "No build of … on this environment"** — the run has no build of that app. Check that the `id` in `launch` matches the build's app id, and that the build was uploaded to this environment or reported with the deployment. A build whose file expired counts as absent.
 - **The run installed an old file, or shows no app version** — the flow calls `launch()` with no `app`, or with `app: { path }` or `app: { env }`, so it reads `RUN_INPUT_PATH` or a fixed file. Change it to `launch({ app: { id } })`. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads).
 - **The pipeline step passes but the workspace never sees the deploy** — the step is still on the legacy deploy webhook. `@v1` and `@v2` of the notify action, Fastlane plugin 0.4.8 and below, and the SDK's `attemptNotifyDeploy` all report through it, and triggers never see it.
