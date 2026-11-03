@@ -2,25 +2,29 @@
 title: "Mobile build testing"
 description: "Upload an Android or iOS build, report it as a deployment, and let a trigger run your flows against every new version."
 sidebarTitle: "Mobile build testing"
-keywords: "mobile, Android, iOS, apk, aab, ipa, build, Fastlane, fastlane-plugin-qawolf, notify-qawolf-on-deploy-action, RUN_INPUT_PATH, run input, reportStatus, service, servicePattern, upload a build"
+keywords: "mobile, Android, iOS, apk, aab, ipa, build, Fastlane, fastlane-plugin-qawolf, upload-build-action, notify-qawolf-on-deploy-action, uploadBuild, reportStatus, builds, service, servicePattern, upload a build"
 ---
 
-QA Wolf runs flows against a real build of your app — an `.apk` or `.aab` for Android, an `.ipa` for iOS. Your pipeline uploads each new build and reports it as a deployment, and a [trigger](/triggers/overview) you create starts the runs.
+QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for Android, an `.ipa` for iOS. Your pipeline uploads each new build and reports it as a deployment, and a [trigger](/triggers/overview) you create starts the runs. Every run records which build it installed.
+
+<Check>
+  Builds are turned on per workspace. Until they are on for yours, every upload fails with "Builds are not enabled for this workspace." Ask your QA Wolf representative to turn them on. Until then, follow [Legacy build uploads](/legacy-build-uploads).
+</Check>
 
 ## How it works
 
 <Steps>
   <Step title="Upload the build">
-    Your pipeline sends the build to QA Wolf storage and gets back the path it is stored under.
+    Your pipeline uploads the file to an environment. QA Wolf reads the app id, version and build number from it, and returns a build id.
   </Step>
   <Step title="Report the deployment">
-    Your pipeline calls `deployment.reportStatus`, carrying the build's path on the runner as the `RUN_INPUT_PATH` environment variable.
+    Your pipeline calls `deployment.reportStatus` with the build id in `builds`.
   </Step>
   <Step title="A trigger matches">
-    The deployment's first `success` report evaluates your triggers. Each one that matches creates a run, and the run carries `RUN_INPUT_PATH`.
+    The deployment's first `success` report evaluates your triggers. Each one that matches creates a run, and the run installs the deployment's builds.
   </Step>
   <Step title="The flow launches the build">
-    `launch` falls back to `RUN_INPUT_PATH` when the flow names no app, so the run executes against the build that was just uploaded.
+    `launch({ app: { id } })` installs the run's build of that app.
   </Step>
 </Steps>
 
@@ -33,30 +37,10 @@ QA Wolf runs flows against a real build of your app — an `.apk` or `.aab` for 
 - An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work.
 - The workspace id, shown on the same page.
 - A QA Wolf environment to report into. The deploy resolves to an environment by alias or name, and a name that matches nothing creates a new environment that no trigger targets.
-- One of: the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) 1.0.0 or later, `qawolf/notify-qawolf-on-deploy-action@v3`, or `@qawolf/ci-sdk` 3.1.0 or later. Earlier versions report through the legacy deploy webhook, which [triggers](/triggers/overview) never see. See [Mobile build testing with legacy triggers](/legacy-triggers/mobile-build-testing).
+- One of: the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) 1.2.0 or later, `qawolf/upload-build-action@v1` with `qawolf/notify-qawolf-on-deploy-action@v3` 3.2.0 or later, or `@qawolf/ci-sdk` 3.5.0 or later.
+- `@qawolf/flows` 0.4.0 or later in your flows.
 
-## Name the build file
-
-You choose the name the build is stored under, and your flows resolve the build by that name. Use one stable name per environment and platform, so each upload replaces the last:
-
-```text
-app-staging-android.apk
-app-staging-ios.ipa
-```
-
-This path accepts app builds only. [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) lists the extensions it takes; a file your flows read goes to [team storage](/use-files-in-flows#upload-a-file) instead.
-
-## The path the run needs
-
-Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executables/`. `RUN_INPUT_PATH` has to carry the **absolute** path:
-
-```text
-/home/wolf/run-inputs-executables/app-staging-android.apk
-```
-
-<Warning>
-  A bare filename does not resolve on an Android or iOS runner. The flow passes `RUN_INPUT_PATH` to the device as given, so a relative path fails to find the build. The Fastlane plugin builds the absolute path for you; on every other path you prepend the directory yourself.
-</Warning>
+[Upload builds](/upload-builds) lists every other way to upload a build, including the Builds page, the CLI and Tester chat.
 
 ## Set up the pipeline
 
@@ -65,20 +49,21 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
     The plugin is not published to RubyGems, so point the `Gemfile` at the repository and pin a tag.
 
     ```ruby
-    gem "fastlane-plugin-qawolf", git: "https://github.com/qawolf/fastlane-plugin-qawolf", tag: "1.0.0"
+    gem "fastlane-plugin-qawolf", git: "https://github.com/qawolf/fastlane-plugin-qawolf", tag: "1.2.0"
     ```
 
-    Run `fastlane install_plugins`, then add both actions to the lane that builds your app. `upload_to_qawolf` stores the build and leaves its filename in the lane context; `notify_deploy_qawolf` reports the deployment and sets `RUN_INPUT_PATH` to that build for you.
+    Run `fastlane install_plugins`, then add both actions to the lane that builds your app. `upload_build_to_qawolf` uploads the file that `gradle` or `build_app` built. `notify_deploy_qawolf` reports the deployment with every build the lane uploaded.
 
     ```ruby expandable
     lane :qawolf do
       # Your existing build step, gradle for Android or build_app for iOS
 
-      upload_to_qawolf(
-        # Also read from QAWOLF_API_KEY
+      upload_build_to_qawolf(
+        # Also read from QAWOLF_API_KEY and QAWOLF_WORKSPACE_ID
         qawolf_api_key: ENV.fetch("QAWOLF_API_KEY", nil),
-        # No extension — it is taken from the build you produced
-        executable_file_basename: "app-staging-android"
+        workspace_id: ENV.fetch("QAWOLF_WORKSPACE_ID", nil),
+        # The environment whose runs install this build from now on
+        environment: "Staging"
       )
 
       notify_deploy_qawolf(
@@ -106,40 +91,39 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
       ```
     </Warning>
 
-    The plugin's [README](https://github.com/qawolf/fastlane-plugin-qawolf#notify_deploy_qawolf-options) lists every option, including `repository` and `pull_request_number` for PR testing, and the upgrade steps from 0.x.
+    The plugin's [README](https://github.com/qawolf/fastlane-plugin-qawolf#builds) lists every option, including pull request environments.
   </Tab>
 
   <Tab title="GitHub Actions">
-    Upload the build, then report the deployment with the upload step's output, under the runner's executables directory, as `RUN_INPUT_PATH`.
+    Upload the build, then report the deployment with the upload step's `build-id` output.
 
     ```yaml expandable
     - name: Upload the build to QA Wolf
-      id: upload
-      uses: qawolf/upload-run-inputs-executable-action@v2
+      id: upload-build
+      uses: qawolf/upload-build-action@v1
       with:
         qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
-        # Stored under this file's own name, so name the build file deliberately
-        input-file-path: ./path/to/app-staging-android.apk
+        workspace-id: ${{ vars.QAWOLF_WORKSPACE_ID }}
+        input-file-path: ./path/to/app-release.apk
+        environment: Staging
 
     - name: Report the deployment to QA Wolf
       uses: qawolf/notify-qawolf-on-deploy-action@v3
       with:
         qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
-        workspace-id: ${{ secrets.QAWOLF_WORKSPACE_ID }}
+        workspace-id: ${{ vars.QAWOLF_WORKSPACE_ID }}
         environment: Staging
-        variables: >
-          { "RUN_INPUT_PATH": "/home/wolf/run-inputs-executables/${{ steps.upload.outputs.destination-file-path }}" }
+        service: android
+        builds: ${{ steps.upload-build.outputs.build-id }}
     ```
 
-    The upload action stores the build under the basename of `input-file-path` and outputs that path as `destination-file-path`. It takes no workspace id, so it needs a workspace API key.
+    To report an Android and an iOS build in one deployment, list both ids in `builds`, one per line.
 
     <Warning>
-      `notify-qawolf-on-deploy-action@v3` has no `service` input. A pipeline that ships an Android and an iOS build into one environment cannot tell them apart in a way a trigger's `servicePattern` can match. Give each platform its own environment, or report from [Fastlane](#set-up-the-pipeline) or the [Node.js SDK](/deployment-testing/ci-sdk), which both send `service`.
-
       The action derives one deployment per workflow run, attempt, job and environment. Two legs of one matrix deploying the same environment therefore share a deployment, and only the first starts runs. Set `deployment-id` per leg to separate them.
     </Warning>
 
-    `environment` names an existing QA Wolf environment. Omit it on a pull request event and the action reports into an ephemeral environment named after the repository and the pull request number. See [PR testing](/deployment-testing/pr-testing).
+    `environment` names an existing QA Wolf environment. To test a pull request in its own ephemeral environment, name it in both steps, such as `pr-${{ github.event.pull_request.number }}`. On the upload step, also set `ephemeral-environment: "true"` and `base-environment`. See [PR testing](/deployment-testing/pr-testing).
   </Tab>
 
   <Tab title="Node.js">
@@ -151,7 +135,6 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
 
     ```javascript expandable
     import assert from "assert";
-    import fs from "fs/promises";
     import {
       detectProviderDeploymentId,
       makeQaWolfSdk,
@@ -163,23 +146,16 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
     const workspaceId = process.env.QAWOLF_WORKSPACE_ID;
     assert(workspaceId, "QAWOLF_WORKSPACE_ID is required");
 
-    const { deployment, generateSignedUrlForRunInputsExecutablesStorage } =
-      makeQaWolfSdk({ apiKey });
+    const { deployment, uploadBuild } = makeQaWolfSdk({ apiKey });
 
-    const signed = await generateSignedUrlForRunInputsExecutablesStorage({
-      destinationFilePath: "app-staging-android.apk",
+    const uploaded = await uploadBuild({
+      filePath: "./path/to/app-release.apk",
+      environment: { name: "staging" },
       workspaceId,
     });
-    if (!signed.success || !signed.uploadUrl || !signed.interactiveRunFileLocation) {
-      throw new Error(`Could not get an upload URL: ${JSON.stringify(signed)}`);
+    if (uploaded.outcome !== "uploaded") {
+      throw new Error(`Could not upload the build: ${JSON.stringify(uploaded)}`);
     }
-
-    const uploaded = await fetch(signed.uploadUrl, {
-      method: "PUT",
-      body: await fs.readFile("./path/to/app-staging-android.apk"),
-      headers: { "Content-Type": "application/octet-stream" },
-    });
-    if (!uploaded.ok) throw new Error(`Upload failed: ${uploaded.status}`);
 
     const detected = detectProviderDeploymentId({ discriminator: "android" });
     if (detected.outcome !== "detected") {
@@ -192,9 +168,7 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
       status: "success",
       environment: { name: "staging" },
       service: "android",
-      environmentVariables: {
-        RUN_INPUT_PATH: `/home/wolf/run-inputs-executables/${signed.interactiveRunFileLocation}`,
-      },
+      builds: [uploaded.build.id],
     });
     if (report.outcome !== "reported") {
       throw new Error(`Failed to report the deployment: ${JSON.stringify(report)}`);
@@ -203,43 +177,18 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
     ```
 
     - `discriminator` separates the deployments one CI job makes at the same time, such as the legs of an Android and iOS matrix. Without it both legs derive the same identity, and only the first starts runs.
-    - `environmentVariables` replaces the values a previous report of the same deployment stored, rather than merging into them.
     - To block the pipeline on the result, add `deployment.waitForVerdict`. See [Node.js SDK](/deployment-testing/ci-sdk).
   </Tab>
 
   <Tab title="Webhook">
-    For a pipeline that cannot run Node.js — ArgoCD, locked-down runners, minimal containers. Requires only HTTP requests.
+    For a pipeline that cannot run Node.js, such as ArgoCD, locked-down runners or minimal containers. Requires only HTTP requests.
 
     <Steps>
-      <Step title="Generate a signed URL and upload the build">
-        ```bash
-        curl "https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls?file=app-staging-android.apk" \
-          -H "Authorization: Bearer $QAWOLF_API_KEY"
-        ```
-
-        On success you get back:
-
-        ```json
-        {
-          "fileLocation": "$WORKSPACE_ID/app-staging-android.apk",
-          "interactiveRunFileLocation": "app-staging-android.apk",
-          "signedUrl": "https://..."
-        }
-        ```
-
-        ```bash
-        curl -X PUT \
-          --header "Content-Type: application/octet-stream" \
-          --data-binary @./path/to/app-staging-android.apk \
-          "$SIGNED_URL"
-        ```
-
-        An organization or user API key also needs `workspaceId` on the first request. See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls).
+      <Step title="Upload the build">
+        Request an upload URL, upload the file, and create the build. See [HTTP API](/upload-builds#http-api) for the three requests. Keep the `buildId`.
       </Step>
 
       <Step title="Report the deployment">
-        Carry `interactiveRunFileLocation`, under the runner's executables directory, as `RUN_INPUT_PATH`.
-
         ```bash expandable
         curl -X POST "https://app.qawolf.com/api/trpc/public.deployment.reportStatus" \
           -H "Authorization: Bearer $QAWOLF_API_KEY" \
@@ -247,11 +196,11 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
           -d "{
             \"json\": {
               \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
-              \"providerDeploymentId\": \"$BUILD_ID-android\",
+              \"providerDeploymentId\": \"$CI_BUILD_ID-android\",
               \"status\": \"success\",
               \"environment\": { \"name\": \"staging\" },
               \"service\": \"android\",
-              \"environmentVariables\": { \"RUN_INPUT_PATH\": \"/home/wolf/run-inputs-executables/app-staging-android.apk\" }
+              \"builds\": [\"$BUILD_ID\"]
             }
           }"
         ```
@@ -262,9 +211,7 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
   </Tab>
 </Tabs>
 
-<Note>
-  These examples upload an Android `.apk`. iOS works identically — point the same steps at your `.ipa`, and name the service `ios`.
-</Note>
+These examples upload an Android `.apk`. iOS works the same way: point the same steps at your `.ipa`, and name the service `ios`.
 
 ## Create a trigger
 
@@ -283,18 +230,18 @@ Shipping both platforms into one environment needs two triggers, one per `servic
 See [Trigger fields](/triggers/reference) for every condition and for the action that selects which flows run.
 
 <Tip>
-  You can create and manage triggers from your own coding agent instead of the triggers page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments — it can also list recent deployments and show why a trigger did or did not fire.
+  You can create and manage triggers from your own coding agent instead of the triggers page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments. It can also list recent deployments and show why a trigger did or did not fire.
 </Tip>
 
 ## Use the build in a flow
 
-A flow that names no app launches whatever `RUN_INPUT_PATH` points at, so the run uses the build that was just uploaded:
+Name the app by its Android package name or iOS bundle id:
 
 ```ts
-await launch({ appPackage: "com.example.app" });
+await launch({ app: { id: "com.example.app" } });
 ```
 
-Naming `app` at all stops the fallback: `launch({ app: ... })` resolves `app.path`, then `app.env`, then `app.url`, and never falls back to `RUN_INPUT_PATH`. On Android and iOS these paths must be absolute too. See App resolution for [Android](/libraries/flows/api-reference/android#app-resolution) or [iOS](/libraries/flows/api-reference/ios#app-resolution).
+The flow installs the run's build of that app: the deployment's build, or else the environment's latest. Scheduled runs and runs started by hand install the environment's latest build, so they test the last upload too. See [How a run picks its build](/upload-builds#how-a-run-picks-its-build).
 
 ## Verify the integration
 
@@ -303,29 +250,33 @@ Naming `app` at all stops the fallback: `launch({ app: ... })` resolves `app.pat
     Run the CI job that builds your app.
   </Step>
   <Step title="Check the upload and the report">
-    The upload step succeeds, and the report step logs the deployment id and the environment's runs page.
+    The upload step prints the build id. The report step logs the deployment id and the environment's runs page.
   </Step>
   <Step title="Check the trigger fired">
     Open the deployment in QA Wolf. It lists a verdict for every trigger, including the reason a trigger did not match. See [Deployments](/triggers/deployments#evaluation).
   </Step>
   <Step title="Check the run used the build">
-    Open the run the trigger created and confirm it launched the build you just uploaded.
+    Open the run the trigger created. It shows the app version it tested, which matches the build you just uploaded.
   </Step>
 </Steps>
 
 ## Troubleshooting
 
+- **The upload fails with "Builds are not enabled for this workspace."** — builds are not on for your workspace yet. Ask your QA Wolf representative, and use [Legacy build uploads](/legacy-build-uploads) until then.
+- **The upload is refused** — the file is not an `.apk`, `.aab` or `.ipa`, or is over 500 MB. If your pipeline zips the app, upload the file inside the zip.
 - **The build uploads, the deployment is recorded, and nothing runs** — no trigger matched. Open the deployment and read the per-trigger verdicts. The usual causes are an environment name that created a new environment instead of resolving an existing one, and a `servicePattern` on the trigger that the report does not send a `service` for.
 - **Only one of the two platforms runs** — both legs reported under the same `providerDeploymentId`, so the second updated the first deployment instead of creating one, and only a deployment's first `success` report evaluates triggers. Give each leg its own identity: `provider_deployment_discriminator` on Fastlane, `discriminator` on `detectProviderDeploymentId`, `deployment-id` on the GitHub Action.
 - **The Android flows ran against the iOS build** — the triggers have no `servicePattern`, so both fired on both deployments.
-- **The flow can't find the build** — most often `RUN_INPUT_PATH` is a bare filename rather than an absolute path under `/home/wolf/run-inputs-executables/`. Otherwise check that the report carried `environmentVariables`, that the name matches what was uploaded, and that a later report of the same deployment did not replace the variables — a report that sends `environmentVariables` replaces the stored map rather than merging into it.
-- **The pipeline step passes but the workspace never sees the deploy** — the step is still on the legacy path. `@v1` and `@v2` of the GitHub Action, Fastlane plugin 0.4.8 and below, and the SDK's `attemptNotifyDeploy` all report through the legacy deploy webhook, which triggers never see.
+- **`launch` fails with "No build of … on this environment"** — the run has no build of that app. Check that the `id` in `launch` matches the build's app id, and that the build was uploaded to this environment or reported with the deployment. A build whose file expired counts as absent.
+- **The run installed an old file, or shows no app version** — the flow calls `launch()` with no `app`, or with `app: { path }` or `app: { env }`, so it reads `RUN_INPUT_PATH` or a fixed file. Change it to `launch({ app: { id } })`. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads).
+- **The pipeline step passes but the workspace never sees the deploy** — the step is still on the legacy deploy webhook. `@v1` and `@v2` of the notify action, Fastlane plugin 0.4.8 and below, and the SDK's `attemptNotifyDeploy` all report through it, and triggers never see it.
 - **Authentication errors** — check `QAWOLF_API_KEY`, and that `workspaceId` names the workspace the key may act on.
 
 ## Related
 
+- [Upload builds](/upload-builds) — every way to upload a build, and how to move from legacy uploads.
 - [Triggers](/triggers/overview) and [Trigger fields](/triggers/reference)
 - [Deployments](/triggers/deployments) — how a deployment resolves to an environment, and the verdict per trigger.
-- [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls)
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
+- [Legacy build uploads](/legacy-build-uploads)
 - [Mobile build testing with legacy triggers](/legacy-triggers/mobile-build-testing)

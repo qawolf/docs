@@ -27,6 +27,7 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `deployTarget` | The URL the deployment serves, as an `http` or `https` URL. Required when `environment.name` names no existing environment; a report that would create one without it is refused. |
 | `environmentVariables` | Overrides for the runs this deployment requests, as a flat map of string to string. A report that sends them replaces the stored values; one that omits them keeps them. |
 | `service` | Which application was deployed, such as `checkout-api`, when several applications deploy into one environment, or when one pipeline ships more than one build such as an Android and an iOS build. A trigger's `servicePattern` matches on it. A report that omits it keeps the stored value. |
+| `builds` | The ids of the [builds](/upload-builds) this deployment ships, at most 20. The runs this deployment starts install them. A report that omits it keeps the stored builds. |
 | `metadata` | Details about the deployed revision, such as the commit. |
 
 <Warning>

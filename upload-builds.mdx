@@ -1,0 +1,262 @@
+---
+title: "Upload builds"
+description: "Every way to upload an Android or iOS build to QA Wolf, how a run picks the build it installs, and how to move from legacy uploads."
+sidebarTitle: "Upload builds"
+keywords: "build, app build, apk, aab, ipa, upload a build, upload-build-action, uploadBuild, qawolf build upload, upload_build_to_qawolf, build.requestUpload, build.create, RUN_INPUT_PATH, app version"
+---
+
+A build is an Android `.apk` or `.aab`, or an iOS `.ipa`, that you upload to QA Wolf. QA Wolf reads the app id, version and build number from the file. Every run records which build it installed, so you know exactly what each run tested.
+
+<Check>
+  Builds are turned on per workspace. Until they are on for yours, every upload fails with "Builds are not enabled for this workspace." Ask your QA Wolf representative to turn them on. Until then, upload with [legacy uploads](/legacy-build-uploads).
+</Check>
+
+## What you can upload
+
+- **File types** — `.apk` and `.aab` for Android, `.ipa` for iOS. Any other file is refused, including a `.zip`.
+- **Size** — at most 500 MB.
+- **File name** — letters, digits, `.`, `_` and `-`, at most 255 characters. The Builds page and the CLI replace other characters with `-`. Every other way refuses the file.
+- **Zipped apps** — not accepted. Upload the `.apk`, `.aab` or `.ipa` inside the zip. A zip that holds `Payload/<App>.app/` is already an `.ipa`, so rename it to `.ipa`.
+- **Retention** — 180 days after upload, except the latest build of each app and platform in a static environment, which stays until a later upload replaces it.
+
+## How a run picks its build
+
+A build reaches runs in three ways:
+
+- **Through its environment** — upload the build with an environment, and it becomes that environment's latest build of its app and platform. Every later run in the environment installs it, until a later upload of the same app and platform replaces it. This covers scheduled runs, runs started by hand, and runs a deployment starts.
+- **Through a run or a deployment** — name the build when you create a run or report a deployment. Only those runs install it. A build uploaded without an environment reaches runs only this way.
+- **Through Tester chat** — a build sent in chat reaches the runs in that chat session.
+
+"Latest" means uploaded last, not the highest version. Uploading an older version again makes it the latest.
+
+For each app and platform, a run installs the first build it finds in this order:
+
+1. The builds named in `run.create`.
+2. The builds the deployment that started the run reported.
+3. The environment's latest build.
+4. The base environment's latest build, for an environment that has one.
+
+A build sent in Tester chat comes before all of these, for the runs in that chat session. A build whose file has expired counts as absent.
+
+## Upload a build
+
+Each way below uploads the file and creates the build in one step.
+
+<Check>
+  Every way except the Builds page and Tester chat needs an API key. Create one under **Workspace Settings → API Keys**. An organization or user key also needs the workspace id, shown on the same page.
+</Check>
+
+### Builds page
+
+<Steps>
+  <Step title="Choose the file">
+    Open **Settings → Builds** and click **Upload build**, or drop the file on the page.
+  </Step>
+  <Step title="Choose the environment">
+    Choose the static environment whose runs install the build. It defaults to your default environment.
+  </Step>
+  <Step title="Add the build">
+    Click **Add build** once the file finishes uploading.
+  </Step>
+</Steps>
+
+### GitHub Actions
+
+Use `qawolf/upload-build-action@v1`. Pass its `build-id` output to `qawolf/notify-qawolf-on-deploy-action@v3`, version 3.2.0 or later. The runs the deployment starts then install the build.
+
+Example:
+
+```yaml
+- name: Upload the build to QA Wolf
+  id: upload-build
+  uses: qawolf/upload-build-action@v1
+  with:
+    qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+    workspace-id: ${{ vars.QAWOLF_WORKSPACE_ID }}
+    input-file-path: app/build/outputs/apk/release/app-release.apk
+    environment: Staging
+
+- name: Report the deployment to QA Wolf
+  uses: qawolf/notify-qawolf-on-deploy-action@v3
+  with:
+    qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+    workspace-id: ${{ vars.QAWOLF_WORKSPACE_ID }}
+    environment: Staging
+    service: android
+    builds: ${{ steps.upload-build.outputs.build-id }}
+```
+
+The upload action also outputs `app-id`, `platform`, `version` and `build-number`.
+
+To test a pull request in its own ephemeral environment, set `environment` to a name for the pull request, such as `pr-${{ github.event.pull_request.number }}`, in both steps. On the upload step, also set `ephemeral-environment: "true"` and `base-environment`. See the action's [README](https://github.com/qawolf/upload-build-action#readme) for every input.
+
+### Fastlane
+
+Use the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) 1.2.0 or later. The plugin is not published to RubyGems. Point the `Gemfile` at the repository and pin a tag:
+
+```ruby
+gem "fastlane-plugin-qawolf", git: "https://github.com/qawolf/fastlane-plugin-qawolf", tag: "1.2.0"
+```
+
+`upload_build_to_qawolf` uploads the file that `gradle` or `build_app` built earlier in the lane. `notify_deploy_qawolf` reports every build the lane uploaded, so you do not pass the build id:
+
+```ruby
+lane :qawolf do
+  # Your existing build step, gradle for Android or build_app for iOS
+
+  upload_build_to_qawolf(
+    # Also read from QAWOLF_API_KEY and QAWOLF_WORKSPACE_ID
+    qawolf_api_key: ENV.fetch("QAWOLF_API_KEY", nil),
+    workspace_id: ENV.fetch("QAWOLF_WORKSPACE_ID", nil),
+    environment: "Staging"
+  )
+
+  notify_deploy_qawolf(
+    qawolf_api_key: ENV.fetch("QAWOLF_API_KEY", nil),
+    workspace_id: ENV.fetch("QAWOLF_WORKSPACE_ID", nil),
+    environment: "Staging",
+    service: "android"
+  )
+end
+```
+
+For a pull request, pass `ephemeral_environment: true` and `base_environment` to `upload_build_to_qawolf`. The plugin's [README](https://github.com/qawolf/fastlane-plugin-qawolf#builds) is the reference for every option.
+
+### Node.js
+
+Use `uploadBuild` from [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference#uploadbuild) 3.5.0 or later. Pass the build id to `deployment.reportStatus` as `builds`:
+
+```javascript
+import { makeQaWolfSdk } from "@qawolf/ci-sdk";
+
+const { deployment, uploadBuild } = makeQaWolfSdk({
+  apiKey: process.env.QAWOLF_API_KEY,
+});
+
+const uploaded = await uploadBuild({
+  filePath: "app/build/outputs/apk/release/app-release.apk",
+  environment: { name: "Staging" },
+  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+});
+if (uploaded.outcome !== "uploaded") {
+  throw new Error(`Upload failed: ${JSON.stringify(uploaded)}`);
+}
+
+const report = await deployment.reportStatus({
+  workspaceId: process.env.QAWOLF_WORKSPACE_ID,
+  providerDeploymentId: `${process.env.BUILD_ID}-android`,
+  status: "success",
+  environment: { name: "Staging" },
+  service: "android",
+  builds: [uploaded.build.id],
+});
+if (report.outcome !== "reported") {
+  throw new Error(`Report failed: ${JSON.stringify(report)}`);
+}
+```
+
+`uploadBuild` returns an outcome rather than throwing. Each call creates a new build, so a retry is another call.
+
+### CLI
+
+Use [`qawolf build upload`](/libraries/cli/api-reference/commands#build) from `@qawolf/cli` 2.8.0 or later:
+
+```bash
+npx @qawolf/cli build upload app-release.apk \
+  --environment-name Staging \
+  --branch main \
+  --commit-sha "$GIT_COMMIT"
+```
+
+Set `QAWOLF_API_KEY`, or sign in with `qawolf auth login`. An organization or user key also needs `--workspace-id`. Use `--environment-id` in place of `--environment-name` to name an environment by id. The command prints the build id and the build's URL.
+
+### HTTP API
+
+For a pipeline that cannot run Node.js. Each call is a `POST` to `https://app.qawolf.com/api/trpc/public.<name>` with the input under `json`.
+
+<Steps>
+  <Step title="Request an upload URL">
+    ```bash
+    curl -X POST "https://app.qawolf.com/api/trpc/public.build.requestUpload" \
+      -H "Authorization: Bearer $QAWOLF_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{ \"json\": {
+        \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
+        \"fileName\": \"app-release.apk\",
+        \"fileSizeBytes\": $(wc -c < app-release.apk)
+      } }"
+    ```
+
+    Read `buildId`, `uploadUrl` and `uploadHeaders` from `result.data.json` in the response.
+  </Step>
+  <Step title="Upload the file">
+    `PUT` the file to `uploadUrl`, with every header in `uploadHeaders` exactly as returned. For example:
+
+    ```bash
+    curl -X PUT --upload-file app-release.apk \
+      -H "Content-Type: application/octet-stream" \
+      -H "x-goog-if-generation-match: 0" \
+      "$UPLOAD_URL"
+    ```
+  </Step>
+  <Step title="Create the build">
+    ```bash
+    curl -X POST "https://app.qawolf.com/api/trpc/public.build.create" \
+      -H "Authorization: Bearer $QAWOLF_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{ \"json\": {
+        \"workspaceId\": \"$QAWOLF_WORKSPACE_ID\",
+        \"buildId\": \"$BUILD_ID\",
+        \"environment\": { \"name\": \"Staging\" }
+      } }"
+    ```
+
+    QA Wolf refuses a file that is not an app. A second call with the same `buildId` returns the same build.
+  </Step>
+</Steps>
+
+To start runs, report the deployment with `"builds": ["<buildId>"]`. See [Webhook](/deployment-testing/webhook).
+
+### Tester chat and the QA Wolf MCP
+
+- **Tester chat** — attach an `.apk`, `.aab` or `.ipa` to a message. The build has no environment. The runs in that chat install it, and the environment's other runs do not.
+- **[QA Wolf MCP](/qawolf-mcp)** — your coding agent calls `build_requestUpload`, uploads the file, then calls `build_create`. To test the build without making it the environment's latest, the agent omits `environment` and passes the build id to `run_create` as `builds`.
+
+## Use the build in a flow
+
+Name the app by its id: the Android package name, or the iOS bundle id. The flow installs the run's build of that app:
+
+```ts
+import { launch } from "@qawolf/flows/android";
+
+await launch({ app: { id: "com.example.app" } });
+```
+
+This needs `@qawolf/flows` 0.4.0 or later. When the run has no build of that app, `launch` fails with "No build of `<id>` for `<platform>` on this environment". It does not fall back to another file. A flow that passes `app` ignores `RUN_INPUT_PATH`. See App resolution for [Android](/libraries/flows/api-reference/android#app-resolution) or [iOS](/libraries/flows/api-reference/ios#app-resolution).
+
+## Test a build in one run
+
+Pass `builds` to `run.create` to test a build without changing what the environment's other runs install. Each build replaces the environment's latest build of its app and platform, for that run only. A run takes at most 20 builds.
+
+## Move from legacy uploads
+
+A legacy upload puts a file in run inputs storage, and the flow reads its path from `RUN_INPUT_PATH`. Its runs name no expected build, so QA Wolf cannot tell whether they tested the right file. Move in three steps. The legacy path keeps working while you move.
+
+<Steps>
+  <Step title="Upload builds">
+    Replace the legacy upload with one of the ways above. On Fastlane, see "Moving from `upload_to_qawolf`" in the plugin's [README](https://github.com/qawolf/fastlane-plugin-qawolf#moving-from-upload_to_qawolf). If your pipeline zips the app, upload the `.apk`, `.aab` or `.ipa` inside the zip.
+  </Step>
+  <Step title="Change your flows">
+    Replace `launch()` with no `app`, and `app: { path }` or `app: { env }`, with `launch({ app: { id } })`. A flow that passes `app: { id }` installs the build and ignores `RUN_INPUT_PATH`.
+  </Step>
+  <Step title="Remove RUN_INPUT_PATH">
+    Once no mobile flow launches without `app`, remove `RUN_INPUT_PATH` from the environment's variables and from your deployment reports. Only a mobile flow that calls `launch()` with no `app` reads it. A Windows flow that passes `RUN_INPUT_PATH` to `startApp()` still needs it.
+  </Step>
+</Steps>
+
+## Related
+
+- [Mobile build testing](/mobile-build-testing) — start runs on every new build.
+- [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference#uploadbuild)
+- [Webhook](/deployment-testing/webhook) — every field of a deployment report.
+- [Legacy build uploads](/legacy-build-uploads)
