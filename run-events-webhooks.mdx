@@ -245,7 +245,13 @@ A status history can continue after a final status:
 
 Events of different runs and flows can arrive in any order relative to each other. The same event can also arrive more than once, for example when your endpoint answers after the 10 seconds and QA Wolf sends the request again.
 
-To handle both, keep the latest status timestamp and the number of statuses of the newest event you've processed for each run and each flow. An event is newer when its latest status is later, or equally late with more statuses. Ignore any event that isn't newer. Identify a run by `runId`, and a flow by `runId` and `flowId` together. A repeated event isn't newer, so this rule ignores it too.
+To handle both, remember the newest event you've processed for each run and each flow, and ignore any event that isn't newer. Identify a run by `runId`, and a flow by `runId` and `flowId` together. Compare two events for the same run or flow by, in order:
+
+1. The timestamp of their first status. A rerun flow's history starts again, later than the earlier execution's.
+2. The timestamp of their latest status.
+3. Their number of statuses, because several statuses can share a timestamp.
+
+A repeated event isn't newer, so this rule ignores it too.
 
 Example:
 
@@ -260,18 +266,20 @@ function entityKey(event) {
 }
 
 function positionOf(event) {
-  return {
-    statusCount: event.data.statuses.length,
-    timestamp: Date.parse(event.data.statuses.at(-1).timestamp),
-  };
+  const { statuses } = event.data;
+  return [
+    Date.parse(statuses[0].timestamp),
+    Date.parse(statuses.at(-1).timestamp),
+    statuses.length,
+  ];
 }
 
 function isNewer(current, previous) {
   if (previous === undefined) return true;
-  if (current.timestamp !== previous.timestamp) {
-    return current.timestamp > previous.timestamp;
+  for (const [index, value] of current.entries()) {
+    if (value !== previous[index]) return value > previous[index];
   }
-  return current.statusCount > previous.statusCount;
+  return false;
 }
 
 async function processEvents(events) {
