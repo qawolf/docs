@@ -28,7 +28,7 @@ This is separate from the issue tracker [Webhook](/Integrate-with-webhooks) inte
     Enter your endpoint's address in **Webhook URL** and select **Save**. The URL must use HTTPS, must not include a username or password, and must resolve only to public internet addresses.
   </Step>
   <Step>
-    Select **Send test event**. QA Wolf sends a signed sample event and shows your endpoint's response.
+    Select **Send test event**. QA Wolf sends a signed sample event and shows your endpoint's response. A test event is sent once: QA Wolf doesn't retry it, and it never turns the webhook off.
   </Step>
 </Steps>
 
@@ -245,12 +245,12 @@ A status history can continue after a final status:
 
 Events of different runs and flows can arrive in any order relative to each other. The same event can also arrive more than once, for example when your endpoint answers after the 10 seconds and QA Wolf sends the request again.
 
-To handle both, keep the timestamp of the latest status you've processed for each run and each flow, and ignore any event whose latest status isn't newer. Identify a run by `runId`, and a flow by `runId` and `flowId` together. A repeated event carries no newer status, so this rule ignores it too.
+To handle both, keep the latest status timestamp and the number of statuses of the newest event you've processed for each run and each flow. An event is newer when its latest status is later, or equally late with more statuses. Ignore any event that isn't newer. Identify a run by `runId`, and a flow by `runId` and `flowId` together. A repeated event isn't newer, so this rule ignores it too.
 
 Example:
 
 ```javascript
-const latestTimestamps = new Map();
+const processed = new Map();
 const knownTypes = new Set(["run.status-changed", "flow.status-changed"]);
 
 function entityKey(event) {
@@ -259,23 +259,38 @@ function entityKey(event) {
     : `run:${event.data.runId}`;
 }
 
+function positionOf(event) {
+  return {
+    statusCount: event.data.statuses.length,
+    timestamp: Date.parse(event.data.statuses.at(-1).timestamp),
+  };
+}
+
+function isNewer(current, previous) {
+  if (previous === undefined) return true;
+  if (current.timestamp !== previous.timestamp) {
+    return current.timestamp > previous.timestamp;
+  }
+  return current.statusCount > previous.statusCount;
+}
+
 async function processEvents(events) {
   for (const event of events) {
     if (!knownTypes.has(event.type)) continue;
     const key = entityKey(event);
-    const latest = event.data.statuses.at(-1);
-    const timestamp = Date.parse(latest.timestamp);
-    if (timestamp <= (latestTimestamps.get(key) ?? -Infinity)) continue;
+    const current = positionOf(event);
+    if (!isNewer(current, processed.get(key))) continue;
 
-    if (event.type === "run.status-changed" && latest.status === "failed") {
+    const { status } = event.data.statuses.at(-1);
+    if (event.type === "run.status-changed" && status === "failed") {
       await alertOnCall(event.data);
     }
-    latestTimestamps.set(key, timestamp);
+    processed.set(key, current);
   }
 }
 ```
 
-Replace `alertOnCall` with your own code. The example records a timestamp only after acting on the event, so an event whose alert fails is processed again on the next try. Keep the timestamps somewhere that survives a restart, such as your database, and process stored events one batch at a time.
+Replace `alertOnCall` with your own code. The example records an event as processed only after acting on it, so an event whose alert fails is processed again on the next try. Keep what you've processed somewhere that survives a restart, such as your database, and process stored events one batch at a time.
 
 <Note>
   Events carry no ID of their own, and `webhook-id` can't stand in for one. It is a SHA-256 hash of the run and flow IDs in the request and their statuses. A resend of exactly the same events carries the same `webhook-id`, but the same event can also arrive in a different request, with a different `webhook-id`.
@@ -291,7 +306,7 @@ After a failed delivery, QA Wolf tries again after 5 seconds, then 5 minutes, th
 - **`429`, or `503` with a `Retry-After` header** — a failed delivery. QA Wolf waits as long as `Retry-After` asks, between 5 seconds and 1 hour, instead of following the schedule.
 - **Anything else** — a failed delivery. This covers every other status, no answer within 10 seconds, and a connection, DNS or TLS failure. QA Wolf retries a connection, DNS or TLS failure up to twice within a few seconds, with the same signature, before it counts as a failed delivery.
 
-While your endpoint is failing, new events wait and QA Wolf keeps only the newest event for each run and flow. If more than about 1 MB of events is waiting, QA Wolf drops the oldest flow events first, then the oldest run events. Once a delivery succeeds, QA Wolf sends everything waiting, up to 100 events per request.
+While your endpoint is failing, new events wait and QA Wolf keeps only the newest event for each run, and for each execution of a flow. If more than about 1 MB of events is waiting, QA Wolf drops the oldest flow events first, then the oldest run events. Once a delivery succeeds, QA Wolf sends everything waiting, up to 100 events per request.
 
 If deliveries keep failing for 8 hours, QA Wolf turns the webhook off. Any successful delivery restarts the 8 hours. QA Wolf also turns the webhook off at once if your URL resolves to a private or internal address when it sends.
 
