@@ -186,7 +186,7 @@ export function isSignedByQaWolf({ body, headers, secret }) {
 
 ## Events
 
-Every event has a `type`, a `version` and a `data` object. `version` is `1`. Ignore fields and event types you don't recognize.
+Every event has a `type`, a `version` and a `data` object. `version` is `1`. Ignore fields you don't recognize. Skip any event whose `version` or `type` you don't recognize, and keep processing the rest of the request. Don't reject the whole request because of one such event, and if you validate events against a schema, validate each event on its own. A rejected request is a failed delivery, so QA Wolf retries it, and after 8 hours the webhook turns off.
 
 - **`run.status-changed`** — a run's status changed.
 - **`flow.status-changed`** — the status of one flow in a run changed.
@@ -284,7 +284,7 @@ function isNewer(current, previous) {
 
 async function processEvents(events) {
   for (const event of events) {
-    if (!knownTypes.has(event.type)) continue;
+    if (event.version !== 1 || !knownTypes.has(event.type)) continue;
     const key = entityKey(event);
     const current = positionOf(event);
     if (!isNewer(current, processed.get(key))) continue;
