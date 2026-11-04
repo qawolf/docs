@@ -13,6 +13,7 @@ This is separate from the issue tracker [Webhook](/Integrate-with-webhooks) inte
 
 - An endpoint that accepts `POST` requests over HTTPS and is reachable from the public internet.
 - Membership of the workspace. Any member can set up the webhook and reveal its signing secret.
+- Run events webhooks turned on for your workspace. Ask your QA Wolf representative to turn them on. Until then, **Workspace settings → Integrations** has no **Run events webhook** section.
 
 ## Set up the webhook
 
@@ -49,7 +50,7 @@ QA Wolf sends each request as a `POST` to your URL, with these headers:
 
 The body is a JSON object with an `events` array:
 
-- A request carries between 1 and 100 events, up to about 1 MB in all.
+- A request carries between 1 and 100 events, up to about 1 MB in all. Make sure your endpoint, and any proxy in front of it, accepts bodies of at least 1 MB.
 - Events in a request are ordered by the timestamp of their latest status, oldest first.
 - Apart from test events, QA Wolf sends one request at a time for your workspace.
 
@@ -131,7 +132,7 @@ const app = express();
 
 app.post(
   "/qawolf/run-events",
-  express.raw({ type: "application/json" }),
+  express.raw({ type: "application/json", limit: "1mb" }),
   async (req, res) => {
     let request;
     try {
@@ -147,7 +148,7 @@ app.post(
 
 Replace `storeEvents` with your own code that saves the events for processing. Set `QAWOLF_WEBHOOK_SECRET` to the signing secret, including its `whsec_` prefix.
 
-To verify without a library, join `webhook-id`, `webhook-timestamp` and the raw body with a `.` between each. Compute an HMAC-SHA256 of the result, keyed with the base64-decoded part of the secret after `whsec_`. Compare its base64 form, in constant time, with each space-separated `v1,` entry in `webhook-signature`. Reject the request when `webhook-timestamp` is more than 5 minutes from your current time, which stops an old request from being replayed. QA Wolf signs every delivery attempt again, so a retried request carries a current timestamp.
+To verify without a library, join `webhook-id`, `webhook-timestamp` and the raw body with a `.` between each. Compute an HMAC-SHA256 of the result, keyed with the base64-decoded part of the secret after `whsec_`. Compare its base64 form, in constant time, with each space-separated `v1,` entry in `webhook-signature`. Reject the request when `webhook-timestamp` is more than 5 minutes from your current time, which stops an old request from being replayed. QA Wolf signs a request again each time it retries it after a failed delivery, so a retried request carries a recent timestamp.
 
 Example:
 
@@ -250,30 +251,31 @@ Example:
 
 ```javascript
 const latestTimestamps = new Map();
+const knownTypes = new Set(["run.status-changed", "flow.status-changed"]);
 
-function isNewest(event) {
-  const key =
-    event.type === "flow.status-changed"
-      ? `flow:${event.data.runId}:${event.data.flowId}`
-      : `run:${event.data.runId}`;
-  const timestamp = Date.parse(event.data.statuses.at(-1).timestamp);
-  if (timestamp <= (latestTimestamps.get(key) ?? -Infinity)) return false;
-  latestTimestamps.set(key, timestamp);
-  return true;
+function entityKey(event) {
+  return event.type === "flow.status-changed"
+    ? `flow:${event.data.runId}:${event.data.flowId}`
+    : `run:${event.data.runId}`;
 }
 
 async function processEvents(events) {
   for (const event of events) {
-    if (!isNewest(event)) continue;
-    const { status } = event.data.statuses.at(-1);
-    if (event.type === "run.status-changed" && status === "failed") {
+    if (!knownTypes.has(event.type)) continue;
+    const key = entityKey(event);
+    const latest = event.data.statuses.at(-1);
+    const timestamp = Date.parse(latest.timestamp);
+    if (timestamp <= (latestTimestamps.get(key) ?? -Infinity)) continue;
+
+    if (event.type === "run.status-changed" && latest.status === "failed") {
       await alertOnCall(event.data);
     }
+    latestTimestamps.set(key, timestamp);
   }
 }
 ```
 
-Replace `alertOnCall` with your own code. Keep the timestamps somewhere that survives a restart, such as your database, rather than in memory.
+Replace `alertOnCall` with your own code. The example records a timestamp only after acting on the event, so an event whose alert fails is processed again on the next try. Keep the timestamps somewhere that survives a restart, such as your database, and process stored events one batch at a time.
 
 <Note>
   Events carry no ID of their own, and `webhook-id` can't stand in for one. It is a SHA-256 hash of the run and flow IDs in the request and their statuses. A resend of exactly the same events carries the same `webhook-id`, but the same event can also arrive in a different request, with a different `webhook-id`.
@@ -287,7 +289,7 @@ After a failed delivery, QA Wolf tries again after 5 seconds, then 5 minutes, th
 - **`410`** — QA Wolf turns the webhook off at once.
 - **`413`** — QA Wolf halves the number of events per request and tries again. A single event your endpoint still refuses as too large is a failed delivery.
 - **`429`, or `503` with a `Retry-After` header** — a failed delivery. QA Wolf waits as long as `Retry-After` asks, between 5 seconds and 1 hour, instead of following the schedule.
-- **Anything else** — a failed delivery. This covers every other status, no answer within 10 seconds, and a connection or TLS failure.
+- **Anything else** — a failed delivery. This covers every other status, no answer within 10 seconds, and a connection, DNS or TLS failure. QA Wolf retries a connection, DNS or TLS failure up to twice within a few seconds, with the same signature, before it counts as a failed delivery.
 
 While your endpoint is failing, new events wait and QA Wolf keeps only the newest event for each run and flow. If more than about 1 MB of events is waiting, QA Wolf drops the oldest flow events first, then the oldest run events. Once a delivery succeeds, QA Wolf sends everything waiting, up to 100 events per request.
 
