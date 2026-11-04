@@ -738,7 +738,8 @@
               "smart-smoke-suites",
               "Run-Rules",
               "concurrency-limits",
-              "tags"
+              "tags",
+              "run-events-webhooks"
             ]
           },
           {
