@@ -1,0 +1,98 @@
+---
+title: "Integrate with Slack"
+description: "Connect Slack to add the QA Wolf agent to your Slack workspace, then add it to each channel where your team should be able to use it."
+sidebarTitle: "Slack"
+keywords:
+  - "chat"
+  - "Slack app"
+  - "Slack bot"
+  - "Slack Connect"
+  - "QA Wolf agent"
+---
+
+Connecting Slack installs the QA Wolf app in your Slack workspace. That app is the [QA Wolf agent](/agent-in-your-tools), and there's nothing else to turn on. It answers direct messages right away, but it only answers in a channel after you add it to that channel.
+
+## Requirements
+
+- Access to a QA Wolf workspace
+- Permission to add apps to your Slack workspace
+
+## Add the agent to Slack
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Integrations**. Under **Notifications**, select **Connect** on the **Slack** card.
+  </Step>
+  <Step>
+    Follow the prompts to sign in to Slack and allow the QA Wolf app in your Slack workspace.
+  </Step>
+  <Step>
+    Back in QA Wolf, confirm the Slack card reads **Connected**.
+  </Step>
+</Steps>
+
+A Slack workspace connects to one QA Wolf workspace at a time, so connecting fails if yours is already connected to another.
+
+## Add the agent to each channel
+
+Connecting Slack doesn't add the agent to any channel. Add it to each channel separately by sending this in the channel:
+
+```text
+/invite @QA Wolf
+```
+
+This works in public and private channels. Direct messages need no invite: search Slack for **QA Wolf**, open the app, and message it.
+
+## What you can ask the agent
+
+The agent works from your QA Wolf workspace: its flows, runs, environments, and bug reports.
+
+- **Why a run failed** — "Why did the checkout flows fail on staging this morning?"
+- **Where things stand** — "What's the status of our latest runs?" Ask for a summary you can paste into a standup or a status update.
+- **Report a bug** — describe what you saw. Unless you've already said what caused it, the agent confirms the details before it files a bug report.
+- **Fix a flow** — "The login flow broke after today's deploy. Fix it."
+- **Run flows** — name the flows and the environment. If you don't name any flows, the agent asks which.
+- **Add coverage** — "We don't have a flow for applying a coupon. Add one."
+
+Attach screenshots to show what you mean. The agent reads up to five images per message and ignores other files. It reads the thread it's in, not the rest of your Slack, and it never runs your application's source code.
+
+Anyone in your Slack workspace can ask for any of these, in a direct message or in a channel the agent is in. They don't need a QA Wolf account.
+
+## Agent notices
+
+If the agent posts one of these notices, here's what to do:
+
+| Notice | What to do |
+|---|---|
+| "…its QA Wolf team doesn't have a default environment." | Set a default environment for your QA Wolf workspace, then ask again. |
+| "…I can't determine which QA Wolf user should own this conversation." | Create a [trigger](/triggers/overview) on your default environment, then ask again. |
+
+## Agent doesn't respond
+
+If the agent doesn't reply at all, check these:
+
+| Cause | What to do |
+|---|---|
+| The agent isn't in the channel. | Send `/invite @QA Wolf` in the channel, then ask again. |
+| Slack isn't connected. | Check that the Slack card under **Workspace settings → Integrations** reads **Connected**. |
+| A bot, an app, or a Slack workflow posted the message. | Post the request yourself. The agent answers people only. |
+| The message was edited. | Post the request again as a new message. The agent doesn't read edits. |
+| Someone in the thread told the agent to stop replying. | Ask it something new in the thread. |
+
+## Disconnect Slack
+
+Under **Workspace settings → Integrations**, open the Slack card's menu and select **Disconnect**. The agent stops answering everywhere in your Slack workspace.
+
+## Additional capabilities
+
+Your QA Wolf representative has to activate these. Connecting Slack doesn't set them up.
+
+### Run alerts and bug reports
+
+QA Wolf can post run alerts and bug report notifications to the Slack channels you choose. These come from QA Wolf, not from the agent. Ask your QA Wolf representative to add or change the channels.
+
+### Shared channels with the QA Wolf team
+
+A shared channel is a Slack Connect channel between your Slack workspace and QA Wolf's, where your team works with QA Wolf's people. You don't need to connect Slack to have one.
+
+The agent can also answer in a shared channel once your QA Wolf representative turns it on for that channel.
