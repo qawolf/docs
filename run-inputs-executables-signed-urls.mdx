@@ -7,7 +7,7 @@ sidebarTitle: "Upload a build (legacy)"
 `GET https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls`
 
 <Warning>
-  Deprecated for Android and iOS builds. Upload them as [builds](/upload-builds) instead, so every run records which build it tested. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). This endpoint keeps working, and it is still the way to upload Windows and Linux app files.
+  Deprecated for Android and iOS builds. Upload them as [builds](/upload-builds) instead, so every run records which build it tested. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). This endpoint keeps working, and it is still the way to upload Windows and Linux app files. A zipped app that is not an `.ipa` also stays on this path for now.
 </Warning>
 
 For Windows and Linux app files from Node.js, use [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.
