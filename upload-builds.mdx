@@ -7,10 +7,6 @@ keywords: "build, app build, apk, aab, ipa, upload a build, upload-build-action,
 
 A build is an Android `.apk` or `.aab`, or an iOS `.ipa`, that you upload to QA Wolf. QA Wolf reads the app id, version and build number from the file. Every run records which build it installed, so you know exactly what each run tested.
 
-<Check>
-  Builds are turned on per workspace. Until they are on for yours, every upload fails with "Builds are not enabled for this workspace." Ask your QA Wolf representative to turn them on. Until then, upload with [legacy uploads](/legacy-build-uploads).
-</Check>
-
 ## What you can upload
 
 - **File types** — `.apk` and `.aab` for Android, `.ipa` for iOS. Any other file is refused, including a `.zip`.
@@ -249,17 +245,17 @@ The Node.js SDK cannot create runs. Each build replaces the environment's latest
 
 ## Move from legacy uploads
 
-A legacy upload puts a file in run inputs storage, and the flow reads its path from `RUN_INPUT_PATH`. Its runs name no expected build, so QA Wolf cannot tell whether they tested the right file. Move in three steps. The legacy path keeps working while you move.
+A legacy upload puts a file in run inputs storage, and the flow reads its path from `RUN_INPUT_PATH`. Its runs name no expected build, so QA Wolf cannot tell whether they tested the right file. Move in three steps. Keep the legacy upload running until every flow uses `app: { id }`, so flows you have not changed yet still test the latest app.
 
 <Steps>
   <Step title="Upload builds">
-    Replace the legacy upload with one of the ways above. On Fastlane, see "Moving from `upload_to_qawolf`" in the plugin's [README](https://github.com/qawolf/fastlane-plugin-qawolf#moving-from-upload_to_qawolf). If your pipeline zips the app, upload the `.apk`, `.aab` or `.ipa` inside the zip.
+    Add a build upload with one of the ways above, next to the legacy upload. On Fastlane, see "Moving from `upload_to_qawolf`" in the plugin's [README](https://github.com/qawolf/fastlane-plugin-qawolf#moving-from-upload_to_qawolf). If your pipeline zips the app, upload the `.apk`, `.aab` or `.ipa` inside the zip.
   </Step>
   <Step title="Change your flows">
     Replace `launch()` with no `app`, and `app: { path }` or `app: { env }`, with `launch({ app: { id } })`. A flow that passes `app: { id }` installs the build and ignores `RUN_INPUT_PATH`.
   </Step>
-  <Step title="Remove RUN_INPUT_PATH">
-    Once no mobile flow launches without `app`, remove `RUN_INPUT_PATH` from the environment's variables and from your deployment reports. Only a mobile flow that calls `launch()` with no `app` reads it. A Windows flow that passes `RUN_INPUT_PATH` to `startApp()` still needs it.
+  <Step title="Remove the legacy upload">
+    Once no mobile flow launches without `app`, remove the legacy upload from your pipeline. Then remove `RUN_INPUT_PATH` from the environment's variables and from your deployment reports. Only a mobile flow that calls `launch()` with no `app` reads it. A Windows flow that passes `RUN_INPUT_PATH` to `startApp()` still needs it.
   </Step>
 </Steps>
 

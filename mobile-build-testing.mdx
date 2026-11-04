@@ -7,10 +7,6 @@ keywords: "mobile, Android, iOS, apk, aab, ipa, build, Fastlane, fastlane-plugin
 
 QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for Android, an `.ipa` for iOS. Your pipeline uploads each new build and reports it as a deployment, and a [trigger](/triggers/overview) you create starts the runs. Every run records which build it installed.
 
-<Check>
-  Builds are turned on per workspace. Until they are on for yours, every upload fails with "Builds are not enabled for this workspace." Ask your QA Wolf representative to turn them on. Until then, follow [Legacy build uploads](/legacy-build-uploads).
-</Check>
-
 ## How it works
 
 <Steps>
@@ -262,7 +258,6 @@ The flow installs the run's build of that app: the deployment's build, or else t
 
 ## Troubleshooting
 
-- **The upload fails with "Builds are not enabled for this workspace."** — builds are not on for your workspace yet. Ask your QA Wolf representative, and use [Legacy build uploads](/legacy-build-uploads) until then.
 - **The upload is refused** — the file is not an `.apk`, `.aab` or `.ipa`, or is over 1 GB. If your pipeline zips the app, upload the file inside the zip.
 - **The build uploads, the deployment is recorded, and nothing runs** — no trigger matched. Open the deployment and read the per-trigger verdicts. The usual causes are an environment name that created a new environment instead of resolving an existing one, and a `servicePattern` on the trigger that the report does not send a `service` for.
 - **Only one of the two platforms runs** — both legs reported under the same `providerDeploymentId`, so the second updated the first deployment instead of creating one, and only a deployment's first `success` report evaluates triggers. Give each leg its own identity: `provider_deployment_discriminator` on Fastlane, `discriminator` on `detectProviderDeploymentId`, `deployment-id` on the GitHub Action.
