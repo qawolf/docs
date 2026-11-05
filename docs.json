@@ -919,6 +919,7 @@
             "group": "Flow conventions",
             "pages": [
               "anatomy-of-a-flow",
+              "soft-checks",
               "lint-rules"
             ]
           },
