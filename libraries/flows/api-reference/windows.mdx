@@ -235,7 +235,9 @@ The exported `expect` dispatches on its subject:
 - **A WebdriverIO driver, element, or element query not yet awaited** — the [`expect-webdriverio`](https://webdriver.io/docs/api/expect-webdriverio) matchers, including `toHaveScreenshot`.
 - **Anything else, including a Playwright `page` or locator** — the Playwright matchers.
 
-`expect.soft` dispatches the same way. Import `expect` from `@qawolf/flows/windows` rather than from `expect-webdriverio` or `@playwright/test`, so QA Wolf's defaults stay in effect.
+Import `expect` from `@qawolf/flows/windows` rather than from `expect-webdriverio` or `@playwright/test`, so QA Wolf's defaults stay in effect.
+
+`expect.soft` dispatches the same way. It records a failed check and keeps the flow going. See [Keep a flow going past a failed check](/soft-checks).
 
 Example:
 

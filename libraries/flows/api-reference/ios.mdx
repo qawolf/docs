@@ -356,6 +356,8 @@ The exported `expect` is the assertion helper for iOS flows, backed by [`expect-
 
 Always import `expect` from `@qawolf/flows/ios` rather than from `expect-webdriverio` directly, so that QA Wolf's defaults (timeout, `toHaveScreenshot`) stay in effect.
 
+To record a failed check and keep the flow going, use `expect.soft(subject, name)`. See [Keep a flow going past a failed check](/soft-checks).
+
 Example:
 
 ```ts
