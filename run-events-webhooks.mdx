@@ -1,0 +1,335 @@
+---
+title: "Run events webhooks"
+description: "Receive a signed HTTPS request at your own endpoint when a run or flow changes status, to alert on failures or start your own automation."
+sidebarTitle: "Run events webhooks"
+keywords: "run status, flow status, failure alerts, notifications, on-call alerts, HTTP callback, Standard Webhooks, signature verification, run.status-changed, flow.status-changed"
+---
+
+A run events webhook sends the status changes of your workspace's runs and flows to an HTTPS endpoint you host. Use it to page your on-call when a run fails, post to your own chat, or start your own automation. Each workspace has one webhook, and your endpoint decides which events to act on.
+
+This is separate from the issue tracker [Webhook](/Integrate-with-webhooks) integration.
+
+## Requirements
+
+- An endpoint that accepts `POST` requests over HTTPS and is reachable from the public internet.
+- Membership of the workspace. Any member can set up the webhook and reveal its signing secret.
+- Run events webhooks turned on for your workspace. Ask your QA Wolf representative to turn them on. Until then, **Workspace settings → Integrations** has no **Run events webhook** section.
+
+## Set up the webhook
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Integrations** and find the **Run events webhook** section.
+  </Step>
+  <Step>
+    Select **Reveal signing secret**, then **Copy signing secret**. Store the secret where your endpoint can read it. Your endpoint uses it to [verify each request](#verify-the-signature).
+  </Step>
+  <Step>
+    Enter your endpoint's address in **Webhook URL** and select **Save**. The URL must use HTTPS, must not include a username or password, and must resolve only to public internet addresses.
+  </Step>
+  <Step>
+    Select **Send test event**. QA Wolf sends a signed sample event and shows your endpoint's response. A test event is sent once: QA Wolf doesn't retry it, and it never turns the webhook off.
+  </Step>
+</Steps>
+
+To stop the events, clear **Webhook URL** and select **Save**. Events waiting to be sent are dropped.
+
+To replace the secret, select **Rotate signing secret**. New requests are signed with the new secret. A request already in progress can still carry a signature made with the old one. If your endpoint rejects it, QA Wolf retries it, signed with the new secret.
+
+## The request
+
+QA Wolf sends each request as a `POST` to your URL, with these headers:
+
+| Header | Description |
+| --- | --- |
+| `content-type` | `application/json`. |
+| `user-agent` | `QAWolf-Webhooks/1.0 (+https://www.qawolf.com)`. |
+| `webhook-id` | Identifies the request, not an event. See [Repeated and out-of-order events](#repeated-and-out-of-order-events). |
+| `webhook-timestamp` | When QA Wolf signed the request, in whole seconds since the Unix epoch. |
+| `webhook-signature` | `v1,` followed by the base64 HMAC-SHA256 signature. See [Verify the signature](#verify-the-signature). |
+
+The body is a JSON object with an `events` array:
+
+- A request carries between 1 and 100 events, up to about 1 MB in all. Make sure your endpoint, and any proxy in front of it, accepts bodies of at least 1 MB.
+- Events in a request are ordered by the timestamp of their latest status, oldest first.
+- Apart from test events, QA Wolf sends one request at a time for your workspace.
+
+Your endpoint must answer with a `2xx` status within 10 seconds. QA Wolf ignores the response body. Any other answer, or none, is a failed delivery, which QA Wolf retries (see [Retries and turning off](#retries-and-turning-off)). To stay within the 10 seconds, store the events and answer before you process them.
+
+QA Wolf never follows a redirect. A `3xx` answer is a failed delivery.
+
+Example:
+
+```json
+{
+  "events": [
+    {
+      "data": {
+        "environmentId": "p2f7h4s9j1d6l3g8a5q0w2ezoenv",
+        "environmentName": "Staging",
+        "flowId": "m3c8v1q6z9x2k5w7t0r4b8ndowor",
+        "git": {
+          "branch": "main",
+          "commitMessage": "Add saved cards to checkout",
+          "commitSha": "4f2c9a1e7b3d5f8a0c6e2b4d9f1a3c5e7b9d0f2a",
+          "commitUrl": "https://github.com/acme/web/commit/4f2c9a1e7b3d5f8a0c6e2b4d9f1a3c5e7b9d0f2a"
+        },
+        "name": "Checkout with a saved card",
+        "runId": "k7d2wq9m4x8b1n6t3r5y0hzposui",
+        "statuses": [
+          { "status": "queued", "timestamp": "2026-11-04T17:02:11.204Z" },
+          { "status": "running", "timestamp": "2026-11-04T17:02:15.870Z" },
+          { "status": "failed", "timestamp": "2026-11-04T17:09:42.031Z" }
+        ],
+        "triggerId": "t5n1b8x3c6v9m2k7j4h0g1fsogtr",
+        "triggerName": "Deploys to staging",
+        "url": "https://app.qawolf.com/acme/runs/r9w4e1q7t2y8u3i6o5p0a3sdorun"
+      },
+      "type": "flow.status-changed",
+      "version": 1
+    },
+    {
+      "data": {
+        "environmentId": "p2f7h4s9j1d6l3g8a5q0w2ezoenv",
+        "environmentName": "Staging",
+        "git": {
+          "branch": "main",
+          "commitMessage": "Add saved cards to checkout",
+          "commitSha": "4f2c9a1e7b3d5f8a0c6e2b4d9f1a3c5e7b9d0f2a",
+          "commitUrl": "https://github.com/acme/web/commit/4f2c9a1e7b3d5f8a0c6e2b4d9f1a3c5e7b9d0f2a"
+        },
+        "runId": "k7d2wq9m4x8b1n6t3r5y0hzposui",
+        "statuses": [
+          { "status": "queued", "timestamp": "2026-11-04T17:02:10.958Z" },
+          { "status": "running", "timestamp": "2026-11-04T17:02:15.402Z" },
+          { "status": "failed", "timestamp": "2026-11-04T17:10:05.517Z" }
+        ],
+        "triggerId": "t5n1b8x3c6v9m2k7j4h0g1fsogtr",
+        "triggerName": "Deploys to staging",
+        "url": "https://app.qawolf.com/acme/environments/p2f7h4s9j1d6l3g8a5q0w2ezoenv/runs/k7d2wq9m4x8b1n6t3r5y0hzposui"
+      },
+      "type": "run.status-changed",
+      "version": 1
+    }
+  ]
+}
+```
+
+## Verify the signature
+
+QA Wolf signs every request following the [Standard Webhooks](https://www.standardwebhooks.com) specification, so any Standard Webhooks library can verify it. Verify each request before you act on it, against the raw body exactly as it arrived. Parsing the JSON and serializing it again changes the bytes, and the signature no longer matches.
+
+The example below uses the `standardwebhooks` npm package in an Express app. `verify` checks the signature, and that `webhook-timestamp` is within 5 minutes of now, then returns the parsed body. It throws when either check fails.
+
+Example:
+
+```javascript
+import express from "express";
+import { Webhook } from "standardwebhooks";
+
+const webhook = new Webhook(process.env.QAWOLF_WEBHOOK_SECRET);
+const app = express();
+
+app.post(
+  "/qawolf/run-events",
+  express.raw({ type: "application/json", limit: "1mb" }),
+  async (req, res) => {
+    let request;
+    try {
+      request = webhook.verify(req.body, req.headers);
+    } catch {
+      return res.sendStatus(401);
+    }
+    await storeEvents(request.events);
+    res.sendStatus(204);
+  },
+);
+```
+
+Replace `storeEvents` with your own code that saves the events for processing. Set `QAWOLF_WEBHOOK_SECRET` to the signing secret, including its `whsec_` prefix.
+
+To verify without a library, join `webhook-id`, `webhook-timestamp` and the raw body with a `.` between each. Compute an HMAC-SHA256 of the result, keyed with the base64-decoded part of the secret after `whsec_`. Compare its base64 form, in constant time, with each space-separated `v1,` entry in `webhook-signature`. Reject the request when `webhook-timestamp` is more than 5 minutes from your current time, which stops an old request from being replayed. QA Wolf signs a request again each time it retries it after a failed delivery, so a retried request carries a recent timestamp.
+
+Example:
+
+```javascript
+import { createHmac, timingSafeEqual } from "node:crypto";
+
+export function isSignedByQaWolf({ body, headers, secret }) {
+  const id = headers["webhook-id"];
+  const timestamp = headers["webhook-timestamp"];
+  const signatures = headers["webhook-signature"];
+  if (!id || !timestamp || !signatures) return false;
+
+  const sentAt = Number(timestamp);
+  const now = Math.floor(Date.now() / 1000);
+  if (!Number.isInteger(sentAt) || Math.abs(now - sentAt) > 5 * 60) {
+    return false;
+  }
+
+  const key = Buffer.from(secret.slice("whsec_".length), "base64");
+  const expected = createHmac("sha256", key)
+    .update(`${id}.${timestamp}.${body}`)
+    .digest();
+
+  return signatures.split(" ").some((entry) => {
+    const [version, signature] = entry.split(",");
+    if (version !== "v1" || !signature) return false;
+    const received = Buffer.from(signature, "base64");
+    return (
+      received.length === expected.length &&
+      timingSafeEqual(received, expected)
+    );
+  });
+}
+```
+
+## Events
+
+Every event has a `type`, a `version` and a `data` object. `version` is `1`. Ignore fields you don't recognize. Skip any event whose `version` or `type` you don't recognize, and keep processing the rest of the request. Don't reject the whole request because of one such event, and if you validate events against a schema, validate each event on its own. A rejected request is a failed delivery, so QA Wolf retries it, and after 8 hours the webhook turns off.
+
+- **`run.status-changed`** — a run's status changed.
+- **`flow.status-changed`** — the status of one flow in a run changed.
+
+Each event carries the whole status history of its run or flow, so one event can report several changes. Act on the latest status rather than expecting one event per change.
+
+Fields of `data` in both event types:
+
+| Field | Description |
+| --- | --- |
+| `runId` | The run's ID, the same `runId` the public API takes. |
+| `statuses` | The status history, oldest first. Each entry has a `status` and an ISO 8601 `timestamp`. Always has at least one entry. See [Statuses](#statuses). |
+| `environmentId` | The ID of the environment the run ran in. |
+| `environmentName` | The environment's name when the run started, up to 500 characters. |
+| `git` | What QA Wolf knows about the deployed commit: `branch`, `commitMessage` (up to 1,000 characters), `commitSha` and `commitUrl`. Each is absent when unknown, so `git` can be an empty object. |
+| `triggerId` | The ID of the trigger that started the run. Absent when no trigger started it. |
+| `triggerName` | The trigger's name when the run started, up to 500 characters. Absent when no trigger started the run. |
+| `url` | A link to the run in QA Wolf. In a `flow.status-changed` event, a link to this flow's result in the run. |
+
+Fields of `data` in `flow.status-changed` only:
+
+| Field | Description |
+| --- | --- |
+| `flowId` | The flow's ID, the same ID the public API uses for flows. |
+| `name` | The flow's name when the run started, or when this flow was rerun, up to 500 characters. |
+
+Names don't change when you rename an environment, trigger or flow later. Match on `environmentId`, `triggerId` and `flowId` instead.
+
+## Statuses
+
+A flow's `statuses` use these values:
+
+- **`queued`** — waiting to start.
+- **`running`** — running. QA Wolf retries a failing flow automatically within the run, and those retries add no statuses.
+- **`passed`** — passed, or was marked as passing.
+- **`failed`** — failed its last automatic attempt, or was marked failed because of a flow it depends on or must run with (see [Run Rules](/Run-Rules)).
+- **`canceled`** — stopped before it finished.
+
+A run's `statuses` use the same values, plus:
+
+- **`superseded`** — a newer run replaced this one before it finished. Its unfinished flows end `canceled`.
+
+A run ends `passed` when every flow that counts passed, `failed` when any of them failed, and `canceled` when none count or the whole run was canceled. Canceled flows don't count, and neither do flows marked failed without running because a flow they depend on was canceled.
+
+A run whose flows had all finished before a newer run replaced it keeps the `passed` or `failed` it already sent. It doesn't change to `superseded`.
+
+These statuses report execution. The public API's `run.get` reports QA Wolf's verdict instead, which takes investigations and bugs into account, so the two can differ for the same run.
+
+A status history can continue after a final status:
+
+- A run's `passed` or `failed` can be followed by `running` when you rerun flows or mark a flow as passing, and then by a new final status.
+- A flow marked as passing adds `passed` after its `failed`.
+- A rerun flow keeps its `runId` and `flowId`. The `statuses` of its next event start again at `queued`, with timestamps after the last status of the earlier execution.
+
+## Repeated and out-of-order events
+
+Events of different runs and flows can arrive in any order relative to each other. The same event can also arrive more than once, for example when your endpoint answers after the 10 seconds and QA Wolf sends the request again.
+
+To handle both, remember the newest event you've processed for each run and each flow, and ignore any event that isn't newer. Identify a run by `runId`, and a flow by `runId` and `flowId` together. Compare two events for the same run or flow by, in order:
+
+1. The timestamp of their first status. A rerun flow's history starts again, later than the earlier execution's.
+2. The timestamp of their latest status.
+3. Their number of statuses, because several statuses can share a timestamp.
+
+A repeated event isn't newer, so this rule ignores it too.
+
+Example:
+
+```javascript
+const processed = new Map();
+const knownTypes = new Set(["run.status-changed", "flow.status-changed"]);
+
+function entityKey(event) {
+  return event.type === "flow.status-changed"
+    ? `flow:${event.data.runId}:${event.data.flowId}`
+    : `run:${event.data.runId}`;
+}
+
+function positionOf(event) {
+  const { statuses } = event.data;
+  return [
+    Date.parse(statuses[0].timestamp),
+    Date.parse(statuses.at(-1).timestamp),
+    statuses.length,
+  ];
+}
+
+function isNewer(current, previous) {
+  if (previous === undefined) return true;
+  for (const [index, value] of current.entries()) {
+    if (value !== previous[index]) return value > previous[index];
+  }
+  return false;
+}
+
+async function processEvents(events) {
+  for (const event of events) {
+    if (event.version !== 1 || !knownTypes.has(event.type)) continue;
+    const key = entityKey(event);
+    const current = positionOf(event);
+    if (!isNewer(current, processed.get(key))) continue;
+
+    const { status } = event.data.statuses.at(-1);
+    if (event.type === "run.status-changed" && status === "failed") {
+      await alertOnCall(event.data);
+    }
+    processed.set(key, current);
+  }
+}
+```
+
+Replace `alertOnCall` with your own code. The example records an event as processed only after acting on it, so an event whose alert fails is processed again on the next try. Keep what you've processed somewhere that survives a restart, such as your database, and process stored events one batch at a time.
+
+<Note>
+  Events carry no ID of their own, and `webhook-id` can't stand in for one. It is a SHA-256 hash of the run and flow IDs in the request and their statuses. A resend of exactly the same events carries the same `webhook-id`, but the same event can also arrive in a different request, with a different `webhook-id`.
+</Note>
+
+## Retries and turning off
+
+After a failed delivery, QA Wolf tries again after 5 seconds, then 5 minutes, then 30 minutes, then every hour. How QA Wolf handles each answer from your endpoint:
+
+- **`2xx`** — delivered.
+- **`410`** — QA Wolf turns the webhook off at once.
+- **`413`** — QA Wolf halves the number of events per request and tries again. A single event your endpoint still refuses as too large is a failed delivery.
+- **`429`, or `503` with a `Retry-After` header** — a failed delivery. QA Wolf waits as long as `Retry-After` asks, between 5 seconds and 1 hour, instead of following the schedule.
+- **Anything else** — a failed delivery. This covers every other status, no answer within 10 seconds, and a connection, DNS or TLS failure. QA Wolf retries a connection, DNS or TLS failure up to twice within a few seconds, with the same signature, before it counts as a failed delivery.
+
+While your endpoint is failing, new events wait and QA Wolf keeps only the newest event for each run, and for each execution of a flow. If more than about 1 MB of events is waiting, QA Wolf drops the oldest flow events first, then the oldest run events. Once a delivery succeeds, QA Wolf sends everything waiting, up to 100 events per request.
+
+If deliveries keep failing for 8 hours, QA Wolf turns the webhook off. Any successful delivery restarts the 8 hours. QA Wolf also turns the webhook off at once if your URL resolves to a private or internal address when it sends.
+
+<Warning>
+  QA Wolf doesn't skip an event that your endpoint keeps rejecting. Every request that carries it fails instead, and after 8 hours the webhook turns off. Answer `2xx` for any event you can't process, and handle it on your side.
+</Warning>
+
+When the webhook turns off, QA Wolf drops the events that were waiting and doesn't send them later. The **Run events webhook** section shows when it turned off and why, with a **Turn back on** button that keeps your URL. QA Wolf sends no other notice. After you turn it back on, the next event for each run or flow carries its whole status history.
+
+## Which runs send events
+
+Whether a run sends events is decided when it starts. A run that started while the webhook had no URL or was off never sends events, even when you rerun its flows or mark one as passing later.
+
+If you clear the URL or the webhook turns off while a run is in progress, that run's status changes aren't sent. If you save a URL or turn the webhook back on before the run ends, its later status changes are sent.
+
+## Where requests come from
+
+QA Wolf doesn't send requests from a fixed set of IP addresses, so you can't allowlist them by address. Verify the signature to confirm that a request came from QA Wolf.

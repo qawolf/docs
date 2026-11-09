@@ -51,6 +51,8 @@ export default flow(
   iOS and Android use `driver.$(...)` calls instead of `page` calls.
 </Note>
 
+In the Assert step, a failed `expect` stops the flow. To check several independent values and see every failure, use `expect.soft`. See [Keep a flow going past a failed check](/soft-checks).
+
 ## Import statement
 
 Import from the `@qawolf/flows` subpath that matches the platform you are testing.

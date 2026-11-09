@@ -1,14 +1,16 @@
 ---
 title: "v0/run-inputs-executables-signed-urls"
-description: "Generate a signed URL and upload an executable file to QA Wolf."
-sidebarTitle: "Upload a build"
+description: "Generate a signed URL and upload an app file to QA Wolf with the legacy v0 endpoint, still the path for Windows and Linux app files and zipped apps."
+sidebarTitle: "Upload a build (legacy)"
 ---
 
 `GET https://app.qawolf.com/api/v0/run-inputs-executables-signed-urls`
 
-<Tip>
-  If your build server supports `node`, use [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.
-</Tip>
+<Warning>
+  Deprecated for Android and iOS builds. Upload them as [builds](/upload-builds) instead, so every run records which build it tested. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). This endpoint keeps working, and it is still the way to upload Windows and Linux app files. A zipped app that is not an `.ipa` also stays on this path for now.
+</Warning>
+
+For Windows and Linux app files from Node.js, use [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference) instead of calling this endpoint directly.
 
 This endpoint accepts app builds only: `.aab`, `.apk`, `.appimage`, `.deb`, `.exe`, `.ipa`, `.msi`, `.rpm`, and `.zip`. A file your flows read, such as a `.csv` or `.pdf`, returns a `400`. Upload it to [team storage](/use-files-in-flows#upload-a-file) instead.
 
@@ -71,7 +73,8 @@ Plus the [common response codes](/rest-overview#common-response-codes).
 
 ## Related
 
-- [Mobile build testing](/mobile-build-testing)
+- [Legacy build uploads](/legacy-build-uploads)
+- [Upload builds](/upload-builds) — upload an Android or iOS build.
 - [Testing Windows desktop apps](/windows-desktop#test-every-new-build-from-ci)
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
 - [Webhook](/deployment-testing/webhook) — reporting the deploy that starts the runs.

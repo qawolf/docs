@@ -1,32 +1,36 @@
 ---
 title: "PR testing"
-description: "Run your flows on every pull request, against its preview deploy, with the result reported as checks on the pull request."
+description: "Run your flows on every pull request, against its preview deploy, with the result reported on the pull request."
 sidebarTitle: "PR testing"
 keywords: "PR testing, pull request testing, merge request testing, preview environment, QA Wolf Test Results, status check"
 ---
 
-PR testing runs your flows against a pull request's preview deploy and reports the result as checks on the pull request. GitLab calls them merge requests; the feature is the same.
+PR testing runs your flows against a pull request's preview deploy and reports the result on the pull request. GitLab calls them merge requests; the feature is the same.
 
 ## What it needs
 
 - **A connected GitHub or GitLab integration covering the deploying repository.** This is what ties a deploy to its pull request. Connect it under **Workspace settings → Integrations**; see [GitHub](/deployment-testing/github) or [GitLab](/deployment-testing/gitlab).
-- **A preview deploy per pull request**, with its own environment name and its own URL, marked as a preview. See [Deployments](/triggers/deployments#previews).
+- **A preview deploy per pull request**, with its own environment name and its own URL. Mark it as a preview so its environment is torn down when the pull request closes. See [Deployments](/triggers/deployments#previews).
 - **A deployment trigger matching those previews**, such as `preview/*` or `review/*`. See [Triggers](/triggers/overview).
 
 ## Without a connected repository
 
-A deploy from a repository QA Wolf cannot read still runs: the deployment is accepted, the trigger matches, and the flows run against the preview. It is not linked to a pull request, so no checks are posted and a [Smart Smoke Suite](/smart-smoke-suites) skips it. Nothing reports the gap.
+A GitHub or GitLab deployment from a repository the integration doesn't cover never reaches QA Wolf, so nothing runs.
 
-This applies to Bitbucket, Azure DevOps and any other code host, to a GitHub or GitLab repository outside the installation, and to a `deployment.reportStatus` report that names `metadata.pullRequestNumber` for a repository with no integration.
+A `deployment.reportStatus` report is different. For a repository with no integration, it's still accepted, triggers match, and the flows run against the preview. QA Wolf can't link the deploy to a pull request or post checks, and a [Smart Smoke Suite](/smart-smoke-suites) skips it with the reason `no-pull-request`. Nothing reports the missing checks.
+
+This is the path for Bitbucket, Azure DevOps and any other code host.
 
 ## Checks on the pull request
 
-QA Wolf posts two checks against the deployed commit:
+On GitHub, QA Wolf posts two checks against the deployed commit:
 
 - **QA Wolf Test Run** — the run's progress.
 - **QA Wolf Test Results** — the outcome.
 
-To gate merges on QA Wolf, require **QA Wolf Test Results** in your branch protection rules or ruleset.
+On GitLab, it posts one commit status, **QA Wolf Test Results**.
+
+To gate merges on QA Wolf, require **QA Wolf Test Results** in your branch protection rules or ruleset. **QA Wolf Test Run** passes whenever the run finishes, so don't require it.
 
 <Note>
   A workspace still on legacy triggers is documented under [PR testing on GitHub](/legacy-triggers/PR-testing-for-GitHub-Integrations) and [PR testing on GitLab](/legacy-triggers/PR-testing-for-GitLab-Integrations).

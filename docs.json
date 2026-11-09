@@ -658,10 +658,6 @@
       "destination": "/legacy-triggers/GitLab"
     },
     {
-      "source": "/triggers/migrate-from-legacy-triggers",
-      "destination": "/triggers/overview"
-    },
-    {
       "source": "/anatomy-of-a-qa-wolf-test-mobile-edition",
       "destination": "/anatomy-of-a-flow"
     },
@@ -731,7 +727,9 @@
               "test-automation",
               "agent-in-your-tools",
               "custom-skills",
-              "qawolf-mcp"
+              "clone-with-git",
+              "qawolf-mcp",
+              "mcp-connections"
             ]
           },
           {
@@ -740,7 +738,9 @@
               "triggers/overview",
               "smart-smoke-suites",
               "Run-Rules",
-              "tags"
+              "concurrency-limits",
+              "tags",
+              "run-events-webhooks"
             ]
           },
           {
@@ -920,6 +920,7 @@
             "group": "Flow conventions",
             "pages": [
               "anatomy-of-a-flow",
+              "soft-checks",
               "lint-rules"
             ]
           },
@@ -968,6 +969,7 @@
             "pages": [
               "libraries/cli/api-reference/index",
               "libraries/cli/api-reference/commands",
+              "libraries/cli/drive-a-runner",
               "libraries/cli/api-reference/environment-variables",
               "libraries/cli/troubleshooting"
             ]
@@ -993,7 +995,8 @@
             "group": "Triggers",
             "pages": [
               "triggers/reference",
-              "triggers/deployments"
+              "triggers/deployments",
+              "triggers/migrate-from-legacy-triggers"
             ]
           },
           {
@@ -1019,14 +1022,22 @@
                 "group": "Deployment testing",
                 "pages": [
                   "deployment-testing/pr-testing",
-                  "deployment-testing/github",
+                  {
+                    "group": "GitHub",
+                    "pages": [
+                      "deployment-testing/github",
+                      "deployment-testing/github-actions"
+                    ]
+                  },
                   "deployment-testing/gitlab",
                   "deployment-testing/webhook",
                   "deployment-testing/ci-sdk",
                   "deployment-testing/circle-ci"
                 ]
               },
-              "mobile-build-testing"
+              "mobile-build-testing",
+              "upload-builds",
+              "legacy-build-uploads"
             ]
           },
           {

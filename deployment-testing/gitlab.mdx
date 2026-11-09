@@ -5,7 +5,7 @@ sidebarTitle: "GitLab"
 keywords: "GitLab environments, deployment job, review apps, notify QA Wolf on deploy, PR testing, group access token, merge request"
 ---
 
-A [GitLab environment](https://docs.gitlab.com/ci/environments/) represents a deployment target for your application, such as development, staging or production. A **deployment job** — a job carrying the [`environment` keyword](https://docs.gitlab.com/ci/yaml/) — creates a **deployment** under that environment when it succeeds.
+A [GitLab environment](https://docs.gitlab.com/ci/environments/) represents a deployment target for your application, such as development, staging or production. A **deployment job** — a job carrying the [`environment` keyword](https://docs.gitlab.com/ci/yaml/) — creates a **deployment** under that environment. QA Wolf acts on the deployment once it succeeds.
 
 QA Wolf receives those deployments through the connected integration, and a [trigger](/triggers/overview) decides which flows run for each one.
 
@@ -27,7 +27,7 @@ QA Wolf receives those deployments through the connected integration, and a [tri
 
 ## Give your deployment job an environment
 
-A deployment job needs nothing beyond the `environment` keyword. GitLab creates the deployment itself, and the webhook fires when the job succeeds.
+A deployment job needs nothing beyond the `environment` keyword. GitLab creates the deployment itself and sends QA Wolf its status. QA Wolf acts on `success` and ignores the rest.
 
 ```yaml
 deploy-staging:
@@ -47,6 +47,8 @@ A GitLab deployment carries no slot for per-deploy environment variables, so run
 ## Review apps
 
 For [PR testing](/deployment-testing/pr-testing), a [review app](https://docs.gitlab.com/ci/review_apps/) names its environment and `url` per merge request. GitLab has no transient flag, so the `review/` prefix is what marks the environment as a preview; a preview named under any other prefix is created as a permanent environment.
+
+On GitLab, QA Wolf reports the result as one commit status, **QA Wolf Test Results**, and a [Smart Smoke Suite](/smart-smoke-suites) reads only the merge request's title and description.
 
 ```yaml
 environment:

@@ -1,0 +1,81 @@
+---
+title: "Concurrency limits"
+description: "Cap how many flows in a run execute at once, with a fixed number or an expression that reacts to failures."
+keywords: "concurrency, concurrency limit, run concurrency, dynamic concurrency, concurrency expression, throttle, parallelism, runConcurrencyLimit"
+---
+
+A concurrency limit caps how many flows in a run execute at the same time. Set it to protect an environment that slows down or fails under load. See [Prepare environments for QA Wolf](/prepare-environments-for-qa-wolf) for sizing guidance.
+
+## Where to set a limit
+
+- **Environment** — in **Settings > Environments**, open an environment and set **Run concurrency**. Leave it empty for no limit. Every run in the environment uses this limit unless its trigger sets one.
+- **Trigger** — in the trigger editor, set **Concurrency limit**. Leave it empty to use the environment's limit. Through the API, this is the [`runConcurrencyLimit`](/triggers/reference) field.
+
+A trigger's limit replaces the environment's limit rather than capping below it, so a trigger can raise the limit as well as lower it.
+
+## Value formats
+
+A limit takes one of three forms:
+
+- **A whole number** — from 1 to 1000, such as `40`.
+- **No limit** — an empty field, or `unlimited` through the API. QA Wolf still caps a run at 1000 flows at once.
+- **An expression** — a formula QA Wolf evaluates while the run executes, such as `firstAttemptsFailureRate > 0.1 ? 5 : 20`.
+
+## Expressions
+
+An expression lets a run slow down when flows start failing, and speed back up when they pass. QA Wolf evaluates it again each time it starts more flows, using the run's results so far.
+
+### Variables
+
+- **`attemptFailureRate`** — the share of completed attempts in the run that failed, from 0 to 1.
+- **`firstAttemptsFailureRate`** — the share of completed first attempts that failed.
+- **`secondAttemptsFailureRate`** — the share of completed second attempts that failed.
+- **`thirdAttemptsFailureRate`** — the share of completed third attempts that failed.
+- **`secondAttemptsStarted`** — whether any flow has started a second attempt.
+- **`thirdAttemptsStarted`** — whether any flow has started a third attempt.
+- **`failedAttemptsCount`** — the number of failed attempts in the run.
+- **`passedAttemptsCount`** — the number of passed attempts in the run.
+
+A failure rate counts only attempts that passed or failed. It is 0 until at least one attempt completes. In arithmetic, `true` counts as 1 and `false` as 0.
+
+### Operators and functions
+
+- **Arithmetic** — `+`, `-`, `*`, `/`, `%`, `**`.
+- **Comparison** — `<`, `<=`, `>`, `>=`, `==`, `!=`, `===`, `!==`.
+- **Logic** — `&&`, `||`, `!`, `??`.
+- **Conditional** — `condition ? whenTrue : whenFalse`.
+- **Functions** — `min(...)` and `max(...)`.
+
+Expressions accept only numbers, the variables above and these operators. QA Wolf rejects anything else when you save, including strings, `Math.min` and other functions.
+
+### Examples
+
+Drop to 5 flows at once when more than 10% of first attempts fail:
+
+```javascript
+firstAttemptsFailureRate > 0.1 ? 5 : 20
+```
+
+Step down in two stages as the overall failure rate rises:
+
+```javascript
+attemptFailureRate > 0.75 ? 1 : attemptFailureRate > 0.5 ? 5 : 20
+```
+
+Start at 50, drop to 20 once any flow starts a second attempt, and drop to 10 once any flow starts a third:
+
+```javascript
+thirdAttemptsStarted ? 10 : secondAttemptsStarted ? 20 : 50
+```
+
+Start at 20 and lose one slot per failed attempt, never going below 5:
+
+```javascript
+max(5, 20 - failedAttemptsCount)
+```
+
+<Tip>
+  Wrap an expression that can shrink in `max(1, ...)` so the run always keeps at least one flow running.
+</Tip>
+
+If you need a variable that is not listed here, contact your Customer Success Manager.
