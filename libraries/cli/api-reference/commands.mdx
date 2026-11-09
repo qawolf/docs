@@ -77,6 +77,7 @@ Examples:
 ```bash
 qawolf flows run
 qawolf flows run "flows/checkout/**"
+qawolf flows run --tag auth --env staging
 qawolf flows run checkout --env <env_id> --headed
 ```
 
@@ -85,7 +86,7 @@ Options:
 - `--retries <n>` — number of retries for each failing flow. Default: `0`.
 - `--bail` — stop after the first failure. Default: `false`.
 - `--workers <n>` — parallel worker count for web flows. Default: `1`. Android flows must run with `--workers 1`; the CLI errors out if Android flows are selected with a higher value.
-- `--timeout <ms>` — default timeout for actions and assertions, in milliseconds.
+- `--timeout <ms>` — default timeout for actions and assertions, in milliseconds. Default: `30000`.
 - `--junit [path]` — write a JUnit XML report. With no value, writes to `<output-dir>/junit-report.xml`. Pass an explicit path to override.
 - `--video <mode>` — `on`, `off`, or `retain-on-failure`. Default: `off`.
 - `--trace <mode>` — Playwright trace mode. `on`, `off`, or `retain-on-failure`. Default: `off`.
@@ -93,9 +94,14 @@ Options:
 - `--har-content <mode>` — `omit` or `full`. `full` includes response bodies and uses more memory. Default: `omit`.
 - `--output-dir <path>` — directory for run artifacts (videos, traces, HAR). Default: `.qawolf/output`.
 - `--headed` — show the browser window instead of running headless. Default: `false`.
-- `--env <env_id>` — environment ID. When set, the CLI pulls missing flows before the run. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
+- `--env <env>` — the id or alias of an environment. When set, the CLI pulls missing flows before the run. If the platform can't be reached, it runs the flows already pulled. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
+- `--tag <name>` — run only the flows carrying this tag. Repeat it to run flows carrying any of several tags. Without `--env`, matches against the tags the last `flows pull` cached.
+- `--all-envs` — when a tag matches flows in more than one pulled environment, run every match instead of choosing one. Default: `false`.
+- `--allow-no-match` — exit `0` instead of `2` when the pattern selects no flow to run. Default: `false`.
+- `--deps <dir>` — use this prepared dependency directory instead of installing the runtime automatically. To move the managed runtime instead, set `QAWOLF_RUNTIME_DIR`.
+- `--no-browser-deps` — skip installing the operating system's browser dependencies, which on Linux needs root. The system libraries must already be installed.
 
-Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments or an unrecognized flow target. See [Exit codes](/libraries/cli/api-reference/index#exit-codes).
+Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for invalid arguments, an unrecognized flow target, or a pattern that selects no flow. See [Exit codes](/libraries/cli/api-reference/index#exit-codes).
 
 ### `flows list [pattern]`
 
@@ -106,28 +112,33 @@ Examples:
 ```bash
 qawolf flows list
 qawolf flows list "flows/checkout/**"
-qawolf flows list --remote
+qawolf flows list --remote --env staging
+qawolf flows list --env staging --tag auth
+qawolf flows list "**/checkout/**" --remote --env staging --include-drafts
 ```
 
 Options:
 
 - `--remote` — list flows from the QA Wolf platform instead of the local project. Default: `false`.
+- `--env <env>` — with `--remote`, the id or alias of the environment to list. Defaults to `QAWOLF_ENVIRONMENT`, or a picker in an interactive terminal. Without `--remote`, the slug or id of a pulled environment.
+- `--tag <name>` — list only the flows carrying this tag. Repeat it to list flows carrying any of several tags. Without `--remote`, matches against the tags the last `flows pull` cached.
+- `--include-drafts` — with `--remote`, include draft flows. Default: `false`.
 
 ### `flows pull`
 
-Downloads an environment's flows into the local `.qawolf/<env_id>/` cache.
+Downloads an environment's flows into the local `.qawolf/<env_id>/` cache. The directory takes the environment's ID even when you pass an alias.
 
 Examples:
 
 ```bash
-qawolf flows pull --env <env_id>
+qawolf flows pull --env staging
 qawolf flows pull --env <env_id> --out ./snapshot
-qawolf flows pull --env <env_id> --yes
+qawolf flows pull --env staging --yes
 ```
 
 Options:
 
-- `--env <env_id>` — required. The environment ID to pull from. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
+- `--env <env>` — the id or alias of the environment to pull from. Defaults to `QAWOLF_ENVIRONMENT`, or a picker in an interactive terminal. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
 - `--out <path>` — destination directory. Defaults to `.qawolf/<env_id>/`.
 - `--yes` — overwrite locally-modified files without prompting. Default: `false`.
 
@@ -142,6 +153,10 @@ qawolf install
 qawolf install "flows/checkout/**"
 ```
 
+Options:
+
+- `--no-browser-deps` — skip installing the operating system's browser dependencies, which on Linux needs root. The system libraries must already be installed.
+
 ### `install browsers [pattern]`
 
 Installs the Playwright browsers used by the project's web flows.
@@ -152,6 +167,10 @@ Examples:
 qawolf install browsers
 qawolf install browsers "flows/web/**"
 ```
+
+Options:
+
+- `--no-browser-deps` — skip installing the operating system's browser dependencies, which on Linux needs root. The system libraries must already be installed.
 
 ### `install android [pattern]`
 
@@ -181,7 +200,7 @@ Options:
 
 ## `init`
 
-Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. When no `package.json` exists, creates one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script. When one already exists, only adds the `test:e2e` script, after a prompt.
+Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. When no `package.json` exists, offers to create one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script that runs `qawolf flows run`. When one already exists, offers to add whichever of those it lacks.
 
 Examples:
 
@@ -192,7 +211,7 @@ qawolf init --yes
 
 Options:
 
-- `--yes` — overwrite existing files without prompting. Default: `false`.
+- `--yes` — overwrite existing files and make the `package.json` changes without prompting. Default: `false`.
 
 ## `doctor`
 
@@ -211,7 +230,7 @@ Options:
 
 ## `runner`
 
-Launches and drives a browser, an Android device, or an iOS device hosted by QA Wolf. Nothing runs on your machine. For a walkthrough, see [Drive a runner](/libraries/cli/drive-a-runner).
+Launches and drives a browser, an Android device, an iOS device, or a Windows desktop hosted by QA Wolf. Nothing runs on your machine. For a walkthrough, see [Drive a runner](/libraries/cli/drive-a-runner).
 
 Every subcommand except `launch` and `list` targets a runner in this order: `--runner <id>`, then the `QAWOLF_RUNNER_ID` environment variable, then the runner that `qawolf runner launch` stored for the current directory. If none of these names a runner, `run`, `act`, `actions`, and `exec` launch a new browser runner, which bills while it's up, and say so on stderr.
 
@@ -230,8 +249,8 @@ qawolf runner launch --id my-runner --name ios
 
 Options:
 
-- `--id <id>` — the runner's id, chosen by you. Launching an id that is already running reconnects to that runner instead of starting a second one. Without `--id`, the CLI generates a random id.
-- `--name <family>` — what the runner runs: `playwright` for a browser, `android`, or `ios`. Default: `playwright`.
+- `--id <id>` — the runner's id, chosen by you: up to 63 lowercase letters, digits, and dashes, starting and ending with a letter or digit. Launching an id that is already running reconnects to that runner instead of starting a second one. Without `--id`, the CLI generates a random id.
+- `--name <family>` — what the runner runs: `playwright` for a browser, `android`, `ios`, or `windows`. See [Windows desktop testing](/windows-desktop) before launching a Windows runner. Default: `playwright`.
 
 ### `runner list`
 
@@ -246,7 +265,7 @@ qawolf runner list --here
 
 Options:
 
-- `--here` — list only the runners launched from the current directory. Default: `false`.
+- `--here` — list only the runners launched from the current directory, or named by `QAWOLF_RUNNER_ID`. Default: `false`.
 
 ### `runner terminate`
 
@@ -282,7 +301,7 @@ qawolf runner keepalive --runner my-runner
 
 ### `runner run <flowFile>`
 
-Runs a flow on a runner. Sends the flow file, the files it imports, and your `package.json` and `tsconfig.json`. On an Android or iOS runner, the first run starts the device session, so run a flow before you take screenshots or act on it. The flow's `target` has to match what the runner runs.
+Runs a flow on a runner. Sends the flow file, the files it imports, and your `package.json` and `tsconfig.json`. On an Android, iOS, or Windows runner, the first run starts the device or desktop session, so run a flow before you take screenshots or act on it. The flow's `target` has to match what the runner runs.
 
 Examples:
 
@@ -290,16 +309,22 @@ Examples:
 qawolf runner run flows/checkout.flow.ts --follow
 qawolf runner run flows/checkout.flow.ts --lines 12-40 --follow
 qawolf runner run flows/checkout.flow.ts --env-id <env_id>
+qawolf runner run flows/checkout.flow.ts --env-var RUN_INPUT_PATH=uploads/app.apk
+qawolf runner run flows/checkout.flow.ts --builds <build_id> <build_id>
 ```
 
 Options:
 
 - `--follow` — wait for the run to finish and report its status. Exits `1` if the run did not pass. Default: `false`.
 - `--logs` — stream the run's log lines while following. Implies `--follow`.
-- `--env-id <env>` — the id or alias of the environment whose variables the run gets. Defaults to `QAWOLF_ENVIRONMENT`.
-- `--env-file <path>` — a dotenv file whose variables the run gets. Pass this or `--env-id`, not both.
-- `--lines <start-end>` — run only these lines against the runner's current page, instead of the whole flow.
-- `--lines-file <path>` — the file `--lines` refers to, such as a page object. Defaults to `<flowFile>`.
+- `--run-events` — stream the run's progress events as JSON lines while following. Implies `--follow`.
+- `--recorder-events` — stream the browser actions the runner records as JSON lines while following. The recorder covers the whole runner, so the stream starts just before the run is submitted. Implies `--follow`.
+- `--env-id <env>` — the id or alias of the environment whose variables the run gets. Defaults to `QAWOLF_ENVIRONMENT` unless you pass `--env-file`.
+- `--env-file <path>` — a dotenv file whose variables the run gets. With `--env-id`, its variables go on top of the environment's.
+- `--env-var <name=value>` — one variable for this run only, on top of the environment and `--env-file`. Repeat it for several. `--var` is an alias.
+- `--builds <ids...>` — builds to install in this run, one per app and platform. Each replaces the environment's latest build of its app and platform. Put the flow file before this flag.
+- `--lines <start-end>` — run only these lines, counted from 1, against the runner's current page, instead of the whole flow.
+- `--lines-file <path>` — the file `--lines` refers to, such as a page object. Requires `--lines`. Defaults to `<flowFile>`.
 - `--timeout <seconds>` — stop following after this long. Default: `3600`.
 
 ### `runner events <stream>`
@@ -338,16 +363,17 @@ qawolf runner screenshot --out step-1.jpg
 
 Options:
 
-- `--out <path>` — the file to write. `-` writes the image to stdout. Default: `screenshot.jpg`.
+- `--out <path>` — the file to write. `-` writes the image to stdout and moves the confirmation, JSON included, to stderr. Default: `screenshot.jpg`.
 
 ### `runner act <action>`
 
-Performs one action on the runner's screen. A browser runner takes `click`, `double_click`, `scroll`, `move`, `drag`, `keypress`, `navigate`, and `type`. A mobile runner takes `tap`, `swipe`, `fill`, and `type`.
+Performs one action on the runner's screen. A browser runner takes `click`, `double_click`, `scroll`, `move`, `drag`, `keypress`, `navigate`, and `type`. A mobile runner takes `tap`, `swipe`, `fill`, and `type`. Use `-` as the action to read a whole action as JSON from stdin.
 
 Examples:
 
 ```bash
 qawolf runner act click --button left --x 480 --y 260 --screenshot step-2.jpg
+qawolf runner act scroll --x 480 --y 260 --scroll-y 600
 qawolf runner act tap --selector '//*[@content-desc="Continue"]'
 qawolf runner act swipe --from 540,1600 --to 540,600 --duration-ms 1500
 ```
@@ -357,28 +383,32 @@ Options:
 - `--x <pixels>`, `--y <pixels>` — the point to act on, in screenshot pixels.
 - `--selector <selector>` — `tap` or `fill`: the element to act on. `tap` takes it in place of `--x` and `--y`.
 - `--strategy <strategy>` — how `--selector` is resolved: `xpath`, `ios-predicate`, or `shadow`. Default: `xpath`.
-- `--text <text>` — `type`: the text to type. `fill`: the field's new value.
+- `--text <text>` — `type`: the text to type into what has focus. `fill`: the field's new value.
 - `--from <x,y>`, `--to <x,y>` — `swipe`: the start and end points.
 - `--duration-ms <ms>` — `swipe`: how long it takes, up to `10000`.
-- `--button <button>` — `click`: `left`, `right`, `wheel`, `back`, or `forward`.
+- `--scroll-x <delta>`, `--scroll-y <delta>` — `scroll`: the horizontal and vertical wheel deltas. The one you leave out is `0`.
+- `--path <json>` — `drag`: a JSON array of the points to drag through.
+- `--button <button>` — `click`: `left`, `right`, `wheel`, `back`, or `forward`. Default: `left`.
 - `--keys <keys...>` — `keypress`: modifiers and the key, for example `Control a`.
-- `--url <url>` — `navigate`: the URL to go to.
-- `--screenshot <path>` — also save a screenshot taken after the action.
+- `--url <url>` — `navigate`: the http or https URL to go to.
+- `--screenshot <path>` — also save a screenshot taken after the action, even when the action did not take effect. `-` writes it to stdout and moves the confirmation, JSON included, to stderr.
 
 ### `runner actions <sequence>`
 
 Performs up to ten actions in one request, as a JSON array of the actions `runner act` takes. Use `-` to read the array from stdin.
 
-Example:
+Examples:
 
 ```bash
 qawolf runner actions '[{"type":"tap","x":540,"y":900},{"type":"type","text":"someone@example.com"}]' --screenshot after.jpg
+qawolf runner actions '[{"type":"click","button":"left","x":480,"y":260},{"type":"type","text":"hello"}]' --screenshot-mode each --screenshot step.jpg
 ```
 
 Options:
 
-- `--screenshot <path>` — save a screenshot taken after the last action.
-- `--continue-on-failure` — carry on past an action that did not take effect. Default: `false`.
+- `--screenshot <path>` — save a screenshot taken after the last action. `-` writes it to stdout and moves the confirmation to stderr.
+- `--screenshot-mode <mode>` — `none`, `final`, or `each`. `each` saves one screenshot per action, with the action's index before the extension: `step-0.jpg`, `step-1.jpg`, and so on. Default: `final` with `--screenshot`, `none` without it.
+- `--continue-on-failure` — carry on past an action that reached the runner but did not take effect. A runner that can't be reached still ends the sequence. Default: `false`.
 
 ### `runner exec <file>`
 
@@ -414,13 +444,13 @@ qawolf runner inspect elements --text "Sign in" --partial
 
 Subcommands:
 
-- `element-html` — browser only. The HTML of the first element `--selector` matches.
-- `page-html` — browser only. The page's HTML, simplified.
+- `element-html` — browser only. The HTML of the first element the required `--selector` matches.
+- `page-html` — browser only. The page's HTML, simplified. `--selector` limits it to one subtree.
 - `variable` — a top-level variable from the running flow, named by `--name`.
 - `session` — mobile only. Whether the Appium session is ready.
 - `contexts` — mobile only. The WebView contexts available, and which one is current.
-- `page-source` — mobile only. The current context's page source.
-- `elements` — mobile only. The elements at `--x` and `--y`, carrying `--text`, or matching `--selector`.
+- `page-source` — mobile only. The current context's page source, or another context's with `--context <name>`.
+- `elements` — mobile only. The elements at `--x` and `--y`, carrying `--text`, or matching `--selector`. `--partial` matches text that contains `--text`. `--strategy` resolves `--selector` the way it does for `runner act`, and `--context <name>` reads another context.
 
 ### `runner import-package <name>`
 
@@ -469,7 +499,7 @@ Options:
 
 ### `runner record`
 
-Controls video recording on a browser runner.
+Controls video recording on a browser, mobile, or Windows runner. Run a flow first, so the runner has a screen to record.
 
 Examples:
 
@@ -482,8 +512,8 @@ qawolf runner record auto on
 
 Subcommands:
 
-- `start` — start recording across runs. Returns the recording's id.
-- `stop <recording-id>` — stop that recording and publish it.
+- `start` — start recording across runs, and pause automatic recording until you stop it. Returns the recording's id. `--recording-id <uuid>` sets the id; reuse it when you retry a start.
+- `stop <recording-id>` — stop that recording and publish it. Exits `1` if the published recording failed.
 - `status` — show the active recording and the automatic recording setting.
 - `auto <on|off>` — turn automatic recording of later full runs on or off.
 
@@ -564,22 +594,27 @@ Triggers and manages runs on the QA Wolf platform. Unlike the local execution co
 
 ### `run create`
 
-Creates a run on the QA Wolf platform.
+Creates a run on the QA Wolf platform for the flows and tags you select. Pass `--flow-ids`, `--tag-names`, or both.
 
 Examples:
 
 ```bash
-qawolf run create --environment-id <env_id>
+qawolf run create --environment-id <env_id> --tag-names smoke
 qawolf run create --environment-id <env_id> --flow-ids <flow_id>... --environment-variables KEY=VALUE
+qawolf run create --environment-id <env_id> --tag-names smoke --repository acme/web --pull-request-number 42
 ```
 
 Options:
 
-- `--builds <build_id>...` — builds to install in this run only, in place of the environment's latest build of the same app and platform. See [Test a build in one run](/upload-builds#test-a-build-in-one-run).
-- `--environment-id <env>` — the id or alias of the environment to run. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
-- `--environment-variables <KEY=VALUE...>` — environment variables to set for the run.
-- `--flow-ids <flow_id>...` — limit the run to specific flow IDs.
+- `--environment-id <env>` — required. The id or alias of the environment to run. Defaults to `QAWOLF_ENVIRONMENT`. See [where to find it](/local-execution/run-flows-locally#pull-an-environment).
+- `--flow-ids <flow_id>...` — the flows to run, by ID.
+- `--tag-names <tag>...` — run the flows carrying these tags.
+- `--builds <build_id>...` — up to 20 builds to install in this run only, in place of the environment's latest build of the same app and platform. See [Test a build in one run](/upload-builds#test-a-build-in-one-run).
+- `--environment-variables <KEY=VALUE...>` — environment variables for this run only, on top of the environment's own.
 - `--ignore-rules` — ignore the workspace's sequencing rules. By default they're honored: the flows your selection depends on are added to the run, and flows run in the order the rules require.
+- `--repository <owner/name>` — the repository to associate with the run, such as `acme/web`.
+- `--pull-request-number <number>` — with `--repository`, the pull request to associate with the run.
+- `--workspace-id <id>` — the workspace the environment belongs to, which an alias resolves in.
 
 ## `attempt`
 
