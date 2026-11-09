@@ -1,6 +1,6 @@
 ---
 title: "Glossary"
-description: "Definitions of key QA Wolf terms including workspaces, environments, groups, flows, runs, coverage outlines, and coverage maps."
+description: "Definitions of key QA Wolf terms including workspaces, environments, builds, groups, flows, runs, coverage outlines, and coverage maps."
 ---
 
 ## Workspace
@@ -12,6 +12,10 @@ A **workspace** is the top-level container in the QA Wolf platform. All environm
 Under each workspace is an **environment**, which corresponds to a specific version of your app, such as development, staging, or production.
 
 Each environment can be configured with separate variables (e.g., base URL, users, etc.), concurrency rates, and other settings relevant to the version of the application you're testing. Flows and tests are unique for each environment and not shared between environments.
+
+## Build
+
+A **build** is an iOS `.ipa`, or an Android `.apk` or `.aab`, that you upload to QA Wolf. Mobile flows install a build of your app rather than opening a URL, and each run records which build it installed. See [Upload builds](/upload-builds).
 
 ## Flow
 

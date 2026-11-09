@@ -8,3 +8,21 @@ import { ConnectAgent } from "/snippets/connect-agent.jsx";
 Connect QA Wolf to the coding agent you already use, then paste a prompt — the agent explores your app, writes the test, and runs it.
 
 <ConnectAgent />
+
+## Test a mobile app
+
+The prompt above tests a website. For an iOS or Android app, the QA Wolf agent works from a build of the app instead: an `.ipa` for iOS, or an `.apk` or `.aab` for Android.
+
+<Steps>
+  <Step title="Send the agent your build">
+    In the [QA Wolf platform](https://app.qawolf.com), attach the build to a message to the QA Wolf agent.
+  </Step>
+  <Step title="Ask for a sign-in test">
+    Ask the agent to create a test that signs in to your app. It opens the app on an iOS or Android device, explores it, and writes the flow. You can watch the device while it works.
+  </Step>
+  <Step title="Test every new build">
+    Have your pipeline upload each new build and report it to QA Wolf. A [trigger](/triggers/overview) then runs your flows against that build. See [Mobile build testing](/mobile-build-testing).
+  </Step>
+</Steps>
+
+A coding agent connected to the QA Wolf MCP can also upload a build and run your mobile flows against it. [Upload builds](/upload-builds) lists every way to get a build into QA Wolf.

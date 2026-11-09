@@ -22,6 +22,10 @@ You create and edit triggers on the workspace's triggers page, or through the pu
 
 Give preview deploys their own trigger rather than widening the one that covers staging. A pull request rarely needs everything staging runs, and a Smart Smoke Suite skips every deploy that has no pull request.
 
+## Mobile apps
+
+A mobile pipeline uploads each new build and reports it as a deployment. The runs a deployment trigger starts install that build. A scheduled run installs the environment's latest build. When Android and iOS both report into one environment, give each platform its own trigger with a service condition. See [Mobile build testing](/mobile-build-testing).
+
 ## Create a trigger
 
 On the triggers page, select **Create trigger**. The drawer asks what should start the runs:
