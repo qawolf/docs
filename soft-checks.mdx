@@ -1,0 +1,64 @@
+---
+title: "Keep a flow going past a failed check"
+description: "Use expect.soft for checks nothing later in the flow depends on, so one failed check doesn't hide the next."
+sidebarTitle: "Soft checks"
+keywords:
+  - "soft assertion"
+  - "non-blocking assertion"
+  - "multiple assertions"
+  - "continue on failure"
+---
+
+A failed `expect` stops the flow, so no check after it runs. A soft assertion, `expect.soft`, records the failure, and the flow keeps going. After the last line, the attempt fails with one error that lists the failed checks. When automatic investigation is on, QA Wolf investigates each failed check on its own, so failures with different causes can lead to separate bugs.
+
+```ts
+expect.soft(subject, name)
+```
+
+- `subject` — what to check, the same as for `expect`
+- `name` — optional label that QA Wolf records with the failure
+
+Example:
+
+```ts
+import { expect, flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Review an invoice",
+  { target: "Web - Chrome", launch: true },
+  async ({ page }) => {
+    await page.goto(`${process.env.BASE_URL}/invoices/42`);
+
+    await expect.soft(page.getByRole("heading", { level: 1 }), "Invoice heading").toHaveText("Invoice 42");
+    await expect.soft(page.getByTestId("invoice-total"), "Invoice total").toHaveText("$120.00");
+
+    const pay = page.getByRole("button", { name: "Pay" });
+    await expect(pay).toBeEnabled();
+    await pay.click();
+    await expect(page.getByText("Paid")).toBeVisible();
+  },
+);
+```
+
+If the heading and the total are both wrong, the flow records both failures and still checks the Pay button. If the Pay button is also disabled, the flow stops there. The run page then lists all three failures.
+
+<Warning>
+  Await each `expect.soft` the same way as `expect`. A soft check that fails after the flow ends is dropped, so the attempt can pass.
+</Warning>
+
+## When to use soft checks
+
+- Use `expect.soft` for checks that nothing later in the flow depends on, such as several values on one page.
+- Use `expect` for a check that a later step relies on, such as a button the flow clicks next.
+- Don't use `expect.soft` inside a loop. A check that fails on every iteration records a failure each time, and an attempt keeps at most 100 failures.
+
+## Name each check
+
+Pass a short name as the second argument, such as `"Invoice total"`. QA Wolf records the name with the failure. It appears in the attempt's logs, next to the check's file and line, and in the failures QA Wolf's MCP returns for the attempt.
+
+## Platforms and limits
+
+- **Platforms** — web, iOS, Android and Windows flows, through the `expect` you already import from `@qawolf/flows`. In Windows flows, `expect.soft` dispatches on its subject the same way `expect` does. Node flows (`@qawolf/flows/cli`) don't have `expect.soft`.
+- **Failures per attempt** — at most 100. The attempt's error counts the rest as "…and N more".
+- **Call only** — `expect.soft(subject, name)` has none of `expect`'s properties, such as `poll`, `configure` or `extend`. In web and Windows flows, `expect.configure({ soft: true })` throws. Use `expect.soft` instead.
+- **Timeouts** — each failing soft check still waits the full `expect` timeout before QA Wolf records it.
