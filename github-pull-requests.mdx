@@ -39,7 +39,7 @@ The agent answers only on pull requests in repositories the QA Wolf GitHub App c
 
 ## What you can ask the agent
 
-Comment `@qawolf` on the pull request, or on a line of its diff to ask about that line.
+Comment `@qawolf` on the pull request, or on a line of its diff to ask about that line. Once the agent is in a thread, you can answer its questions there without mentioning `@qawolf` again.
 
 - **Cover the change** — "@qawolf add a flow that covers the new coupon field."
 - **Run flows against it** — "@qawolf run the checkout flows against this pull request."
@@ -53,6 +53,8 @@ The agent reads the pull request's title, description, and changed files. It als
 1. The ephemeral environment QA Wolf created for the pull request's branch.
 2. Otherwise, the environment of the pull request's latest deployment.
 3. Otherwise, your default environment.
+
+It picks the environment at the thread's first `@qawolf` comment and keeps it for that thread, so it won't switch to an environment created later.
 
 The agent answers the owners and members of the repository's organization, and the repository's collaborators. Other contributors need write access to the repository. People asking don't need a QA Wolf account.
 
@@ -80,3 +82,4 @@ The agent doesn't post anything when it ignores a comment, so check these:
 | The commenter isn't an organization owner or member, a collaborator, or a contributor with write access. | Ask someone with write access to the repository to comment instead. |
 | A bot posted the comment. | Post the request yourself. The agent answers people only. |
 | Your QA Wolf workspace has no default environment. | Set a default environment for your QA Wolf workspace, then comment again. |
+| Nobody has created a trigger on your default environment. | Create a [trigger](/triggers/overview) on your default environment, then comment again. |
