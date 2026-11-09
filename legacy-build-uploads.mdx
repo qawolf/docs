@@ -6,7 +6,7 @@ keywords: "RUN_INPUT_PATH, run input, run inputs executables, upload_to_qawolf, 
 ---
 
 <Warning>
-  Deprecated for Android and iOS builds. Upload them as [builds](/upload-builds) instead, so every run records which build it tested. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). Legacy uploads keep working, and Windows and Linux app files still take this path. A zipped app that is not an `.ipa` also stays on this path for now.
+  Deprecated for Android and iOS builds. Upload them as [builds](/upload-builds) instead, so every run records which build it tested. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). Legacy uploads keep working, and Windows app files still take this path. A zipped app that is not an `.ipa` also stays on this path for now.
 </Warning>
 
 Your pipeline uploads each new app file to run inputs storage and reports it as a deployment, and a [trigger](/triggers/overview) you create starts the runs. The flow reads the file's path from `RUN_INPUT_PATH`.
