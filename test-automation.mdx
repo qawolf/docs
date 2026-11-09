@@ -46,6 +46,8 @@ Create a test for the rate quote application. Go to {{your app URL}} and sign in
 
 If there's something specific you need verified, say so. The agent won't always infer what matters to you — telling it what to assert produces more useful tests.
 
+The agent writes each check that nothing later in the flow depends on as a [soft check](/soft-checks), so one failed check doesn't hide the rest.
+
 ### Link your app's documentation
 
 If a flow depends on setup that is only explained in your documentation, include the link in the flow description or your prompt. The AI reads linked documentation before it starts building and uses it to complete configuration steps it cannot discover from the UI alone.
