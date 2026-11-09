@@ -1,15 +1,18 @@
 ---
 title: "Keep a flow going past a failed check"
-description: "Use expect.soft for checks nothing later in the flow depends on, so one failed check doesn't hide the next."
+description: "Use expect.soft for checks nothing later in the flow depends on, so one failed check doesn't hide the next and QA Wolf diagnoses each failure on its own."
 sidebarTitle: "Soft checks"
 keywords:
+  - "expect.soft"
   - "soft assertion"
   - "non-blocking assertion"
   - "multiple assertions"
   - "continue on failure"
 ---
 
-A failed `expect` stops the flow, so no check after it runs. A soft assertion, `expect.soft`, records the failure, and the flow keeps going. After the last line, the attempt fails with one error that lists the failed checks. When automatic investigation is on, QA Wolf investigates each failed check on its own, so failures with different causes can lead to separate bugs.
+A failed `expect` stops the flow, so no check after it runs. A soft check, `expect.soft`, records the failure, and the flow keeps going. After the last line, the attempt fails with one error that lists the failed checks. One run can surface several bugs instead of one.
+
+The QA Wolf agent writes soft checks by default. QA Wolf diagnoses each failed check on its own, so failures with different causes become separate bugs.
 
 ```ts
 expect.soft(subject, name)
@@ -48,17 +51,47 @@ If the heading and the total are both wrong, the flow records both failures and 
 
 ## When to use soft checks
 
-- Use `expect.soft` for checks that nothing later in the flow depends on, such as several values on one page.
-- Use `expect` for a check that a later step relies on, such as a button the flow clicks next.
+- Use `expect.soft` for a check that nothing later in the flow depends on, such as a label, a total, or a message.
+- Use `expect` for a check a later step relies on, such as a readiness check or the element the next action uses.
+- Use `expect` for a check that the flow is on the right page or record. If it fails, every check after it fails too.
 - Don't use `expect.soft` inside a loop. A check that fails on every iteration records a failure each time, and an attempt keeps at most 100 failures.
+
+The QA Wolf agent follows these rules when it creates or fixes a flow, and it names each soft check it writes.
 
 ## Name each check
 
-Pass a short name as the second argument, such as `"Invoice total"`. QA Wolf records the name with the failure. It appears in the attempt's logs, next to the check's file and line, and in the failures QA Wolf's MCP returns for the attempt.
+Pass a short name as the second argument, such as `"Invoice total"`. QA Wolf records the name with the failure. It appears in the attempt's logs, next to the check's file and line, and in the failures QA Wolf's MCP returns for the attempt. The run page shows each failure's message and line instead.
+
+## What the run page shows
+
+The run page lists each failure of an attempt on its own row, in order, with its line number. A soft failure's row starts with **Soft check**. A hard failure that stopped the flow comes last.
+
+Above the list, the attempt reads **Ran to the end · N checks failed** or **Stopped at line N · N checks failed**. Once a failure is diagnosed, its row links to the bug or blocker it's on. In the attempt's video, each failed soft check marks a chapter.
+
+## How QA Wolf diagnoses several failures
+
+QA Wolf diagnoses each failure of the latest attempt on its own, including a hard failure that stopped the flow:
+
+- A failure caused by an earlier one goes on the same bug.
+- Failures with different causes go on separate bugs.
+- When QA Wolf proposes a bug report for you to approve, each cause gets its own proposal. Approve or dismiss each one separately.
+
+The run counts as diagnosed once every failure is. Until then, the run summary's **Needs diagnosis** tab lists the flow.
+
+To diagnose a failure yourself, open its **Diagnose** menu on the run page and choose **Add to existing bug**, **Report new bug**, or **Add to existing blocker**. Only the latest attempt has the menu. A flow that failed several checks can't be diagnosed as a whole, so diagnose each failure. With the [QA Wolf MCP](/qawolf-mcp), `attempt.get` lists an attempt's failures, and `run.diagnose` takes each one as `<attemptId>:<position>`.
+
+## When a bug closes
+
+A bug on a failed check stays open on that flow until a later attempt of the flow finishes after the bug's latest failure and does one of these:
+
+- Passes.
+- Runs to the end with every failure diagnosed, and none of them on that bug.
+
+An attempt that stopped at a hard failure, or that hit the 100-failure cap, doesn't close the bug. Once no flow still reproduces the bug, QA Wolf resolves its report, unless auto-close is turned off for that bug.
 
 ## Platforms and limits
 
-- **Platforms** — web, iOS, Android and Windows flows, through the `expect` you already import from `@qawolf/flows`. In Windows flows, `expect.soft` dispatches on its subject the same way `expect` does. Node flows (`@qawolf/flows/cli`) don't have `expect.soft`.
+- **Platforms** — web, iOS, Android, and Windows flows, through the `expect` you already import from `@qawolf/flows`. In Windows flows, `expect.soft` dispatches on its subject the same way `expect` does. Node flows (`@qawolf/flows/cli`) don't have `expect.soft`.
 - **Failures per attempt** — at most 100. The attempt's error counts the rest as "…and N more".
-- **Call only** — `expect.soft(subject, name)` has none of `expect`'s properties, such as `poll`, `configure` or `extend`. In web and Windows flows, `expect.configure({ soft: true })` throws. Use `expect.soft` instead.
+- **Call only** — `expect.soft(subject, name)` has none of `expect`'s properties, such as `poll`, `configure`, or `extend`. In web and Windows flows, `expect.configure({ soft: true })` throws. Use `expect.soft` instead.
 - **Timeouts** — each failing soft check still waits the full `expect` timeout before QA Wolf records it.
