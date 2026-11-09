@@ -455,7 +455,7 @@ Pass exactly one of the following to identify the environment:
 ## generateSignedUrlForRunInputsExecutablesStorage
 
 <Warning>
-  Deprecated for Android and iOS builds. Use [`uploadBuild`](#uploadbuild) instead, so every run records which build it tested. It keeps working, prints no warning, and is still the way to upload Windows and Linux app files. A zipped app that is not an `.ipa` also stays on this path for now.
+  Deprecated for Android and iOS builds. Use [`uploadBuild`](#uploadbuild) instead, so every run records which build it tested. It keeps working, prints no warning, and is still the way to upload Windows app files. A zipped app that is not an `.ipa` also stays on this path for now.
 </Warning>
 
 Generates a signed URL for uploading a run input executable (APK, AAB, DEB, IPA, ZIP, CSV, PDF) to QA Wolf. See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the underlying endpoint, and [Legacy build uploads](/legacy-build-uploads) for the pipeline it belongs to. To upload an Android or iOS build, use [`uploadBuild`](#uploadbuild).
