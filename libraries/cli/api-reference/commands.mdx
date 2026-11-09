@@ -1,18 +1,29 @@
 ---
 title: "Commands Reference"
-description: "Reference for the qawolf CLI commands most workflows use, including auth, flows, install, init, doctor, runner, run create, and build upload."
+description: "Reference for the qawolf CLI commands, including auth, flows, install, runner, agent, run, attempt, build, help, and the commands generated from the QA Wolf public API."
 sidebarTitle: "Commands"
 ---
 
-These are the commands most workflows use. Run `qawolf help` to list all of them.
+Run `qawolf help` to list every command, or `qawolf <command> --help` for one command's options. The installed CLI's help always matches its version.
 
 ## `auth`
 
-Manages authentication with the QA Wolf platform. The CLI reads credentials from the `QAWOLF_API_KEY` environment variable first, then the system keychain, then a config file fallback.
+Manages authentication with the QA Wolf platform. The CLI uses the first credential it finds: the `QAWOLF_API_KEY` environment variable, then a stored API key, then a browser session from `qawolf auth login`.
 
 ### `auth login`
 
-Prompts for an API key, validates it against the platform, and stores it locally. Requires an interactive terminal — in non-interactive contexts, set `QAWOLF_API_KEY` directly.
+Signs you in to QA Wolf, and asks whether to use a browser or an API key. Requires an interactive terminal — in non-interactive contexts, set `QAWOLF_API_KEY` directly.
+
+- **Browser** — shows a one-time code and opens a sign-in page. After you sign in, the CLI asks which organization and workspace to work in when you can reach more than one. Set `QAWOLF_ORGANIZATION` or `QAWOLF_WORKSPACE` to choose without a prompt.
+- **API key** — prompts for a key, validates it against the platform, and stores it in the system keychain, or in a config file when the keychain is unavailable.
+
+An API key takes precedence over a browser session. If one is set or stored, the CLI says so before a browser sign-in starts.
+
+With a browser sign-in or a user API key, `auth login` also sets up Git to use your QA Wolf sign-in. Then `git clone`, `git fetch`, and `git push` work with your workspace's QA Wolf Git URL without asking for a password. The CLI adds a credential helper for the QA Wolf host to your global Git config and prints the lines it added. See [Clone your workspace with Git](/clone-with-git).
+
+The CLI skips Git setup when Git isn't installed, when the CLI runs through `npx` or `bunx`, and when you sign in with a team API key, which Git can't use.
+
+Example:
 
 ```bash
 qawolf auth login
@@ -20,15 +31,34 @@ qawolf auth login
 
 ### `auth logout`
 
-Removes stored credentials. This command cannot remove credentials set via the `QAWOLF_API_KEY` environment variable.
+Removes stored credentials: the stored API key and the browser session. Also removes the Git credential helper that `auth login` added. This command cannot remove credentials set via the `QAWOLF_API_KEY` environment variable.
+
+Example:
 
 ```bash
 qawolf auth logout
 ```
 
+### `auth switch`
+
+Chooses which organization and workspace a browser session works in, without signing in again. Requires a browser sign-in from `qawolf auth login`.
+
+The CLI saves the choice for every session on this machine. To work in another workspace for one `runner` command without saving it, pass `--workspace-id` to that command instead.
+
+In a non-interactive shell, set `QAWOLF_WORKSPACE` to the workspace's name, slug, or ID. If workspaces in more than one organization match, also set `QAWOLF_ORGANIZATION` to the organization's name or ID.
+
+Examples:
+
+```bash
+qawolf auth switch
+QAWOLF_WORKSPACE=<workspace-slug> qawolf auth switch
+```
+
 ### `auth whoami`
 
 Displays the authenticated workspace name, ID, optional slug, and the credential source.
+
+Example:
 
 ```bash
 qawolf auth whoami
@@ -41,6 +71,8 @@ Manages and runs QA Wolf flows.
 ### `flows run [pattern]`
 
 Runs flows matching `[pattern]`, or every flow when omitted. The default pattern matches `**/*.flow.{ts,js}` in the current working directory and in `.qawolf/<env_id>/` subdirectories.
+
+Examples:
 
 ```bash
 qawolf flows run
@@ -69,6 +101,8 @@ Exit codes: `0` when all flows pass, `1` when one or more flows fail, `2` for in
 
 Lists flows matching `[pattern]`. By default, lists local flows; with `--remote`, lists flows from the QA Wolf platform.
 
+Examples:
+
 ```bash
 qawolf flows list
 qawolf flows list "flows/checkout/**"
@@ -82,6 +116,8 @@ Options:
 ### `flows pull`
 
 Downloads an environment's flows into the local `.qawolf/<env_id>/` cache.
+
+Examples:
 
 ```bash
 qawolf flows pull --env <env_id>
@@ -99,6 +135,8 @@ Options:
 
 Installs every runtime dependency the project's flows need. With a `[pattern]` argument, it installs only the dependencies for the matching flows.
 
+Examples:
+
 ```bash
 qawolf install
 qawolf install "flows/checkout/**"
@@ -107,6 +145,8 @@ qawolf install "flows/checkout/**"
 ### `install browsers [pattern]`
 
 Installs the Playwright browsers used by the project's web flows.
+
+Examples:
 
 ```bash
 qawolf install browsers
@@ -117,14 +157,33 @@ qawolf install browsers "flows/web/**"
 
 Installs Android system images, AVDs, and the Appium driver used by the project's Android flows. Requires `ANDROID_HOME` or `ANDROID_SDK_ROOT`.
 
+Examples:
+
 ```bash
 qawolf install android
 qawolf install android "flows/mobile/**"
 ```
 
+### `install clear`
+
+Removes the managed runtime cache, which holds every runtime version the CLI has installed. Asks for confirmation in an interactive terminal. When `QAWOLF_RUNTIME_DIR` is set, the cache is in that directory.
+
+Examples:
+
+```bash
+qawolf install clear
+qawolf install clear --yes
+```
+
+Options:
+
+- `--yes` — skip the confirmation prompt. Default: `false`.
+
 ## `init`
 
 Scaffolds a QA Wolf project in the current directory. Creates `qawolf.config.ts`, an example flow at `src/flows/example.flow.ts`, and `.qawolf/.gitignore`. When no `package.json` exists, creates one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script. When one already exists, only adds the `test:e2e` script, after a prompt.
+
+Examples:
 
 ```bash
 qawolf init
@@ -139,6 +198,8 @@ Options:
 
 Diagnoses problems running flows locally. Checks your environment (CLI and Node.js versions, API key, connectivity) and the dependencies your flows need, such as Playwright browsers and the Android SDK.
 
+Examples:
+
 ```bash
 qawolf doctor
 qawolf doctor --all
@@ -152,11 +213,15 @@ Options:
 
 Launches and drives a browser, an Android device, or an iOS device hosted by QA Wolf. Nothing runs on your machine. For a walkthrough, see [Drive a runner](/libraries/cli/drive-a-runner).
 
-Every subcommand except `launch` and `list` targets a runner in this order: `--runner <id>`, then the `QAWOLF_RUNNER_ID` environment variable, then the runner that `qawolf runner launch` stored for the current directory. If none of these names a runner, `run`, `act` and `actions` launch a new browser runner, which bills while it's up, and say so on stderr.
+Every subcommand except `launch` and `list` targets a runner in this order: `--runner <id>`, then the `QAWOLF_RUNNER_ID` environment variable, then the runner that `qawolf runner launch` stored for the current directory. If none of these names a runner, `run`, `act`, `actions`, and `exec` launch a new browser runner, which bills while it's up, and say so on stderr.
+
+Every subcommand takes `--workspace-id <id>`, which works in that workspace for the one command and isn't saved. Without it, runner commands use the workspace that `qawolf auth switch` saved.
 
 ### `runner launch`
 
 Launches a runner and stores it as the current directory's default.
+
+Examples:
 
 ```bash
 qawolf runner launch --id my-runner --name android
@@ -172,6 +237,8 @@ Options:
 
 Lists the runners running in your workspace.
 
+Examples:
+
 ```bash
 qawolf runner list
 qawolf runner list --here
@@ -185,14 +252,39 @@ Options:
 
 Ends a runner and the pod it runs on.
 
+Examples:
+
 ```bash
 qawolf runner terminate
 qawolf runner terminate --runner my-runner
 ```
 
+### `runner stop-run`
+
+Stops what a runner is executing and leaves the runner up, its browser on whatever page the run reached. The run settles as stopped, not passed or failed. To end the runner itself, use `runner terminate`. Succeeds when nothing was running.
+
+Example:
+
+```bash
+qawolf runner stop-run
+```
+
+### `runner keepalive`
+
+Resets a runner's inactivity clock. QA Wolf ends a runner after a period of inactivity, and every command that talks to the runner counts as activity. Use `keepalive` when you pause for minutes between actions. It keeps a billed runner alive, and it never launches one.
+
+Examples:
+
+```bash
+qawolf runner keepalive
+qawolf runner keepalive --runner my-runner
+```
+
 ### `runner run <flowFile>`
 
 Runs a flow on a runner. Sends the flow file, the files it imports, and your `package.json` and `tsconfig.json`. On an Android or iOS runner, the first run starts the device session, so run a flow before you take screenshots or act on it. The flow's `target` has to match what the runner runs.
+
+Examples:
 
 ```bash
 qawolf runner run flows/checkout.flow.ts --follow
@@ -210,9 +302,35 @@ Options:
 - `--lines-file <path>` — the file `--lines` refers to, such as a page object. Defaults to `<flowFile>`.
 - `--timeout <seconds>` — stop following after this long. Default: `3600`.
 
+### `runner events <stream>`
+
+Prints a runner's journal, one entry per line. QA Wolf writes five streams: `console`, `recorder`, `run-events`, `run-logs`, and `run-status`. A stream nobody has written reads as empty. This command never launches a runner.
+
+As you drive the browser, the `recorder` stream records each interaction. Its entries carry the Playwright locator the runner resolved (`locator`), the other locators that matched the same element (`alternates`), and the generated Playwright call (`code`).
+
+With `--json`, each line is the whole entry (`sequence`, `recordedAt`, and `payload`) instead of the payload alone.
+
+Examples:
+
+```bash
+qawolf runner events recorder --tail 5
+qawolf runner events run-logs --run <run_id> --follow
+qawolf runner events console --since 120 --json
+```
+
+Options:
+
+- `--tail <count>` — read only the newest `<count>` entries.
+- `--since <sequence>` — read the entries after this sequence.
+- `--run <id>` — limit the run-scoped streams to one run.
+- `--follow` — keep reading as new entries arrive. Reading counts as activity, so a follow keeps the runner alive and billing. Ends only at `--timeout`, with exit code `6`, not when a run settles. Default: `false`.
+- `--timeout <seconds>` — stop following after this long. Default: `3600`.
+
 ### `runner screenshot`
 
 Saves a JPEG of the runner's screen.
+
+Example:
 
 ```bash
 qawolf runner screenshot --out step-1.jpg
@@ -225,6 +343,8 @@ Options:
 ### `runner act <action>`
 
 Performs one action on the runner's screen. A browser runner takes `click`, `double_click`, `scroll`, `move`, `drag`, `keypress`, `navigate`, and `type`. A mobile runner takes `tap`, `swipe`, `fill`, and `type`.
+
+Examples:
 
 ```bash
 qawolf runner act click --button left --x 480 --y 260 --screenshot step-2.jpg
@@ -249,6 +369,8 @@ Options:
 
 Performs up to ten actions in one request, as a JSON array of the actions `runner act` takes. Use `-` to read the array from stdin.
 
+Example:
+
 ```bash
 qawolf runner actions '[{"type":"tap","x":540,"y":900},{"type":"type","text":"someone@example.com"}]' --screenshot after.jpg
 ```
@@ -258,9 +380,31 @@ Options:
 - `--screenshot <path>` — save a screenshot taken after the last action.
 - `--continue-on-failure` — carry on past an action that did not take effect. Default: `false`.
 
+### `runner exec <file>`
+
+Evaluates a snippet against the runner's live page. Use `-` to read the snippet from stdin.
+
+`exec` reports whether the snippet ran, not what it returned. To get a value back, print it and read the `console` stream with `runner events console`. Entries from your snippet carry `"source": "serverConsole"`, and entries from the page carry `"source": "browserConsole"`.
+
+A snippet that changes something may have run even when `exec` exits `4`, so check its effect before you run it again.
+
+Examples:
+
+```bash
+qawolf runner exec snippet.ts
+echo 'console.log("qw-title:", await page.title())' | qawolf runner exec -
+qawolf runner exec snippet.ts --file flows/checkout.flow.ts
+```
+
+Options:
+
+- `--file <path>` — evaluate the snippet in this file's scope, so it can use your page objects and helpers. Sends the file and the other files in its directory. Without it, the snippet imports nothing of yours.
+
 ### `runner inspect`
 
 Reads one thing off the runner's live page or Appium session and prints it to stdout.
+
+Examples:
 
 ```bash
 qawolf runner inspect element-html --selector "#email"
@@ -278,9 +422,56 @@ Subcommands:
 - `page-source` — mobile only. The current context's page source.
 - `elements` — mobile only. The elements at `--x` and `--y`, carrying `--text`, or matching `--selector`.
 
+### `runner import-package <name>`
+
+Installs an npm package into the runner's live run, so `runner exec` snippets and `runner run --lines` selections can import it without a full run. Resolves the package against your project's dependencies in `package.json`. Needs a run already going on the runner.
+
+Examples:
+
+```bash
+qawolf runner import-package dayjs
+qawolf runner import-package dayjs --package-version 1.11.13
+```
+
+Options:
+
+- `--package-version <version>` — the version to install. Default: `latest`.
+
+### `runner highlight-selector [selector]`
+
+Highlights what a selector matches on the runner's live page, so the next `runner screenshot` shows it. The highlight stays until you replace or clear it. Omit the selector to clear it.
+
+Prints how many elements matched, and exits `0` even when none did. Exits `2` when the page can't read the selector, or when the runner has no browser to draw on.
+
+Examples:
+
+```bash
+qawolf runner highlight-selector "text=Sign in"
+qawolf runner highlight-selector "#checkout" && qawolf runner screenshot
+qawolf runner highlight-selector
+```
+
+### `runner promote-snapshot`
+
+Accepts a run's screenshot as the new baseline for a failed image diff, on the runner that produced the run. Both paths come from the diff's `imageDiffArtifact` event in the `run-events` stream. They're paths in the run's screenshot storage, not files on your machine. Promoting the same screenshot twice is safe.
+
+Examples:
+
+```bash
+qawolf runner events run-events --tail 20 | jq 'select(.type == "imageDiffArtifact")'
+qawolf runner promote-snapshot --screenshot checkout-1-actual.png --baseline checkout-1.png
+```
+
+Options:
+
+- `--screenshot <path>` — required. The screenshot to promote, as the image diff named it.
+- `--baseline <path>` — required. The baseline to replace, as the image diff named it.
+
 ### `runner record`
 
 Controls video recording on a browser runner.
+
+Examples:
 
 ```bash
 qawolf runner record start --json
@@ -296,13 +487,86 @@ Subcommands:
 - `status` — show the active recording and the automatic recording setting.
 - `auto <on|off>` — turn automatic recording of later full runs on or off.
 
+### `runner list-recordings`
+
+Lists one page of a runner's published video recordings, including after the runner terminates. Each entry has its status, its run IDs, a `url` for its QA Wolf page, and a `videoUrl` when video is available. The `url` persists, and the `videoUrl` expires. Pages come in storage order, not newest first.
+
+Terminating a runner clears the current directory's default, so pass `--runner` to read an ended runner's recordings.
+
+Examples:
+
+```bash
+qawolf runner list-recordings --runner my-runner --json
+qawolf runner list-recordings --runner my-runner --recording-id <recording-id> --json
+qawolf runner list-recordings --runner my-runner --page-token <next-page-token> --json
+```
+
+Options:
+
+- `--recording-id <uuid>` — look up one recording. An empty result means it isn't published or doesn't exist.
+- `--page-token <token>` — continue from the `nextPageToken` the previous page returned.
+
+## `agent`
+
+Asks the QA Wolf AI for work and follows what it does. Requires authentication.
+
+### `agent send <message>`
+
+Asks the QA Wolf AI to do a piece of work, such as covering a journey or fixing a broken flow. Opens a new session unless `--session` names one, and prints the session's ID and URL. Remembers the session, so a later `agent get` in the same directory needs no ID.
+
+With `--follow`, the command prints each reply as it arrives and exits when the session settles: `0` when it completed, `1` when it failed or was cancelled, and `6` at `--timeout`. In `--json` or `--agent` mode, a follow ends with one line holding the whole session, the same object a plain `agent get` prints.
+
+When a followed session asks a question, an interactive terminal prompts you for the answer and keeps following. Anywhere else, such as a CI job or `--json` mode, the CLI prints the question and the command that answers it, then exits `0`.
+
+Examples:
+
+```bash
+qawolf agent send "cover the checkout journey" --follow
+qawolf agent send "use the staging login test@example.com" --session <session-id>
+qawolf agent send "cover signup" --environment-id staging --follow
+qawolf agent send "cover every journey in the sheet" --file-paths uploads/journeys.csv --follow
+```
+
+Options:
+
+- `--follow` — report what the session says until it settles, and answer its questions as they come. Default: `false`.
+- `--session <id>` — continue this session instead of opening a new one, to answer a question or add context to work already running.
+- `--environment-id <env>` — the id or alias of the environment to work in. Defaults to `QAWOLF_ENVIRONMENT`. Ignored with `--session`, because a session keeps the environment it opened in.
+- `--file-paths <path...>` — up to 20 team-storage paths of files the request is about, from `qawolf file requestUpload`. The AI reads them from storage, not from the message.
+- `--builds <ids...>` — builds the request is about, from `qawolf build upload` or `qawolf build create`, one per app and platform. The session's runs install them in place of the environment's builds of the same app and platform. Put the message before this flag.
+- `--workspace-id <id>` — the workspace to work in. Required with an organization or user API key.
+- `--timeout <seconds>` — stop following after this long. Default: `1800`.
+
+### `agent get [session]`
+
+Reads what the QA Wolf AI has said in a session, and whether it's still working. Targets the session you name, then `QAWOLF_SESSION_ID`, then the session `agent send` last sent to from the current directory. With `--follow`, it reports and exits the way `agent send --follow` does.
+
+Examples:
+
+```bash
+qawolf agent get
+qawolf agent get --follow
+qawolf agent get <session-id> --follow
+qawolf --json agent get --sessions <session-id> <session-id> --follow --timeout 120
+```
+
+Options:
+
+- `--follow` — report what the session says until it settles, and answer its questions as they come. Default: `false`.
+- `--session <id>` — the session to read, in place of the `[session]` argument.
+- `--sessions <ids...>` — follow several sessions in one process, and return the first completion, failure, cancellation, or question. Requires `--follow`.
+- `--workspace-id <id>` — the workspace an answer given during `--follow` goes to. Required with an organization or user API key.
+- `--timeout <seconds>` — stop following after this long. Default: `1800`.
+
 ## `run`
 
-Triggers and manages runs on the QA Wolf platform. Unlike the local execution commands, `run` does not execute flows on your machine and requires authentication.
+Triggers and manages runs on the QA Wolf platform. Unlike the local execution commands, `run` does not execute flows on your machine and requires authentication. The other `run` commands are listed under [Public API commands](#public-api-commands).
 
 ### `run create`
 
 Creates a run on the QA Wolf platform.
+
+Examples:
 
 ```bash
 qawolf run create --environment-id <env_id>
@@ -317,13 +581,79 @@ Options:
 - `--flow-ids <flow_id>...` — limit the run to specific flow IDs.
 - `--ignore-rules` — ignore the workspace's sequencing rules. By default they're honored: the flows your selection depends on are added to the run, and flows run in the order the rules require.
 
+## `attempt`
+
+Investigates a finished run attempt from its recorded trace and execution log. Requires authentication. Attempt IDs come from `qawolf run get`.
+
+### `attempt get`
+
+Gets a finished run attempt: its run and flow status, its place among that flow's attempts in the run, the checks that failed in it, and signed links to its logs, trace, and video when they were captured.
+
+Example:
+
+```bash
+qawolf attempt get --attempt-id <attempt-id>
+```
+
+Options:
+
+- `--attempt-id <id>` — required. The attempt to get.
+
+### `attempt investigate`
+
+Summarizes the evidence for one finished attempt. The summary carries evidence IDs that `attempt inspect` reads in full.
+
+Example:
+
+```bash
+qawolf attempt investigate --attempt-id <attempt-id>
+```
+
+Options:
+
+- `--attempt-id <id>` — required. The attempt to summarize.
+
+### `attempt inspect`
+
+Reads one kind of evidence for a finished attempt. Pass exactly one of `--action`, `--timeline`, `--network`, `--request`, `--snapshot`, `--screenshot`, `--console`, or `--log`.
+
+Examples:
+
+```bash
+qawolf attempt inspect --attempt-id <attempt-id> --timeline
+qawolf attempt inspect --attempt-id <attempt-id> --network --status 500
+qawolf attempt inspect --attempt-id <attempt-id> --snapshot <evidence-id> --format html --output-file page.html
+```
+
+Options:
+
+- `--attempt-id <id>` — required. The attempt to inspect.
+- `--action <id>` — one action, by evidence ID.
+- `--timeline` — the action timeline.
+- `--network` — network requests.
+- `--request <id>` — one network request, by evidence ID.
+- `--snapshot <id>` — one page snapshot, by evidence ID.
+- `--screenshot <id>` — one screenshot, by evidence ID. Requires `--output-file`.
+- `--console` — browser console entries.
+- `--log` — execution log entries.
+- `--evidence-id <id>` — with `--console` or `--log`, return only this record.
+- `--limit <number>` — with `--timeline`, `--network`, `--console`, or `--log`, the most entries to return, up to `100`. `--console` returns the earliest entries, and the others return the most recent. Default: `20`.
+- `--start-time-ms <number>`, `--end-time-ms <number>` — with `--network` or `--console`, the trace time window, in milliseconds.
+- `--start-timestamp <iso>`, `--end-timestamp <iso>` — with `--log`, the time window, as ISO 8601 timestamps.
+- `--source <source>` — with `--log`, the log source: `qawolfTraceCollection` or `serverConsole`.
+- `--method <method>`, `--status <code>`, `--url-contains <text>` — with `--network`, filter by HTTP method, HTTP status, or URL substring.
+- `--format <format>` — `text` or `html`. `html` works only with `--snapshot`. Default: `text`.
+- `--output-file <path>` — write the screenshot, or the HTML of a `--format html` snapshot, to this file. Refuses to overwrite an existing file.
+
 ## `build`
 
-Manages app builds. See [Upload builds](/upload-builds).
+Manages app builds. See [Upload builds](/upload-builds). The other `build` commands are listed under [Public API commands](#public-api-commands).
 
 ### `build upload <file>`
 
-Uploads an `.apk`, `.aab` or `.ipa` of up to 1 GB and creates a build from it. Requires CLI 2.8.0 or later.
+Uploads an `.apk`, `.aab`, or `.ipa` of up to 1 GB and creates a build from it. Requires CLI 2.8.0 or later.
+
+Examples:
 
 ```bash
 qawolf build upload app-release.apk --environment-name Staging
@@ -341,3 +671,62 @@ Options:
 - `--workspace-id <id>` — the workspace to upload into. Required with an organization or user API key.
 
 Without an environment option, only the runs created with the build install it.
+
+## `help`
+
+Displays help for a command, or for the whole CLI when you name none. `qawolf <command> --help` does the same.
+
+Examples:
+
+```bash
+qawolf help
+qawolf help runner launch
+```
+
+### `help ref [command...]`
+
+Prints the full help of a command and of every command under it, as Markdown. Omit the command to print the whole CLI. `help reference` is an alias. `qawolf help ref runner` prints the runner guide and the help of every `runner` command.
+
+Examples:
+
+```bash
+qawolf help ref runner
+qawolf help ref runner inspect
+qawolf help reference
+```
+
+## Public API commands
+
+The CLI generates one command for each QA Wolf public API operation, named `qawolf <group> <operation>`. Their options come from the operation's input, so they change with the API. Run `qawolf <group> <operation> --help` for one command's options, or `qawolf help ref <group>` for a whole group. Every one requires authentication.
+
+On every command that takes `--environment-id`, it defaults to `QAWOLF_ENVIRONMENT`. An option that takes JSON also accepts `@<path>` to read the JSON from a file, or `-` to read it from stdin.
+
+Examples:
+
+```bash
+qawolf environment find --json
+qawolf run get --run-id <run-id> --flow-statuses failed
+qawolf environment setVariable --environment-id staging --name API_TOKEN --value <value>
+```
+
+| Group | Commands | What it covers |
+| --- | --- | --- |
+| `activity` | `wait` | Waiting on QA Wolf AI sessions and runs in one call. |
+| `attempt` | `get` | A finished run attempt. See [`attempt`](#attempt). |
+| `build` | `create`, `delete`, `get`, `list`, `requestDownload`, `requestUpload` | App builds. [`build upload`](#build) uploads and creates a build in one step. |
+| `codeHostIntegration` | `find`, `listRepositories` | GitHub and GitLab integrations and the repositories they cover. |
+| `deployment` | `find`, `listTriggerEvaluations`, `reportStatus` | Deployments, and how triggers evaluated them. |
+| `email` | `find`, `get`, `getAttachment`, `listAddresses`, `registerAddress`, `send` | The workspace's inboxes and email. |
+| `environment` | `create`, `deleteVariable`, `find`, `get`, `getVariable`, `listVariableNames`, `promote`, `setVariable`, `terminate`, `update` | Environments and their variables. |
+| `file` | `requestDownload`, `requestUpload` | Files in team storage. |
+| `flow` | `addTag`, `getHistory`, `removeTag`, `update` | Flow tags, draft and active readiness, and a flow's results across runs. |
+| `investigation` | `get`, `question answer`, `question find` | What the QA Wolf AI investigating a run concluded, and the questions it's waiting on. |
+| `issue` | `addFlows`, `attachFiles`, `comment`, `create`, `decideSuggestion`, `find`, `get`, `listActivity`, `listComments`, `removeFlows`, `update` | Bug reports, blockers, and coverage requests. |
+| `legacyTrigger` | `find`, `pause`, `resume` | Legacy triggers, for migration. |
+| `mcpServer` | `connect` | Connecting an MCP server from the workspace's catalog. |
+| `narratedRecording` | `get` | A narrated recording's video. |
+| `promotion` | `find`, `get`, `resolve` | Environment promotions. |
+| `run` | `acceptScreenshotBaseline`, `create`, `diagnose`, `find`, `get`, `listScreenshotComparisons`, `optOutOfInvestigation`, `reattempt`, `restoreScreenshotBaseline`, `stop` | Runs on the QA Wolf platform. See [`run create`](#run-create). |
+| `skill` | `get`, `list` | The QA Wolf skills coding agents follow. |
+| `tag` | `create`, `list` | Tags. |
+| `trigger` | `create`, `delete`, `find`, `get`, `pause`, `resume`, `update` | Triggers. |
