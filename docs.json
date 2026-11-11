@@ -74,6 +74,10 @@
       "destination": "/workspace-setup"
     },
     {
+      "source": "/qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
+      "destination": "/members"
+    },
+    {
       "source": "/qawolf/Asana",
       "destination": "/Asana"
     },
