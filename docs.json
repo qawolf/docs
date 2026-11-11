@@ -744,8 +744,9 @@
             ]
           },
           {
-            "group": "Authentication",
+            "group": "Members and access",
             "pages": [
+              "members",
               "sso"
             ]
           }
