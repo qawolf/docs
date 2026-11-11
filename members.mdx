@@ -2,17 +2,22 @@
 title: "Manage workspace members"
 description: "Invite people to a QA Wolf workspace, change their roles, and let anyone with your company's email domain join without an invite."
 sidebarTitle: "Members"
-keywords: ["invite teammates", "add users", "user management", "team members", "roles", "domain sign-up", "join by email domain"]
+keywords: ["invite teammates", "add users", "remove user", "user management", "permissions", "domain sign-up", "auto-join"]
 ---
 
 Manage who is in your workspace under **Settings > Members**.
 
-## Who can do what
+## Roles
 
-- **Anyone in the workspace** — invites people by email. Their invitations use the **Member** role.
-- **Membership managers** — see the members table, choose the role for an invite, change roles, remove members, and turn domain sign-up on or off.
+Each member holds one or more roles:
 
-People who are not membership managers see a notice in place of the members table.
+- **Member** — sees the members table, invites people as **Member**, and resends or cancels pending invites.
+- **Membership Manager** — everything a **Member** can do, plus inviting people with any role, changing roles, removing members, and turning domain sign-up on or off.
+- **Billing Manager** — manages the workspace's billing.
+
+Until someone in the workspace holds **Membership Manager**, any member can remove members, change roles up to **Member**, and turn domain sign-up on or off.
+
+Single sign-on (SSO) and Directory Sync also change who can join. Directory Sync adds and removes members from your identity provider's directory. See [Configure Single Sign-On (SSO)](/sso).
 
 ## Invite people
 
@@ -21,23 +26,22 @@ People who are not membership managers see a notice in place of the members tabl
     Go to **Settings > Members** and click **Invite**.
   </Step>
   <Step title="Add email addresses">
-    Type or paste one or more addresses. Separate them with commas, semicolons, spaces, or new lines. Each address becomes its own chip.
-  </Step>
-  <Step title="Choose a role">
-    Membership managers pick a role from **Role**. It defaults to **Member**, and you can only pick roles you are allowed to give.
+    Type or paste one or more addresses. Separate them with commas, semicolons, spaces, or new lines, or press Enter after each one. Each address appears as its own tag.
   </Step>
   <Step title="Send the invite">
     Click **Send invite**. Everyone on the list gets an invite email.
   </Step>
 </Steps>
 
-QA Wolf flags an address that is not valid, that already belongs to a member, or that already has a pending invite. Remove it before sending.
+If you hold **Membership Manager**, the dialog also shows a **Role** menu. It defaults to **Member**, and everyone you invite at once gets the same role.
 
-If an address is on an email domain your workspace does not use yet, QA Wolf asks you to confirm before sending the invite.
+QA Wolf flags an address that is not valid, that already belongs to a member, or that already has a pending invite. **Send invite** stays disabled until you remove it. If an address is on an email domain your workspace does not use yet, QA Wolf asks you to confirm before sending.
+
+When your workspace uses Directory Sync, invites are off. Add people in your identity provider instead.
 
 ## Find and manage members
 
-The members table lists everyone in the workspace and every open invitation, with each person's name, email, role, and when they were last active.
+The members table lists everyone in the workspace and every open invite, with each person's name, email, role, and when they were last active. For an invite, **Last active** shows **Invite sent** or **Invitation expired**. Rows with a wolf icon and an **Admin** role are QA Wolf staff who support your workspace.
 
 - **Search** — click the search icon and type part of a name or email.
 - **Role** — filter the table to one or more roles. The menu shows how many people hold each role. Click **Reset role** to clear the filter.
@@ -49,25 +53,31 @@ Open the menu at the end of a row to act on it:
 - **Remove** — removes the member from the workspace.
 - **Resend invitation** — sends a pending invite again.
 - **Cancel invite** — withdraws a pending invite.
-- **Send new invitation** — replaces an expired invite with a new one.
+- **Send new invitation** — replaces an expired invite with a new one that keeps the original role.
 
-You cannot change your own membership from the table, and members managed by Directory Sync only offer **Copy email**.
+Your own row and members managed by Directory Sync only offer **Copy email**.
 
-## Let your email domain join without an invite
+## Let people join by email domain
 
-Domain sign-up lets anyone with your company's email address join the workspace on their own. They sign up, skip the invite, and join as members.
+Domain sign-up lets people at your company join the workspace without an invite. Anyone who signs up with a verified email on your domain, and who is not already in a QA Wolf workspace, joins yours as a **Member**. Public email domains such as gmail.com never qualify.
+
+<Check>
+  Your own QA Wolf email must be on the domain. The setting only appears when your workspace's domain is not verified for SSO.
+</Check>
 
 <Steps>
   <Step title="Open Members">
-    Go to **Settings > Members** as a membership manager.
+    Go to **Settings > Members**.
   </Step>
   <Step title="Turn on domain sign-up">
     Check **Anyone with a `<your domain>` email can join**.
   </Step>
 </Steps>
 
-To stop it, uncheck the same box. People who already joined stay in the workspace. Someone on your domain who signs up while it is off sees that your domain already has a workspace and is asked to get an invite from your team.
+To stop it, uncheck the same box. People who already joined stay in the workspace. While it is off, someone on your domain who signs up sees a message that the domain already has a workspace. They need an invite from your team.
+
+If another workspace already uses your email domain, QA Wolf does not let you turn domain sign-up on.
 
 <Note>
-  You need a verified email on the domain to turn domain sign-up on. When single sign-on or Directory Sync manages who joins the organization, nobody joins by email domain and the box is locked. See [Configure Single Sign-On (SSO)](/sso).
+  When SSO or Directory Sync is set up, nobody joins by email domain. You cannot turn the box on, but you can still turn it off. If you later remove SSO or Directory Sync while the box is on, people on your domain can join again.
 </Note>
