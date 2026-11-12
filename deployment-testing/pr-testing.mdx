@@ -17,7 +17,7 @@ PR testing runs your flows against a pull request's preview deploy and reports t
 
 A GitHub or GitLab deployment from a repository the integration doesn't cover never reaches QA Wolf, so nothing runs.
 
-A `deployment.reportStatus` report is different. For a repository with no integration, it's still accepted, triggers match, and the flows run against the preview. QA Wolf can't link the deploy to a pull request or post checks, and a [Smart Smoke Suite](/smart-smoke-suites) skips it with the reason `no-pull-request`. Nothing reports the missing checks.
+A `deployment.reportStatus` report is different. For a repository with no integration, it's still accepted, triggers match, and the flows run against the preview. QA Wolf can't link the deploy to a pull request or post checks. A [Smart Smoke Suite](/smart-smoke-suites) reads only the changes your CI sends with the report, and skips the deploy when there are none and the trigger has no instructions. Nothing reports the missing checks.
 
 This is the path for Bitbucket, Azure DevOps and any other code host.
 

@@ -145,6 +145,10 @@ await deployment.reportStatus({
 
 `metadata.repository` and `metadata.pullRequestNumber` link the deployment to its pull request only when a connected GitHub or GitLab integration covers that repository. See [PR testing](/deployment-testing/pr-testing).
 
+## Send what changed
+
+A [Smart Smoke Suite](/smart-smoke-suites) on a deploy with no pull request reads what the deploy changed. When the deploying repository isn't connected to QA Wolf's GitHub or GitLab integration, send that in `changes`, built from your git history with `deployment.collectCommitChanges`. See [Sending changes from your CI](/smart-smoke-suites#sending-changes-from-your-ci).
+
 ## Create a trigger
 
 Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report. See [Triggers](/triggers/overview).

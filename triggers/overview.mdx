@@ -18,9 +18,9 @@ You create and edit triggers on the workspace's triggers page, or through the pu
 
 - **A tag** — every flow carrying it. Flows tagged later join automatically.
 - **Named flows** — a fixed set.
-- **A [Smart Smoke Suite](/smart-smoke-suites)**, labeled **Let QA Wolf choose from the pull request's changes** on the triggers page — flows QA Wolf selects from the pull request behind the deploy. Deployment triggers only, and only for deploys tied to a pull request. See [PR testing](/deployment-testing/pr-testing).
+- **A [Smart Smoke Suite](/smart-smoke-suites)**, labeled **Let QA Wolf choose the flows** on the triggers page, or **Let QA Wolf choose from the pull request's changes** for pull request previews — flows QA Wolf selects from what each deploy changed: its pull request, or what reached the environment since its previous deploy. Deployment triggers only.
 
-Give preview deploys their own trigger rather than widening the one that covers staging. A pull request rarely needs everything staging runs, and a Smart Smoke Suite skips every deploy that has no pull request.
+Give preview deploys their own trigger rather than widening the one that covers staging. A pull request rarely needs everything staging runs.
 
 ## Mobile apps
 
@@ -30,7 +30,7 @@ A mobile pipeline uploads each new build and reports it as a deployment. The run
 
 On the triggers page, select **Create trigger**. The drawer asks what should start the runs:
 
-- **Deploys to an environment** — a deployment trigger for staging, production or any long-lived environment.
+- **Deploys to an environment** — a deployment trigger for staging, production or any long-lived environment. It can let QA Wolf choose the flows from what each deploy changed, or always run the same flows.
 - **A schedule** — runs in one environment on a repeating schedule. Pick a shortcut such as **Hourly**, **Weekdays** or **Every 2 weeks**, or set **Every [N] [unit] at [time]**.
 - **Pull request previews** — a deployment trigger for preview environments named like a pattern, such as `pr-*`. It can let QA Wolf choose the flows from each pull request's changes, or always run the same flows.
 
