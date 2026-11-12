@@ -13,7 +13,7 @@ A build is an Android `.apk` or `.aab`, or an iOS `.ipa`, that you upload to QA 
 - **Size** — at most 1 GB.
 - **File name** — letters, digits, `.`, `_` and `-`, at most 255 characters. The Builds page and the CLI replace other characters with `-`, and the Fastlane plugin replaces spaces with `-`. Every other way refuses the file.
 - **Zipped apps** — not accepted. Upload the `.apk`, `.aab` or `.ipa` inside the zip. A zip that holds `Payload/<App>.app/` is already an `.ipa`, so rename it to `.ipa`. Any other zipped app stays on [legacy build uploads](/legacy-build-uploads) for now.
-- **Retention** — QA Wolf deletes a build's file once no run is likely to need it. See [How long QA Wolf keeps a build](#how-long-qa-wolf-keeps-a-build).
+- **Retention** — QA Wolf keeps the newest builds of each app, and deletes older build files. See [How long QA Wolf keeps a build](#how-long-qa-wolf-keeps-a-build).
 
 ## How a run picks its build
 
@@ -245,14 +245,13 @@ The Node.js SDK cannot create runs. Each build replaces the environment's latest
 
 ## How long QA Wolf keeps a build
 
-QA Wolf keeps the build itself, so every run still shows which build it tested. It deletes the build's file once no run is likely to need it:
+QA Wolf keeps the build itself, so every run still shows which build it tested. It keeps the build's file as long as runs are likely to need it:
 
-| Build | File kept |
-| --- | --- |
-| The latest build of an app and platform in a static environment | Until a later upload replaces it |
-| A build a later upload replaced | 30 days after it was replaced, but no more than 180 days after upload |
-| A build uploaded with no environment | 14 days after upload |
-| A build in a preview environment | 180 days after upload |
+- **The latest build** of an app and platform in a static environment is always kept.
+- **The newest 50 builds** of each app and platform in an environment, and **the newest 100** uploaded with no environment, are kept for 180 days after upload.
+- **An older build** is deleted 7 days after it falls out of the newest 50 or 100.
+
+iOS and Android builds of one app count separately. Deleted builds count too. If your team needs to keep more builds, contact QA Wolf.
 
 A file can stay up to a day longer than these times.
 
