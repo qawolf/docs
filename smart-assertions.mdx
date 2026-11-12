@@ -1,7 +1,7 @@
 ---
 title: "Assert on the meaning of generated text"
 description: "Use toSatisfy to check what AI-generated text means, so a flow accepts new wording and still catches wrong answers."
-sidebarTitle: "Semantic assertions"
+sidebarTitle: "Smart assertions"
 keywords:
   - "LLM testing"
   - "LLM-as-a-judge"
@@ -11,7 +11,7 @@ keywords:
 ---
 
 <Check>
-  Semantic assertions must be enabled for your workspace. Ask your QA Wolf team to turn them on. They aren't available to workspaces whose AI data policy restricts provider data retention.
+  Smart assertions must be enabled for your workspace. Ask your QA Wolf team to turn them on. They aren't available to workspaces whose AI data policy restricts provider data retention.
 </Check>
 
 To assert on what an element's text means rather than its exact wording, use `ai.expect(...).toSatisfy(...)` from `@qawolf/ai/web`.
@@ -82,9 +82,9 @@ Avoid `toSatisfy` for required copy, numbers, IDs, and formats, or to prove what
 - `ai.expect` offers only `toSatisfy` and `.not.toSatisfy`. Use `expect` from `@qawolf/flows/web` for every other matcher.
 - The locator must match exactly one element. `toSatisfy` reads its text, not its visibility or input value, so add `toBeVisible()` when visibility matters.
 - An uncertain judgment or an evaluator error fails both `toSatisfy` and `.not.toSatisfy`. Treat an inconclusive result as a failure to investigate, not a reason to lower the threshold.
-- Semantic assertions run in web flows, in the editor and in triggered runs. They aren't available in iOS, Android, or local execution.
+- Smart assertions run in web flows, in the editor and in triggered runs. They aren't available in iOS, Android, or local execution.
 - QA Wolf evaluates each assertion with TypeSafe's Jev model, so flows need no API key.
-- When semantic assertions are enabled, the QA Wolf agent uses them for generated text in the flows it writes.
+- When smart assertions are enabled, the QA Wolf agent uses them for generated text in the flows it writes.
 
 ## Full sample test
 

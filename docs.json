@@ -58,6 +58,10 @@
   },
   "redirects": [
     {
+      "source": "/semantic-assertions",
+      "destination": "/smart-assertions"
+    },
+    {
       "source": "/triggers/set-up-a-trigger",
       "destination": "/triggers/reference"
     },
@@ -882,7 +886,7 @@
           {
             "group": "AI & LLMs",
             "pages": [
-              "semantic-assertions",
+              "smart-assertions",
               "non-deterministic-ai-testing"
             ]
           },
