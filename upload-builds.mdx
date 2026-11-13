@@ -13,7 +13,7 @@ A build is an Android `.apk` or `.aab`, or an iOS `.ipa`, that you upload to QA 
 - **Size** — at most 1 GB.
 - **File name** — letters, digits, `.`, `_` and `-`, at most 255 characters. The Builds page and the CLI replace other characters with `-`, and the Fastlane plugin replaces spaces with `-`. Every other way refuses the file.
 - **Zipped apps** — not accepted. Upload the `.apk`, `.aab` or `.ipa` inside the zip. A zip that holds `Payload/<App>.app/` is already an `.ipa`, so rename it to `.ipa`. Any other zipped app stays on [legacy build uploads](/legacy-build-uploads) for now.
-- **Retention** — 180 days after upload, except the latest build of each app and platform in a static environment, which stays until a later upload replaces it.
+- **Retention** — QA Wolf keeps the newest builds of each app, and deletes older build files. See [How long QA Wolf keeps a build](#how-long-qa-wolf-keeps-a-build).
 
 ## How a run picks its build
 
@@ -242,6 +242,26 @@ Pass the build ids as `builds` when you create the run, to test a build without 
 - **HTTP** — `POST https://app.qawolf.com/api/trpc/public.run.create` with `{ "json": { "workspaceId": "…", "environmentId": "…", "flowIds": ["…"], "builds": ["<build_id>"] } }`.
 
 The Node.js SDK cannot create runs. Each build replaces the environment's latest build of its app and platform, for that run only. A run takes at most 20 builds.
+
+## How long QA Wolf keeps a build
+
+QA Wolf keeps the build itself, so every run still shows which build it tested. It keeps the build's file as long as runs are likely to need it:
+
+- **The latest build** of an app and platform in a static environment is always kept.
+- **The newest 50 builds** of each app and platform in an environment, and **the newest 100** uploaded with no environment, are kept for 180 days after upload.
+- **An older build** is deleted 7 days after it falls out of the newest 50 or 100.
+- **A build in a preview environment** is deleted 7 days after the environment is terminated, for example when its pull request closes.
+
+iOS and Android builds of one app count separately. Deleted builds count too. If your team needs to keep more builds, contact QA Wolf.
+
+A file can stay up to a day longer than these times.
+
+When a build's file is gone:
+
+- **The build's details** on the Builds page show **File expired**.
+- **Creating a run, reporting a deployment, or reattempting a run that names the build** is refused with "Build file expired".
+
+To test the build again, upload the file again. The new upload gets a new build id.
 
 ## Move from legacy uploads
 
