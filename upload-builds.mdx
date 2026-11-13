@@ -250,6 +250,7 @@ QA Wolf keeps the build itself, so every run still shows which build it tested. 
 - **The latest build** of an app and platform in a static environment is always kept.
 - **The newest 50 builds** of each app and platform in an environment, and **the newest 100** uploaded with no environment, are kept for 180 days after upload.
 - **An older build** is deleted 7 days after it falls out of the newest 50 or 100.
+- **A build in a preview environment** is deleted 7 days after the environment is terminated, for example when its pull request closes.
 
 iOS and Android builds of one app count separately. Deleted builds count too. If your team needs to keep more builds, contact QA Wolf.
 
