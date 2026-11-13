@@ -33,7 +33,7 @@ The command creates the following files:
 - `src/flows/example.flow.ts` — a minimal web flow you can edit or delete.
 - `.qawolf/.gitignore` — ignores the contents of `.qawolf/`, including flows pulled from the platform and run artifacts in `.qawolf/output/`.
 
-If your directory has no `package.json`, the CLI creates one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script that runs `qawolf flows run`. If a `package.json` already exists, the CLI only adds the `test:e2e` script.
+If your directory has no `package.json`, the CLI offers to create one with `"type": "module"`, the `@qawolf/flows` dependency, and a `test:e2e` script that runs `qawolf flows run`. If a `package.json` already exists, the CLI offers to add whichever of those it lacks. `--yes` makes these `package.json` changes without prompting.
 
 ## Write a flow
 

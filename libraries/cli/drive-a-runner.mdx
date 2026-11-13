@@ -1,10 +1,10 @@
 ---
 title: "Drive a runner"
-description: "Launch a QA Wolf-hosted browser, Android device, or iOS device from the qawolf CLI, run flows on it, and drive it by hand."
+description: "Launch a QA Wolf-hosted browser, Android device, iOS device, or Windows desktop from the qawolf CLI, run flows on it, and drive it by hand."
 sidebarTitle: "Drive a runner"
 ---
 
-`qawolf runner` drives a browser, an Android device, or an iOS device hosted by QA Wolf. Nothing runs on your machine.
+`qawolf runner` drives a browser, an Android device, an iOS device, or a Windows desktop hosted by QA Wolf. Nothing runs on your machine.
 
 You launch a runner, run a flow on it, then act on its screen and read what it shows. Unlike `qawolf flows run`, this works for iOS flows.
 
@@ -16,7 +16,7 @@ Sign in with `qawolf auth login`, or set `QAWOLF_API_KEY`. See [Authenticate](/l
 
 <Steps>
   <Step>
-    Launch a runner under an id you choose, and pick what it runs with `--name`: `ios`, `android`, or `playwright` for a browser.
+    Launch a runner under an id you choose, and pick what it runs with `--name`: `ios`, `android`, `windows`, or `playwright` for a browser. See [Windows desktop testing](/windows-desktop) before launching a Windows runner.
 
     ```bash
     qawolf runner launch --id my-runner --name ios
@@ -33,7 +33,7 @@ Sign in with `qawolf auth login`, or set `QAWOLF_API_KEY`. See [Authenticate](/l
     qawolf runner run flows/login.flow.ts --follow
     ```
 
-    On an Android or iOS runner, the first run starts the device session, so this step is required even if you only want to drive the device by hand. Until then, `screenshot`, `act` and `inspect` exit with code `2`. A browser runner's screen starts at launch. The flow's `target` has to match what the runner runs. `run` sends the flow file, the files it imports, and your `package.json`. `--follow` waits for the run to finish and exits with code `1` if it did not pass.
+    On an Android, iOS, or Windows runner, the first run starts the device or desktop session, so this step is required even if you only want to drive the device by hand. Until then, `screenshot`, `act` and `inspect` exit with code `2`. A browser runner's screen starts at launch. The flow's `target` has to match what the runner runs. `run` sends the flow file, the files it imports, and your `package.json`. `--follow` waits for the run to finish and exits with code `1` if it did not pass.
   </Step>
   <Step>
     Drive and inspect the runner with the commands in the sections below. When you're done, terminate it:
