@@ -1071,6 +1071,7 @@
             "group": "Issue Trackers",
             "pages": [
               "Jira",
+              "jira-agent",
               "Linear",
               "Asana",
               "Azure-DevOps-Boards",

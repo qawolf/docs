@@ -1,0 +1,50 @@
+---
+title: "Use QA Wolf AI in Jira"
+description: "Install the QA Wolf app from Atlassian Marketplace, link your workspace, and request testing from Jira comments."
+sidebarTitle: "QA Wolf AI in Jira"
+---
+
+Mention `@QA Wolf` in a Jira work item comment to ask about test coverage, request a test run, or investigate a failure. QA Wolf replies in a comment on the same work item.
+
+## Before you begin
+
+- A Jira Cloud site with Rovo and Jira AI enabled.
+- A Jira site admin to install the app and post the first mention.
+- A QA Wolf workspace admin to link the workspace.
+
+## Install the app
+
+<Steps>
+  <Step title="Open the Marketplace listing">
+    Open the [QA Wolf app in Atlassian Marketplace](https://marketplace.atlassian.com/apps/797871481/qa-wolf?tab=overview&showOnlyPublic=true).
+  </Step>
+  <Step title="Start the installation">
+    Select **Get it now**.
+  </Step>
+  <Step title="Select your site">
+    Choose the Jira Cloud site where you want to use QA Wolf.
+  </Step>
+  <Step title="Install QA Wolf">
+    Review the app permissions and select **Install**.
+  </Step>
+</Steps>
+
+## Link your QA Wolf workspace
+
+<Steps>
+  <Step title="Mention QA Wolf for the first time">
+    As a Jira site admin, open a work item and start a comment. Type `@QA Wolf`, select the **QA Wolf** agent from the suggestions, and post the comment.
+  </Step>
+  <Step title="Open the workspace link">
+    In **Agent sessions** on the work item, select **Connect** on the QA Wolf card.
+  </Step>
+  <Step title="Authorize the workspace">
+    As a QA Wolf workspace admin, choose the workspace that should answer mentions from this Jira site. Select **Link Jira site**.
+  </Step>
+</Steps>
+
+## Ask QA Wolf in Jira
+
+You link the workspace once for the Jira site. After that, mention `@QA Wolf` in a new comment each time you have a request.
+
+For example, ask `@QA Wolf What test coverage do we have for sign-in?`
