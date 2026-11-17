@@ -1,6 +1,8 @@
 # QA Wolf docs style guide
 
-Rules for the References tab, derived from a full-text style audit of all ~40 pages (rules 1-10), a later page-by-page ordering pass (rule 11), and a site-wide audit of step-by-step instruction formatting (rule 12, which applies beyond the References tab). Apply these when writing new pages or editing existing ones. Each rule names the actual problem found, not a generic writing-advice bullet.
+> This file is a copy, kept in sync from QA Wolf's writing guides. To change a rule, say so in your pull request instead of editing it here.
+
+Rules for writing and editing QA Wolf's docs pages. Rules 1-10 came from a full-text style audit of the References tab (about 40 pages), rule 11 from a page-by-page ordering pass, rule 12 from a site-wide audit of step-by-step formatting, and the rest from reviews since. Each rule names the actual problem found, not a generic writing-advice bullet.
 
 ## 1. Terminology — one word per concept
 
@@ -143,7 +145,7 @@ Two consequences worth knowing when choosing a level:
 
 - **Only `##`, `###`, and `####` get an anchor and a "On this page" entry** — `#####` and deeper are rendered but silently excluded, as are `<Step>` and `<Accordion>` titles (verified against rendered output). So a heading level is also a decision about whether readers can link to and navigate to that content.
 - **Anchors derive from heading text, not level**, so changing a heading's level never breaks an inbound link. Renaming it does.
-
+- **A placeholder in a heading stays in its anchor.** Mintlify keeps the angle brackets: `` `build upload <file>` `` anchors to `#build-upload-<file>`, not `#build-upload-file`, and the link check doesn't catch a dead in-page anchor. Link the parent `##` section instead, or read the real `id` off the preview.
 
 ## 15. Callouts don't stack
 
@@ -190,7 +192,6 @@ So `keywords` is an external-SEO aid. It does not make a page findable in the do
 
 **Don't use keywords to paper over missing content.** If a term matters enough to search for, it usually belongs in the page.
 
-
 ## 18. Write for coding agents as well as people
 
 A coding agent is a real reader of these docs, not a hypothetical one. It arrives through the QA Wolf MCP, the `qawolf-cli` agent skill, or by fetching a page directly, and it acts on what it finds. Write for it explicitly where it is genuinely part of the audience.
@@ -209,7 +210,6 @@ Quick start's "For coding agents" section is the model: it names the `qawolf-cli
 
 **Don't perform it.** Not every page has an agent audience, and a line addressed to one on a page about reading maintenance reports is noise. Add it where an agent would actually be doing the task — CLI and MCP setup, anything an agent automates, anything it would fetch on its own.
 
-
 ## 19. First person — the product is third person, the service team is first
 
 The original ban on "we" was written from a self-service page, where "we" stands in for software. That reading doesn't survive contact with Full Service, where the subject is a team of people doing work for the reader. Which voice a page takes depends on what the sentence is actually about.
@@ -224,6 +224,23 @@ Two things this does not license:
 - **"We" as a vague authority.** "We recommend" on a reference page is the old problem in a new costume — it is the product speaking, so state the requirement directly (rule 16) or name the product.
 - **First person plural for the reader's team.** "Your team" and "our team" are different groups, and a page that blurs them becomes unreadable at exactly the moment it matters, in a table of who attends which meeting.
 
+## 20. The Oxford comma, always
+
+Every series of three or more takes the serial comma: "A, B, and C", in body copy, titles, descriptions, and link text. When a series has its own "and" inside it, split the sentence instead of stacking commas.
+
+## 21. Facts come from the product, never from another docs page
+
+The docs are being rewritten because pages fell out of date, so a docs page is never evidence of how QA Wolf works. Check behavior, endpoints, tool and package names, and install steps against the shipped code and packages (or the live tools) before writing them, and verify every identifier an agent will copy (rule 18). When something can only be sourced from another page, say so and treat it as unverified. Reading a page to decide what to edit is fine.
+
+## 22. Where a page goes
+
+- **Features** holds one overview page per feature. Field and API detail goes under **References**, and setup walkthroughs under **Integrations** (Deployment testing, for example).
+- **A feature that's part of an existing object nests under it** instead of becoming a new Features group. Triggers, Smart Smoke Suites, Run Rules, and Tags are one Run Orchestration group.
+- **Quick start is the home page** (`index.mdx`), and the old Welcome page is `why-qa-wolf.mdx`.
+
+## 23. Public wording only
+
+The docs repo is public, so pages, examples, commit messages, and pull request descriptions describe the docs change in customer-facing words. No internal feature-flag names, internal file paths, chat links or IDs, or customer names, in examples included.
 
 ---
 
