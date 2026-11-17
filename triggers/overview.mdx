@@ -1,13 +1,13 @@
 ---
 title: "Loops"
-description: "Tell QA Wolf what to do when something happens: run flows, or run AI with your own instructions, on a deploy, a schedule, or a pull request."
+description: "Tell QA Wolf what to do when something happens: run flows, or run AI with your own instructions, on a deploy, a schedule, a pull request, or a QA Wolf bug, blocker, or request."
 sidebarTitle: "Loops"
-keywords: "triggers, automatic test runs, run on deploy, PR testing, nightly runs, deployment trigger, scheduled trigger, Smart Smoke Suite, Run AI, Run now, run history, automation"
+keywords: "triggers, automatic test runs, run on deploy, PR testing, nightly runs, deployment trigger, scheduled trigger, Smart Smoke Suite, Run AI, Run now, run history, automation, QA Wolf events, bug events"
 ---
 
 A loop tells QA Wolf what to do when something happens. It has two parts:
 
-- **When** — what starts the loop: a deploy, a schedule, or a pull request.
+- **When** — what starts the loop: a deploy, a schedule, a pull request, or a QA Wolf event.
 - **Then** — what QA Wolf does each time: **Run AI** with your instructions, or **Run specific flows**.
 
 Loops belong to the workspace, so one loop can cover staging, production, and every preview environment. You find them under **Loops** in the main navigation. The public API and CLI call a loop a trigger, through `trigger.*`. See [Trigger fields](/triggers/reference).
@@ -20,8 +20,25 @@ The **Starts on** menu picks what starts the loop:
 - **A schedule** — fires in one environment every few hours, days, weeks, or months. Pick a shortcut such as **Hourly**, **Weekdays**, or **Every 2 weeks**, or set **Every [N] [unit] at [time]**. An hourly or daily schedule can be restricted to chosen days of the week. Needs nothing from your pipeline.
 - **Pull request previews** — fires on deploys to preview environments named like a pattern, such as `pr-*`.
 - **A pull request** — fires when a pull request in a repository is opened, marked ready for review, gets new commits, gets a label, or is merged. Needs a connected GitHub or GitLab integration. Not every workspace has it yet.
+- **A bug**, **A blocker**, or **A request** — fires on a QA Wolf event. See [QA Wolf events](#qa-wolf-events).
 
 To narrow a deploy loop, select **Only when…** and add a repository, service, branch, or deploy URL condition. Each condition suggests the values your recent deploys reported, and you can type a name or [pattern](/triggers/reference#deployment-conditions) instead. The editor says how many of your recent deploys the loop would have run on, and lists them.
+
+### QA Wolf events
+
+A loop can start when something happens to a bug, a blocker, or a request in QA Wolf. Each one has its own events in the **Starts on** menu:
+
+| Starts on | Events |
+| --- | --- |
+| **A bug** | **is reported**, **is closed**, **is reopened**, **gets a priority** |
+| **A blocker** | **is opened**, **is closed** |
+| **A request** | **is made**, **moves to a status** |
+
+**gets a priority** asks for the priorities that start the loop, and **moves to a status** asks for the statuses. A request that moves to In review counts as moving to In Progress. To narrow a loop further, add a **Priority** filter, or a **Blocked on** filter for a blocker.
+
+A loop on a QA Wolf event can Run AI or Run specific flows. With Run specific flows, the **Environment** option picks where the flows run. It defaults to the workspace's default environment. When the environment a loop was saved with is terminated, the option shows **Unavailable environment**. Clear it, or pick another.
+
+A change made by a loop's own session never starts a loop. The firing is skipped with the reason `caused-by-global-trigger-session`.
 
 ## Then
 
@@ -30,7 +47,7 @@ To narrow a deploy loop, select **Only when…** and add a repository, service, 
 
 **Run options** holds failure investigation and the number of flows that run in parallel. Run AI has no run options.
 
-A [Smart Smoke Suite](/smart-smoke-suites) lets QA Wolf choose the flows from the change behind each deploy. Choose **Run AI** and start the instructions with `/smart-smoke-suite`. It works only on a loop that starts on a deploy.
+A [Smart Smoke Suite](/smart-smoke-suites) lets QA Wolf choose the flows from the change behind each deploy. Choose **Run AI** and start the instructions with `/smart-smoke-suite`. It works only on a loop that starts on a deploy, not on a schedule, a pull request, or a QA Wolf event.
 
 Give preview deploys their own loop rather than widening the one that covers staging. A pull request rarely needs everything staging runs.
 
@@ -40,6 +57,8 @@ On the Loops page, select **New loop**. Pick a template, such as **Nightly regre
 
 **Create loop** stays disabled until the loop is complete, and says what is missing.
 
+On a loop's page, a new name and the **Enabled** switch save at once. Changes to **When** and **Then** wait until you select **Save changes**.
+
 ## Run now
 
 **Run now** fires a loop by hand, so you can try it before it fires on its own. It sits on each row of the Loops page and on the loop's own page.
@@ -47,14 +66,14 @@ On the Loops page, select **New loop**. Pick a template, such as **Nightly regre
 - **A schedule loop** fires at once, in its environment.
 - **A deploy loop** opens a menu of recent deploys the loop matches. Pick one, and the loop fires on it, in that deploy's environment.
 
-Run now works on a paused loop. It is not available for a Smart Smoke Suite or a pull request loop.
+QA Wolf confirms with "Run requested for {name}. See it in Run history." Run now works on a paused loop. It is not available for a Smart Smoke Suite, a pull request loop, or a QA Wolf event loop.
 
 ## Run history
 
 A loop's page shows **Run history**, one row per firing, newest first. A row says whether the loop fired, what happened, and when. A firing started with Run now says who started it.
 
 - **A run** — opens into its results.
-- **A session** — shows whether it is working, finished, failed, or waiting for its owner. It opens into the session's latest reply, how long it worked, the flow it left if any, and **Open in chat**.
+- **A session** — shows its status, such as **Session working** or **Session waiting for its owner**. It opens into the session's latest reply, how long it worked ("Worked for"), the flow it left if any, and **Open in chat**.
 - **A skipped firing** — says why nothing started, such as "This loop has no owner on the team to run the session as".
 
 ## Mobile apps

@@ -16,8 +16,9 @@ The session starts with the firing's details, so your instructions don't need to
 | A deploy | The deploy's environment, commit, and branch, and the changes your CI reported with it. |
 | A schedule | The time it came due, and the environment the loop runs on. |
 | A pull request | The pull request's repository, branches, title, labels, and changes. |
+| A bug, a blocker, or a request | Its name, what changed, and its priority. |
 
-A session on a deploy works in the deploy's environment. A session on a schedule works in the schedule's environment. A session on a pull request works in the workspace's default environment. On GitHub, it posts its reply as a comment on the pull request.
+A session on a deploy works in the deploy's environment. A session on a schedule works in the schedule's environment. A session on a pull request or a QA Wolf event works in the workspace's default environment. On GitHub, a pull request session posts its reply as a comment on the pull request.
 
 ## Write instructions
 
@@ -40,7 +41,7 @@ Read what this pull request changes. List the flows it could break, and draft a 
 In the **Instructions** box:
 
 - Type `@` to mention a tag, a flow, or an environment by name.
-- Type `/` for a command. `/smart-smoke-suite` makes the loop a [Smart Smoke Suite](/smart-smoke-suites) instead of a session, and works only on a loop that starts on a deploy.
+- On a loop that starts on a deploy, type `/` for the `/smart-smoke-suite` command. It makes the loop a [Smart Smoke Suite](/smart-smoke-suites) instead of a session. No other loop has commands.
 - Pick a chip under **Start from:** to fill the box with an example for the loop's start.
 
 Instructions can be up to 10,000 characters.
@@ -58,6 +59,6 @@ QA Wolf pauses a loop that runs AI when it has no owner, or when its owner is no
 ## Follow a session
 
 - **Run history** — each firing shows its session's status. Open it for the session's latest reply, how long it worked, and **Open in chat**. See [Run history](/triggers/overview#run-history).
-- **Inbox** — when a session asks a question or fails, QA Wolf adds an Inbox row for the owner, under **Loops**. Open it to answer in chat.
+- **Inbox** — when a session asks a question or fails, QA Wolf adds an Inbox row for the owner, under **Loops**, such as "Nightly review is waiting for you". Open it to answer in chat. Once the session moves on, the row reads "Session closed". Deleting a loop closes its open Inbox rows.
 
 A firing that starts no session says why in Run history, for example when the loop reached its daily limit of sessions.
