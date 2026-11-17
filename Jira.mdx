@@ -1,6 +1,6 @@
 ---
 title: "Integrate with Jira"
-description: "Connect QA Wolf to Jira to automatically create, sync, and close issue tickets from QA Wolf bug reports."
+description: "Install the QA Wolf agent in Jira Cloud, link your workspace, and sync QA Wolf bug reports with Jira."
 sidebarTitle: "Jira"
 keywords:
   - "bug tracker"
@@ -12,9 +12,58 @@ keywords:
   - "Jira Software"
 ---
 
-To request testing and ask questions from Jira comments, [use QA Wolf AI in Jira](/jira-agent).
+Use the QA Wolf agent in Jira to request testing from a work item comment. You can also sync QA Wolf bug reports with Jira.
 
-## What this integration does
+## Use QA Wolf AI in Jira
+
+Mention `@QA Wolf` in a Jira work item comment to ask about test coverage, request a test run, or investigate a failure. QA Wolf replies in a comment on the same work item.
+
+### Before you begin
+
+- A Jira Cloud site with Rovo and Jira AI enabled.
+- A Jira site admin to install the app and post the first mention.
+- A QA Wolf workspace admin to link the workspace.
+
+### Install the app
+
+<Steps>
+  <Step title="Open the Marketplace listing">
+    Open the [QA Wolf app in Atlassian Marketplace](https://marketplace.atlassian.com/apps/797871481/qa-wolf?tab=overview&showOnlyPublic=true).
+  </Step>
+  <Step title="Start the installation">
+    Select **Get it now**.
+  </Step>
+  <Step title="Select your site">
+    Choose the Jira Cloud site where you want to use QA Wolf.
+  </Step>
+  <Step title="Install QA Wolf">
+    Review the app permissions and select **Install**.
+  </Step>
+</Steps>
+
+### Link your QA Wolf workspace
+
+<Steps>
+  <Step title="Mention QA Wolf for the first time">
+    As a Jira site admin, open a work item and start a comment. Type `@QA Wolf`, select the **QA Wolf** agent from the suggestions, and post the comment.
+  </Step>
+  <Step title="Open the workspace link">
+    In **Agent sessions** on the work item, select **Connect** on the QA Wolf card.
+  </Step>
+  <Step title="Authorize the workspace">
+    As a QA Wolf workspace admin, choose the workspace that should answer mentions from this Jira site. Select **Link Jira site**.
+  </Step>
+</Steps>
+
+### Ask QA Wolf in Jira
+
+You link the workspace once for the Jira site. After that, mention `@QA Wolf` in a new comment each time you have a request.
+
+For example, ask `@QA Wolf What test coverage do we have for sign-in?`
+
+## Sync QA Wolf bug reports with Jira
+
+### What this integration does
 
 - **Automatic issue handling.** Creates Jira issues automatically when new bug reports are generated in QA Wolf, keeping Jira up to date without manual entry. Context added in Jira is not written back to QA Wolf.
 - **Synchronization.** Closing a bug report in QA Wolf closes the linked Jira ticket, and closing a Jira ticket updates QA Wolf. QA Wolf also performs regular bug revalidations to ensure accuracy. Contact your QA Wolf representative if a closed ticket doesn't update QA Wolf.
@@ -26,12 +75,12 @@ To request testing and ask questions from Jira comments, [use QA Wolf AI in Jira
   **Full Service customers:** the QA Wolf team can configure this integration on your behalf. To get started, invite QA Wolf as a user in your Jira workspace using this email convention: qa\+\[yourcompanyname\]@qawolf.com (e.g. [qa\+acme@qawolf.com](mailto:qa+acme@qawolf.com)).
 </Note>
 
-## Requirements
+### Requirements
 
 - Access to a QA Wolf workspace
 - A Jira project to create issues in
 
-## How to connect QA Wolf to Jira
+### How to connect QA Wolf to Jira
 
 <Steps>
   <Step title="Start the connection">
