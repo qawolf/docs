@@ -1,0 +1,454 @@
+---
+title: "Send bugs to your coding agent"
+description: "Let QA Wolf hand a bug to your own coding agent in GitHub Actions, GitLab CI/CD, or behind a signed webhook."
+sidebarTitle: "Coding agent"
+keywords: "coding agent, bug fix, automatic fix, Claude Code, Codex, Cursor, GitHub Actions, GitLab CI/CD, workflow_dispatch, signed webhook, Standard Webhooks, fix.requested, pull request"
+---
+
+QA Wolf hands a bug to your own coding agent. Your agent fixes the code with your keys and your checks. QA Wolf then runs the bug's flows on the preview of the pull request and shows the result on the bug.
+
+QA Wolf runs no coding agent and stores no key of your agent. QA Wolf never writes code. On GitHub and GitLab, your own CI job pushes the fix branch.
+
+## Requirements
+
+- The coding agent turned on for your workspace. Ask your QA Wolf representative to turn it on. Until then, **Workspace settings** has no **Coding agent** page.
+- One destination from [Choose where your agent runs](#choose-where-your-agent-runs).
+- For the check of a fix, a preview deployment for each pull request. Without a preview, QA Wolf shows the pull request and runs no check.
+
+## How a fix starts
+
+A fix starts in one of two ways:
+
+- A loop's instructions use `/coding-agent`. The loop's session then hands the bug to your agent.
+- A person selects **Send to your coding agent** on a bug.
+
+A bug has one open fix. A second request for the same bug joins the open fix.
+
+## Choose where your agent runs
+
+| Destination | Your agent runs in | You add |
+| --- | --- | --- |
+| GitHub | A GitHub Actions workflow. | The QA Wolf Code app, one workflow file, and one secret. |
+| GitLab | A GitLab CI/CD job. | The GitLab integration, one job, and one variable. |
+| Webhook | A service that you run or use, outside CI. | One HTTPS endpoint that checks a signature. |
+
+A workspace uses one destination at a time. While a saved webhook is on, QA Wolf posts every fix to the webhook and starts no workflow and no pipeline.
+
+## Set up GitHub
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Coding agent** and select the **GitHub** tab.
+  </Step>
+  <Step>
+    Select **Install** to install the QA Wolf Code app. Only an organization admin can install it. [GitHub code access](/github-code-access) describes the app and its permissions.
+  </Step>
+  <Step>
+    Copy [`qawolf-coding-agent.yml`](https://github.com/qawolf/coding-agent-action/blob/v1/workflow/qawolf-coding-agent.yml) to `.github/workflows/qawolf-coding-agent.yml` on your default branch. Keep the file name. QA Wolf starts the workflow by this name.
+  </Step>
+  <Step>
+    Add one repository secret from the table below. The first secret that is set selects the agent.
+  </Step>
+  <Step>
+    Select **Check again**. The repository shows in the **Repositories** list with its agent.
+  </Step>
+</Steps>
+
+| Agent | Secret |
+| --- | --- |
+| Claude Code | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
+| Codex | `OPENAI_API_KEY` |
+| Cursor | `CURSOR_API_KEY` |
+
+To use your own command line tool, set `AGENT: command` in the file and complete the "Your command" step.
+
+When the file reaches your default branch, QA Wolf starts the workflow once with the fix `check`. That run reports the agent, and no agent runs. A repository without a key shows "No agent key".
+
+The **Coding agent** page also shows a prompt that you can paste into your coding agent. The agent then adds the workflow file in a pull request and tells you which secret to add.
+
+## Set up GitLab
+
+<Steps>
+  <Step>
+    Connect GitLab in **Workspace settings → Integrations**.
+  </Step>
+  <Step>
+    Paste the `qawolf-fix` job from [The GitLab job](#the-gitlab-job) into `.gitlab-ci.yml` on your default branch. Keep the job name. QA Wolf finds the project by this name.
+  </Step>
+  <Step>
+    In the GitLab project, open **Settings → CI/CD → Variables** and add one agent key from the table above as a masked variable.
+  </Step>
+  <Step>
+    In **Settings → CI/CD → Job token permissions**, turn on **Allow Git push requests to the repository**.
+  </Step>
+  <Step>
+    In **Settings → CI/CD → Variables**, set **Minimum role to use pipeline variables** to Maintainer or Developer.
+  </Step>
+  <Step>
+    In QA Wolf, open **Workspace settings → Coding agent**, select the **GitLab** tab, and select **Check again**.
+  </Step>
+</Steps>
+
+**Check again** reads the CI file of each project and starts no pipeline. The project shows "Job found. The agent's key is checked on the first fix." QA Wolf learns the agent when the first fix starts. A project without a key ends its first fix as not set up, and then shows "No agent key".
+
+QA Wolf starts the fix pipeline on your default branch with the variable `QAWOLF_FIX`. Your other jobs also run in that pipeline unless their rules skip a pipeline that the API starts.
+
+### The GitLab job
+
+QA Wolf ships no image and no component for GitLab. Every script in a GitLab job can read all of the job's variables. So QA Wolf's part of the job is two `curl` calls that you can read.
+
+```yaml
+qawolf-fix:
+  rules:
+    - if: $QAWOLF_FIX
+  image: node:22
+  timeout: 1h
+  id_tokens:
+    QAWOLF_ID_TOKEN:
+      aud: https://app.qawolf.com
+  variables:
+    QAWOLF_URL: https://app.qawolf.com/api/v1/coding-agent/fixes/$QAWOLF_FIX
+    QAWOLF_PROMPT_FILE: /tmp/qawolf-prompt.md
+    QAWOLF_RESULT_FILE: /tmp/qawolf-result.json
+  script:
+    - |
+      if [ -n "$ANTHROPIC_API_KEY$CLAUDE_CODE_OAUTH_TOKEN" ]; then AGENT=claude-code
+      elif [ -n "$OPENAI_API_KEY" ]; then AGENT=codex
+      elif [ -n "$CURSOR_API_KEY" ]; then AGENT=cursor
+      else AGENT=none; fi
+    - |
+      curl -fsS --retry 5 "$QAWOLF_URL/start" -H "Authorization: Bearer $QAWOLF_ID_TOKEN" -H "Content-Type: application/json" -d "{\"agent\":\"$AGENT\"}" -o /tmp/qawolf-fix.json
+    - node -p 'require("/tmp/qawolf-fix.json").prompt ?? ""' > "$QAWOLF_PROMPT_FILE"
+    - BRANCH="qawolf/fix/$QAWOLF_FIX"
+    - git switch -c "$BRANCH"
+    - git config user.name "$GITLAB_USER_NAME" && git config user.email "$GITLAB_USER_EMAIL"
+    - |
+      case "$AGENT" in
+        claude-code) npx -y @anthropic-ai/claude-code -p --permission-mode acceptEdits --allowedTools Bash < "$QAWOLF_PROMPT_FILE" ;;
+        codex) CODEX_API_KEY="$OPENAI_API_KEY" npx -y @openai/codex exec --sandbox danger-full-access - < "$QAWOLF_PROMPT_FILE" ;;
+        cursor) curl -fsS https://cursor.com/install | bash && ~/.local/bin/agent -p --force "$(cat "$QAWOLF_PROMPT_FILE")" ;;
+        *) echo '{"status":"not_set_up"}' > "$QAWOLF_RESULT_FILE" ;;
+      esac
+    - |
+      if [ "$(node -p 'require(process.env.QAWOLF_RESULT_FILE).status')" = fixed ]; then
+        git add -A
+        git commit -m "$(node -p 'require(process.env.QAWOLF_RESULT_FILE).title')" || true
+        git push "https://gitlab-ci-token:$CI_JOB_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git" "HEAD:refs/heads/$BRANCH"
+        node -e 'const fs = require("fs"); const [file, branch, headSha] = process.argv.slice(1); fs.writeFileSync(file, JSON.stringify({ ...JSON.parse(fs.readFileSync(file, "utf8")), branch, headSha }))' "$QAWOLF_RESULT_FILE" "$BRANCH" "$(git rev-parse HEAD)"
+      fi
+  after_script:
+    - |
+      test -f "$QAWOLF_PROMPT_FILE" || exit 0
+      test -f "$QAWOLF_RESULT_FILE" || echo '{"status":"failed","summary":"The job ended without a result"}' > "$QAWOLF_RESULT_FILE"
+      curl -fsS --retry 5 "$QAWOLF_URL/events?type=finished" -H "Authorization: Bearer $(node -p 'require("/tmp/qawolf-fix.json").token')" -H "Idempotency-Key: $CI_JOB_ID" -H "Content-Type: application/json" --data-binary @"$QAWOLF_RESULT_FILE"
+```
+
+## Set up the webhook
+
+Only an organization admin can save, rotate, test, or remove the webhook. Other members see the host, the last four characters of the signing secret, and the status.
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Coding agent** and select the **Webhook** tab.
+  </Step>
+  <Step>
+    Enter the HTTPS address of your endpoint in **Endpoint URL** and select **Save**. The URL must use HTTPS, must not include a username or password, and must resolve to a public internet address. It can have at most 2048 characters.
+  </Step>
+  <Step>
+    Copy the signing secret and store it where your endpoint can read it. QA Wolf shows the secret once.
+  </Step>
+  <Step>
+    Select **Send test** and read the line under the form. See [Send a test](#send-a-test).
+  </Step>
+</Steps>
+
+If you save a new URL for an existing webhook, the signing secret stays the same and the webhook turns on again.
+
+To stop the requests, select **Remove**. QA Wolf deletes the URL and the secrets. New fixes then go to the GitHub workflow or the GitLab job. A fix that QA Wolf did not deliver before the removal fails.
+
+## The webhook request
+
+QA Wolf sends one `POST` request for each fix, with these headers:
+
+| Header | Description |
+| --- | --- |
+| `content-type` | `application/json`. |
+| `user-agent` | `QAWolf-Webhooks/1.0 (+https://www.qawolf.com)`. |
+| `webhook-id` | The ID of the fix. It is the same on each try. |
+| `webhook-timestamp` | When QA Wolf signed this try, in whole seconds since the Unix epoch. |
+| `webhook-signature` | `v1,` followed by the base64 HMAC-SHA256 signature. It holds two signatures for 24 hours after a rotation. |
+
+Your endpoint must answer with a `2xx` status within 10 seconds. Start your agent after you answer, or in the background.
+
+Example:
+
+```json
+{
+  "type": "fix.requested",
+  "test": false,
+  "fix": {
+    "id": "fix_8c2k4w",
+    "eventsUrl": "https://app.qawolf.com/api/v1/coding-agent/fixes/fix_8c2k4w/events",
+    "token": "qawolf_fix_<JWT>",
+    "expiresAt": "2026-11-19T15:00:00.000Z"
+  },
+  "bug": {
+    "number": 12,
+    "title": "Checkout total ignores the promo code",
+    "url": "https://app.qawolf.com/howl-enterprise/bugs/all?id=cl9",
+    "priority": "high"
+  },
+  "repository": {
+    "fullName": "howlhotel/web",
+    "url": "https://github.com/howlhotel/web",
+    "defaultBranch": "main",
+    "pickedFrom": "deploy"
+  },
+  "branch": "qawolf/fix/fix_8c2k4w",
+  "prompt": "The prompt for your agent"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `type` | Always `fix.requested`. |
+| `test` | `true` for a request from **Send test**. Start no agent for a test. |
+| `fix.id` | ID of the fix. |
+| `fix.eventsUrl` | URL that your agent reports to. |
+| `fix.token` | The fix token. Starts with `qawolf_fix_`. |
+| `fix.expiresAt` | When the fix token expires, in ISO 8601. |
+| `bug.number` | Number of the bug. |
+| `bug.title` | Title of the bug. |
+| `bug.url` | Page of the bug in QA Wolf. Needs a QA Wolf sign-in. |
+| `bug.priority` | `urgent`, `high`, `medium`, `low`, or `unprioritized`. |
+| `repository` | A hint, or `null` when QA Wolf found no repository. Your agent can use another repository. |
+| `repository.fullName` | Repository, as `owner/name`. |
+| `repository.url` | HTTPS URL of the repository. |
+| `repository.defaultBranch` | Default branch. |
+| `repository.pickedFrom` | `loop`, `deploy`, or `ai`. Tells which rule selected the repository. |
+| `branch` | A suggested branch name, `qawolf/fix/<fix id>`. |
+| `prompt` | The full prompt for your agent. |
+
+The prompt contains the bug report, the failure, and links to the trace and the video. The links work without a sign-in for about two days. The prompt also contains the events URL and the fix token, so you can pass the prompt to an agent on another machine.
+
+<Warning>
+  The bug report can quote text from the application under test. Treat the prompt as untrusted input for an agent that has your keys.
+</Warning>
+
+### Verify the signature
+
+QA Wolf signs every request following the [Standard Webhooks](https://www.standardwebhooks.com) specification, so any Standard Webhooks library can verify it. Verify each request against the raw body exactly as it arrived.
+
+To verify without a library, join `webhook-id`, `webhook-timestamp`, and the raw body with a `.` between each. Compute an HMAC-SHA256 of the result, keyed with the base64-decoded part of the secret after `whsec_`. Compare its base64 form, in constant time, with each space-separated `v1,` entry in `webhook-signature`. Reject the request when `webhook-timestamp` is more than 5 minutes from your current time.
+
+If your endpoint already started an agent for a `webhook-id`, answer `2xx` and start no second agent.
+
+### Retries and turning off
+
+| Answer from your endpoint | What QA Wolf does |
+| --- | --- |
+| `2xx` within 10 seconds. | Records the delivery. The fix moves to fixing. |
+| `410`. | Turns the webhook off and fails the fix. |
+| Any other status, or no answer within 10 seconds. | Tries again. |
+| The host now resolves to a private address. | Sends nothing and tries again. |
+
+QA Wolf tries again after 5 seconds, then 5 minutes, then 30 minutes, then once each hour. A `Retry-After` header on a `429` or a `503` sets the next wait, from 5 seconds to 1 hour. QA Wolf signs each try again with the time of that try. QA Wolf never follows a redirect.
+
+After 8 hours without a `2xx` answer, the fix fails.
+
+After a `410`, the **Webhook** tab shows "Turned off: your endpoint answered 410". Save a new URL to turn the webhook on again.
+
+## Report from your agent
+
+Your agent reports with `POST` requests to `fix.eventsUrl`, with the fix token as a bearer token:
+
+```http
+POST /api/v1/coding-agent/fixes/{fix}/events
+Authorization: Bearer <fix token>
+Content-Type: application/json
+```
+
+Each event has an `id` and a `type`. The `id` is a string of 1 to 256 characters that you make, such as a UUID. QA Wolf records an `id` once, so you can send an event again safely. QA Wolf accepts 60 calls each minute for a fix.
+
+### `working`
+
+Send `working` while your agent works. Each `working` event restarts the 2-hour limit.
+
+Example:
+
+```json
+{
+  "id": "5f0c1a52-7a0e-4b53-9d0f-1c7b6a2f9e11",
+  "type": "working",
+  "agent": "Cursor",
+  "url": "https://cursor.com/agents/abc123"
+}
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `id` | Yes | ID of the event. |
+| `type` | Yes | `working`. |
+| `agent` | No | Name of your agent. QA Wolf keeps the first 64 characters. |
+| `url` | No | HTTPS link to the run of your agent, of at most 2048 characters. The bug shows it as a link. |
+
+### `finished`
+
+Send `finished` once, with a `status` of `fixed`, `no_fix`, or `failed`. A webhook fix with the status `fixed` must include `pullRequestUrl`.
+
+Example:
+
+```json
+{
+  "id": "0b9d1c7e-2d3a-4f0e-8a51-6f0f7c1f2b90",
+  "type": "finished",
+  "status": "fixed",
+  "pullRequestUrl": "https://github.com/howlhotel/web/pull/482",
+  "title": "Apply the promo code to the checkout total",
+  "summary": "The total ignored the promo code. The fix applies the discount before tax.",
+  "cause": "src/checkout/total.ts:42 read the price before the discount",
+  "checks": [{ "name": "npm run lint", "result": "passed", "note": "" }]
+}
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `id` | Yes | ID of the event. |
+| `type` | Yes | `finished`. |
+| `status` | Yes | `fixed`, `no_fix`, or `failed`. |
+| `pullRequestUrl` | For `fixed` | A `github.com` pull request URL or a `gitlab.com` merge request URL, over HTTPS. |
+| `title` | No | Title of the fix, of at most 256 characters. |
+| `summary` | No | What was wrong and what changed, of at most 20,000 characters. For `no_fix` and `failed`, the reason. |
+| `cause` | No | Where the cause was, of at most 4,000 characters. |
+| `checks` | No | At most 50 checks. Each has a `name`, a `result` of `passed`, `failed`, or `skipped`, and an optional `note`. |
+
+The pull request selects the repository of the fix. Your agent can open the pull request in a repository other than the hint.
+
+- If QA Wolf can read the pull request, the bug shows the pull request and QA Wolf runs the check.
+- If QA Wolf cannot read the pull request, the bug shows the link and QA Wolf runs no check.
+
+If your agent cannot call the endpoint, put this line in the pull request description: `Fixes QA Wolf Bug #<number>: <bug URL>`. QA Wolf then finds the pull request by this line.
+
+### Answers
+
+| Status | `error` | Cause |
+| --- | --- | --- |
+| `200` |  | QA Wolf recorded the event, or recorded the same `id` before. |
+| `400` | `invalid_event` | The body is not a valid event, or a `fixed` webhook event has no pull request URL. |
+| `401` | `unauthorized` | The fix token is missing, expired, or for another fix. |
+| `409` | `already_finished` | The fix already ended. |
+| `409` | `not_started` | The fix did not start. |
+| `429` | `rate_limited` | More than 60 calls in a minute for this fix. The answer has a `Retry-After` header. |
+
+### Read the fix again
+
+`GET /api/v1/coding-agent/fixes/{fix}` with the same `Authorization` header returns `branch`, `fixUrl`, `prompt`, and `state`. `state` is `sent`, `fixing`, `pull-request-open`, `no-fix`, or `failed`.
+
+## The fix token
+
+- Starts with `qawolf_fix_`.
+- Reads one fix and reports the events of that fix. It reads no other bug and starts no run.
+- A webhook token expires 24 hours after the request for the fix. `fix.expiresAt` gives that time.
+- Also expires 1 hour after your agent sends `finished`.
+- Is not a workspace API key. Keep it secret.
+
+## Rotate the signing secret
+
+<Steps>
+  <Step>
+    Open the **Webhook** tab and select **Rotate**.
+  </Step>
+  <Step>
+    Copy the new secret. QA Wolf shows the secret once.
+  </Step>
+  <Step>
+    Deploy the new secret to your endpoint within 24 hours.
+  </Step>
+</Steps>
+
+For 24 hours after a rotation, QA Wolf signs each request with the new secret and the previous secret. The `webhook-signature` header then holds two signatures with a space between them. Accept the request when one signature is correct. After 24 hours, QA Wolf signs with the new secret only.
+
+## Send a test
+
+**Send test** posts one `fix.requested` request with `"test": true` and a sample bug.
+
+- QA Wolf tries once, with the 10-second limit.
+- Each test has its own `webhook-id`, which starts with `msg_`.
+- The token in a test is the text `qawolf_fix_sample`. The events endpoint rejects that token.
+- You can send one test every 10 seconds.
+
+| Line under the form | Meaning |
+| --- | --- |
+| "Your endpoint answered 200 in 312 ms." | The endpoint answered with a `2xx` status. |
+| "Your endpoint answered 401." | The endpoint answered with another status. |
+| "Your endpoint didn't answer." | No answer came within 10 seconds. |
+| "The host now resolves to a private address, so QA Wolf sent nothing." | The DNS record of the host changed. |
+| "Wait 7 seconds before you send another test." | A test ran less than 10 seconds ago. |
+
+A failed test changes nothing in the saved webhook.
+
+## The check of a fix
+
+When a pull request is open, QA Wolf runs the bug's flows on its preview. The check is a run and uses credits.
+
+| Line on the bug | Meaning |
+| --- | --- |
+| "Waiting for the preview of #482 to deploy" | QA Wolf waits up to 2 hours for a preview. |
+| "Running this bug's flows on the preview of #482" | The check runs. |
+| "Fix confirmed: the bug is gone on #482" | The bug's flows passed. |
+| "The bug still shows on #482" | A flow of the bug failed. |
+| "QA Wolf can't confirm this fix: #482 has no preview" | No preview deployed within 2 hours. |
+
+When the check still shows the bug, a loop's session can ask for one extra try. QA Wolf then starts a new fix on a new branch and ends the first fix. A bug gets one extra try.
+
+## When a fix fails
+
+The bug shows "The fix failed" with one of these lines:
+
+| Line on the bug | Cause |
+| --- | --- |
+| "GitHub Actions didn't start the workflow in 30 minutes." | The workflow or the job did not start. For GitLab, the line names GitLab CI/CD. |
+| "The coding agent isn't set up in this repository. Add the QA Wolf workflow file and an agent key." | The repository has no workflow file or no agent key. |
+| "The coding agent stopped before it finished the fix." | The agent reported `failed`, or the job ended without a result. |
+| "The workflow failed before Claude Code reported back." | The workflow run ended and sent no result. The line names your agent. |
+| "The coding agent did not finish in time." | No event came for 2 hours, or no result came 24 hours after the request. |
+| "The workflow pushed no fix branch, so QA Wolf didn't open a pull request." | The fix branch is absent or has no new commit. |
+| "The fix changed CI files, so QA Wolf didn't open a pull request." | The fix changes `.github/`, `.gitlab/`, or `.gitlab-ci.yml`. |
+| "The fix changed more files than QA Wolf can check, so QA Wolf didn't open a pull request." | The fix changes too many files. |
+| "The coding agent reported a pull request in another repository, so QA Wolf didn't link it." | An agent in a workflow reported a pull request in another repository. |
+| "The bug was closed, so QA Wolf stopped the fix." | The bug closed during the fix. |
+| "Your webhook didn't take the fix on any try for 8 hours, so QA Wolf stopped." | The webhook gave no `2xx` answer for 8 hours. |
+| "Your webhook is off, so QA Wolf stopped the fix." | The webhook answered `410`, or was removed before the delivery. |
+
+## What to protect
+
+- Your agent reads the bug report, and an attacker can write text in an application. Protect your default branch, and review each draft pull request.
+- A public repository shows the logs of a run to everyone. The logs can quote the bug report.
+- A webhook has no proof of where the agent runs. QA Wolf trusts the URL that an admin saved.
+
+## For coding agents
+
+If a person asked you to set up QA Wolf's coding agent in a repository, do these steps:
+
+<Steps>
+  <Step>
+    Read the `origin` remote to learn whether the repository is on GitHub or GitLab.
+  </Step>
+  <Step>
+    On GitHub, copy [`qawolf-coding-agent.yml`](https://raw.githubusercontent.com/qawolf/coding-agent-action/v1/workflow/qawolf-coding-agent.yml) to `.github/workflows/qawolf-coding-agent.yml`. Keep the file name, the `permissions`, the `AGENT` line, and the `qawolf/coding-agent-action` step as they are.
+  </Step>
+  <Step>
+    On GitLab, paste the `qawolf-fix` job from [The GitLab job](#the-gitlab-job) into `.gitlab-ci.yml`. Keep the job name.
+  </Step>
+  <Step>
+    Open a pull request or a merge request with the change. The setup works only after the change is on the default branch.
+  </Step>
+  <Step>
+    Tell the person which secret or variable to add, from the table in [Set up GitHub](#set-up-github). For GitLab, also tell them the two project settings in [Set up GitLab](#set-up-gitlab).
+  </Step>
+  <Step>
+    Ask the person to select **Check again** in **Workspace settings → Coding agent** after the change merges.
+  </Step>
+</Steps>
+
+Never ask for an agent key or a signing secret, and never write one to a file. You can read this page as plain Markdown at `https://docs.qawolf.com/coding-agent.md`.
