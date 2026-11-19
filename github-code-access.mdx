@@ -16,7 +16,7 @@ QA Wolf has two GitHub Apps. A workspace connects through one of them, never thr
 
 With code access, QA Wolf's AI uses your code changes to find new features, create flows, and maintain flows. It also helps tell when a failure is a bug.
 
-QA Wolf never writes code. The app has read access to repository contents. When you [send bugs to your coding agent](/coding-agent), your own workflow pushes the fix branch with its own GitHub token.
+QA Wolf never writes code. The app has read access to repository contents.
 
 ## Requirements
 
@@ -111,17 +111,17 @@ The QA Wolf app can't read your repositories, only the changes in pull requests.
 
 ## Permissions of QA Wolf Code
 
-QA Wolf Code has every permission of the QA Wolf app, plus three: `contents: read`, `actions: write`, and `members: read`.
+QA Wolf Code has every permission of the QA Wolf app, plus three: `contents: read`, `actions: write`, and `members: read`. GitHub shows these permissions when you install the app.
 
 | Permission | What QA Wolf uses it for |
 | --- | --- |
-| `contents: read` | Reads your code. Finds the coding agent workflow file, and compares a fix branch with the default branch. |
-| `actions: write` | Starts the coding agent workflow in your repository, and cancels that run when the bug closes. It can't change code. |
+| `contents: read` | Reads the code in the repositories you choose. |
+| `actions: write` | Starts and cancels a workflow run in your repository, for a feature that is in limited release. It can't change code. |
 | `members: read` | Checks that the person who connects the app is an owner of the GitHub organization. |
 | `checks: write` | Posts the results of your flows as check runs. |
 | `statuses: write` | The QA Wolf app has this permission, and QA Wolf Code keeps it. |
 | `issues: write` | Files a bug report as a GitHub issue, updates the issue, and posts comments. |
-| `pull_requests: write` | Replies to comments on pull requests, and opens the draft pull request of a coding agent fix. |
+| `pull_requests: write` | Replies to comments on pull requests. Opens a pull request for the feature that is in limited release. |
 | `repository_hooks: write` | Deletes the repository webhooks that QA Wolf created until 2024, when you disconnect GitHub. |
 | `deployments: read` | Receives the status of each deployment, which starts your flows. |
 | `metadata: read` | Required by GitHub for every app. |
@@ -133,14 +133,14 @@ The app subscribes to these events: `deployment_status`, `issue_comment`, `issue
 | `deployment_status` | Starts the flows of a deployment. |
 | `pull_request` | Records the pull request and its changes. |
 | `issue_comment`, `pull_request_review_comment` | Reads a comment that mentions `@qawolf`. |
-| `push` | Finds a coding agent workflow file that you added or changed. |
-| `workflow_run` | Records the end of a coding agent run. |
+| `push` | Learns when you add or change the workflow of the feature that is in limited release. |
+| `workflow_run` | Follows the workflow run that QA Wolf started for that feature. |
 
 GitHub also sends `installation` and `check_suite` to the app without a subscription. QA Wolf uses `installation` to record a removed or suspended app, and `check_suite` to record the head commit of a check suite.
 
 ## Approve the new permission
 
-If your organization installed QA Wolf Code before it asked for the `actions` permission, GitHub asks an organization owner to approve it. Until an owner accepts, QA Wolf can't start the coding agent workflow, and a fix fails with a setup problem.
+If your organization installed QA Wolf Code before it asked for the `actions` permission, GitHub asks an organization owner to approve it. Until an owner accepts, QA Wolf can't use that permission, and the feature that needs it doesn't work.
 
 In GitHub, an owner opens the organization's installed GitHub Apps, opens QA Wolf Code, and accepts the new permissions.
 
