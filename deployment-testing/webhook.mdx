@@ -29,6 +29,7 @@ Pick this path when your code host is not GitHub or GitLab, when the deploying r
 | `service` | Which application was deployed, such as `checkout-api`, when several applications deploy into one environment, or when one pipeline ships more than one build such as an Android and an iOS build. A trigger's `servicePattern` matches on it. A report that omits it keeps the stored value. |
 | `builds` | The ids of the [builds](/upload-builds) this deployment ships, at most 20. The runs this deployment starts install them. A report that omits it keeps the stored builds. |
 | `metadata` | Details about the deployed revision, such as the commit. |
+| `changes` | What the deployment changed, for a [Smart Smoke Suite](/smart-smoke-suites) on a deploy with no pull request. See [Changes](#changes). |
 
 <Warning>
   Send `environment.ephemeral: true` for every preview deploy. A report that omits it is accepted and creates a permanent environment, one per pull request, that is never torn down.
@@ -79,6 +80,47 @@ The input goes inside a `json` wrapper, and the reply carries the deployment und
 <Warning>
   `repository` and `pullRequestNumber` only link the deployment to its pull request when a connected GitHub or GitLab integration covers that repository. QA Wolf reads the pull request from the code host. Without the integration the report succeeds and the deployment carries no pull request. See [PR testing](/deployment-testing/pr-testing).
 </Warning>
+
+### Changes
+
+`changes` tells a [Smart Smoke Suite](/smart-smoke-suites) what a deploy with no pull request shipped: each merged pull request or pushed commit, plus release notes. It takes readable text only. There is no field for diffs or file contents, and unknown fields are refused.
+
+| Field | Description |
+| --- | --- |
+| `items` | The pull requests and commits the deployment ships, newest first. At most 250. |
+| `items[].kind` | `pull-request` for a merged pull request, `commit` for a commit pushed without one. Required. |
+| `items[].title` | The pull request title or the commit subject. Required. At most 512 characters. |
+| `items[].description` | The pull request description or the commit message body. Put ticket ids here or in the title. At most 4,000 characters. |
+| `items[].changedPaths` | Paths of the files the change touched, without their contents. At most 1,000 paths of up to 1,024 characters each. |
+| `items[].url` | A link to the pull request or commit, as an `http` or `https` URL. At most 2,048 characters. |
+| `omittedCount` | How many pull requests or commits you left out of `items` to stay within the limits. |
+| `releaseNotes` | Release notes written for the deployment. At most 16,000 characters. |
+
+The whole `changes` value is at most 256 KB. Text fields are trimmed, and a field that's empty after trimming is refused.
+
+- A report that omits `changes` keeps the stored value. A report that sends it replaces it.
+- A value with no `items` and no `releaseNotes` counts as not sent.
+- Triggers read it on the deployment's first `success` report, so send it on that report or an earlier one.
+
+Example:
+
+```json
+"changes": {
+  "items": [
+    {
+      "kind": "pull-request",
+      "title": "Recalculate the cart total with discounts",
+      "description": "Fixes SHOP-123. Discounts now apply before tax.",
+      "changedPaths": ["src/checkout/cartTotal.ts"],
+      "url": "https://git.example.com/acme/web/pull/42"
+    },
+    { "kind": "commit", "title": "Bump the payment SDK" }
+  ],
+  "releaseNotes": "Checkout shows discounted totals."
+}
+```
+
+From a Node.js pipeline, `deployment.collectCommitChanges` in `@qawolf/ci-sdk` builds this value from your git history. See [Sending changes from your CI](/smart-smoke-suites#sending-changes-from-your-ci).
 
 ## When a report starts a run
 

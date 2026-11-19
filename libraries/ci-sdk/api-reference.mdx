@@ -52,6 +52,7 @@ A second argument injects dependencies. Each is optional:
 Returns an object with these functions:
 
 - **`deployment.reportStatus`** — reports a deployment. A deployment's first `success` report is what evaluates triggers and starts a run.
+- **`deployment.collectCommitChanges`** — builds a deployment's `changes` from the local git history.
 - **`deployment.waitForVerdict`** — blocks until QA Wolf can say whether the deployment's tests passed.
 - **`environment.promote`** and **`environment.terminate`** — close a preview environment, keeping or discarding its flow changes.
 - **`promotion.get`** — reads how a promotion settled.
@@ -123,6 +124,7 @@ console.log(result.deployment.url);
 | `metadata.commitUrl` | string | A link to the commit, for when QA Wolf cannot resolve the commit itself. |
 | `metadata.commitMessage` | string | The deployed commit's message. |
 | `metadata.commitAuthorName` | string | The display name of the commit's author. |
+| `changes` | object | What the deployment changed, for a [Smart Smoke Suite](/smart-smoke-suites) on a deploy with no pull request. Send it on the first `success` report or earlier. [`deployment.collectCommitChanges`](#deployment-collectcommitchanges) builds it; the fields and limits are under [Changes](/deployment-testing/webhook#changes). |
 
 The input is validated strictly: a field the contract does not know, or `environment` carrying both `id` and `name`, is an `invalid-request`. `ReportDeploymentParams` is the exported type.
 
@@ -151,6 +153,51 @@ The response carries the deployment only, never the resulting runs. `deployment.
 <Note>
   `outcome: "reported"` means QA Wolf recorded the deployment, not that a trigger matched it. Whether a run starts is decided afterwards, by your [triggers](/triggers/overview).
 </Note>
+
+## deployment.collectCommitChanges
+
+Builds the `changes` value for `deployment.reportStatus` from the local git history, from the commit after `since` up to `HEAD`. It returns the summary rather than sending it, so you can check or edit it first. Requires 3.7.0; earlier versions call it `collectChanges`.
+
+Example:
+
+```javascript
+const collected = await deployment.collectCommitChanges({
+  include: ["titles", "paths"],
+  since: "v1.2.0",
+});
+
+if (collected.outcome === "collected") {
+  await deployment.reportStatus({
+    /* ... */
+    status: "success",
+    changes: collected.changes,
+  });
+}
+```
+
+Each commit on the first-parent line becomes one change. A GitHub or GitLab merge commit, or a GitHub squash-merge commit whose subject ends in `(#123)`, becomes a pull request titled from its message. Any other commit stays a commit. It reads commit messages and, when asked, changed file paths. It never reads diffs or file contents.
+
+It reads at most the 250 newest commits. Older ones, and any left out to fit the API's limits, are counted in `omittedCount`.
+
+### Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `since` | string | The commit or tag the environment ran before, such as the previous release tag. Required. |
+| `include` | string[] | What each change carries: `"titles"`, `"descriptions"` or `"paths"`. Defaults to `["titles"]`. `"descriptions"` adds each message body, and `"paths"` adds the changed file paths. |
+| `releaseNotes` | string | Notes written for the release, sent as they are. |
+| `cwd` | string | The repository to read. Defaults to the current directory. |
+
+### Result
+
+Branch on `outcome`:
+
+| `outcome` | Description |
+| --- | --- |
+| `"collected"` | Carries `changes`, ready to pass to `deployment.reportStatus`. |
+| `"history-unavailable"` | The clone is shallow, so it may not hold the whole range. Carries `fix`. Fetch the full history, such as `fetch-depth: 0` on `actions/checkout`, or `git fetch --unshallow`. |
+| `"since-not-found"` | `since` names no commit in this repository, such as a typo or a tag that wasn't fetched. Carries `fix`. |
+| `"git-failed"` | Git failed for another reason. Carries `message`. |
 
 ## detectProviderDeploymentId
 

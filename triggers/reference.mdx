@@ -58,8 +58,8 @@ A created schedule reports `nextScheduledAt`.
 | --- | --- |
 | `flowIds` | Flows named one by one. |
 | `tagNames` | Every flow carrying one of these tags. Combines with `flowIds`. |
-| `kind` | `createSuite`, the default, runs the flows named by `flowIds` and `tagNames`. `generativeSuite` makes the trigger a [Smart Smoke Suite](/smart-smoke-suites): QA Wolf selects the flows from the pull request the deploy belongs to. |
-| `instructions` | Optional guidance for a `generativeSuite` selection. Refused on a `createSuite` action. |
+| `kind` | `createSuite`, the default, runs the flows named by `flowIds` and `tagNames`. `generativeSuite` makes the trigger a [Smart Smoke Suite](/smart-smoke-suites): QA Wolf selects the flows from what the deploy changed. |
+| `instructions` | Optional guidance for a `generativeSuite` selection, also followed when QA Wolf can't see what a deploy changed. Refused on a `createSuite` action. |
 | `investigateFailures` | Whether QA Wolf investigates failures in the runs the trigger creates. Defaults to `true`. |
 | `runConcurrencyLimit` | How many runs of the resulting suite may execute at once. Sent as a string: a whole number from 1 to 1000 such as `"40"`, the literal `"unlimited"`, or a [concurrency expression](/concurrency-limits#expressions) such as `"max(2, 4)"`. A number or expression replaces the environment's limit rather than capping below it, so it can raise the limit as well as lower it. `"unlimited"` is treated as unset, so the environment's limit still applies. Omit it to leave the environment's limit in charge. |
 
@@ -67,7 +67,7 @@ An action names at least one flow or tag, or is a `generativeSuite`. A `generati
 
 - Refuses `flowIds` and `tagNames`.
 - Is only valid on a deployment trigger.
-- Matches a deploy that isn't tied to a pull request, but doesn't run on it: the run outcome is `did-not-run` with reason `no-pull-request`. See [PR testing](/deployment-testing/pr-testing) for what ties a deploy to its pull request.
+- On a deploy that isn't tied to a pull request, reads what changed since the environment's previous deploy. When there's nothing to read and no `instructions`, the run outcome is `did-not-run` with reason `skipped`. See [When there's nothing to read](/smart-smoke-suites#when-theres-nothing-to-read).
 
 ## Paused
 
