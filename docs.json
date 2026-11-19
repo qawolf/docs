@@ -1048,7 +1048,8 @@
           {
             "group": "Code review",
             "pages": [
-              "github-pull-requests"
+              "github-pull-requests",
+              "github-code-access"
             ]
           },
           {
