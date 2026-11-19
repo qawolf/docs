@@ -63,7 +63,7 @@ If you clear **Read your code**, GitHub asks you to install the QA Wolf app, and
   </Step>
 </Steps>
 
-QA Wolf Code replaces the QA Wolf app. QA Wolf removes the installation of the QA Wolf app after it links the new one.
+QA Wolf Code replaces the QA Wolf app. QA Wolf removes the installation of the QA Wolf app after it links the new one, unless another workspace still uses that installation.
 
 ## Update required status checks
 
@@ -135,6 +135,8 @@ The app subscribes to these events: `deployment_status`, `issue_comment`, `issue
 | `issue_comment`, `pull_request_review_comment` | Reads a comment that mentions `@qawolf`. |
 | `push` | Finds a coding agent workflow file that you added or changed. |
 | `workflow_run` | Records the end of a coding agent run. |
+
+GitHub also sends `installation` and `check_suite` to the app without a subscription. QA Wolf uses `installation` to record a removed or suspended app, and `check_suite` to record the head commit of a check suite.
 
 ## Approve the new permission
 
