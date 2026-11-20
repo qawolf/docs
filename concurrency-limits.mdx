@@ -9,7 +9,7 @@ A concurrency limit caps how many flows in a run execute at the same time. Set i
 ## Where to set a limit
 
 - **Environment** — in **Settings > Environments**, open an environment and set **Run concurrency**. Leave it empty for no limit. Every run in the environment uses this limit unless its trigger sets one.
-- **Trigger** — on the loop's page, under **Run options**, set **Concurrency limit**. The app calls a trigger a [loop](/loops/overview). Leave it empty to use the environment's limit. Through the API, this is the [`runConcurrencyLimit`](/loops/reference) field.
+- **Trigger** — on the loop's page, under **Run options**, set **Max flows in parallel**. The app calls a trigger a [loop](/loops/overview). Leave it empty to use the environment's limit. Through the API, this is the [`runConcurrencyLimit`](/loops/reference) field.
 
 A trigger's limit replaces the environment's limit rather than capping below it, so a trigger can raise the limit as well as lower it.
 
