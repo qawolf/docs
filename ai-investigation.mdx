@@ -1,0 +1,88 @@
+---
+title: "AI investigation"
+description: "Learn why a flow failed, decide when QA Wolf should repair it, and answer investigation questions from the tools your team uses."
+---
+
+When a flow still fails after its automatic retries, QA Wolf AI can investigate the failure. It checks what happened, what your app should do, and whether the flow still tests that behavior. Open the run summary to see the findings and any decisions that need your input.
+
+## What happens when a flow fails?
+
+QA Wolf starts with the failed step. It compares the trace, logs, and screenshots with the last passing run and checks relevant changes to your app or flow. If several flows fail for the same reason, it can group them under one finding.
+
+| What QA Wolf finds | What happens next |
+| --- | --- |
+| The app still works, but the flow can no longer complete the task. | QA Wolf repairs the flow and runs it to verify the change. If your workspace requires approval, it proposes the repair for review. |
+| The app behaves differently from what users should expect. | QA Wolf checks for a matching bug report. For a new bug, it tries to reproduce the failure and records the evidence. It can file a report or ask you to review a proposed report. |
+| The same flow passes on another attempt without a change. | QA Wolf can mark the failure as a flake. If the failed attempt showed a crash or lost data, it can still ask you to review it. |
+| The environment prevents verification. | The finding explains what blocked the flow, such as an unavailable sign-in service, and what QA Wolf could verify. |
+| The evidence shows what changed, but the expected behavior is unclear. | QA Wolf asks a question. Other flows with independent failures can still move forward. |
+
+## Decide when QA Wolf can act
+
+| What you want to control | Where to change it |
+| --- | --- |
+| Which runs get automatic investigation | For a loop that runs flows, open **Run options** and set **Investigate failures**. It defaults to on where your organization has access. [Loop setup](/loops/overview) |
+| Which flows to leave out of one investigation | On the run page, select the affected flows and choose **Do not investigate**. The choice applies to those flows in that run. |
+| How QA Wolf handles a decision in this run | Give the investigation an instruction in its chat. For example, “Ask me before updating the checkout screenshot for this release.” |
+| How QA Wolf handles the same situation in future runs | Put the rule in a custom skill on the workspace branch used by the investigation. For example, require approval before filing a bug or publishing a flow repair. [Guide investigations with a skill](/custom-skills#guide-investigations-with-a-skill) |
+
+For example, a checkout skill might say, “If a button label changes, verify that placing an order still works before updating the flow. Ask us before changing the expected total.” That gives QA Wolf a way to maintain the flow and a clear point to involve your team.
+
+## Give the investigation more context
+
+**Connect the tools where your team records decisions.** Under **Workspace settings → MCPs**, connect a Model Context Protocol (MCP) server and authorize access. QA Wolf can then check a Linear issue for acceptance criteria, LaunchDarkly for a rollout, or Sentry for an error near the failed step. Choose an account with access to the information your workspace should share. [Connect your tools with MCP](/mcp-connections)
+
+**Give QA Wolf access to the relevant application code.** In **Workspace settings → Integrations**, an organization admin can enable **Read your code** for GitHub where available. A GitHub owner installs the **QA Wolf Code** app and chooses the repositories. If you use required status checks, the setup guide explains how to update them when switching apps. [GitHub code access setup](/github-code-access)
+
+Code access lets QA Wolf follow a failure beyond the last line of the flow. Suppose checkout reports success but never saves the order. QA Wolf can trace the request to the line that returns success too early. When the evidence supports it, the finding can identify the file, line, or pull request that introduced the bug.
+
+The same access helps with maintenance. Suppose a pull request renames **Place order** to **Confirm order**. The diff shows the rename, and the pull request description explains that checkout should still create an order. QA Wolf can update the flow to use the new label and verify that an order actually appears. It makes the repair in your QA Wolf flow code. The GitHub connection gives it read access to your selected application repositories.
+
+## Answer an investigation question
+
+QA Wolf asks when it needs product knowledge, missing information, or approval to act. For example, QA Wolf may see a different checkout total and need to know whether a new discount should apply. You can ask what it observed before you decide. If the choices miss an important detail, explain the expected behavior in your own words.
+
+| Where you work | How to answer |
+| --- | --- |
+| QA Wolf | Open the question from the run summary or your Inbox. Choose an answer and select **Submit answers**, or use **Discuss** to ask for context. |
+| Slack | Use the buttons on a question notification, or mention `@QA Wolf` in a channel where you added the agent. You can also send it a direct message. [Slack setup](/Slack) |
+| GitHub | Mention `@qawolf` on a pull request in a connected repository with mentions enabled. A run summary on the pull request can also link to **Answer in QA Wolf**. [GitHub setup](/github-pull-requests) |
+| Linear | Mention **QA Wolf** in an issue comment in a team the agent can access. [Linear setup](/Linear) |
+| Jira | Mention `@QA Wolf` in a work item comment on the Jira Cloud site linked to your workspace. [Jira setup](/Jira#use-qa-wolf-ai-in-jira) |
+| Claude Code, Codex, or another coding agent | Connect your agent to the QA Wolf MCP. To submit an answer, use your own sign-in or user API key. [Coding agent setup](/qawolf-mcp) |
+
+### Answer from a pull request
+
+<Steps>
+  <Step title="Find the open questions">
+    “@qawolf, which investigation questions are open for this run?” Include the run link if the pull request has several runs.
+  </Step>
+  <Step title="Check the evidence">
+    Ask, “For the checkout question, did the order total change, or did only the button label change?”
+  </Step>
+  <Step title="Record your decision">
+    Reply, “Record my answer to the checkout question. The new label is intentional. Update the flow and keep the order total check.”
+  </Step>
+</Steps>
+
+Use the same requests in Slack, Linear, Jira, or your coding agent. Name the question and say what should happen. QA Wolf records your decision against the run and updates the finding as it acts on the answer.
+
+## Frequently asked questions
+
+### Can I get questions automatically in Slack or my issue tracker?
+
+For Slack, an organization admin can enable **Questions** under **Workspace settings → Notifications → Slack** and choose the channel. In Linear and Jira, mention the agent and ask it to list open questions for the run. Bug report sync creates issues for bug reports. To post open questions to an issue tracker on a schedule, configure an automation in your own tools. [Slack notification setup](/Slack#run-alerts-and-bug-reports)
+
+If a Slack button asks you to sign in, follow its link to answer in QA Wolf. Some decisions, including screenshot approvals, require QA Wolf to identify your account.
+
+### Why is a question I saw earlier no longer open?
+
+A teammate may already have answered it. A newer run may also have settled the failure for all affected flows. Open the latest run summary or ask the agent which decisions still need you. QA Wolf keeps the first answer when two people answer the same open question.
+
+### Will QA Wolf ask the same question next time?
+
+QA Wolf checks earlier decisions when the same flow fails for the same reason. It can reuse an applicable maintenance decision. A different failure, a change in expected behavior, or a new report that requires approval can need a fresh answer. For a standing rule, add a [custom skill](/custom-skills#guide-investigations-with-a-skill).
+
+### What if I disagree with a finding?
+
+Use **Discuss** to ask how QA Wolf reached its conclusion. If a completed repair or report offers **Dispute**, select it and explain what the flow should do. QA Wolf uses your reason to revisit the finding.
