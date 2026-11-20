@@ -41,7 +41,7 @@ Read what this pull request changes. List the flows it could break, and draft a 
 In the **Instructions** box:
 
 - Type `@` to mention a tag, a flow, or an environment by name.
-- On a loop that starts on a deploy, type `/` for the `/smart-smoke-suite` command. It makes the loop a [Smart Smoke Suite](/smart-smoke-suites) instead of a session. No other loop has commands.
+- On a loop that starts on **Pull request previews**, type `/` for the `/smart-smoke-suite` command. It makes the loop a [Smart Smoke Suite](/smart-smoke-suites) instead of a session. No other loop has commands.
 - Pick a chip under **Start from:** to fill the box with an example for the loop's start.
 
 Instructions can be up to 10,000 characters.
@@ -52,7 +52,7 @@ Instructions can be up to 10,000 characters.
 
 ## Owner
 
-A loop that runs AI has an owner, and its sessions run with the owner's access. Whoever creates the loop, or saves a change to its instructions, becomes its owner. A loop's page says whether you own it, and anyone who can manage loops can select **Make me the owner**. Saving new instructions on a loop someone else owns makes you its owner, and the page says so beside **Save changes**.
+A loop that runs AI has an owner, and its sessions run with the owner's access. Whoever creates the loop, or saves a change to its instructions, becomes its owner. That includes a loop you [describe to QA Wolf](/triggers/overview#describe-a-loop): QA Wolf writes the instructions, and you own the loop once you create it. A loop's page says whether you own it, and anyone who can manage loops can select **Make me the owner**. Saving new instructions on a loop someone else owns makes you its owner, and the page says so beside **Save changes**.
 
 QA Wolf pauses a loop that runs AI when it has no owner, or when its owner is no longer a member of the workspace. A loop made through the API with a workspace API key starts this way, because no person made it. The loop's page says why it is paused. Selecting **Make me the owner** resumes it.
 

@@ -2,7 +2,7 @@
 title: "Loops"
 description: "Tell QA Wolf what to do when something happens: run flows, or run AI with your own instructions, on a deploy, a schedule, a pull request, or a QA Wolf bug, blocker, or request."
 sidebarTitle: "Loops"
-keywords: "triggers, automatic test runs, run on deploy, PR testing, nightly runs, deployment trigger, scheduled trigger, Smart Smoke Suite, Run AI, Run now, run history, automation, QA Wolf events, bug events, pull request events, rate limits, MCP, runNow, listFirings"
+keywords: "triggers, describe a loop, loop description, automatic test runs, run on deploy, PR testing, nightly runs, deployment trigger, scheduled trigger, Smart Smoke Suite, Run AI, Run now, run history, automation, QA Wolf events, bug events, pull request events, rate limits, MCP, runNow, listFirings"
 ---
 
 A loop tells QA Wolf what to do when something happens. It has two parts:
@@ -17,7 +17,7 @@ Loops belong to the workspace, so one loop can cover staging, production, and ev
 The **Starts on** menu picks what starts the loop:
 
 - **Deploys to an environment** — fires when your pipeline notifies QA Wolf of a successful deploy to staging, production, or any long-lived environment. See [PR testing](/deployment-testing/pr-testing) and the deployment testing guides for how the notification reaches QA Wolf.
-- **A schedule** — fires in one environment every few hours, days, weeks, or months. Pick a shortcut such as **Hourly**, **Weekdays**, or **Every 2 weeks**, or set **Every [N] [unit] at [time]**. An hourly or daily schedule can be restricted to chosen days of the week. Needs nothing from your pipeline.
+- **A schedule** — fires in one environment every few hours, days, weeks, or months. Pick a shortcut such as **Hourly**, **Weekdays**, or **Every 2 weeks**, or set **Every [N] [unit] at [time]**. An hourly or daily schedule can be restricted to chosen days of the week. On an hourly schedule, **Only certain hours** sets a **starting at** time and an optional **until** time, and every run happens at the starting time's minute. Needs nothing from your pipeline.
 - **Pull request previews** — fires on deploys to preview environments named like a pattern, such as `pr-*`.
 - **A pull request** — fires when a pull request is opened, marked ready for review, gets new commits, gets a label, or is merged. Needs a connected GitHub or GitLab integration. See [Pull request events](#pull-request-events).
 - **A bug**, **A blocker**, or **A request** — fires on a QA Wolf event. See [QA Wolf events](#qa-wolf-events).
@@ -61,7 +61,7 @@ A change made by a loop's own session never starts a loop. The firing is skipped
 - **Run AI** — starts a QA Wolf AI session with the instructions you write. See [Run AI](/triggers/run-ai).
 - **Run specific flows** — runs the flows you pick. Select tags, flows named one by one, or both. Flows tagged later join automatically.
 
-**Run options** holds failure investigation and the number of flows that run in parallel. Run AI has no run options.
+**Run options** holds failure investigation and the number of flows that run in parallel. Run AI has no run options, except in a Smart Smoke Suite.
 
 A [Smart Smoke Suite](/smart-smoke-suites) lets QA Wolf choose the flows from the change behind each deploy. Choose **Run AI** and start the instructions with `/smart-smoke-suite`, or pick the **Test each pull request** template. It works on a loop that starts on **Pull request previews**, not on a schedule, a pull request, or a QA Wolf event.
 
@@ -69,11 +69,25 @@ Give preview deploys their own loop rather than widening the one that covers sta
 
 ## Create a loop
 
-On the Loops page, select **New loop**. Pick a template, such as **Nightly regression** or **Test each pull request**, or select **Go lone wolf** to start blank. Name the loop, fill in **When** and **Then**, and select **Create loop**.
+On the Loops page, select **New loop**. In the **Create a new loop** dialog, describe the loop to QA Wolf, or pick a template such as **Nightly regression** or **Test each pull request**, or **Blank slate** to start empty. Name the loop, fill in **When** and **Then**, and select **Create loop**.
 
 **Create loop** stays disabled until the loop is complete, and says what is missing.
 
-On a loop's page, a new name and the **Enabled** switch save at once. Changes to **When** and **Then** wait until you select **Save changes**.
+Under the name, **Add a description** holds a note of up to 500 characters about what the loop is for. Empty it to clear the description.
+
+On a loop's page, a new name, a new description, and the **Enabled** switch save at once. Changes to **When** and **Then** wait until you select **Save changes**.
+
+### Describe a loop
+
+In the **Create a new loop** dialog, write what the loop should do under **Ask QA Wolf to build the loop for you**, and select **Ask QA Wolf**. The New loop page opens with QA Wolf's chat beside it, and QA Wolf fills in the loop's name, **When**, and **Then**. Nothing is saved until you select **Create loop**, so check the loop and change anything that isn't right.
+
+Example:
+
+```text
+Every weekday at 9:30am New York time, check that the dashboard and the Runs page load, and tell me what looks broken.
+```
+
+When QA Wolf writes a loop's Run AI instructions, a `/smart-smoke-suite` command included, the loop is created paused. The page says so beside **Create loop**. Read the instructions, then turn the loop on with its **Enabled** switch. Its sessions run with your access, because creating the loop makes you its [owner](/triggers/run-ai#owner). A loop that runs specific flows is created enabled.
 
 ## Run now
 
