@@ -10,7 +10,7 @@ A loop tells QA Wolf what to do when something happens. It has two parts:
 - **When** — what starts the loop: a deploy, a schedule, a pull request, or a QA Wolf event.
 - **Then** — what QA Wolf does each time: **Run AI** with your instructions, or **Run specific flows**.
 
-Loops belong to the workspace, so one loop can cover staging, production, and every preview environment. You find them under **Loops** in the main navigation. The public API and CLI call a loop a trigger, through `trigger.*`. See [Trigger fields](/triggers/reference).
+Loops belong to the workspace, so one loop can cover staging, production, and every preview environment. You find them under **Loops** in the main navigation. The public API and CLI call a loop a trigger, through `trigger.*`. See [Trigger fields](/loops/reference).
 
 ## When
 
@@ -22,7 +22,7 @@ The **Starts on** menu picks what starts the loop:
 - **A pull request** — fires when a pull request is opened, marked ready for review, gets new commits, gets a label, or is merged. Needs a connected GitHub or GitLab integration. See [Pull request events](#pull-request-events).
 - **A bug**, **A blocker**, or **A request** — fires on a QA Wolf event. See [QA Wolf events](#qa-wolf-events).
 
-To narrow a deploy loop, select **Only when…** and add a repository, service, branch, or deploy URL condition. Each condition suggests the values your recent deploys reported, and you can type a name or [pattern](/triggers/reference#deployment-conditions) instead. The editor says how many of your recent deploys the loop would have run on, and lists them.
+To narrow a deploy loop, select **Only when…** and add a repository, service, branch, or deploy URL condition. Each condition suggests the values your recent deploys reported, and you can type a name or [pattern](/loops/reference#deployment-conditions) instead. The editor says how many of your recent deploys the loop would have run on, and lists them.
 
 ### Pull request events
 
@@ -34,7 +34,7 @@ A loop that starts on **A pull request** fires on the events you tick:
 - **Labeled** — the pull request gets a label. Ticking it adds a **Label** filter that names the label.
 - **Merged** — the pull request is merged.
 
-**Repository** picks the repositories the loop watches, such as `acme/web` or `acme/*`. **Into branch** and **From branch** narrow it to pull requests between matching branches, and **Skip draft pull requests** leaves drafts out. Each filter takes a name or a [pattern](/triggers/reference#deployment-conditions). The editor lists the recent pull requests the loop would have fired on.
+**Repository** picks the repositories the loop watches, such as `acme/web` or `acme/*`. **Into branch** and **From branch** narrow it to pull requests between matching branches, and **Skip draft pull requests** leaves drafts out. Each filter takes a name or a [pattern](/loops/reference#deployment-conditions). The editor lists the recent pull requests the loop would have fired on.
 
 To test each pull request's preview deploy instead, select **Or, once it's deployed: Preview deployed**. That makes the loop start on **Pull request previews**.
 
@@ -58,7 +58,7 @@ A change made by a loop's own session never starts a loop, and nothing shows in 
 
 ## Then
 
-- **Run AI** — starts a QA Wolf AI session with the instructions you write. See [Run AI](/triggers/run-ai).
+- **Run AI** — starts a QA Wolf AI session with the instructions you write. See [Run AI](/loops/run-ai).
 - **Run specific flows** — runs the flows you pick. Select tags, flows named one by one, or both. Flows tagged later join automatically.
 
 **Run options** includes failure investigation and the number of flows that run in parallel. Run AI has no run options, except in a Smart Smoke Suite.
@@ -113,7 +113,7 @@ Example:
 Every weekday at 9:30am New York time, check that the dashboard and the Runs page load, and tell me what looks broken.
 ```
 
-When QA Wolf writes a loop's Run AI instructions, a `/smart-smoke-suite` command included, the loop is created paused. The page says so beside **Create loop**. Read the instructions, then turn the loop on with its **Enabled** switch. A loop that runs AI with your instructions runs its sessions with your access, because creating it makes you its [owner](/triggers/run-ai#owner). A loop that runs specific flows is created enabled.
+When QA Wolf writes a loop's Run AI instructions, a `/smart-smoke-suite` command included, the loop is created paused. The page says so beside **Create loop**. Read the instructions, then turn the loop on with its **Enabled** switch. A loop that runs AI with your instructions runs its sessions with your access, because creating it makes you its [owner](/loops/run-ai#owner). A loop that runs specific flows is created enabled.
 
 ## Run now
 
@@ -157,14 +157,14 @@ The public API calls a loop a trigger. A coding agent connected through the [QA 
 - **`trigger.listFirings`** — reads a loop's Run history, newest first: each firing's run or session, the session's status, and the reason for a skip.
 - **`trigger.find`**, **`trigger.get`**, **`trigger.pause`**, **`trigger.resume`**, and **`trigger.delete`** — find, read, pause, resume, and delete loops.
 
-A loop that runs AI and is created with a workspace API key has no owner, so QA Wolf keeps it paused until a person selects **Make me the owner** on its page. A loop created with your own credentials is yours. The API can't create a loop that starts on a pull request or a QA Wolf event. See [Trigger fields](/triggers/reference) for every field.
+A loop that runs AI and is created with a workspace API key has no owner, so QA Wolf keeps it paused until a person selects **Make me the owner** on its page. A loop created with your own credentials is yours. The API can't create a loop that starts on a pull request or a QA Wolf event. See [Trigger fields](/loops/reference) for every field.
 
 ## Reference
 
-- [Run AI](/triggers/run-ai) — writing instructions, and who a session runs as.
-- [Trigger fields](/triggers/reference) — conditions, schedule, and action fields.
-- [Deployments](/triggers/deployments) — how QA Wolf reads a deployment, and the verdict it records for each loop.
+- [Run AI](/loops/run-ai) — writing instructions, and who a session runs as.
+- [Trigger fields](/loops/reference) — conditions, schedule, and action fields.
+- [Deployments](/loops/deployments) — how QA Wolf reads a deployment, and the verdict it records for each loop.
 
 <Note>
-  Older workspaces may still run [legacy triggers](/legacy-triggers/overview), which attach to a single environment. See [Migrate from legacy triggers](/triggers/migrate-from-legacy-triggers) to move them.
+  Older workspaces may still run [legacy triggers](/legacy-triggers/overview), which attach to a single environment. See [Migrate from legacy triggers](/loops/migrate-from-legacy-triggers) to move them.
 </Note>

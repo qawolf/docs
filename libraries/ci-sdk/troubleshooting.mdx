@@ -14,8 +14,8 @@ Check:
 
 - Only a deployment's first `success` report evaluates triggers. A re-run that reuses the same `providerDeploymentId` reports into a deployment that already evaluated, and creates nothing. Use [`detectProviderDeploymentId`](/libraries/ci-sdk/api-reference#detectproviderdeploymentid), or compose an id that changes on every re-run.
 - `environment.name` resolves against the workspace's environments by alias or slugified name, and a name nothing matches creates a new environment that no trigger targets. Send the QA Wolf environment's name, or add the name you send as an alias.
-- A deployment trigger exists whose conditions match this deployment. See [Triggers](/triggers/overview).
-- Call `deployment.waitForVerdict` with the deployment id: a `not-tested` result carries one note per trigger saying what it did with the deployment. `deployment.listTriggerEvaluations` in the public API returns the same verdicts. See [Deployments](/triggers/deployments#evaluation).
+- A deployment trigger exists whose conditions match this deployment. See [Triggers](/loops/overview).
+- Call `deployment.waitForVerdict` with the deployment id: a `not-tested` result carries one note per trigger saying what it did with the deployment. `deployment.listTriggerEvaluations` in the public API returns the same verdicts. See [Deployments](/loops/deployments#evaluation).
 
 ## `outcome` is `"invalid-request"` on `deployment.reportStatus`
 
@@ -123,7 +123,7 @@ Check:
 
 ## Legacy functions
 
-`attemptNotifyDeploy` and `pollCiGreenlightStatus` were deprecated in 3.1.0 and are still exported in 3.3.0, so these symptoms apply on every version, current releases included. They report through the legacy `deploy_success` webhook, which [triggers](/triggers/overview) never see.
+`attemptNotifyDeploy` and `pollCiGreenlightStatus` were deprecated in 3.1.0 and are still exported in 3.3.0, so these symptoms apply on every version, current releases included. They report through the legacy `deploy_success` webhook, which [triggers](/loops/overview) never see.
 
 ### `outcome` is `"skipped"` on `attemptNotifyDeploy`
 

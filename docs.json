@@ -59,15 +59,15 @@
   "redirects": [
     {
       "source": "/triggers/set-up-a-trigger",
-      "destination": "/triggers/reference"
+      "destination": "/loops/reference"
     },
     {
       "source": "/triggers/report-deployments",
-      "destination": "/triggers/deployments"
+      "destination": "/loops/deployments"
     },
     {
       "source": "/triggers/diagnose-a-trigger",
-      "destination": "/triggers/deployments"
+      "destination": "/loops/deployments"
     },
     {
       "source": "/qawolf/Workspace-settings",
@@ -627,7 +627,7 @@
     },
     {
       "source": "/triggers",
-      "destination": "/triggers/overview"
+      "destination": "/loops/overview"
     },
     {
       "source": "/legacy/legacy-triggers",
@@ -684,6 +684,14 @@
     {
       "source": "/Test-environments",
       "destination": "/prepare-environments-for-qa-wolf"
+    },
+    {
+      "source": "/triggers/:slug*",
+      "destination": "/loops/:slug*"
+    },
+    {
+      "source": "/loops",
+      "destination": "/loops/overview"
     }
   ],
   "integrations": {
@@ -739,8 +747,8 @@
           {
             "group": "Run Orchestration",
             "pages": [
-              "triggers/overview",
-              "triggers/run-ai",
+              "loops/overview",
+              "loops/run-ai",
               "smart-smoke-suites",
               "Run-Rules",
               "concurrency-limits",
@@ -1000,9 +1008,9 @@
           {
             "group": "Triggers",
             "pages": [
-              "triggers/reference",
-              "triggers/deployments",
-              "triggers/migrate-from-legacy-triggers"
+              "loops/reference",
+              "loops/deployments",
+              "loops/migrate-from-legacy-triggers"
             ]
           },
           {

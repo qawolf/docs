@@ -5,7 +5,7 @@ sidebarTitle: "Run AI"
 keywords: "loop instructions, standing instructions, AI session, scheduled AI task, explore each deploy, flake review, coverage gaps, startAgent"
 ---
 
-**Run AI** is one of a [loop's](/triggers/overview) two actions. Each time the loop fires, QA Wolf starts a QA Wolf AI session with the loop's **Instructions**. The session is the same kind you open in chat: you can read what it did, and answer it when it asks a question.
+**Run AI** is one of a [loop's](/loops/overview) two actions. Each time the loop fires, QA Wolf starts a QA Wolf AI session with the loop's **Instructions**. The session is the same kind you open in chat: you can read what it did, and answer it when it asks a question.
 
 ## What a session already knows
 
@@ -52,13 +52,13 @@ Instructions can be up to 10,000 characters.
 
 ## Owner
 
-A loop that runs AI has an owner, and its sessions run with the owner's access. Whoever creates the loop, or saves a change to its instructions, becomes its owner. That includes a loop you [describe to QA Wolf](/triggers/overview#describe-a-loop): QA Wolf writes the instructions, and you own the loop once you create it. A loop's page says whether you own it, and anyone who can manage loops can select **Make me the owner**. Saving new instructions on a loop someone else owns makes you its owner, and the page says so beside **Save changes**.
+A loop that runs AI has an owner, and its sessions run with the owner's access. Whoever creates the loop, or saves a change to its instructions, becomes its owner. That includes a loop you [describe to QA Wolf](/loops/overview#describe-a-loop): QA Wolf writes the instructions, and you own the loop once you create it. A loop's page says whether you own it, and anyone who can manage loops can select **Make me the owner**. Saving new instructions on a loop someone else owns makes you its owner, and the page says so beside **Save changes**.
 
 QA Wolf pauses a loop that runs AI when it has no owner, or when its owner is no longer a member of the workspace. A loop made through the API with a workspace API key starts this way, because no person made it. The loop's page says why it is paused. Selecting **Make me the owner** resumes it.
 
 ## Follow a session
 
-- **Run history** — each firing shows its session's status. Open it for the session's latest reply, how long it worked, and **Open in chat**. See [Run history](/triggers/overview#run-history).
+- **Run history** — each firing shows its session's status. Open it for the session's latest reply, how long it worked, and **Open in chat**. See [Run history](/loops/overview#run-history).
 - **Inbox** — when a session asks a question or fails, QA Wolf adds an Inbox row for the owner, under **Loops**, such as "Nightly review is waiting for you". Open it to answer in chat. Once the session moves on, the row reads "Session closed". Deleting a loop closes its open Inbox rows.
 
-A firing that starts no session says why in Run history, for example when the loop reached its daily limit of sessions. See [Limits](/triggers/overview#limits).
+A firing that starts no session says why in Run history, for example when the loop reached its daily limit of sessions. See [Limits](/loops/overview#limits).
