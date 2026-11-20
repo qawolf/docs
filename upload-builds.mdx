@@ -237,7 +237,7 @@ This needs `@qawolf/flows` 0.4.0 or later. When the run has no build of that app
 
 Pass the build ids as `builds` when you create the run, to test a build without changing what the environment's other runs install. To leave the environment's latest build unchanged, upload the build with no environment. Then create the run with one of these:
 
-- **CLI** — `qawolf run create --environment-id <env> --builds <build_id>`.
+- **CLI** — `qawolf run create --environment-id <env> --flow-ids <flow_id> --builds <build_id>`.
 - **[QA Wolf MCP](/qawolf-mcp)** — `run_create` with `builds`.
 - **HTTP** — `POST https://app.qawolf.com/api/trpc/public.run.create` with `{ "json": { "workspaceId": "…", "environmentId": "…", "flowIds": ["…"], "builds": ["<build_id>"] } }`.
 
