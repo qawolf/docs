@@ -740,6 +740,7 @@
             "group": "Run Orchestration",
             "pages": [
               "triggers/overview",
+              "triggers/run-ai",
               "smart-smoke-suites",
               "Run-Rules",
               "concurrency-limits",
