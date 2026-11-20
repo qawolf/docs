@@ -7,7 +7,7 @@ keywords: "trigger fields, environmentPattern, deployTargetPattern, branchPatter
 
 Every trigger has a name, a paused state, deployment conditions or a schedule, and one action. It can also carry a `description` of up to 500 characters.
 
-The app calls a trigger a [loop](/triggers/overview). The API creates loops that start on a deploy or a schedule, and that run flows or [Run AI](/triggers/run-ai). It can't create a loop that starts on a pull request or a QA Wolf event, and reports one with a `configuration.kind` of `advanced`.
+The app calls a trigger a [loop](/loops/overview). The API creates loops that start on a deploy or a schedule, and that run flows or [Run AI](/loops/run-ai). It can't create a loop that starts on a pull request or a QA Wolf event, and reports one with a `configuration.kind` of `advanced`.
 
 ## Deployment conditions
 
@@ -20,7 +20,7 @@ Every condition supplied must match. A trigger with no conditions fires on every
 | `deployTargetPattern` | Only fire for deployments whose deploy target URL matches this pattern. |
 | `branchPattern` | Only fire for deployments of a branch matching this pattern. |
 | `repositoryPattern` | Only fire for deployments from a repository whose `owner/name` matches this pattern, such as `acme/web` or `acme/*`. A deployment that names no repository never matches. |
-| `servicePattern` | Only fire for deployments whose service matches this pattern. A deployment that names no service never matches a trigger carrying one, so adding a service pattern to an existing trigger silently stops it firing until your pipeline sends the field. See [Deployments](/triggers/deployments#what-a-deployment-carries). |
+| `servicePattern` | Only fire for deployments whose service matches this pattern. A deployment that names no service never matches a trigger carrying one, so adding a service pattern to an existing trigger silently stops it firing until your pipeline sends the field. See [Deployments](/loops/deployments#what-a-deployment-carries). |
 
 Patterns ignore case. In a pattern:
 
@@ -31,7 +31,7 @@ Patterns ignore case. In a pattern:
 
 A deployment with no deploy target, branch, repository or service never matches a pattern on that field, with or without `!`.
 
-`environmentPattern` matches the name of the QA Wolf environment the deployment resolved to, not the name your pipeline sent. See [Deployments](/triggers/deployments#environment).
+`environmentPattern` matches the name of the QA Wolf environment the deployment resolved to, not the name your pipeline sent. See [Deployments](/loops/deployments#environment).
 
 ## Schedule
 
@@ -60,7 +60,7 @@ A created schedule reports `nextScheduledAt`.
 | --- | --- |
 | `flowIds` | Flows named one by one. |
 | `tagNames` | Every flow carrying one of these tags. Combines with `flowIds`. |
-| `kind` | `createSuite`, the default, runs the flows named by `flowIds` and `tagNames`. `generativeSuite` makes the trigger a [Smart Smoke Suite](/smart-smoke-suites): QA Wolf selects the flows from the pull request the deploy belongs to. `startAgent` makes it [Run AI](/triggers/run-ai): each firing starts a QA Wolf AI session that carries out `instructions`. |
+| `kind` | `createSuite`, the default, runs the flows named by `flowIds` and `tagNames`. `generativeSuite` makes the trigger a [Smart Smoke Suite](/smart-smoke-suites): QA Wolf selects the flows from the pull request the deploy belongs to. `startAgent` makes it [Run AI](/loops/run-ai): each firing starts a QA Wolf AI session that carries out `instructions`. |
 | `instructions` | Required for `startAgent`: the task, up to 10,000 characters. Optional guidance for a `generativeSuite` selection. Refused on a `createSuite` action. |
 | `investigateFailures` | Whether QA Wolf investigates failures in the runs the trigger creates. Defaults to `true`. |
 | `runConcurrencyLimit` | How many runs of the resulting suite may execute at once. Sent as a string: a whole number from 1 to 1000 such as `"40"`, the literal `"unlimited"`, or a [concurrency expression](/concurrency-limits#expressions) such as `"max(2, 4)"`. A number or expression replaces the environment's limit rather than capping below it, so it can raise the limit as well as lower it. `"unlimited"` is treated as unset, so the environment's limit still applies. Omit it to leave the environment's limit in charge. |
