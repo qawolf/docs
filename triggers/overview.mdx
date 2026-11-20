@@ -124,7 +124,7 @@ When QA Wolf writes a loop's Run AI instructions, a `/smart-smoke-suite` command
 
 QA Wolf confirms that the run or the session started. The firing then shows in Run history, and a session also shows in the chat. Run now works on a paused loop, because a pause only stops a loop firing on its own.
 
-Run now is not available for a Smart Smoke Suite, a pull request loop, or a QA Wolf event loop. The button is disabled. Run now also has an hourly limit. See [Limits](#limits).
+Run now is not available for a Smart Smoke Suite, a pull request loop, or a QA Wolf event loop. The button is disabled. Run now also has a cap. See [Limits](#limits).
 
 ## Run history
 
@@ -142,18 +142,7 @@ A mobile pipeline uploads each new build and reports it as a deployment. The run
 
 ## Limits
 
-Each row names its own window. A firing over a limit is skipped, and Run history says which limit it hit.
-
-| Limit | Default |
-| --- | --- |
-| Run AI sessions per loop | 20 in 24 hours |
-| Run AI sessions per workspace | 100 in 24 hours |
-| Runs of specific flows per loop, started by a pull request, a QA Wolf event, or Run now | 50 in 24 hours |
-| Runs of specific flows per loop for the same pull request or issue | 1 in 15 minutes |
-| Run now per loop | 10 in an hour |
-| Run now per workspace | 30 in an hour |
-
-Run now counts every firing by hand, from the app and from the API alike. When Run now is over its limit, QA Wolf refuses the request instead of recording a skipped firing. To raise a limit for your workspace, contact QA Wolf.
+Loops have daily and hourly caps to keep a loop from running away. A firing a cap skips shows its reason in Run history, and Run now says when a loop was run by hand too often.
 
 ## Pausing
 
