@@ -272,7 +272,7 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
 
 ## Create a trigger
 
-A deployment starts nothing until a trigger matches it. Create one on the workspace's triggers page, with conditions that match the deployments you now report:
+A deployment starts nothing until a trigger matches it. Create one on the workspace's **Loops** page, where the app calls a trigger a loop, with conditions that match the deployments you now report:
 
 | Condition | For a mobile pipeline |
 | --- | --- |
@@ -287,7 +287,7 @@ Shipping both platforms into one environment needs two triggers, one per `servic
 See [Trigger fields](/loops/reference) for every condition and for the action that selects which flows run.
 
 <Tip>
-  You can create and manage triggers from your own coding agent instead of the triggers page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments — it can also list recent deployments and show why a trigger did or did not fire.
+  You can create and manage triggers from your own coding agent instead of the **Loops** page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments — it can also list recent deployments and show why a trigger did or did not fire.
 </Tip>
 
 ## Use the build in a flow
@@ -328,7 +328,7 @@ Naming `app` at all stops the fallback: `launch({ app: ... })` resolves `app.pat
 
 ## Related
 
-- [Triggers](/loops/overview) and [Trigger fields](/loops/reference)
+- [Loops](/loops/overview) and [Trigger fields](/loops/reference)
 - [Deployments](/loops/deployments) — how a deployment resolves to an environment, and the verdict per trigger.
 - [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls)
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)

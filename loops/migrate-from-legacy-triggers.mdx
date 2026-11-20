@@ -11,7 +11,7 @@ keywords: "legacy triggers, trigger migration, move off legacy triggers, deploy_
 
 - **Where automation lives.** A legacy trigger sits on one environment, so covering staging and production takes one in each. A trigger sits on the workspace, so one trigger can cover staging, production and every preview environment.
 - **How deploys are matched.** A legacy deployment trigger matched an opaque deployment type your pipeline sent. A trigger matches what the deploy actually carries: its environment, URL, branch, repository and service. See [Trigger fields](/loops/reference).
-- **Who manages it.** You create, edit and pause triggers yourself, on the workspace's triggers page, through the API and CLI, or through your coding agent.
+- **Who manages it.** You create, edit and pause triggers yourself, on the workspace's **Loops** page, through the API and CLI, or through your coding agent.
 
 Triggers also add things legacy triggers can't express, such as schedules that run on weekdays only, and a Smart Smoke Suite for pull requests.
 
@@ -56,7 +56,7 @@ The recommended path is to let your coding agent do the migration through the [Q
 
 ## Migrate without a coding agent
 
-If you don't use a coding agent, you can follow the same steps by hand. You create and edit triggers on the **Triggers** page under **Workspace settings**, or your QA Wolf team can create the replacement triggers for you. Changing how your pipeline reports deploys is the one step only you can do. Do the steps in this order:
+If you don't use a coding agent, you can follow the same steps by hand. You create and edit triggers on the **Loops** page in the main navigation, where the app calls a trigger a loop, or your QA Wolf team can create the replacement triggers for you. Changing how your pipeline reports deploys is the one step only you can do. Do the steps in this order:
 
 <Steps>
   <Step title="Move your schedules">
@@ -277,7 +277,7 @@ Your coding agent does the work. You review and approve the plan, and make any p
 
 ### What if I don't use a coding agent?
 
-You can create the triggers yourself on the **Triggers** page, or your QA Wolf team can create them for you. See [Migrate without a coding agent](#migrate-without-a-coding-agent).
+You can create the triggers yourself on the **Loops** page, or your QA Wolf team can create them for you. See [Migrate without a coding agent](#migrate-without-a-coding-agent).
 
 ### Will I lose runs or coverage during the switch?
 
@@ -293,4 +293,4 @@ Yes. Pause the new triggers, then resume the legacy ones. Pausing every trigger 
 
 ### How do I know it worked?
 
-Each schedule shows its next run time on the triggers page. For a deployment trigger, the next real deploy should produce a run. If it doesn't, [Deployments](/loops/deployments#evaluation) explains how to see why the trigger didn't fire.
+Each schedule shows its next run time on the loop's page. For a deployment trigger, the next real deploy should produce a run. If it doesn't, [Deployments](/loops/deployments#evaluation) explains how to see why the trigger didn't fire.

@@ -11,7 +11,7 @@ PR testing runs your flows against a pull request's preview deploy and reports t
 
 - **A connected GitHub or GitLab integration covering the deploying repository.** This is what ties a deploy to its pull request. Connect it under **Workspace settings → Integrations**; see [GitHub](/deployment-testing/github) or [GitLab](/deployment-testing/gitlab).
 - **A preview deploy per pull request**, with its own environment name and its own URL. Mark it as a preview so its environment is torn down when the pull request closes. See [Deployments](/loops/deployments#previews).
-- **A deployment trigger matching those previews**, such as `preview/*` or `review/*`. See [Triggers](/loops/overview).
+- **A deployment trigger matching those previews**, such as `preview/*` or `review/*`. See [Loops](/loops/overview).
 
 ## Without a connected repository
 
