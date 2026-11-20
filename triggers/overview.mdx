@@ -54,7 +54,7 @@ A loop can start when something happens to a bug, a blocker, or a request in QA 
 
 A loop on a QA Wolf event can Run AI or Run specific flows. With Run specific flows, the **Environment** option picks where the flows run. It defaults to the workspace's default environment. When the environment a loop was saved with is terminated, the option shows **Unavailable environment**. Clear it, or pick another.
 
-A change made by a loop's own session never starts a loop. The firing is skipped with the reason `caused-by-global-trigger-session`.
+A change made by a loop's own session never starts a loop, and nothing shows in Run history.
 
 ## Then
 
@@ -63,13 +63,26 @@ A change made by a loop's own session never starts a loop. The firing is skipped
 
 **Run options** holds failure investigation and the number of flows that run in parallel. Run AI has no run options, except in a Smart Smoke Suite.
 
-A [Smart Smoke Suite](/smart-smoke-suites) lets QA Wolf choose the flows from the change behind each deploy. Choose **Run AI** and start the instructions with `/smart-smoke-suite`, or pick the **Test each pull request** template. It works on a loop that starts on **Pull request previews**, not on a schedule, a pull request, or a QA Wolf event.
+A [Smart Smoke Suite](/smart-smoke-suites) lets QA Wolf choose the flows from the change behind each deploy. Choose **Run AI** and start the instructions with `/smart-smoke-suite`. It works on a loop that starts on **Pull request previews**, not on a schedule, a pull request, or a QA Wolf event.
 
 Give preview deploys their own loop rather than widening the one that covers staging. A pull request rarely needs everything staging runs.
 
 ## Create a loop
 
-On the Loops page, select **New loop**. In the **Create a new loop** dialog, describe the loop to QA Wolf, or pick a template such as **Nightly regression** or **Test each pull request**, or **Blank slate** to start empty. Name the loop, fill in **When** and **Then**, and select **Create loop**.
+<Steps>
+  <Step>
+    On the Loops page, select **New loop**.
+  </Step>
+  <Step>
+    In the **Create a new loop** dialog, [describe the loop to QA Wolf](#describe-a-loop), or pick a starting point: **Nightly regression**, **Test each pull request**, or **Blank slate** to start empty. **Test each pull request** sets up a [Smart Smoke Suite](/smart-smoke-suites) on pull request previews.
+  </Step>
+  <Step>
+    Name the loop, and fill in **When** and **Then**.
+  </Step>
+  <Step>
+    Select **Create loop**.
+  </Step>
+</Steps>
 
 **Create loop** stays disabled until the loop is complete, and says what is missing.
 
@@ -79,7 +92,20 @@ On a loop's page, a new name, a new description, and the **Enabled** switch save
 
 ### Describe a loop
 
-In the **Create a new loop** dialog, write what the loop should do under **Ask QA Wolf to build the loop for you**, and select **Ask QA Wolf**. The New loop page opens with QA Wolf's chat beside it, and QA Wolf fills in the loop's name, **When**, and **Then**. Nothing is saved until you select **Create loop**, so check the loop and change anything that isn't right.
+<Steps>
+  <Step>
+    In the **Create a new loop** dialog, write what the loop should do under **Ask QA Wolf to build the loop for you**.
+  </Step>
+  <Step>
+    Select **Ask QA Wolf**. The New loop page opens with QA Wolf's chat beside it, and QA Wolf fills in the loop's name, **When**, and **Then**.
+  </Step>
+  <Step>
+    Check the loop, and change anything that isn't right. Nothing is saved yet.
+  </Step>
+  <Step>
+    Select **Create loop**.
+  </Step>
+</Steps>
 
 Example:
 
@@ -87,18 +113,18 @@ Example:
 Every weekday at 9:30am New York time, check that the dashboard and the Runs page load, and tell me what looks broken.
 ```
 
-When QA Wolf writes a loop's Run AI instructions, a `/smart-smoke-suite` command included, the loop is created paused. The page says so beside **Create loop**. Read the instructions, then turn the loop on with its **Enabled** switch. Its sessions run with your access, because creating the loop makes you its [owner](/triggers/run-ai#owner). A loop that runs specific flows is created enabled.
+When QA Wolf writes a loop's Run AI instructions, a `/smart-smoke-suite` command included, the loop is created paused. The page says so beside **Create loop**. Read the instructions, then turn the loop on with its **Enabled** switch. A loop that runs AI with your instructions runs its sessions with your access, because creating it makes you its [owner](/triggers/run-ai#owner). A loop that runs specific flows is created enabled.
 
 ## Run now
 
 **Run now** fires a loop by hand, so you can try it before it fires on its own. It sits on each row of the Loops page and on the loop's own page.
 
-- **A schedule loop** fires at once, in its environment.
-- **A deploy loop** opens a menu of recent deploys the loop matches. Pick one, and the loop fires on it, in that deploy's environment.
+- **A schedule loop** — fires at once, in its environment.
+- **A deploy loop** — opens a menu of recent deploys the loop matches. Pick one, and the loop fires on it, in that deploy's environment.
 
 QA Wolf confirms that the run or the session started. The firing then shows in Run history, and a session also shows in the chat. Run now works on a paused loop, because a pause only stops a loop firing on its own.
 
-Run now is not available for a Smart Smoke Suite, a pull request loop, or a QA Wolf event loop. The button says why. Run now also has an hourly limit. See [Limits](#limits).
+Run now is not available for a Smart Smoke Suite, a pull request loop, or a QA Wolf event loop. The button is disabled. Run now also has an hourly limit. See [Limits](#limits).
 
 ## Run history
 
@@ -116,7 +142,7 @@ A mobile pipeline uploads each new build and reports it as a deployment. The run
 
 ## Limits
 
-Each limit counts the last 24 hours, or the last hour for Run now. A firing over a limit is skipped, and Run history says which limit it hit.
+Each row names its own window. A firing over a limit is skipped, and Run history says which limit it hit.
 
 | Limit | Default |
 | --- | --- |
