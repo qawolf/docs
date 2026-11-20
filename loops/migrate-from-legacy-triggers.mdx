@@ -5,12 +5,12 @@ sidebarTitle: "Migrate from legacy triggers"
 keywords: "legacy triggers, trigger migration, move off legacy triggers, deploy_success, cutover, per-environment triggers, scheduled runs, PR testing"
 ---
 
-[Legacy triggers](/legacy-triggers/overview) belong to one environment. [Triggers](/triggers/overview) belong to the workspace. Your coding agent can do most of the move for you.
+[Legacy triggers](/legacy-triggers/overview) belong to one environment. [Triggers](/loops/overview) belong to the workspace. Your coding agent can do most of the move for you.
 
 ## What changes
 
 - **Where automation lives.** A legacy trigger sits on one environment, so covering staging and production takes one in each. A trigger sits on the workspace, so one trigger can cover staging, production and every preview environment.
-- **How deploys are matched.** A legacy deployment trigger matched an opaque deployment type your pipeline sent. A trigger matches what the deploy actually carries: its environment, URL, branch, repository and service. See [Trigger fields](/triggers/reference).
+- **How deploys are matched.** A legacy deployment trigger matched an opaque deployment type your pipeline sent. A trigger matches what the deploy actually carries: its environment, URL, branch, repository and service. See [Trigger fields](/loops/reference).
 - **Who manages it.** You create, edit and pause triggers yourself, on the workspace's triggers page, through the API and CLI, or through your coding agent.
 
 Triggers also add things legacy triggers can't express, such as schedules that run on weekdays only, and a Smart Smoke Suite for pull requests.
@@ -251,7 +251,7 @@ For any other interval, ask your QA Wolf team.
 
 Each legacy deployment trigger becomes a deployment trigger that matches the same deploys. Usually that means its environment, plus its repository when the legacy trigger was limited to one. Its tags, failure investigation setting and run concurrency limit carry across.
 
-A legacy trigger limited to several branch patterns becomes one brace list, such as `{main,hotfix/*}`. Legacy branch patterns were case-sensitive, and trigger patterns ignore case. See [Trigger fields](/triggers/reference#deployment-conditions).
+A legacy trigger limited to several branch patterns becomes one brace list, such as `{main,hotfix/*}`. Legacy branch patterns were case-sensitive, and trigger patterns ignore case. See [Trigger fields](/loops/reference#deployment-conditions).
 
 ### PR testing and adaptive flow selection
 
@@ -293,4 +293,4 @@ Yes. Pause the new triggers, then resume the legacy ones. Pausing every trigger 
 
 ### How do I know it worked?
 
-Each schedule shows its next run time on the triggers page. For a deployment trigger, the next real deploy should produce a run. If it doesn't, [Deployments](/triggers/deployments#evaluation) explains how to see why the trigger didn't fire.
+Each schedule shows its next run time on the triggers page. For a deployment trigger, the next real deploy should produce a run. If it doesn't, [Deployments](/loops/deployments#evaluation) explains how to see why the trigger didn't fire.

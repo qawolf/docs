@@ -7,7 +7,7 @@ keywords: "GitLab environments, deployment job, review apps, notify QA Wolf on d
 
 A [GitLab environment](https://docs.gitlab.com/ci/environments/) represents a deployment target for your application, such as development, staging or production. A **deployment job** — a job carrying the [`environment` keyword](https://docs.gitlab.com/ci/yaml/) — creates a **deployment** under that environment. QA Wolf acts on the deployment once it succeeds.
 
-QA Wolf receives those deployments through the connected integration, and a [trigger](/triggers/overview) decides which flows run for each one.
+QA Wolf receives those deployments through the connected integration, and a [trigger](/loops/overview) decides which flows run for each one.
 
 ## Requirements
 
@@ -39,7 +39,7 @@ deploy-staging:
     - ./deploy.sh
 ```
 
-- **`name`** — QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches. See [Deployments](/triggers/deployments#environment).
+- **`name`** — QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches. See [Deployments](/loops/deployments#environment).
 - **`url`** — the address QA Wolf runs against.
 
 A GitLab deployment carries no slot for per-deploy environment variables, so runs against it use the QA Wolf environment's own variables. To vary them per deploy, report the deploy through the [Webhook](/deployment-testing/webhook) path instead.
@@ -58,4 +58,4 @@ environment:
 
 ## Create a trigger
 
-A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your jobs now create. See [Triggers](/triggers/overview).
+A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your jobs now create. See [Triggers](/loops/overview).

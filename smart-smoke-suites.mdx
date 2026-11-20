@@ -4,7 +4,7 @@ description: "Let a loop use the QA Wolf agent to pick and run the flows affecte
 keywords: "Smart Smoke Suite, smoke tests, smoke suite, generativeSuite, PR testing, adaptive flow selection"
 ---
 
-A Smart Smoke Suite is one way for a [loop](/triggers/overview) to choose its flows. Instead of running flows you name in advance, the QA Wolf agent selects the flows affected by the pull request behind each deploy. This gives engineers a faster release signal in the review cycle.
+A Smart Smoke Suite is one way for a [loop](/loops/overview) to choose its flows. Instead of running flows you name in advance, the QA Wolf agent selects the flows affected by the pull request behind each deploy. This gives engineers a faster release signal in the review cycle.
 
 Smart Smoke Suites are designed to layer onto your existing coverage strategies.
 
@@ -24,12 +24,12 @@ The suite has no fixed size. The agent selects the flows it judges affected by t
 ## Requirements
 
 - **A connected GitHub or GitLab integration** covering the deploying repository, so each deploy links to its pull request. See [PR testing](/deployment-testing/pr-testing).
-- **A deploy tied to a pull request.** It can go to any environment, not only a preview. GitHub deployments and GitLab deployment jobs are tied automatically. A `deployment.reportStatus` report is tied when it sends `metadata.repository` with `metadata.pullRequestNumber`, or with `metadata.commitSha` while that pull request is still open. See [Deployments](/triggers/deployments#pull-request).
-- **A loop that starts on those deploys.** On the [Loops](/triggers/overview) page, pick the **Test each pull request** template, or start a loop from **Pull request previews** and enter the environment name pattern, such as `pr-*`. Under **Then**, choose **Run AI** and start the instructions with `/smart-smoke-suite`. The pattern isn't limited to previews, so `dev-*` covers several static dev environments.
+- **A deploy tied to a pull request.** It can go to any environment, not only a preview. GitHub deployments and GitLab deployment jobs are tied automatically. A `deployment.reportStatus` report is tied when it sends `metadata.repository` with `metadata.pullRequestNumber`, or with `metadata.commitSha` while that pull request is still open. See [Deployments](/loops/deployments#pull-request).
+- **A loop that starts on those deploys.** On the [Loops](/loops/overview) page, pick the **Test each pull request** template, or start a loop from **Pull request previews** and enter the environment name pattern, such as `pr-*`. Under **Then**, choose **Run AI** and start the instructions with `/smart-smoke-suite`. The pattern isn't limited to previews, so `dev-*` covers several static dev environments.
 
 Once it's set up, each matching deploy tied to a pull request gets its own selection. To stop, switch the loop to **Run specific flows**, or pause it. The change applies to deploys that arrive afterwards.
 
-A Smart Smoke Suite is a [loop](/triggers/overview) that starts on deploys. The API calls it a trigger whose action kind is `generativeSuite`; see [Trigger fields](/triggers/reference#action). It needs [PR testing](/deployment-testing/pr-testing): a deploy with no pull request behind it, such as a merge to `main` deployed to staging, is skipped.
+A Smart Smoke Suite is a [loop](/loops/overview) that starts on deploys. The API calls it a trigger whose action kind is `generativeSuite`; see [Trigger fields](/loops/reference#action). It needs [PR testing](/deployment-testing/pr-testing): a deploy with no pull request behind it, such as a merge to `main` deployed to staging, is skipped.
 
 ## FAQ
 
