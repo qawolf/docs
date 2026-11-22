@@ -1063,6 +1063,12 @@
             ]
           },
           {
+            "group": "Security",
+            "pages": [
+              "security/github-code-access"
+            ]
+          },
+          {
             "group": "VPN",
             "pages": [
               "vpn"
