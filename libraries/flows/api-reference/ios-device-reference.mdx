@@ -523,6 +523,8 @@ type NetworkConditionStatus = {
 
 Routes network traffic for specific apps or domains through a tunnel. Returns a cleanup function that restores default routing when called.
 
+The route replaces the network capture of `launch()`. Set `inspect: true` to keep [network logs](/ios-network-logs) on this route.
+
 ```typescript
 function routeTraffic(config: RouteTrafficConfig): Promise<() => Promise<void>>;
 
@@ -597,19 +599,18 @@ interface NetworkLogSubscription {
 ```
 
 <Warning>
-  Requires `routeTraffic()` to have been called first with `inspect: true`.
+  Requires network capture: `launch({ network: { capture: true } })`, or `routeTraffic()` with `inspect: true`. The stream starts at the next entry, so subscribe before the step whose requests you read. See [Network logs (iOS)](/ios-network-logs).
 </Warning>
 
 Example:
 
 ```typescript
-import { device, flow } from "@qawolf/flows/ios";
+import { device, flow, launch } from "@qawolf/flows/ios";
 
 export default flow("Inspect network traffic", "iOS - iPhone 15 (iOS 26)", async () => {
-  const cleanup = await device.routeTraffic({
-    apps: ["com.example.app"],
-    tunnel: { type: "direct" },
-    inspect: true,
+  await launch({
+    bundleId: "com.example.app",
+    network: { capture: true },
   });
 
   const subscription = device.subscribeNetworkLogs();
@@ -622,7 +623,6 @@ export default flow("Inspect network traffic", "iOS - iPhone 15 (iOS 26)", async
   // trigger network activity in your app
 
   subscription.close();
-  await cleanup();
 });
 ```
 

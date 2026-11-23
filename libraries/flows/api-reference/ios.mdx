@@ -172,8 +172,11 @@ type LaunchOptions = {
   udid?: string;
   waitForIdleTimeout?: number;
   webDriverAgentUrl?: string;
+  network?: { capture?: boolean; passThrough?: string[]; redact?: boolean };
 };
 ```
+
+`network` records the app's network requests. See [Network logs (iOS)](/ios-network-logs).
 
 Example:
 
@@ -203,6 +206,7 @@ The implementation applies these defaults:
 - `respectSystemAlerts` defaults to `true`
 - `snapshotMaxDepth` defaults to `999`
 - `noReset` defaults to `false`
+- `network.capture` defaults to `false`, and `network.redact` to `true`
 
 Example:
 
