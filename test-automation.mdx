@@ -168,3 +168,11 @@ Use the new apiLogin method as exemplified in this file: {{path to file}}
 ```
 
 This will prevent having to re-describe the change each time.
+
+---
+
+## Mobile apps
+
+For an iOS or Android app, the agent works on a device instead of a browser. It reads each screen from a screenshot and the app's element tree, then taps, swipes, and types its way through the journey. The flow it writes uses Appium. You can watch the device while it works.
+
+The agent needs a build of your app: an `.ipa` for iOS, or an `.apk` or `.aab` for Android. Attach it to your message in place of a URL, and the agent's runs install it. To test every new build from your pipeline, see [Mobile build testing](/mobile-build-testing). [Upload builds](/upload-builds) lists every other way to get a build into QA Wolf.

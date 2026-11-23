@@ -28,7 +28,7 @@ This is separate from the issue tracker [Webhook](/Integrate-with-webhooks) inte
     Enter your endpoint's address in **Webhook URL** and select **Save**. The URL must use HTTPS, must not include a username or password, and must resolve only to public internet addresses.
   </Step>
   <Step>
-    Select **Send test event**. QA Wolf sends a signed sample event and shows your endpoint's response. A test event is sent once: QA Wolf doesn't retry it, and it never turns the webhook off.
+    Select **Send test event**. QA Wolf sends a signed sample event and shows your endpoint's response. A test event is sent once: QA Wolf doesn't retry it, and it never turns the webhook off. You can send one test event every 10 seconds. The sample is a `run.status-changed` event with `runId` `test-run` and `environmentId` `test-environment`, so your endpoint can tell it apart from real events.
   </Step>
 </Steps>
 
@@ -310,13 +310,13 @@ After a failed delivery, QA Wolf tries again after 5 seconds, then 5 minutes, th
 
 - **`2xx`** — delivered.
 - **`410`** — QA Wolf turns the webhook off at once.
-- **`413`** — QA Wolf halves the number of events per request and tries again. A single event your endpoint still refuses as too large is a failed delivery.
+- **`413`** — QA Wolf halves the number of events per request and tries again. The smaller size stays until no events are waiting, then goes back to 100. A single event your endpoint still refuses as too large is a failed delivery.
 - **`429`, or `503` with a `Retry-After` header** — a failed delivery. QA Wolf waits as long as `Retry-After` asks, between 5 seconds and 1 hour, instead of following the schedule.
 - **Anything else** — a failed delivery. This covers every other status, no answer within 10 seconds, and a connection, DNS or TLS failure. QA Wolf retries a connection, DNS or TLS failure up to twice within a few seconds, with the same signature, before it counts as a failed delivery.
 
-While your endpoint is failing, new events wait and QA Wolf keeps only the newest event for each run, and for each execution of a flow. If more than about 1 MB of events is waiting, QA Wolf drops the oldest flow events first, then the oldest run events. Once a delivery succeeds, QA Wolf sends everything waiting, up to 100 events per request.
+While your endpoint is failing, new events wait and QA Wolf keeps only the newest event for each run, and for each execution of a flow. If more than about 1 MB of events is waiting, QA Wolf drops the oldest flow events first, then the oldest run events. The waiting events go out at the next retry after your endpoint recovers, which can be up to an hour later, and a successful test event doesn't send them sooner. Once that retry succeeds, QA Wolf sends everything still waiting straight away, up to 100 events per request, or fewer after a `413`.
 
-If deliveries keep failing for 8 hours, QA Wolf turns the webhook off. Any successful delivery restarts the 8 hours. QA Wolf also turns the webhook off at once if your URL resolves to a private or internal address when it sends.
+If deliveries keep failing for 8 hours, QA Wolf turns the webhook off. Any successful delivery restarts the 8 hours. Saving **Webhook URL**, even with the same URL, or rotating the signing secret also restarts the 8 hours and the retry schedule, from the next delivery attempt after the change. QA Wolf also turns the webhook off at once if your URL resolves to a private or internal address when it sends.
 
 <Warning>
   QA Wolf doesn't skip an event that your endpoint keeps rejecting. Every request that carries it fails instead, and after 8 hours the webhook turns off. Answer `2xx` for any event you can't process, and handle it on your side.

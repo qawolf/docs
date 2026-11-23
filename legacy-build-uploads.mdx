@@ -9,7 +9,7 @@ keywords: "RUN_INPUT_PATH, run input, run inputs executables, upload_to_qawolf, 
   Deprecated for Android and iOS builds. Upload them as [builds](/upload-builds) instead, so every run records which build it tested. See [Move from legacy uploads](/upload-builds#move-from-legacy-uploads). Legacy uploads keep working, and Windows and Linux app files still take this path. A zipped app that is not an `.ipa` also stays on this path for now.
 </Warning>
 
-Your pipeline uploads each new app file to run inputs storage and reports it as a deployment, and a [trigger](/triggers/overview) you create starts the runs. The flow reads the file's path from `RUN_INPUT_PATH`.
+Your pipeline uploads each new app file to run inputs storage and reports it as a deployment, and a [trigger](/loops/overview) you create starts the runs. The flow reads the file's path from `RUN_INPUT_PATH`.
 
 ## How it works
 
@@ -37,7 +37,7 @@ Your pipeline uploads each new app file to run inputs storage and reports it as 
 - An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work.
 - The workspace id, shown on the same page.
 - A QA Wolf environment to report into. The deploy resolves to an environment by alias or name, and a name that matches nothing creates a new environment that no trigger targets.
-- One of: the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) 1.0.0 or later, `qawolf/notify-qawolf-on-deploy-action@v3`, or `@qawolf/ci-sdk` 3.1.0 or later. Earlier versions report through the legacy deploy webhook, which [triggers](/triggers/overview) never see. See [Mobile build testing with legacy triggers](/legacy-triggers/mobile-build-testing).
+- One of: the [QA Wolf Fastlane plugin](https://github.com/qawolf/fastlane-plugin-qawolf) 1.0.0 or later, `qawolf/notify-qawolf-on-deploy-action@v3`, or `@qawolf/ci-sdk` 3.1.0 or later. Earlier versions report through the legacy deploy webhook, which [triggers](/loops/overview) never see. See [Mobile build testing with legacy triggers](/legacy-triggers/mobile-build-testing).
 
 ## Name the build file
 
@@ -272,7 +272,7 @@ Uploaded builds are mounted on the runner under `/home/wolf/run-inputs-executabl
 
 ## Create a trigger
 
-A deployment starts nothing until a trigger matches it. Create one on the workspace's triggers page, with conditions that match the deployments you now report:
+A deployment starts nothing until a trigger matches it. Create one on the workspace's **Loops** page, where the app calls a trigger a loop, with conditions that match the deployments you now report:
 
 | Condition | For a mobile pipeline |
 | --- | --- |
@@ -284,10 +284,10 @@ Shipping both platforms into one environment needs two triggers, one per `servic
 
 `deployTargetPattern` matches on the deploy target URL, which a mobile build has none of, so it is not a way to tell builds apart.
 
-See [Trigger fields](/triggers/reference) for every condition and for the action that selects which flows run.
+See [Trigger fields](/loops/reference) for every condition and for the action that selects which flows run.
 
 <Tip>
-  You can create and manage triggers from your own coding agent instead of the triggers page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments — it can also list recent deployments and show why a trigger did or did not fire.
+  You can create and manage triggers from your own coding agent instead of the **Loops** page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments — it can also list recent deployments and show why a trigger did or did not fire.
 </Tip>
 
 ## Use the build in a flow
@@ -310,7 +310,7 @@ Naming `app` at all stops the fallback: `launch({ app: ... })` resolves `app.pat
     The upload step succeeds, and the report step logs the deployment id and the environment's runs page.
   </Step>
   <Step title="Check the trigger fired">
-    Open the deployment in QA Wolf. It lists a verdict for every trigger, including the reason a trigger did not match. See [Deployments](/triggers/deployments#evaluation).
+    Open the deployment in QA Wolf. It lists a verdict for every trigger, including the reason a trigger did not match. See [Deployments](/loops/deployments#evaluation).
   </Step>
   <Step title="Check the run used the build">
     Open the run the trigger created and confirm it launched the build you just uploaded.
@@ -328,8 +328,8 @@ Naming `app` at all stops the fallback: `launch({ app: ... })` resolves `app.pat
 
 ## Related
 
-- [Triggers](/triggers/overview) and [Trigger fields](/triggers/reference)
-- [Deployments](/triggers/deployments) — how a deployment resolves to an environment, and the verdict per trigger.
+- [Loops](/loops/overview) and [Trigger fields](/loops/reference)
+- [Deployments](/loops/deployments) — how a deployment resolves to an environment, and the verdict per trigger.
 - [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls)
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
 - [Mobile build testing with legacy triggers](/legacy-triggers/mobile-build-testing)

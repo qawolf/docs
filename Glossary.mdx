@@ -1,6 +1,6 @@
 ---
 title: "Glossary"
-description: "Definitions of key QA Wolf terms including workspaces, environments, groups, flows, runs, coverage outlines, and coverage maps."
+description: "Definitions of key QA Wolf terms including workspaces, environments, builds, groups, flows, runs, coverage outlines, and coverage maps."
 ---
 
 ## Workspace
@@ -12,6 +12,10 @@ A **workspace** is the top-level container in the QA Wolf platform. All environm
 Under each workspace is an **environment**, which corresponds to a specific version of your app, such as development, staging, or production.
 
 Each environment can be configured with separate variables (e.g., base URL, users, etc.), concurrency rates, and other settings relevant to the version of the application you're testing. Flows and tests are unique for each environment and not shared between environments.
+
+## Build
+
+A **build** is an iOS `.ipa`, or an Android `.apk` or `.aab`, that you upload to QA Wolf. Mobile flows install a build of your app rather than opening a URL, and each run records which build it installed. See [Upload builds](/upload-builds).
 
 ## Flow
 
@@ -79,17 +83,21 @@ A **Run Rule**, defined in your repository's `rules.yaml`, orders flows (`run-af
 
 ## Schedule
 
-A **schedule** is a trigger that runs a set of flows in one environment every few hours, days, weeks or months. Hourly and daily schedules can be limited to chosen days of the week. To run flows when a build deploys, use a deployment trigger instead. See [Triggers](/triggers/overview).
+A **schedule** is a trigger that fires in one environment every few hours, days, weeks, or months. Hourly and daily schedules can be limited to chosen days of the week. To run flows when a build deploys, use a deployment trigger instead. See [Loops](/loops/overview).
+
+## Loop
+
+A **loop** is what the app calls a [trigger](#trigger).
 
 ## Trigger
 
-A **trigger** runs a set of flows when your application deploys, or on a schedule. Triggers belong to the workspace, so one trigger can cover every environment a deployment reaches. The flows are named directly, selected by tag, or chosen by QA Wolf as a Smart Smoke Suite.
+A **trigger** tells QA Wolf what to do when something happens: a deploy, a schedule, a pull request, or a QA Wolf bug, blocker, or request. Each time it fires, it runs a set of flows or starts a QA Wolf AI session with your instructions. Triggers belong to the workspace, so one trigger can cover every environment a deployment reaches. The app calls a trigger a **loop**.
 
 <Note>
   Older workspaces may still run legacy triggers, which attach to a single environment. See [Legacy triggers](/legacy-triggers/overview).
 </Note>
 
-See [Triggers](/triggers/overview).
+See [Loops](/loops/overview).
 
 ## PR testing
 
