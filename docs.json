@@ -800,6 +800,12 @@
                 ]
               },
               {
+                "group": "Network logs",
+                "pages": [
+                  "ios-network-logs"
+                ]
+              },
+              {
                 "group": "Beacon injection",
                 "pages": [
                   "i-beacon-injection"
