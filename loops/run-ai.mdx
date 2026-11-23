@@ -1,0 +1,64 @@
+---
+title: "Run AI"
+description: "Give a loop written instructions, and QA Wolf starts an AI session to carry them out each time the loop fires."
+sidebarTitle: "Run AI"
+keywords: "loop instructions, standing instructions, AI session, scheduled AI task, explore each deploy, flake review, coverage gaps, startAgent"
+---
+
+**Run AI** is one of a [loop's](/loops/overview) two actions. Each time the loop fires, QA Wolf starts a QA Wolf AI session with the loop's **Instructions**. The session is the same kind you open in chat: you can read what it did, and answer it when it asks a question.
+
+## What a session already knows
+
+The session starts with the firing's details, so your instructions don't need to repeat them:
+
+| Starts on | The session reads |
+| --- | --- |
+| A deploy | The deploy's environment, commit, and branch, and the changes your CI reported with it. |
+| A schedule | The time it came due, and the environment the loop runs on. |
+| A pull request | The pull request's repository, branches, title, labels, and changes. |
+| A bug, a blocker, or a request | Its name, what changed, and its priority. |
+
+A session on a deploy works in the deploy's environment. A session on a schedule works in the schedule's environment. A session on a pull request or a QA Wolf event works in the workspace's default environment. On GitHub, a pull request session posts its reply as a comment on the pull request.
+
+## Write instructions
+
+Write the task as you would for a teammate: what to look at, what to do, and what to report. One task per loop keeps each session focused, and keeps its run history easy to read.
+
+Examples:
+
+```text
+Read what this deploy changed. Explore those pages on the deployed environment, and report anything that looks broken.
+```
+
+```text
+Look at last week's runs. Find the five flakiest flows, say why each one flakes, and fix the ones you can.
+```
+
+```text
+Read what this pull request changes. List the flows it could break, and draft a flow for any change no flow tests.
+```
+
+In the **Instructions** box:
+
+- Type `@` to mention a tag, a flow, or an environment by name.
+- On a loop that starts on **Pull request previews**, type `/` for the `/smart-smoke-suite` command. It makes the loop a [Smart Smoke Suite](/smart-smoke-suites) instead of a session.
+- Pick a chip under **Start from:** to fill the box with an example for the loop's start.
+
+Instructions can be up to 10,000 characters.
+
+<Tip>
+  Be specific about scope and output. "Find the five flakiest flows" gives a session a clear finish line; "look into flakiness" doesn't.
+</Tip>
+
+## Owner
+
+A loop that runs AI has an owner, and its sessions run with the owner's access. Whoever creates the loop, or saves a change to its instructions, becomes its owner. That includes a loop you [describe to QA Wolf](/loops/overview#describe-a-loop): QA Wolf writes the instructions, and you own the loop once you create it. A loop's page says whether you own it, and anyone who can manage loops can select **Make me the owner**. Saving new instructions on a loop someone else owns makes you its owner, and the page says so beside **Save changes**.
+
+QA Wolf pauses a loop that runs AI when it has no owner, or when its owner is no longer a member of the workspace. A loop made through the API with a workspace API key starts this way, because no person made it. The loop's page says why it is paused. Selecting **Make me the owner** resumes it.
+
+## Follow a session
+
+- **Run history** — each firing shows its session's status. Open it for the session's latest reply, how long it worked, and **Open in chat**. See [Run history](/loops/overview#run-history).
+- **Inbox** — when a session asks a question or fails, QA Wolf adds an Inbox row for the owner, under **Loops**, such as "Nightly review is waiting for you". Open it to answer in chat. Once the session moves on, the row reads "Session closed". Deleting a loop closes its open Inbox rows.
+
+A firing that starts no session says why in Run history, for example when the loop reached its daily limit of sessions. See [Limits](/loops/overview#limits).

@@ -36,6 +36,7 @@ The goal is simple: you get high end-to-end coverage without needing to build an
 
 - [ ] [Prepare environments for QA Wolf](/prepare-environments-for-qa-wolf)
 - [ ] Assign a champion point of contact to remove blockers
+- [ ] Choose who on your team holds the [Membership Manager](/members#roles) role
 
 ## Onboarding timeline
 
@@ -154,6 +155,12 @@ Every customer gets a dedicated team of Wolves to make sure that they're success
 - **QA Team** — Implements tests, investigates failures, maintains tests, and reports bugs.
 - **Account Executive** — Guides you through contracting, security reviews, and any other internal procedures your company requires.
 
+### Who manages the members of our workspace?
+
+Someone on your team does. The first person on your team to accept an invitation to the workspace becomes its **Membership Manager** within a few minutes. Nobody gets the role automatically if your workspace uses single sign-on or Directory Sync, or was created before November 21, 2026. In those cases, tell your Customer Success Manager who should hold it. A Membership Manager invites people with any role, changes roles, and removes members. See [Manage workspace members](/members).
+
+Once someone on your team holds **Membership Manager**, only your team changes who is in the workspace. QA Wolf staff can no longer invite, remove, or change members there. Within a few minutes, QA Wolf also leaves each staff member we added to your workspace with only the **Member** role.
+
 ### In what order does QA Wolf build tests?
 
 Unless there are specific high-priority tests that need to be done first, we generally start with the most complex flows. These take longer to build and often require more collaboration with your team, so tackling them early helps speed up the rest of the process.
@@ -212,5 +219,3 @@ QA Wolf automatically re-runs any test that fails. After multiple consecutive fa
 By default, your suite will run once a day, which is where most companies start. As their deployment processes mature, they increase testing frequency.
 
 We also support [PR testing](/deployment-testing/pr-testing), which runs your flows against the preview deploy of a pull request and reports the result back on the request. You can ask your QA Lead to increase or decrease your test runs to best fit your process.
-
-Unlimited test runs are included in your contract, so we encourage running your suite as frequently as it makes sense for your team and process.
