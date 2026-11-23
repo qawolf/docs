@@ -9,7 +9,7 @@ keywords: "GitHub Actions, workflow, notify-qawolf-on-deploy-action, wait-for-ve
   Use this page to report deploys from your own workflow, from any host, and to have a job pass or fail on QA Wolf's verdict, with a timeout, a choice of what to do with superseded, needs-review and not-tested runs, and a job summary with run links. If you already create GitHub deployments and release through pull requests or required checks, [GitHub deployments](/deployment-testing/github) may be simpler. Pick one per deploy: using both reports it twice and runs the flows twice.
 </Tip>
 
-Two actions cover a GitHub Actions workflow. [`qawolf/notify-qawolf-on-deploy-action`](https://github.com/qawolf/notify-qawolf-on-deploy-action) reports the deploy, and a [trigger](/triggers/overview) decides which flows run. [`qawolf/wait-for-verdict-action`](https://github.com/marketplace/actions/wait-for-qa-wolf-verdict) waits for those runs and passes or fails on QA Wolf's verdict, so a release job that depends on it ships only a deployment QA Wolf says is good.
+Two actions cover a GitHub Actions workflow. [`qawolf/notify-qawolf-on-deploy-action`](https://github.com/qawolf/notify-qawolf-on-deploy-action) reports the deploy, and a [trigger](/loops/overview) decides which flows run. [`qawolf/wait-for-verdict-action`](https://github.com/marketplace/actions/wait-for-qa-wolf-verdict) waits for those runs and passes or fails on QA Wolf's verdict, so a release job that depends on it ships only a deployment QA Wolf says is good.
 
 The wait is optional. Reporting alone is what starts the runs.
 
@@ -17,7 +17,7 @@ The wait is optional. Reporting alone is what starts the runs.
 
 - An API key, created under **Workspace Settings → API Keys**. A workspace, organization or user key all work.
 - The workspace id, shown on the same page.
-- A deployment trigger whose conditions match the deployments the workflow reports. See [Triggers](/triggers/overview).
+- A deployment trigger whose conditions match the deployments the workflow reports. See [Loops](/loops/overview).
 
 ## Report the deploy and wait for the verdict
 
@@ -115,4 +115,4 @@ The action's [README](https://github.com/qawolf/wait-for-verdict-action) lists e
 
 - [Node.js SDK](/deployment-testing/ci-sdk) — the same report and wait from any CI system that runs Node.js.
 - [PR testing](/deployment-testing/pr-testing) — testing every pull request's preview deploy.
-- [Deployments](/triggers/deployments) — how the environment name and preview flag resolve.
+- [Deployments](/loops/deployments) — how the environment name and preview flag resolve.
