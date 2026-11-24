@@ -42,7 +42,7 @@ You can also connect another remote MCP server if it meets the [requirements](#r
 
 ## Connect a server
 
-Anyone in your workspace can connect a server. Your workspace can have one connection to each server.
+Anyone in your workspace can connect a server, unless a **Membership Manager** [turned MCP connections off](#turn-mcp-connections-off). Your workspace can have one connection to each server.
 
 <Steps>
   <Step title="Open the MCPs page">
@@ -84,6 +84,20 @@ Select a connection on the **MCPs** page to see its server URL, who connected it
 - **Turn off tools** — stop the agent from using specific tools. New tools the server adds later are on by default.
 - **Reconnect** — sign in again when the connection needs it.
 - **Disconnect** — stop the agent from reading the server for the whole workspace, and delete the saved sign-in tokens. This doesn't remove access on the server's side, so also remove QA Wolf from the server's authorized apps.
+
+## Turn MCP connections off
+
+A **Membership Manager** can turn MCP connections off for the whole workspace. Go to **Settings > General** and uncheck **Allow MCP connections**.
+
+While it is off:
+
+- Nobody in the workspace can connect a server, reconnect one, or turn tools on or off.
+- The agent stops using every connection.
+- Existing connections stay on the **MCPs** page, and anyone can still disconnect them.
+
+Check the box again to turn MCP connections back on. The audit log records who turned them off or on.
+
+The setting applies to one workspace. If your organization has several workspaces, turn it off in each one. Until someone in the workspace holds **Membership Manager**, contact QA Wolf support to turn it off.
 
 ## Troubleshooting
 
