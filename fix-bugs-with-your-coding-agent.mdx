@@ -1,258 +1,91 @@
 ---
 title: "Fix bugs with your coding agent"
-description: "Send each QA Wolf bug to your own cloud coding agent. Your agent opens a pull request, and QA Wolf checks the fix on its preview."
+description: "Send each QA Wolf bug to your own coding agent. Your agent opens a pull request, and QA Wolf checks the fix on its preview."
 sidebarTitle: "Fix bugs with your coding agent"
-keywords: "coding agent, cloud agent, bug fix, fix.requested, webhook, Standard Webhooks, Warp, Devin, Factory, Cursor automation, Claude Code scheduled task, routine, Codex, GitHub Copilot, Jules, relay, /coding-agent, Fix new bugs"
+keywords: "coding agent, cloud agent, bug fix, fix.requested, webhook, Standard Webhooks, Claude Code scheduled task, routine, Cursor automation, GitHub Actions, GitLab CI/CD, Warp, Devin, Factory, Codex, /coding-agent, Fix new bugs"
 ---
 
-QA Wolf sends a bug to the coding agent that you already use. Your agent fixes the code with your keys, and QA Wolf then checks the fix on the preview of the pull request. QA Wolf runs no coding agent and stores no key of your agent.
+Once it's set up, a loop fixes your bugs for you. QA Wolf sends each new bug to the coding agent that you already use. Your agent opens a pull request with the fix, and QA Wolf checks the fix on the preview of the pull request.
 
-## What happens
+## What you get
+
+The **Fix new bugs** loop sends each new bug to your coding agent:
+
+| | |
+| --- | --- |
+| **When** | A bug is reported. |
+| **Then** | Run AI: `Fix the bug using /coding-agent. Keep the change small.` |
+
+For each bug:
 
 <Steps>
   <Step>
-    A loop or a person sends a bug. A loop does this with the `/coding-agent` command in its instructions. A person selects **Send to your coding agent** on the bug.
+    The loop sends the bug to your agent, with the bug report, the failure, and links to the trace and the video.
   </Step>
   <Step>
-    QA Wolf sends the bug to your agent. The request carries a prompt with the bug report, the failure, and links to the trace and the video.
-  </Step>
-  <Step>
-    Your agent fixes the code, opens a pull request, and reports the pull request back to QA Wolf.
+    Your agent fixes the code and opens a pull request.
   </Step>
   <Step>
     QA Wolf runs the bug's flows on the preview of the pull request, and shows the result on the bug.
   </Step>
 </Steps>
 
-A bug has one open fix. A second request for the same bug joins the open fix.
+Set up one of the options below, then [create the loop](#fix-new-bugs-automatically). You can also select **Send to your coding agent** on one bug.
 
-## Requirements
+## Choose an option
 
-- The coding agent turned on for your workspace. If **Settings > Coding agent** is missing, ask your QA Wolf representative.
-- An admin of the workspace's organization. Only an admin can change the webhook. Other members see its host, its status, and the last four characters of its secret.
-- A cloud coding agent that can open a pull request in your repository.
+| Option | Your agent runs in | QA Wolf needs |
+| --- | --- | --- |
+| [Claude Code](#claude-code) | A Claude Code scheduled task. | No code access. |
+| [Cursor](#cursor) | A Cursor automation. | No code access. |
+| [GitHub](#github) | A GitHub Actions workflow in your repository: Claude Code, Codex, Cursor, or your own command. | [QA Wolf Code](/github-code-access). |
+| [GitLab](#gitlab) | A GitLab CI/CD job in your project: Claude Code, Codex, Cursor, or your own command. | The GitLab integration. |
+| [Webhook](#webhook) | Warp, Devin, Factory, or your own service. | No code access. |
 
-## Ask your agent to set it up
+Each option has its own tab in **Settings > Coding agent**. Only an admin of the workspace's organization can change the setup. If **Settings > Coding agent** is missing, ask your QA Wolf representative.
 
-The fastest setup is a prompt to the coding agent that you work with, such as Claude Code, Codex, or Cursor.
+<Note>
+  Claude Code, Cursor, and Webhook share one saved webhook. While it is on, QA Wolf sends every fix of the workspace to it, and starts no GitHub workflow and no GitLab pipeline.
+</Note>
+
+## Set it up from your agent
+
+Each option starts with a prompt that you can paste into your coding agent, such as Claude Code, Codex, or Cursor. Your agent then sets up QA Wolf through the [QA Wolf MCP](/qawolf-mcp), so you don't use the UI.
 
 <Steps>
   <Step>
     Connect your agent to the [QA Wolf MCP](/qawolf-mcp). Sign in as an admin of the workspace's organization. QA Wolf refuses a workspace API key and an organization API key for this setup.
   </Step>
   <Step>
-    Paste a prompt that names your cloud agent.
+    Paste the prompt of your option.
   </Step>
 </Steps>
 
-Examples:
+Your agent checks that you can change the setup, saves it, and sends a test. It then offers to create the [Fix new bugs](#fix-new-bugs-automatically) loop.
+
+<Accordion title="The MCP tools that your agent uses">
+  | Tool | What it does |
+  | --- | --- |
+  | `codingAgent_getWebhook` | Shows the host, the status, and the last four characters of the secret. |
+  | `codingAgent_submitWebhook` | Saves the URL, with `format` and `triggerToken` for Claude Code or Cursor. The first save of a generic webhook returns the signing secret. |
+  | `codingAgent_sendWebhookTest` | Sends a test and returns the answer of your endpoint. |
+  | `codingAgent_rotateWebhookSecret` | Replaces the signing secret and returns the new secret. |
+  | `codingAgent_removeWebhook` | Removes the webhook. |
+
+  The agent gets each secret one time, and never prints it in chat.
+</Accordion>
+
+## Claude Code
+
+QA Wolf starts a [Claude Code scheduled task](https://code.claude.com/docs/en/routines) through its API trigger. Anthropic once called a scheduled task a routine.
+
+**Ask your agent to set it up:**
 
 ```text
-Set up QA Wolf to send new bugs to my Cursor automation.
+Connect QA Wolf to my Claude Code scheduled task. I will give you its Fire URL and token. Save them as the QA Wolf coding agent webhook with the claude-code-routine format, and send a test.
 ```
 
-```text
-Connect QA Wolf to my Claude Code scheduled task, so each new bug starts a fix.
-```
-
-```text
-Set up QA Wolf to send bugs to Codex in GitHub Actions.
-```
-
-Your agent follows the `qawolf-cloud-coding-agent` skill. It checks that you can change the webhook, saves the URL, and sends a test. It then offers to create the [Fix new bugs](#fix-new-bugs-automatically) loop. Each section under [Connect your cloud agent](#connect-your-cloud-agent) has a prompt for that agent.
-
-The agent uses these MCP tools:
-
-| Tool | What it does |
-| --- | --- |
-| `codingAgent_getWebhook` | Shows the host, the status, and the last four characters of the secret. |
-| `codingAgent_submitWebhook` | Saves the URL, with `format` and `triggerToken` for a Cursor automation or a Claude Code scheduled task. The first save returns the signing secret. |
-| `codingAgent_sendWebhookTest` | Sends a test and returns the answer of your endpoint. |
-| `codingAgent_rotateWebhookSecret` | Replaces the signing secret and returns the new secret. |
-| `codingAgent_removeWebhook` | Removes the webhook. |
-
-<Note>
-  The agent gets each secret one time, and never prints it in chat. If it can't store the signing secret where your agent checks it, it asks you to save the URL on the **Webhook** tab.
-</Note>
-
-## Choose a destination
-
-| Destination | Your agent runs in | QA Wolf needs |
-| --- | --- | --- |
-| Webhook | A cloud agent, a software factory, or a service that you run. | No code access. |
-| GitHub | A GitHub Actions workflow in your repository. | [QA Wolf Code](/github-code-access). |
-| GitLab | A GitLab CI/CD job in your project. | The GitLab integration. |
-
-Each destination has its own tab in **Settings > Coding agent**. The rest of this page covers the webhook, and the [Codex](#codex) section also covers the GitHub tab.
-
-<Note>
-  While a saved webhook is on, QA Wolf sends every fix of the workspace to the webhook. It then starts no GitHub workflow and no GitLab pipeline.
-</Note>
-
-## Set up the webhook by hand
-
-On the **Webhook** tab, **Send bugs to** has three choices:
-
-| Choice | Use it for | Fields |
-| --- | --- | --- |
-| **Generic webhook** | Warp, Devin, Factory, the QA Wolf relay, or your own service. QA Wolf signs each request. | **Endpoint URL** |
-| **Cursor automation** | A Cursor automation with a webhook trigger. | **Webhook URL** and **Trigger token** |
-| **Claude Code scheduled task** | A Claude Code scheduled task with an API trigger. | **Fire URL** and **Trigger token** |
-
-For a generic webhook:
-
-<Steps>
-  <Step>
-    Open **Settings > Coding agent** and select the **Webhook** tab.
-  </Step>
-  <Step>
-    Under **Send bugs to**, keep **Generic webhook** selected.
-  </Step>
-  <Step>
-    Enter the HTTPS URL of your agent's trigger in **Endpoint URL** and select **Save**. The URL must not include a username or password, and must resolve to a public internet address.
-  </Step>
-  <Step>
-    Copy the signing secret. QA Wolf shows it one time.
-  </Step>
-  <Step>
-    Store the secret where your agent's trigger or your receiver checks the signature.
-  </Step>
-  <Step>
-    Select **Send test** and read the result under the form.
-  </Step>
-</Steps>
-
-A test request has `"test": true`. The relay, and a receiver that you build, start no agent for it. A test to the trigger of Warp, Devin, Factory, Cursor, or Claude Code starts a real run of your agent. For a Cursor automation or a Claude Code scheduled task, the test text tells the agent to stop at once.
-
-## Connect your cloud agent
-
-Each agent reports its progress and its pull request to `app.qawolf.com`. If the agent's sandbox blocks outbound traffic, allow `app.qawolf.com`, as each section says.
-
-| Agent | How QA Wolf starts it | Needs the relay |
-| --- | --- | --- |
-| [Warp](#warp), [Devin](#devin), [Factory](#factory) | **Generic webhook**, to the agent's webhook trigger. | No |
-| [Cursor](#cursor) automation | **Cursor automation**. | No |
-| [Claude Code](#claude-code) scheduled task | **Claude Code scheduled task**. | No |
-| [Codex](#codex) | The **GitHub** tab, or **Generic webhook** to the relay, which starts a GitHub workflow. | Only without the **GitHub** tab |
-| [GitHub Copilot](#github-copilot), [Jules](#jules), a [Cursor](#cursor) cloud agent without an automation | **Generic webhook**, to the relay. | Yes |
-| [Your own service](#your-own-service) | **Generic webhook**, to your receiver. | No |
-
-An agent that needs the relay has no webhook trigger. The [coding agent relay](#the-coding-agent-relay) is a small service that you deploy, so your key stays with you.
-
-### Warp
-
-<Steps>
-  <Step>
-    In Warp, create a [webhook trigger](https://docs.warp.dev/factories/webhooks/). Set **Authentication** to **Provider signature** with the Standard Webhooks scheme.
-  </Step>
-  <Step>
-    Save the webhook's URL in QA Wolf as a **Generic webhook**, and copy the signing secret.
-  </Step>
-  <Step>
-    Paste the signing secret as the provider secret of the Warp webhook. Warp then checks each request's signature.
-  </Step>
-  <Step>
-    Select **Send test**. A test starts a real Warp run.
-  </Step>
-</Steps>
-
-With the default bearer token authentication, Warp answers `401` to QA Wolf.
-
-**Network:** if the agent's sandbox limits outbound traffic, allow `app.qawolf.com`. Send a test fix, and check that the agent reports back.
-
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send bugs to my Warp agent. I created a Warp webhook trigger with Provider signature authentication. Save its URL as the QA Wolf coding agent webhook, and give the signing secret to the Warp webhook.
-  ```
-</Accordion>
-
-### Devin
-
-<Steps>
-  <Step>
-    In Devin, create an [automation](https://docs.devin.ai/product-guides/automations) with a webhook trigger.
-  </Step>
-  <Step>
-    Copy the webhook URL and the secret.
-  </Step>
-  <Step>
-    Save the URL in QA Wolf as a **Generic webhook**, with the secret in the query: `?secret=<secret>`.
-  </Step>
-  <Step>
-    Select **Send test**. A test starts a real Devin session.
-  </Step>
-</Steps>
-
-**Network:** if the automation has a network policy, add `app.qawolf.com` to its allowlist.
-
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send bugs to my Devin automation. Save its webhook URL with the secret in the query as the QA Wolf coding agent webhook, and send a test.
-  ```
-</Accordion>
-
-### Factory
-
-<Steps>
-  <Step>
-    In Factory, create a [custom webhook automation](https://docs.factory.com/automations/custom.md).
-  </Step>
-  <Step>
-    Copy the webhook URL and the secret.
-  </Step>
-  <Step>
-    Save the URL in QA Wolf as a **Generic webhook**, with the secret in the query: `?secret=<secret>`.
-  </Step>
-  <Step>
-    Select **Send test**. A test starts a real Factory run.
-  </Step>
-</Steps>
-
-**Network:** if the agent's sandbox limits outbound traffic, allow `app.qawolf.com`. Send a test fix, and check that the agent reports back.
-
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send bugs to my Factory automation. Save its webhook URL with the secret in the query as the QA Wolf coding agent webhook, and send a test.
-  ```
-</Accordion>
-
-### Cursor
-
-A [Cursor automation](https://cursor.com/docs/cloud-agent/automations) takes the request directly, with no receiver of your own.
-
-<Steps>
-  <Step>
-    In Cursor, create an automation with a webhook trigger, and save it. Cursor shows the webhook URL, such as `https://api2.cursor.sh/automations/webhook/<id>`.
-  </Step>
-  <Step>
-    Select **Generate auth header**, and copy the key.
-  </Step>
-  <Step>
-    In QA Wolf, on the **Webhook** tab, select **Cursor automation**.
-  </Step>
-  <Step>
-    Enter the URL in **Webhook URL** and the key in **Trigger token**. You can paste the whole copied `Authorization: Bearer ...` line. Select **Save**.
-  </Step>
-  <Step>
-    Select **Send test**. A test starts a real Cursor run.
-  </Step>
-</Steps>
-
-QA Wolf sends the prompt as `{ "context": "<prompt>" }`, with the key as a bearer token. The agent gets the text with the automation's prompt.
-
-To start a Cursor cloud agent without an automation, deploy the [relay](#the-coding-agent-relay) with its Cursor Cloud Agents adapter.
-
-**Network:** Cursor cloud agents have internet access by default. If your Cursor team limits the network of cloud agents, allow `app.qawolf.com`.
-
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send new bugs to my Cursor automation. Save its webhook URL with the cursor-automation format and its auth key, and send a test.
-  ```
-</Accordion>
-
-### Claude Code
-
-A [Claude Code scheduled task](https://code.claude.com/docs/en/routines) with an API trigger takes the request directly. Anthropic once called a scheduled task a routine.
+**Or set it up yourself:**
 
 <Steps>
   <Step>
@@ -268,164 +101,253 @@ A [Claude Code scheduled task](https://code.claude.com/docs/en/routines) with an
     Write the task's instructions so that it acts on the text that it receives. For example: "Fix the bug that the routine-fire-payload block describes. Follow its instructions, and report to QA Wolf as it says."
   </Step>
   <Step>
-    In the task's cloud environment, allow `app.qawolf.com`. Set **Network access** to **Limited** and add `app.qawolf.com` to **Allowed domains**, or select **Full**.
+    In the task's cloud environment, set **Network access** to **Limited** and add `app.qawolf.com` to **Allowed domains**, or select **Full**.
   </Step>
   <Step>
-    In QA Wolf, on the **Webhook** tab, select **Claude Code scheduled task**.
+    In QA Wolf, open **Settings > Coding agent** and select the **Claude Code** tab.
   </Step>
   <Step>
     Enter the URL in **Fire URL** and the token in **Trigger token**, and select **Save**.
   </Step>
   <Step>
-    Select **Send test**. A test starts a real session.
+    Select **Send test**. A test starts a real session, and its text tells the agent to stop at once.
   </Step>
 </Steps>
 
-QA Wolf sends the prompt as `{ "text": "<prompt>" }`, with the token as a bearer token. Claude marks the text as untrusted, so without step 4 the task doesn't act on the fix. If the prompt is longer than 65,536 characters, QA Wolf sends a short text that tells the agent to [read the fix](#read-the-fix).
+<Accordion title="About the trigger token">
+  The task checks the trigger token, so QA Wolf signs nothing for Claude Code.
 
-A scheduled task accepts 30 fires each hour, and a test counts as one. Each try that QA Wolf sends again starts a new session.
-
-To run Claude Code in GitHub Actions instead, use the **GitHub** tab, as [for Codex](#from-the-github-tab).
-
-<Accordion title="Prompt for your agent">
-  ```text
-  Connect QA Wolf to my Claude Code scheduled task. Save its Fire URL with the claude-code-routine format and its token, and send a test.
-  ```
+  - QA Wolf stores the token encrypted and shows only its last four characters.
+  - Enter the token again each time you save.
+  - QA Wolf sends the prompt as `{ "text": "<prompt>" }`, with the token as a bearer token. Claude marks the text as untrusted, so without step 4 the task doesn't act on the fix.
+  - If the prompt is longer than 65,536 characters, QA Wolf sends a short text that tells the agent to [read the fix](#read-the-fix).
+  - A scheduled task accepts 30 fires each hour, and a test counts as one. Each try that QA Wolf sends again starts a new session.
 </Accordion>
 
-### Codex
+To run Claude Code in GitHub Actions or GitLab CI/CD instead, use [GitHub](#github) or [GitLab](#gitlab).
 
-OpenAI has no inbound trigger for Codex automations or Codex cloud tasks. Instead, Codex runs in a GitHub Actions workflow in your repository, and something must start that workflow for each fix. Choose one of these:
+## Cursor
 
-- **[The GitHub tab](#from-the-github-tab)** — QA Wolf starts the workflow through [QA Wolf Code](/github-code-access). You deploy nothing.
-- **[The relay](#through-the-relay)** — the [coding agent relay](https://www.npmjs.com/package/@qawolf/coding-agent-relay), a service that you deploy, starts the workflow with a GitHub token of yours. Use it in a private repository when you don't want to install QA Wolf Code.
+QA Wolf starts a [Cursor automation](https://cursor.com/docs/cloud-agent/automations) through its webhook trigger.
 
-Set up only one. While a webhook is saved, QA Wolf starts no workflow from the **GitHub** tab.
+**Ask your agent to set it up:**
 
-**Network:** both workflows turn on network access for Codex.
+```text
+Set up QA Wolf to send new bugs to my Cursor automation. I will give you its webhook URL and auth key. Save them as the QA Wolf coding agent webhook with the cursor-automation format, and send a test.
+```
 
-#### From the GitHub tab
+**Or set it up yourself:**
 
 <Steps>
   <Step>
-    Open **Settings > Coding agent**, select the **GitHub** tab, and install QA Wolf Code.
+    In Cursor, create an automation with a webhook trigger, and save it. Cursor shows the webhook URL, such as `https://api2.cursor.sh/automations/webhook/<id>`.
   </Step>
   <Step>
-    Copy [`qawolf-coding-agent.yml`](https://github.com/qawolf/coding-agent-action/blob/main/workflow/qawolf-coding-agent.yml) to `.github/workflows/qawolf-coding-agent.yml` on your default branch. Keep the file name.
+    Select **Generate auth header**, and copy the key.
   </Step>
   <Step>
-    Add the repository secret `OPENAI_API_KEY`. The [action's README](https://github.com/qawolf/coding-agent-action) also describes OpenAI federation, with no stored key.
+    In QA Wolf, open **Settings > Coding agent** and select the **Cursor** tab.
   </Step>
   <Step>
-    Select **Check again**. The repository shows "Codex".
+    Enter the URL in **Webhook URL** and the key in **Trigger token**. You can paste the whole copied `Authorization: Bearer ...` line. Select **Save**.
+  </Step>
+  <Step>
+    Select **Send test**. A test starts a real Cursor run, and its text tells the agent to stop at once.
   </Step>
 </Steps>
 
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send bugs to Codex in GitHub Actions. Add the QA Wolf coding agent workflow to this repository, and tell me which secret to add.
-  ```
+<Accordion title="About the trigger token">
+  The automation checks the trigger token, so QA Wolf signs nothing for Cursor.
+
+  - QA Wolf stores the token encrypted and shows only its last four characters.
+  - Enter the token again each time you save.
+  - QA Wolf sends the prompt as `{ "context": "<prompt>" }`, with the key as a bearer token. The agent gets the text with the automation's prompt.
 </Accordion>
 
-#### Through the relay
+**Network:** Cursor cloud agents have internet access by default. If your Cursor team limits the network of cloud agents, allow `app.qawolf.com`.
 
-<Warning>
-  GitHub shows workflow inputs to each person who can read the repository's Actions runs, and the relay puts the fix token in those inputs. Use the relay's workflow adapter only in a private repository.
-</Warning>
+## GitHub
+
+QA Wolf starts a workflow in your repository, and your agent runs in it. You put any agent in the workflow: Claude Code, Codex, Cursor, or your own command.
+
+**Ask your agent to set it up:**
+
+```text
+Set up the QA Wolf coding agent workflow in this repository, and tell me which secret to add for my agent.
+```
+
+Paste it in each repository that the agent should fix bugs in.
+
+**Or set it up yourself:**
 
 <Steps>
   <Step>
-    Copy the relay's example workflow, `examples/github-actions/qawolf-codex.yml`, to `.github/workflows/` on your default branch. Do this in each repository that QA Wolf can suggest for a fix.
+    Open **Settings > Coding agent**, select the **GitHub** tab, and install QA Wolf Code. Only an owner of the GitHub organization can install it.
   </Step>
   <Step>
-    Add the repository secret `OPENAI_API_KEY`.
+    Copy [`qawolf-coding-agent.yml`](https://github.com/qawolf/coding-agent-action/blob/main/workflow/qawolf-coding-agent.yml) to `.github/workflows/qawolf-coding-agent.yml` on your default branch. Keep the file name, because QA Wolf starts the workflow by this name.
   </Step>
   <Step>
-    Create a fine-grained personal access token with the repository permission "Actions" set to read and write.
+    Add one repository secret from the table below. The first secret that is set picks the agent.
   </Step>
   <Step>
-    Deploy the relay with its GitHub workflow adapter. Set `GITHUB_TOKEN` to the token.
-  </Step>
-  <Step>
-    Save the relay's URL in QA Wolf as a **Generic webhook**, and copy the signing secret.
-  </Step>
-  <Step>
-    Set `QAWOLF_SIGNING_SECRET` on the relay to the signing secret, and redeploy.
-  </Step>
-  <Step>
-    Select **Send test**, and expect a `200` answer. The relay starts no agent for a test.
+    Select **Check again**. The repository shows in the **Repositories** list with its agent.
   </Step>
 </Steps>
 
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send bugs to Codex in GitHub Actions through the QA Wolf coding agent relay. Add the relay's Codex workflow to this repository, deploy the relay, save its URL, and send a test.
-  ```
+| Agent | Secret |
+| --- | --- |
+| Claude Code | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
+| Codex | `OPENAI_API_KEY` |
+| Cursor | `CURSOR_API_KEY` |
+
+To use your own command, set `AGENT: command` in the file and fill in the "Your command" step. For Claude Code or Codex with no stored key, see the federation steps in the [action's README](https://github.com/qawolf/coding-agent-action).
+
+<Accordion title="Why does this need code access?">
+  QA Wolf Code is QA Wolf's second GitHub app. It lets QA Wolf do three things that the workflow can't do alone:
+
+  - **Start the workflow.** QA Wolf starts it for each fix with `actions: write`. It can't change code.
+  - **Find the workflow.** QA Wolf reads your repository with `contents: read`, to find the workflow file and compare the fix branch with your default branch.
+  - **Open the pull request.** The workflow pushes the fix branch, and QA Wolf opens the pull request with `pull_requests: write`. A workflow's own token can't open a pull request unless you allow it in your repository settings.
+
+  [GitHub code access](/github-code-access#permissions-of-qa-wolf-code) lists each permission of the app.
 </Accordion>
 
-### GitHub Copilot
+## GitLab
+
+QA Wolf starts a job in your project, and your agent runs in it. You put any agent in the job: Claude Code, Codex, Cursor, or your own command.
+
+**Ask your agent to set it up:**
+
+```text
+Set up the QA Wolf coding agent job in this GitLab project, and tell me which variable and project settings to change.
+```
+
+Paste it in each project that the agent should fix bugs in.
+
+**Or set it up yourself:**
 
 <Steps>
   <Step>
-    Turn on the Copilot cloud agent for the repository. It needs a Copilot Business or Copilot Enterprise plan.
+    Connect GitLab to the workspace in **Settings > Integrations**.
   </Step>
   <Step>
-    Create a fine-grained personal access token with the repository permission "Agent tasks" set to read and write.
+    Paste the `qawolf-fix` job below into `.gitlab-ci.yml` on your default branch. Keep the job name, because QA Wolf finds the project by this name.
   </Step>
   <Step>
-    Deploy the relay with its GitHub Copilot adapter. Set `GITHUB_TOKEN` to the token.
+    In **Settings > CI/CD > Variables** of the project, add one agent key from the [GitHub](#github) table as a masked variable.
   </Step>
   <Step>
-    Save the relay's URL in QA Wolf as a **Generic webhook**, and copy the signing secret.
+    In **Settings > CI/CD > Job token permissions**, turn on "Allow Git push requests to the repository".
   </Step>
   <Step>
-    Set `QAWOLF_SIGNING_SECRET` on the relay to the signing secret, and redeploy.
+    In **Settings > CI/CD > Variables**, set "Minimum role to use pipeline variables" to Maintainer or Developer.
   </Step>
   <Step>
-    Select **Send test**, and expect a `200` answer.
+    In QA Wolf, open **Settings > Coding agent**, select the **GitLab** tab, and select **Check again**.
   </Step>
 </Steps>
 
-**Network:** in the repository, open **Settings > Copilot > Internet access**. Add `app.qawolf.com` to the **Custom allowlist**.
+**Check again** reads the CI file of each project and starts no pipeline. QA Wolf learns the agent when the first fix starts. A project with no key ends its first fix as not set up, and then shows "No agent key".
 
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send bugs to the GitHub Copilot cloud agent through the QA Wolf coding agent relay. Deploy the relay, save its URL, and send a test.
+QA Wolf starts the fix pipeline on your default branch with the variable `QAWOLF_FIX`. Your other jobs also run in that pipeline, unless their rules skip a pipeline that the API starts.
+
+<Accordion title="The qawolf-fix job">
+  ```yaml
+  qawolf-fix:
+    rules:
+      - if: $QAWOLF_FIX
+    image: node:22
+    timeout: 1h
+    id_tokens:
+      QAWOLF_ID_TOKEN:
+        aud: https://app.qawolf.com
+    variables:
+      QAWOLF_URL: https://app.qawolf.com/api/v1/coding-agent/fixes/$QAWOLF_FIX
+      QAWOLF_PROMPT_FILE: /tmp/qawolf-prompt.md
+      QAWOLF_RESULT_FILE: /tmp/qawolf-result.json
+    script:
+      - |
+        if [ -n "$ANTHROPIC_API_KEY$CLAUDE_CODE_OAUTH_TOKEN" ]; then AGENT=claude-code
+        elif [ -n "$OPENAI_API_KEY" ]; then AGENT=codex
+        elif [ -n "$CURSOR_API_KEY" ]; then AGENT=cursor
+        else AGENT=none; fi
+      - |
+        curl -fsS --retry 5 "$QAWOLF_URL/start" -H "Authorization: Bearer $QAWOLF_ID_TOKEN" -H "Content-Type: application/json" -d "{\"agent\":\"$AGENT\"}" -o /tmp/qawolf-fix.json
+      - node -p 'require("/tmp/qawolf-fix.json").prompt ?? ""' > "$QAWOLF_PROMPT_FILE"
+      - BRANCH="qawolf/fix/$QAWOLF_FIX"
+      - git switch -c "$BRANCH"
+      - git config user.name "$GITLAB_USER_NAME" && git config user.email "$GITLAB_USER_EMAIL"
+      - |
+        case "$AGENT" in
+          claude-code) npx -y @anthropic-ai/claude-code -p --permission-mode acceptEdits --allowedTools Bash < "$QAWOLF_PROMPT_FILE" ;;
+          codex) CODEX_API_KEY="$OPENAI_API_KEY" npx -y @openai/codex exec --sandbox danger-full-access - < "$QAWOLF_PROMPT_FILE" ;;
+          cursor) curl -fsS https://cursor.com/install | bash && ~/.local/bin/agent -p --force "$(cat "$QAWOLF_PROMPT_FILE")" ;;
+          *) echo '{"status":"not_set_up"}' > "$QAWOLF_RESULT_FILE" ;;
+        esac
+      - |
+        if [ "$(node -p 'require(process.env.QAWOLF_RESULT_FILE).status')" = fixed ]; then
+          git add -A
+          git commit -m "$(node -p 'require(process.env.QAWOLF_RESULT_FILE).title')" || true
+          git push "https://gitlab-ci-token:$CI_JOB_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git" "HEAD:refs/heads/$BRANCH"
+          node -e 'const fs = require("fs"); const [file, branch, headSha] = process.argv.slice(1); fs.writeFileSync(file, JSON.stringify({ ...JSON.parse(fs.readFileSync(file, "utf8")), branch, headSha }))' "$QAWOLF_RESULT_FILE" "$BRANCH" "$(git rev-parse HEAD)"
+        fi
+    after_script:
+      - |
+        test -f "$QAWOLF_PROMPT_FILE" || exit 0
+        test -f "$QAWOLF_RESULT_FILE" || echo '{"status":"failed","summary":"The job ended without a result"}' > "$QAWOLF_RESULT_FILE"
+        curl -fsS --retry 5 "$QAWOLF_URL/events?type=finished" -H "Authorization: Bearer $(node -p 'require("/tmp/qawolf-fix.json").token')" -H "Idempotency-Key: $CI_JOB_ID" -H "Content-Type: application/json" --data-binary @"$QAWOLF_RESULT_FILE"
   ```
 </Accordion>
 
-### Jules
+<Accordion title="Why does this need the GitLab integration?">
+  The integration's token lets QA Wolf do three things that the job can't do alone:
+
+  - **Find the job.** QA Wolf reads `.gitlab-ci.yml` of each project to find the `qawolf-fix` job.
+  - **Start the pipeline.** QA Wolf starts it for each fix with the variable `QAWOLF_FIX`, so the project must allow pipeline variables.
+  - **Open the merge request.** The job pushes the fix branch with its job token, and QA Wolf opens the merge request.
+</Accordion>
+
+## Webhook
+
+For a custom setup. QA Wolf posts each fix to your HTTPS endpoint, signs each request, and needs no access to your code. These agents work with the webhook alone:
+
+| Agent | How it checks the request |
+| --- | --- |
+| [Warp](https://docs.warp.dev/factories/webhooks/) | A webhook trigger with **Provider signature** authentication and the Standard Webhooks scheme. With the default bearer token, Warp answers `401`. |
+| [Devin](https://docs.devin.ai/product-guides/automations) | An automation with a webhook trigger. Put its secret in the URL: `?secret=<secret>`. |
+| [Factory](https://docs.factory.com/automations/custom.md) | A custom webhook automation. Put its secret in the URL: `?secret=<secret>`. |
+| Your own service | [Check the signature](#check-the-signature). |
+
+**Ask your agent to set it up:**
+
+```text
+Set up QA Wolf to send bugs to my coding agent through the QA Wolf coding agent webhook. I will give you its webhook URL. Save it, store the signing secret where the agent checks it, and send a test.
+```
+
+**Or set it up yourself:**
 
 <Steps>
   <Step>
-    Connect the repository to Jules in the Jules web app.
+    Open **Settings > Coding agent** and select the **Webhook** tab.
   </Step>
   <Step>
-    Create an API key in the Jules settings.
+    Enter the HTTPS URL of your agent's trigger in **Endpoint URL** and select **Save**. The URL must not include a username or password, and must resolve to a public internet address.
   </Step>
   <Step>
-    Deploy the relay with its Jules adapter. Set `JULES_API_KEY` to the key.
+    Copy the signing secret. QA Wolf shows it one time.
   </Step>
   <Step>
-    Save the relay's URL in QA Wolf as a **Generic webhook**, and copy the signing secret.
+    Store the secret where your agent's trigger or your service checks the signature. Devin and Factory don't check it, because their secret is in the URL.
   </Step>
   <Step>
-    Set `QAWOLF_SIGNING_SECRET` on the relay to the signing secret, and redeploy.
-  </Step>
-  <Step>
-    Select **Send test**, and expect a `200` answer.
+    Select **Send test**. A test to Warp, Devin, or Factory starts a real run of your agent. Your own service must start no agent for a request with `"test": true`.
   </Step>
 </Steps>
 
-**Network:** the Jules documentation describes no network setting. Send a test fix, and check that the agent reports back.
+**Network:** your agent must reach `https://app.qawolf.com` to [report back](#the-callback). If its sandbox limits outbound traffic, allow `app.qawolf.com`.
 
-<Accordion title="Prompt for your agent">
-  ```text
-  Set up QA Wolf to send bugs to Jules through the QA Wolf coding agent relay. Deploy the relay, save its URL, and send a test.
-  ```
-</Accordion>
-
-### Your own service
+### Build your own service
 
 <Steps>
   <Step>
@@ -435,81 +357,13 @@ Set up only one. While a webhook is saved, QA Wolf starts no workflow from the *
     After the answer, start your agent with the `prompt` from the request.
   </Step>
   <Step>
-    Save the endpoint's URL in QA Wolf as a **Generic webhook**, and store the signing secret in your service.
-  </Step>
-  <Step>
-    Select **Send test**. Start no agent for a request with `"test": true`.
+    Have your agent [report back](#the-callback) with the fix token from the request.
   </Step>
 </Steps>
 
-**Network:** your agent must reach `https://app.qawolf.com` to [report back](#the-callback).
+### The request
 
-<Accordion title="Prompt for your agent">
-  ```text
-  Build a receiver for the QA Wolf coding agent webhook in this repository. Check the Standard Webhooks signature, answer within 10 seconds, and start our agent with the prompt. Then save its URL in QA Wolf and send a test.
-  ```
-</Accordion>
-
-## The coding agent relay
-
-GitHub Copilot, Jules, the Cursor Cloud Agents API, and a GitHub workflow have no webhook trigger. Each has only an API that starts the agent with your account key, and QA Wolf does not store that key. The [coding agent relay](https://www.npmjs.com/package/@qawolf/coding-agent-relay) sits between QA Wolf and that API:
-
-1. It checks the signature of each request from QA Wolf.
-2. It starts your agent with your key.
-3. It starts one agent for each fix, also when QA Wolf sends the same request again.
-4. It answers QA Wolf within 10 seconds.
-
-**Where it runs:** the relay is one web handler with no runtime dependencies. Run it as a Vercel function or a Cloudflare Worker, or on your own server with Node.js 20 or later or Deno. QA Wolf must reach it at a public HTTPS URL. A CI job cannot host it, because nothing listens for requests between jobs.
-
-If more than one instance of the relay runs, give it a shared store, so that a repeated request does not start a second agent. The relay's README has a Vercel example with Upstash Redis and a Cloudflare Worker example.
-
-**Read the code before you deploy it:** the relay has the MIT license. Its npm package holds the code that you deploy, with its types and the Vercel and Cloudflare examples. Open the [**Code** tab of the package](https://www.npmjs.com/package/@qawolf/coding-agent-relay?activeTab=code) to read it.
-
-## The trigger token
-
-A Cursor automation and a Claude Code scheduled task check a trigger token instead of the signing secret.
-
-- QA Wolf stores the trigger token encrypted and shows only its last four characters.
-- Enter the token again each time you save a Cursor automation or a Claude Code scheduled task.
-- A generic webhook takes no token.
-- The **Webhook** tab shows no signing secret and no **Rotate** for these two choices.
-
-## What QA Wolf needs
-
-The webhook needs no code access and no QA Wolf Code install. QA Wolf sends the bug, and your agent works in your repository with its own access.
-
-To check the fix, QA Wolf needs two more things:
-
-- **Read access to the pull request.** On GitHub, QA Wolf reads it through the QA Wolf GitHub app or [QA Wolf Code](/github-code-access). On GitLab, QA Wolf reads the merge request through the GitLab integration. Without it, the bug shows the link to the pull request, and QA Wolf runs no check.
-- **A deployment of the pull request.** Your code host or your deploy job reports the preview to QA Wolf. See [PR testing](/deployment-testing/pr-testing). QA Wolf waits up to 2 hours for it, and doesn't run flows on a preview URL that the agent reports.
-
-The check is a run, and it uses credits.
-
-## Fix new bugs automatically
-
-A loop can send each new bug to your agent.
-
-<Steps>
-  <Step>
-    Create a [loop](/loops/overview) that starts on **A bug** **is reported**, with **Run AI**.
-  </Step>
-  <Step>
-    Under **Start from:**, pick **Fix new bugs**. The instructions become `Fix the bug using /coding-agent. Keep the change small.`
-  </Step>
-  <Step>
-    Select **Create loop**.
-  </Step>
-</Steps>
-
-The `/coding-agent` command tells the loop's session to send the bug to your agent. You can use it in your own instructions. See [Run AI](/loops/run-ai#write-instructions). Until a coding agent is set up, the loop shows "Set up your coding agent to use /coding-agent." and doesn't save.
-
-A loop starts the first fix only. When the check still shows the bug, open the bug and select **Try again** to send your agent one more try.
-
-## The webhook request
-
-QA Wolf sends one `POST` request for each fix, with a JSON body. This section describes the generic webhook, for a receiver or a relay that you build. A Cursor automation and a Claude Code scheduled task get the prompt only, with no signature.
-
-### Headers
+QA Wolf sends one `POST` request for each fix, with a JSON body.
 
 | Header | Value |
 | --- | --- |
@@ -519,9 +373,7 @@ QA Wolf sends one `POST` request for each fix, with a JSON body. This section de
 | `webhook-timestamp` | The time of this try, in seconds since the Unix epoch. |
 | `webhook-signature` | `v1,` and a base64 signature. Two signatures, separated by a space, for 24 hours after a rotation. |
 
-### Payload
-
-Example:
+Example body:
 
 ```json
 {
@@ -582,8 +434,6 @@ A `Retry-After` header on a `429` or a `503` sets the next wait, from 5 seconds 
 
 ### Rotate the signing secret
 
-Only the generic webhook uses the signing secret.
-
 <Steps>
   <Step>
     On the **Webhook** tab, select **Rotate**.
@@ -592,15 +442,48 @@ Only the generic webhook uses the signing secret.
     Copy the new secret. QA Wolf shows it one time.
   </Step>
   <Step>
-    Deploy the new secret to your receiver within 24 hours.
+    Deploy the new secret to your service within 24 hours.
   </Step>
 </Steps>
 
 For 24 hours, QA Wolf signs each request with the new secret and the previous secret.
 
+## Codex
+
+Use [GitHub](#github) or [GitLab](#gitlab) for Codex. Add the `OPENAI_API_KEY` secret or variable, and the workflow or the job runs Codex.
+
+<Accordion title="Why can't Codex use the webhook?">
+  OpenAI has no inbound trigger for Codex automations or Codex cloud tasks, so QA Wolf can't start Codex with a webhook. Codex runs in your CI instead, where QA Wolf starts the workflow or the job. On GitHub, Codex can also use OpenAI federation, with no stored key. The [action's README](https://github.com/qawolf/coding-agent-action) has the steps.
+</Accordion>
+
+## What QA Wolf needs to check the fix
+
+- **Read access to the pull request.** On GitHub, QA Wolf reads it through the QA Wolf GitHub app or [QA Wolf Code](/github-code-access). On GitLab, QA Wolf reads the merge request through the GitLab integration. Without it, the bug shows the link to the pull request, and QA Wolf runs no check.
+- **A deployment of the pull request.** Your code host or your deploy job reports the preview to QA Wolf. See [PR testing](/deployment-testing/pr-testing). QA Wolf waits up to 2 hours for it, and doesn't run flows on a preview URL that the agent reports.
+
+The check is a run, and it uses credits.
+
+## Fix new bugs automatically
+
+<Steps>
+  <Step>
+    Create a [loop](/loops/overview) that starts on **A bug** **is reported**, with **Run AI**.
+  </Step>
+  <Step>
+    Under **Start from:**, pick **Fix new bugs**. The instructions become `Fix the bug using /coding-agent. Keep the change small.`
+  </Step>
+  <Step>
+    Select **Create loop**.
+  </Step>
+</Steps>
+
+The `/coding-agent` command tells the loop's session to send the bug to your agent. You can use it in your own instructions. See [Run AI](/loops/run-ai#write-instructions). Until a coding agent is set up, the loop doesn't save.
+
+A bug has one open fix. A second request for the same bug joins the open fix. A loop starts the first fix only. When the check still shows the bug, open the bug and select **Try again** to send your agent one more try.
+
 ## The callback
 
-Your agent reports with `POST` requests to `fix.eventsUrl`, with the header `Authorization: Bearer <fix token>`. Each event has an `id` that you make, such as a UUID, and a `type`. QA Wolf records each `id` one time, so you can send an event again safely. QA Wolf accepts 60 calls each minute for a fix.
+Your agent reports with `POST` requests to `fix.eventsUrl`, with the header `Authorization: Bearer <fix token>`. The prompt tells your agent how to do this. Each event has an `id` that you make, such as a UUID, and a `type`. QA Wolf records each `id` one time, so you can send an event again safely. QA Wolf accepts 60 calls each minute for a fix.
 
 | Event | When to send it |
 | --- | --- |
