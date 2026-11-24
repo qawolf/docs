@@ -128,16 +128,16 @@ A test request has `"test": true`. The relay, and a receiver that you build, sta
 
 Each agent reports its progress and its pull request to `app.qawolf.com`. If the agent's sandbox blocks outbound traffic, allow `app.qawolf.com`, as each section says.
 
-| Agent | How QA Wolf starts it |
-| --- | --- |
-| [Warp](#warp), [Devin](#devin), [Factory](#factory) | **Generic webhook**, to the agent's webhook trigger. |
-| [Cursor](#cursor) | **Cursor automation**. |
-| [Claude Code](#claude-code) | **Claude Code scheduled task**. |
-| [Codex](#codex) | The **GitHub** tab, or **Generic webhook** to the relay, which starts a GitHub workflow. |
-| [GitHub Copilot](#github-copilot), [Jules](#jules) | **Generic webhook**, to the relay. |
-| [Your own service](#your-own-service) | **Generic webhook**, to your receiver. |
+| Agent | How QA Wolf starts it | Needs the relay |
+| --- | --- | --- |
+| [Warp](#warp), [Devin](#devin), [Factory](#factory) | **Generic webhook**, to the agent's webhook trigger. | No |
+| [Cursor](#cursor) automation | **Cursor automation**. | No |
+| [Claude Code](#claude-code) scheduled task | **Claude Code scheduled task**. | No |
+| [Codex](#codex) | The **GitHub** tab, or **Generic webhook** to the relay, which starts a GitHub workflow. | Only without the **GitHub** tab |
+| [GitHub Copilot](#github-copilot), [Jules](#jules), a [Cursor](#cursor) cloud agent without an automation | **Generic webhook**, to the relay. | Yes |
+| [Your own service](#your-own-service) | **Generic webhook**, to your receiver. | No |
 
-Some agents have no webhook trigger. For these, deploy the [coding agent relay](https://www.npmjs.com/package/@qawolf/coding-agent-relay). The relay checks the signature, starts your agent with your key, and answers QA Wolf after the agent's API accepts the start. You deploy it, so your key stays with you.
+An agent that needs the relay has no webhook trigger. The [coding agent relay](#the-coding-agent-relay) is a small service that you deploy, so your key stays with you.
 
 ### Warp
 
@@ -240,7 +240,7 @@ A [Cursor automation](https://cursor.com/docs/cloud-agent/automations) takes the
 
 QA Wolf sends the prompt as `{ "context": "<prompt>" }`, with the key as a bearer token. The agent gets the text with the automation's prompt.
 
-To start a Cursor cloud agent without an automation, deploy the relay with its Cursor Cloud Agents adapter.
+To start a Cursor cloud agent without an automation, deploy the [relay](#the-coding-agent-relay) with its Cursor Cloud Agents adapter.
 
 **Network:** Cursor cloud agents have internet access by default. If your Cursor team limits the network of cloud agents, allow `app.qawolf.com`.
 
@@ -449,6 +449,21 @@ Set up only one. While a webhook is saved, QA Wolf starts no workflow from the *
   Build a receiver for the QA Wolf coding agent webhook in this repository. Check the Standard Webhooks signature, answer within 10 seconds, and start our agent with the prompt. Then save its URL in QA Wolf and send a test.
   ```
 </Accordion>
+
+## The coding agent relay
+
+GitHub Copilot, Jules, the Cursor Cloud Agents API, and a GitHub workflow have no webhook trigger. Each has only an API that starts the agent with your account key, and QA Wolf does not store that key. The [coding agent relay](https://www.npmjs.com/package/@qawolf/coding-agent-relay) sits between QA Wolf and that API:
+
+1. It checks the signature of each request from QA Wolf.
+2. It starts your agent with your key.
+3. It starts one agent for each fix, also when QA Wolf sends the same request again.
+4. It answers QA Wolf within 10 seconds.
+
+**Where it runs:** the relay is one web handler with no runtime dependencies. Run it as a Vercel function or a Cloudflare Worker, or on your own server with Node.js 20 or later or Deno. QA Wolf must reach it at a public HTTPS URL. A CI job cannot host it, because nothing listens for requests between jobs.
+
+If more than one instance of the relay runs, give it a shared store, so that a repeated request does not start a second agent. The relay's README has a Vercel example with Upstash Redis and a Cloudflare Worker example.
+
+**Read the code before you deploy it:** the relay has the MIT license. Its npm package holds the code that you deploy, with its types and the Vercel and Cloudflare examples. Open the [**Code** tab of the package](https://www.npmjs.com/package/@qawolf/coding-agent-relay?activeTab=code) to read it.
 
 ## The trigger token
 
