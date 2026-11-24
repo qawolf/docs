@@ -27,6 +27,11 @@ A deployment is separate from the workflow that created it, so your repository c
   <Step title="Select the repositories that deploy">
     A repository the App does not cover sends nothing, so every repository whose deploys you want tested has to be selected.
   </Step>
+  <Step title="Authorize QA Wolf">
+    When GitHub asks you to authorize QA Wolf, approve it. If you cancel, GitHub doesn't connect, and you start again from **Workspace settings → Integrations**.
+
+    If QA Wolf shows **Your GitHub account does not have access to this installation.**, authorize with a GitHub account that can access the repositories you selected.
+  </Step>
   <Step title="Confirm the install">
     Reopen the integrations page and confirm GitHub reads as connected.
   </Step>
