@@ -133,7 +133,7 @@ Each agent reports its progress and its pull request to `app.qawolf.com`. If the
 | [Warp](#warp), [Devin](#devin), [Factory](#factory) | **Generic webhook**, to the agent's webhook trigger. |
 | [Cursor](#cursor) | **Cursor automation**. |
 | [Claude Code](#claude-code) | **Claude Code scheduled task**. |
-| [Codex](#codex) | The **GitHub** tab, or the relay with a GitHub workflow. |
+| [Codex](#codex) | The **GitHub** tab, or **Generic webhook** to the relay, which starts a GitHub workflow. |
 | [GitHub Copilot](#github-copilot), [Jules](#jules) | **Generic webhook**, to the relay. |
 | [Your own service](#your-own-service) | **Generic webhook**, to your receiver. |
 
@@ -285,7 +285,7 @@ QA Wolf sends the prompt as `{ "text": "<prompt>" }`, with the token as a bearer
 
 A scheduled task accepts 30 fires each hour, and a test counts as one. Each try that QA Wolf sends again starts a new session.
 
-To run Claude Code in GitHub Actions instead, use the **GitHub** tab, as for [Codex](#codex).
+To run Claude Code in GitHub Actions instead, use the **GitHub** tab, as [for Codex](#from-the-github-tab).
 
 <Accordion title="Prompt for your agent">
   ```text
@@ -295,9 +295,16 @@ To run Claude Code in GitHub Actions instead, use the **GitHub** tab, as for [Co
 
 ### Codex
 
-OpenAI has no inbound trigger for Codex automations or Codex cloud tasks. Run Codex in GitHub Actions in one of two ways.
+OpenAI has no inbound trigger for Codex automations or Codex cloud tasks. Instead, Codex runs in a GitHub Actions workflow in your repository, and something must start that workflow for each fix. Choose one of these:
 
-**The GitHub tab.** This needs [QA Wolf Code](/github-code-access) and no relay.
+- **[The GitHub tab](#from-the-github-tab)** — QA Wolf starts the workflow through [QA Wolf Code](/github-code-access). You deploy nothing.
+- **[The relay](#through-the-relay)** — the [coding agent relay](https://www.npmjs.com/package/@qawolf/coding-agent-relay), a service that you deploy, starts the workflow with a GitHub token of yours. Use it in a private repository when you don't want to install QA Wolf Code.
+
+Set up only one. While a webhook is saved, QA Wolf starts no workflow from the **GitHub** tab.
+
+**Network:** both workflows turn on network access for Codex.
+
+#### From the GitHub tab
 
 <Steps>
   <Step>
@@ -314,35 +321,45 @@ OpenAI has no inbound trigger for Codex automations or Codex cloud tasks. Run Co
   </Step>
 </Steps>
 
-**The relay.** Use it when you want QA Wolf to start a workflow of your own, without QA Wolf Code.
+<Accordion title="Prompt for your agent">
+  ```text
+  Set up QA Wolf to send bugs to Codex in GitHub Actions. Add the QA Wolf coding agent workflow to this repository, and tell me which secret to add.
+  ```
+</Accordion>
+
+#### Through the relay
+
+<Warning>
+  GitHub shows workflow inputs to each person who can read the repository's Actions runs, and the relay puts the fix token in those inputs. Use the relay's workflow adapter only in a private repository.
+</Warning>
 
 <Steps>
   <Step>
-    Copy the relay's example Codex workflow to `.github/workflows/` on your default branch. Add the repository secret `OPENAI_API_KEY`.
+    Copy the relay's example workflow, `examples/github-actions/qawolf-codex.yml`, to `.github/workflows/` on your default branch. Do this in each repository that QA Wolf can suggest for a fix.
+  </Step>
+  <Step>
+    Add the repository secret `OPENAI_API_KEY`.
   </Step>
   <Step>
     Create a fine-grained personal access token with the repository permission "Actions" set to read and write.
   </Step>
   <Step>
-    Deploy the relay with its GitHub workflow adapter, `GITHUB_TOKEN`, and `QAWOLF_SIGNING_SECRET`.
+    Deploy the relay with its GitHub workflow adapter. Set `GITHUB_TOKEN` to the token.
   </Step>
   <Step>
-    Save the relay's URL in QA Wolf as a **Generic webhook**. Put the signing secret in `QAWOLF_SIGNING_SECRET`, and redeploy.
+    Save the relay's URL in QA Wolf as a **Generic webhook**, and copy the signing secret.
+  </Step>
+  <Step>
+    Set `QAWOLF_SIGNING_SECRET` on the relay to the signing secret, and redeploy.
   </Step>
   <Step>
     Select **Send test**, and expect a `200` answer. The relay starts no agent for a test.
   </Step>
 </Steps>
 
-**Network:** the example workflow turns on network access for Codex.
-
-<Warning>
-  GitHub shows workflow inputs to each person who can read the repository's Actions runs, and the inputs carry the fix token. Use the relay's workflow adapter only in a private repository.
-</Warning>
-
 <Accordion title="Prompt for your agent">
   ```text
-  Set up QA Wolf to send bugs to Codex in GitHub Actions. Add the QA Wolf coding agent workflow to this repository, and tell me which secret to add.
+  Set up QA Wolf to send bugs to Codex in GitHub Actions through the QA Wolf coding agent relay. Add the relay's Codex workflow to this repository, deploy the relay, save its URL, and send a test.
   ```
 </Accordion>
 
@@ -356,10 +373,13 @@ OpenAI has no inbound trigger for Codex automations or Codex cloud tasks. Run Co
     Create a fine-grained personal access token with the repository permission "Agent tasks" set to read and write.
   </Step>
   <Step>
-    Deploy the relay with its GitHub Copilot adapter, `GITHUB_TOKEN`, and `QAWOLF_SIGNING_SECRET`.
+    Deploy the relay with its GitHub Copilot adapter. Set `GITHUB_TOKEN` to the token.
   </Step>
   <Step>
-    Save the relay's URL in QA Wolf as a **Generic webhook**. Put the signing secret in `QAWOLF_SIGNING_SECRET`, and redeploy.
+    Save the relay's URL in QA Wolf as a **Generic webhook**, and copy the signing secret.
+  </Step>
+  <Step>
+    Set `QAWOLF_SIGNING_SECRET` on the relay to the signing secret, and redeploy.
   </Step>
   <Step>
     Select **Send test**, and expect a `200` answer.
@@ -384,10 +404,13 @@ OpenAI has no inbound trigger for Codex automations or Codex cloud tasks. Run Co
     Create an API key in the Jules settings.
   </Step>
   <Step>
-    Deploy the relay with its Jules adapter, `JULES_API_KEY`, and `QAWOLF_SIGNING_SECRET`.
+    Deploy the relay with its Jules adapter. Set `JULES_API_KEY` to the key.
   </Step>
   <Step>
-    Save the relay's URL in QA Wolf as a **Generic webhook**. Put the signing secret in `QAWOLF_SIGNING_SECRET`, and redeploy.
+    Save the relay's URL in QA Wolf as a **Generic webhook**, and copy the signing secret.
+  </Step>
+  <Step>
+    Set `QAWOLF_SIGNING_SECRET` on the relay to the signing secret, and redeploy.
   </Step>
   <Step>
     Select **Send test**, and expect a `200` answer.
