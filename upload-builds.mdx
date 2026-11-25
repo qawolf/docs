@@ -9,7 +9,7 @@ A build is an Android `.apk` or `.aab`, or an iOS `.ipa`, that you upload to QA 
 
 ## What you can upload
 
-- **File types** — `.apk` and `.aab` for Android, `.ipa` for iOS. Any other file is refused, including a `.zip`.
+- **File types** — `.apk` and `.aab` for Android, `.ipa` for iOS, `.msi` for Windows. Any other file is refused, including a `.zip`.
 - **Size** — at most 1 GB.
 - **File name** — letters, digits, `.`, `_` and `-`, at most 255 characters. The Builds page and the CLI replace other characters with `-`, and the Fastlane plugin replaces spaces with `-`. Every other way refuses the file.
 - **Zipped apps** — not accepted. Upload the `.apk`, `.aab` or `.ipa` inside the zip. A zip that holds `Payload/<App>.app/` is already an `.ipa`, so rename it to `.ipa`. Any other zipped app stays on [legacy build uploads](/legacy-build-uploads) for now.
@@ -164,7 +164,7 @@ npx @qawolf/cli build upload app-release.apk \
   --commit-sha "$GIT_COMMIT"
 ```
 
-Set `QAWOLF_API_KEY`, or sign in with `qawolf auth login`. An organization or user key also needs `--workspace-id`. Use `--environment-id` in place of `--environment-name` to name an environment by id. The command prints the build id and the build's URL.
+Set `QAWOLF_API_KEY`, or sign in with `qawolf auth login`. An organization or user key also needs `--workspace-id`. For a Windows `.msi`, `--app-id` sets the app id. See [Windows apps](#windows-apps). Use `--environment-id` in place of `--environment-name` to name an environment by id. The command prints the build id and the build's URL.
 
 ### HTTP API
 
@@ -232,6 +232,32 @@ await launch({ app: { id: "com.example.app" } });
 ```
 
 This needs `@qawolf/flows` 0.4.0 or later. When the run has no build of that app, `launch` fails with "No build of `<id>` for `<platform>` on this environment". It does not fall back to another file. A flow that passes `app` ignores `RUN_INPUT_PATH`. See App resolution for [Android](/libraries/flows/api-reference/android#app-resolution) or [iOS](/libraries/flows/api-reference/ios#app-resolution).
+
+## Windows apps
+
+A Windows build is an `.msi` installer. QA Wolf reads its `ProductName` as the app name and its `ProductVersion` as the version. An `.msi` has no app id of its own, so the app id is its `ProductName`, such as `Figma (Machine - MSI)`, unless you set one when you upload it:
+
+- **Builds page** — fill in **App ID** after you choose the file.
+- **GitHub Actions** — the `app-id` input.
+- **Node.js** — `appId` in `uploadBuild`.
+- **CLI** — `--app-id`.
+- **HTTP API** — `appId` in `build.create`.
+
+Other builds take the app id in the file, and QA Wolf refuses one you set.
+
+A Windows flow starts the build by that app id. The run installs the `.msi` on the Windows machine, then starts the program it installed:
+
+```ts
+import { launch, startApp } from "@qawolf/flows/windows";
+
+// An Electron app such as Figma, driven with Playwright:
+const { page } = await launch({ app: { id: "figma" } });
+
+// Or a native app, driven with WebdriverIO:
+const driver = await startApp({ id: "figma" });
+```
+
+When the installer leaves more than one program, name the one to start with `qawolf:launch`, as in `startApp({ id: "figma", "qawolf:launch": "Figma.exe" })`.
 
 ## Test a build in one run
 
