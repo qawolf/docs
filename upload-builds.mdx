@@ -238,14 +238,14 @@ This needs `@qawolf/flows` 0.4.0 or later. When the run has no build of that app
 A Windows build is an `.msi` installer. QA Wolf reads its `ProductName` as the app name and its `ProductVersion` as the version. An `.msi` has no app id of its own, so the app id is its `ProductName`, such as `Figma (Machine - MSI)`, unless you set one when you upload it:
 
 - **Builds page** — fill in **App ID** after you choose the file.
-- **GitHub Actions** — the `app-id` input.
-- **Node.js** — `appId` in `uploadBuild`.
+- **GitHub Actions** — the `app-id` input, from `qawolf/upload-build-action` v1.1.0.
+- **Node.js** — `appId` in `uploadBuild`, from `@qawolf/ci-sdk` 3.10.0.
 - **CLI** — `--app-id`.
 - **HTTP API** — `appId` in `build.create`.
 
 Other builds take the app id in the file, and QA Wolf refuses one you set.
 
-A Windows flow starts the build by that app id. The run installs the `.msi` on the Windows machine, then starts the program it installed:
+A Windows flow starts the build by that app id. The examples below assume Figma's `.msi` was uploaded with the app id `figma`. The run installs the `.msi` on the Windows machine, then starts the program it installed:
 
 ```ts
 import { launch, startApp } from "@qawolf/flows/windows";
@@ -257,7 +257,7 @@ const { page } = await launch({ app: { id: "figma" } });
 const driver = await startApp({ id: "figma" });
 ```
 
-When the installer leaves more than one program, name the one to start with `qawolf:launch`, as in `startApp({ id: "figma", "qawolf:launch": "Figma.exe" })`.
+When the installer leaves more than one program, name the one to start with `qawolf:launch`: the file name of a program it installed, as in `startApp({ id: "figma", "qawolf:launch": "Figma.exe" })`, or its full path on the machine. The error a run shows when it can't choose lists the programs the installer left.
 
 ## Test a build in one run
 
