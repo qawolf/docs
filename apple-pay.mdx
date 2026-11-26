@@ -1,0 +1,83 @@
+---
+title: "Apple Pay and Apple Wallet"
+description: "Pay with Apple Pay and add passes to Apple Wallet in iOS flows on a real iPhone."
+keywords: ["Apple Pay testing", "test Apple Pay", "Apple Pay sandbox", "payment sheet", "express checkout", "Wallet pass", "PassKit"]
+---
+
+An iOS flow can pay with Apple Pay the way your users do. It opens your checkout on a real iPhone, taps Apple Pay, and confirms the payment with `device.confirmApplePay()`. It can also add a pass to Apple Wallet and check that it's there.
+
+<Check>
+  Apple Pay flows run on a [private device](/libraries/flows/api-reference/ios-device-pools#private-devices): an iPhone with Face ID dedicated to your team, with a passcode and a card in Apple Wallet. Contact your QA Wolf representative to set one up, and tell them which payment provider your checkout uses.
+</Check>
+
+## What you can test
+
+- **Apple Pay in Safari** — your website's checkout, in Safari on the iPhone.
+- **Apple Pay in your iOS app** — your app's checkout, including a checkout built as a web page inside the app.
+- **Apple Wallet passes** — a pass your app or website adds to Apple Wallet, checked in the Wallet app.
+
+<Warning>
+  Your app's native Apple Pay sheet only opens when you sign the app for the dedicated iPhone. An app that QA Wolf resigns during installation can't present it. See [private devices](/libraries/flows/api-reference/ios-device-pools#private-devices).
+</Warning>
+
+## Payment cards
+
+QA Wolf adds the card to Wallet when it sets up the iPhone. Which card depends on your payment provider:
+
+- **Apple's Apple Pay sandbox** — one of Apple's sandbox test cards, under a sandbox tester account. Your team creates the sandbox tester in App Store Connect, on an email address QA Wolf gives you.
+- **Stripe test mode** — a real card on a real Apple Account. Stripe doesn't charge it in test mode.
+
+For another provider, ask your QA Wolf representative. The card stays in Wallet between runs. If the Apple Pay sheet says "Not accepted by this website", your checkout doesn't take that card's network: ask for a card on another one.
+
+## Confirm a payment
+
+<Steps>
+  <Step>Open your checkout and tap the Apple Pay button.</Step>
+  <Step>Wait for the Apple Pay sheet to show the card and "Confirm with AssistiveTouch".</Step>
+  <Step>Call `device.confirmApplePay(driver)`. It confirms the payment and enters the iPhone's passcode.</Step>
+  <Step>Assert on the result in your app or website, such as the order confirmation.</Step>
+</Steps>
+
+`device.confirmApplePay()` doesn't open the Apple Pay sheet or pick a card. It fails if the sheet isn't on screen, or if the iPhone asks for a double-click of the side button instead. Contact your QA Wolf representative if that happens.
+
+## Full sample test
+
+Example:
+
+```typescript
+import { device, flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Pay with Apple Pay in Safari",
+  {
+    target: {
+      platform: "ios",
+      schemaVersion: 1,
+      meta: {
+        // The model and iOS version of your team's dedicated iPhone
+        deviceModel: "iPhone 17",
+        iosVersion: "26",
+        targetDevices: "Team Dedicated Device",
+      },
+    },
+    launch: { bundleId: "com.apple.mobilesafari" },
+  },
+  async ({ driver, test }) => {
+    await test("pay with Apple Pay", async () => {
+      // Arrange
+      await driver.url("https://applepaydemo.apple.com");
+
+      // Act
+      const payButton = await driver.$(
+        '//XCUIElementTypeButton[contains(@name, "Pay")]',
+      );
+      await payButton.waitForExist({ timeout: 15_000 });
+      await payButton.click();
+      await device.confirmApplePay(driver);
+
+      // Assert
+      // Check the order confirmation on your own checkout here
+    });
+  },
+);
+```

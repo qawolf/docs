@@ -785,6 +785,12 @@
             ]
           },
           {
+            "group": "Payments",
+            "pages": [
+              "apple-pay"
+            ]
+          },
+          {
             "group": "Networking",
             "pages": [
               {
