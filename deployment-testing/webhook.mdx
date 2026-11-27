@@ -105,10 +105,10 @@ The input goes inside a `json` wrapper, and the reply carries the deployment und
 The whole `changes` value is at most 256 KB. Text fields are trimmed, and a field that's empty after trimming is refused.
 
 - A report that omits `changes` keeps the stored value. A report that sends it replaces it.
-- A value with no `items` and no `releaseNotes` counts as not sent.
+- A value with no `items`, no `releaseNotes`, and no `problems` counts as not sent. A value with only `problems` is stored, replaces the stored value, and raises the setup problem.
 - Triggers read it on the deployment's first `success` report, so send it on that report or an earlier one.
 - QA Wolf redacts secrets, such as tokens, keys, and passwords, from the text when it arrives, before storing it.
-- When QA Wolf also reads the deploy's merged pull requests from your code host, it uses both and lists a change both name once. See [Combining CI changes with your code host](/smart-smoke-suites#combining-ci-changes-with-your-code-host).
+- When QA Wolf also reads the deploy's changes from your code host, it uses both and lists a change both name once. See [Combining CI changes with your code host](/smart-smoke-suites#combining-ci-changes-with-your-code-host).
 
 Example:
 

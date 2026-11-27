@@ -18,7 +18,7 @@ The suite has no fixed size. The agent selects the flows it judges affected by t
 
 1. QA Wolf works out what the deploy changed, in this order:
    1. **The pull request** — on a deploy tied to a pull request, QA Wolf reads the pull request.
-   2. **Changes merged since the last deploy** — on a deploy with no pull request, QA Wolf reads the pull requests merged into the deployed branch since the environment's previous deploy, through its GitHub or GitLab integration.
+   2. **Changes since the last deploy** — on a deploy with no pull request, QA Wolf reads what changed since the environment's previous deploy, through its GitHub or GitLab integration. On GitHub, that's the pull requests merged into the deployed branch. On GitLab, QA Wolf compares the two deploys' commits, so it also lists commits pushed straight to the branch.
    3. **Changes your CI sends** — on a deploy with no pull request, QA Wolf also reads the changes your pipeline sends with the deploy report. When it reads changes from your code host too, it uses both. See [Combining CI changes with your code host](#combining-ci-changes-with-your-code-host).
    4. **The loop's instructions** — when there's nothing to read, the instructions decide what runs. Without instructions, the deploy is skipped. See [When QA Wolf has nothing to read](#when-qa-wolf-has-nothing-to-read).
 2. The agent compares the changes with your existing flows, along with any instructions on the loop, and picks the flows the change affects.
@@ -30,7 +30,7 @@ The suite has no fixed size. The agent selects the flows it judges affected by t
 - **Deploys reported to QA Wolf.** A GitHub deployment, a GitLab deployment job, or a [`deployment.reportStatus`](/deployment-testing/webhook) report from your pipeline. See [Deployments](/loops/deployments).
 - **A pull request, a GitHub or GitLab integration, or changes your CI sends**, so QA Wolf can see what the deploy changed:
   - **A pull request** — GitHub deployments and GitLab deployment jobs are tied to their pull request automatically. A `deployment.reportStatus` report is tied when it sends `metadata.repository` with `metadata.pullRequestNumber`, or with `metadata.commitSha` while that pull request is still open. See [Deployments](/loops/deployments#pull-request).
-  - **A GitHub or GitLab integration** covering the deploying repository. QA Wolf reads the pull requests merged since the environment's previous deploy, with no change to your pipeline. A `deployment.reportStatus` report needs `metadata.repository` and `metadata.commitSha` for this, and `metadata.ref` to name the deployed branch. See [PR testing](/deployment-testing/pr-testing).
+  - **A GitHub or GitLab integration** covering the deploying repository. QA Wolf reads what changed since the environment's previous deploy, with no change to your pipeline. A `deployment.reportStatus` report needs `metadata.repository` and `metadata.commitSha` for this. Send `metadata.ref` to name the deployed branch too. Without it, QA Wolf works out the branch from the code host's merges. See [PR testing](/deployment-testing/pr-testing).
   - **Changes your CI sends** with the deploy report, from any CI system and any code host. See [Sending changes from your CI](#sending-changes-from-your-ci).
 - **A loop that starts on those deploys.** On the [Loops](/loops/overview) page, select **New loop**, then pick a starting point:
   - **Smart smoke suite** — for staging, release, or any long-lived environment. The loop starts on **Deploys to an environment**.
@@ -55,13 +55,13 @@ On a deploy with no pull request, QA Wolf reads, for each change the deploy ship
 
 It never reads your code: no diffs and no file contents.
 
-Through the GitHub or GitLab integration, QA Wolf only sees merged pull requests. When the deployed commit moved but no pull request merged in between, such as after a direct push or a cherry-pick, it can't see what changed. Have your CI send the changes for those deploys.
+Through the GitHub integration, QA Wolf only sees merged pull requests. When the deployed commit moved but no pull request merged in between, such as after a direct push or a cherry-pick, it can't see what changed. Have your CI send the changes for those deploys. Through the GitLab integration, QA Wolf compares the previous deploy's commit with this one, so it also lists commits pushed straight to the branch, and what a rollback dropped.
 
 The first deploy QA Wolf sees for an environment has no earlier deploy to compare with, so only a pull request or changes your CI sends describe it.
 
 ## Combining CI changes with your code host
 
-When your CI sends changes and QA Wolf also reads the deploy's merged pull requests from your code host, it uses both. Your code host has the real pull request titles, descriptions, and changed files. Your CI sees commits that never went through a pull request, such as a hotfix pushed straight to the branch.
+When your CI sends changes and QA Wolf also reads the deploy's changes from your code host, it uses both. Your code host has the real pull request titles, descriptions, and changed files. On GitHub, your CI also sees commits that never went through a pull request, such as a hotfix pushed straight to the branch.
 
 - **A change both list appears once.** QA Wolf matches changes by their pull request number or commit sha, and falls back to their links and titles. Send the ids when you can. The Node.js SDK sends them for you.
 - **Changes sent with a replaced deploy still count.** When a newer deploy replaced one before QA Wolf checked it, the changes your CI sent with the replaced deploy are read with the newer one.
@@ -240,7 +240,7 @@ Instructions guide the agent's selection. They don't guarantee a flow runs.
 A Smart Smoke Suite's run summary has a **Why these flows** card:
 
 - **The headline** — how many flows the agent chose, out of how many it considered, and a one-line reason.
-- **What changed** — where QA Wolf learned what changed, such as the pull request, merged pull requests since the last deploy, changes reported by your CI, or both your code host and your CI, with each change linked. When QA Wolf couldn't read your code host, it says so here.
+- **What changed** — where QA Wolf learned what changed, such as the pull request, merged pull requests since the last deploy, **Changes since the last deploy** when QA Wolf compared the deploys' commits on GitLab, changes reported by your CI, or both your code host and your CI, with each change linked. When QA Wolf couldn't read your code host, it says so here.
 - **Flows it chose** — most relevant first, each with the reason it was picked.
 - **Your loop's instructions** — the flows that ran because of the instructions, when they applied.
 
@@ -260,7 +260,7 @@ The causes when QA Wolf couldn't see what changed, and how to fix each one:
 
 | Cause | Fix |
 | --- | --- |
-| Changes reached the branch without a pull request | Have your CI send the changes. |
+| Changes reached the branch without a pull request, which QA Wolf can't see on GitHub | Have your CI send the changes. |
 | The repository isn't connected | Connect GitHub or GitLab, or have your CI send the changes. |
 | No earlier deploy of this environment to compare with | Have your CI send the changes. |
 | QA Wolf couldn't tell which branch was deployed | Report the deploy's branch as its `ref`, or have your CI send the changes. |

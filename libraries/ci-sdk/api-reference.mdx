@@ -52,7 +52,7 @@ A second argument injects dependencies. Each is optional:
 Returns an object with these functions:
 
 - **`deployment.reportStatus`** — reports a deployment. A deployment's first `success` report is what evaluates triggers and starts a run.
-- **`deployment.collectDeployChanges`** — builds a deployment's `changes` from the deploy's commits, with ids and secrets redacted.
+- **`deployment.collectDeployChanges`** — builds a deployment's `changes` from the deploy's commits, carrying ids, with secrets redacted.
 - **`deployment.findLastDeployedCommit`** — reads the commit of an environment's last successful deploy.
 - **`deployment.collectCommitChanges`** — builds a deployment's `changes` from the commits after a given one, without ids or redaction.
 - **`codeHostIntegration.findForRepository`** — checks what QA Wolf reads of a repository.
