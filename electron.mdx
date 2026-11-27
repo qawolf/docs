@@ -56,7 +56,9 @@ On `"Linux - Electron"`:
 
 ## Move a web Electron flow to a desktop list
 
-To add Mac and Windows to a flow on the web `"Electron"` target, move it in two commits. Push the second commit only after the first one syncs. The first commit keeps the flow's history on the Linux target.
+To add Mac and Windows to a flow on the web `"Electron"` target, move it in two commits. The first commit keeps the flow's history on the Linux target. Keep the two changes in separate commits, and don't squash them.
+
+These steps are for a flow that sets `executablePath` to an absolute path. A relative `executablePath` is relative to the working directory, but `installed` looks in the run's uploaded files and then in team storage. Change a relative path to an absolute one first. A flow that starts an uploaded build with `launch: { app: { id } }` or `launch: {}` stays on the web `"Electron"` target for now.
 
 <Steps>
   <Step title='Move the flow to "Linux - Electron"'>
@@ -64,7 +66,7 @@ To add Mac and Windows to a flow on the web `"Electron"` target, move it in two 
 
     - Import `flow` from `@qawolf/flows/desktop` instead of `@qawolf/flows/web`.
     - Change `target: "Electron"` to `target: "Linux - Electron"`.
-    - Change `launch: { executablePath: path }` to `launch: { app: { linux: { installed: path } } }`.
+    - Change `launch: { executablePath: path }` to `launch: { app: { linux: { installed: path } } }`, with the same absolute path.
 
     ```diff
     - import { flow } from "@qawolf/flows/web";
@@ -81,7 +83,7 @@ To add Mac and Windows to a flow on the web `"Electron"` target, move it in two 
         async ({ page, test }) => {
     ```
 
-    The callback still receives `page`, and now also `context`. Push the commit and let it sync. The flow keeps its name and history.
+    The callback still receives `page`, and now also `context`. Commit the change. When it syncs, the flow keeps its name and history.
   </Step>
   <Step title="Add Mac and Windows">
     Turn `target` into a list, and add an entry to `app` for each new OS:
@@ -107,7 +109,7 @@ To add Mac and Windows to a flow on the web `"Electron"` target, move it in two 
   </Step>
 </Steps>
 
-If both changes sync together, the three flows are all new, and the old flow's history stays on the deleted flow.
+If both changes are in one commit, the three flows are all new. They still copy readiness, tags, and priority from the old flow, but the old flow's history stays on the deleted flow.
 
 <Warning>
   `launch({ app })` from `@qawolf/flows/desktop` returns no `electronApplication`. A flow that runs code in Electron's main process, such as `electronApplication.evaluate(...)`, has no equivalent there. Keep that flow on the web `"Electron"` target.

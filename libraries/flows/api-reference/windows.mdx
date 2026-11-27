@@ -53,7 +53,7 @@ All Windows flow callbacks receive:
 - `setOutput(...)`
 - `test(...)`
 
-Flows with `launch: true` also receive `browser`, `context` and `page`, connected to Chrome on the VM. Flows with `launch: { app }` receive the app's `context` and `page`, with no `browser`.
+Flows with `launch: true` also receive `browser`, `context`, and `page`, connected to Chrome on the VM. Flows with `launch: { app }` receive the app's `context` and `page`, with no `browser`.
 
 <Note>
   On Windows, `launch: true` starts the browser, not an app. On Android and iOS it starts the app. Start a native app with [`startApp(...)`](#startapp).
@@ -76,6 +76,7 @@ type WindowsFlowTargetInput =
     }
   | {
       target: WindowsFlowTarget;
+      // The common form. `installed` also takes `startApp()` options.
       launch: { app: { installed: string } };
     };
 ```
@@ -135,9 +136,9 @@ export default flow("Launch explicitly", "Windows 11 - Desktop", async () => {
 
 ### Start a desktop app
 
-`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app: { installed }` names an app that is already on the VM, the way `startApp(...)` takes it: a path on the VM or an app user model ID. `launch({ app })` installs nothing, so it refuses an `.msi`, a URL, or a file on the runner.
+`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app: { installed }` names an app that is already on the VM, the way `startApp(...)` takes it: a path on the VM or an app user model ID. With `installed`, `launch({ app })` installs nothing, so it refuses an `.msi`, a URL, or a file on the runner.
 
-QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. Returns `{ context, page }`: `page` is the app's first window, and its other windows are in `context.pages()`. There is no `browser`, because an app can't open a new context. Chrome stays closed for the rest of the run. While the app holds the port, a later `launch()` without `app` fails.
+QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. Returns `{ context, page }`: `page` is the app's first window, and its other windows are in `context.pages()`. There is no `browser`, because an app can't open a new context. Chrome stays closed until the session ends. In the flow editor, start a new session to get Chrome back. While the app holds the debugging port, a later `launch()` without `app` fails.
 
 Example:
 

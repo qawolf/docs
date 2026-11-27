@@ -233,8 +233,8 @@ A launch-enabled flow also receives the platform object, which differs by platfo
 | Web (Electron) | `page` |
 | iOS | `driver` — the Appium/WebdriverIO session for the device |
 | Android | `driver` — the Appium/WebdriverIO session for the device |
-| Windows | `page`, `context`, `browser` — Chrome on the Windows VM. Native apps come from [`startApp()`](/libraries/flows/api-reference/windows#startapp), not from the callback. |
-| Desktop (Mac, Windows, and Linux Electron) | `page`, `context`, `browser` with `launch: true`. `page` and `context` of the app with `launch: { app }`. See [`flow(...)`](/libraries/flows/api-reference/desktop#flow). |
+| Windows | `page`, `context`, `browser` — Chrome on the Windows VM. `page` and `context` of the app with `launch: { app }`. Native apps come from [`startApp()`](/libraries/flows/api-reference/windows#startapp), not from the callback. |
+| Desktop (Mac, Windows, and Linux Electron) | `page`, `context`, `browser` with `launch: true`, on Mac and Windows only. `page` and `context` of the app with `launch: { app }`. See [`flow(...)`](/libraries/flows/api-reference/desktop#flow). |
 | Node | nothing additional — only `inputs`, `setOutput`, and `test` |
 
 For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), [iOS](/libraries/flows/api-reference/ios#flow-callback-context), [Windows](/libraries/flows/api-reference/windows#flow-callback-context), and [Desktop](/libraries/flows/api-reference/desktop#flow).

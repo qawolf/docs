@@ -55,10 +55,10 @@ Each target of a list becomes a flow named `<name> · <preset>`. It is a normal 
 - **Results and history** — each target has its own result, flow history, and bug reports.
 - **Readiness, tags, and priority** — each target has its own. You can pause one broken target and keep the others running.
 
-When you add a target to a file that already has flows, the new target copies readiness, tags, and priority from the file's first existing target. So it is active at once, and it joins every trigger that picks flows by tag or picks every flow.
+When you add a target to a file that already has flows, the new target copies readiness, tags, and priority from the file's first existing target. So it has the same readiness as the first target. If it is active, it joins every trigger that picks flows by tag or picks every flow. A trigger that picks flows by ID doesn't pick up the new target.
 
 <Warning>
-  Turning a flow into a list multiplies its runs in every trigger that selects it. To run a target only in some triggers, change that target's tags.
+  Turning a flow into a list multiplies its runs in every trigger that selects flows by tag or selects every flow. To run a target only in some triggers, change that target's tags.
 </Warning>
 
 ## Order and fail fast
@@ -68,7 +68,7 @@ Two options set how the targets of a list run against each other. Both are `fals
 | Option | Default | What it does |
 | --- | --- | --- |
 | `sequential` | `false` | Runs the targets one after another, in list order, instead of all at once. Use it when the targets share a test account. |
-| `failFast` | `false` | Stops the targets that haven't ended once one target fails for good, after its retries. The stopped targets show as canceled, and the run reports the target that failed. |
+| `failFast` | `false` | Stops the targets that haven't ended once one target fails a check for good, after its retries. A target that QA Wolf aborts for an infrastructure reason doesn't stop the others. The stopped targets show as canceled, and the run reports the target that failed. |
 
 Example:
 
@@ -91,7 +91,7 @@ export default flow(
 
 Write both options as `true` or `false` in the options object. A variable, a spread, or a computed key is a sync error.
 
-The order applies inside one run. If a run selects only some targets of a sequential list, only those run in order. The run doesn't add the other targets. [Run rules](/Run-Rules) can't remove the order, and a rule that contradicts it is a rule cycle.
+The order applies inside one run. If a run selects only some targets of a sequential list, only those run in order. The run doesn't add the other targets. [Run rules](/Run-Rules) can't remove the order, An ordering rule that contradicts it is a rule cycle, and a `run-with` rule on a sequential list is an error.
 
 ## Screenshots
 
@@ -107,7 +107,7 @@ Each target keeps its own screenshot baselines. For a flow of a list, QA Wolf ad
 A `Latest` preset is keyed by its name, so its baselines stay when the version it points to moves. WebdriverIO adds its own platform part to native screenshot names.
 
 <Warning>
-  Turning a flow into a list, or a list into one target, starts new baselines. The first run of each target saves its images and passes, so it can't catch a visual change in the same commit. Change the target list and the UI in separate commits.
+  Turning a flow into a list, or a list into one target, starts new baselines. The first run of each target saves its images and passes, so it can't catch a visual change in the same commit. Run every target once against the current UI, so it saves its baselines, before you deploy the UI change.
 </Warning>
 
 ## Run rules
@@ -127,7 +127,7 @@ A target keeps its flow, and so its history, when you edit the file:
 | Move the file | Same flows. |
 | Add a target | A new flow. It copies readiness, tags, and priority from the file's first existing target. |
 | Remove a target | Its flow is deleted. Its history stays. |
-| Add a removed target back | Its flow comes back with its runs, history, readiness, tags, and priority. Bug report links don't come back. |
+| Add a removed target back, while the file is still a list | Its flow comes back with its runs, history, readiness, tags, and priority. Bug report links don't come back. |
 | Replace a target | A new flow for the new target. The old target's flow is deleted. |
 | Turn one target into a list | The target that matches the old target keeps the old flow and its history. The other targets are new flows. |
 | Turn a list into one target | The matching target keeps its flow. The other flows are deleted. |
@@ -141,11 +141,15 @@ A coding agent connected through the QA Wolf MCP picks the target with the `targ
 
 ## Errors
 
-Sync checks each list. A flow with an error doesn't run. Sync reports an error when:
+Sync checks each list. It reports an error, and the flow doesn't run, when:
 
 - An entry isn't a preset name.
 - Two entries name the same target.
 - The entries aren't all of one device class, or not of the class of the import.
 - An entry is `"Basic"` or the web `"Electron"` target.
 - `sequential` or `failFast` isn't written as `true` or `false`.
+
+Sync also reports an error on the flow's name when:
+
 - A target flow's name, `<name> · <preset>`, is longer than 255 characters.
+- The flow's name is the name of another flow. See [Run rules](#run-rules).
