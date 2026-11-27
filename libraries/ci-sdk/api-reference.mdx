@@ -74,7 +74,7 @@ Find the id under **Workspace Settings → API Keys**. The legacy functions and 
 
 ## deployment.reportStatus
 
-Reports a deployment to QA Wolf through the public `deployment.reportStatus` API. The parameters are the API's own input, so [Webhook](/deployment-testing/webhook) and [Deployments](/triggers/deployments) describe how each field is read.
+Reports a deployment to QA Wolf through the public `deployment.reportStatus` API. The parameters are the API's own input, so [Webhook](/deployment-testing/webhook) and [Deployments](/loops/deployments) describe how each field is read.
 
 Example:
 
@@ -151,7 +151,7 @@ Branch on `outcome`:
 The response carries the deployment only, never the resulting runs. `deployment.waitForVerdict` is how a pipeline learns what the runs decided.
 
 <Note>
-  `outcome: "reported"` means QA Wolf recorded the deployment, not that a trigger matched it. Whether a run starts is decided afterwards, by your [triggers](/triggers/overview).
+  `outcome: "reported"` means QA Wolf recorded the deployment, not that a trigger matched it. Whether a run starts is decided afterwards, by your [triggers](/loops/overview).
 </Note>
 
 ## deployment.collectCommitChanges
@@ -502,7 +502,7 @@ Pass exactly one of the following to identify the environment:
 ## generateSignedUrlForRunInputsExecutablesStorage
 
 <Warning>
-  Deprecated for Android and iOS builds. Use [`uploadBuild`](#uploadbuild) instead, so every run records which build it tested. It keeps working, prints no warning, and is still the way to upload Windows and Linux app files. A zipped app that is not an `.ipa` also stays on this path for now.
+  Deprecated for Android and iOS builds. Use [`uploadBuild`](#uploadbuild) instead, so every run records which build it tested. It keeps working, prints no warning, and is still the way to upload Windows app files. A zipped app that is not an `.ipa` also stays on this path for now.
 </Warning>
 
 Generates a signed URL for uploading a run input executable (APK, AAB, DEB, IPA, ZIP, CSV, PDF) to QA Wolf. See [v0/run-inputs-executables-signed-urls](/run-inputs-executables-signed-urls) for the underlying endpoint, and [Legacy build uploads](/legacy-build-uploads) for the pipeline it belongs to. To upload an Android or iOS build, use [`uploadBuild`](#uploadbuild).
@@ -558,7 +558,7 @@ await fetch(signed.uploadUrl, {
 ## Legacy functions
 
 <Warning>
-  `attemptNotifyDeploy` and `pollCiGreenlightStatus` report through the legacy `deploy_success` webhook, which feeds [legacy triggers](/legacy-triggers/overview) only. A [trigger](/triggers/overview) never sees a deployment they send. They were deprecated in 3.1.0 and are still exported in 3.6.0: legacy describes the path they report through, not an old version of the package. They keep working unchanged, print no warning, and have no removal date. A new integration uses `deployment.reportStatus` and `deployment.waitForVerdict`.
+  `attemptNotifyDeploy` and `pollCiGreenlightStatus` report through the legacy `deploy_success` webhook, which feeds [legacy triggers](/legacy-triggers/overview) only. A [trigger](/loops/overview) never sees a deployment they send. They were deprecated in 3.1.0 and are still exported in 3.6.0: legacy describes the path they report through, not an old version of the package. They keep working unchanged, print no warning, and have no removal date. A new integration uses `deployment.reportStatus` and `deployment.waitForVerdict`.
 </Warning>
 
 Moving a pipeline off them: `deploymentType` becomes `environment.name`; `branch` and `sha` move into `metadata`; `providerDeploymentId` is new and required, and subsumes `deduplicationKey`; `hostingService` disappears, since the code host comes from your integration; `variables` becomes `environmentVariables`. There is no `skipped` outcome, because whether a trigger matched is not known at report time; `deployment.waitForVerdict` answers `not-tested` instead.

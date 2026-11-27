@@ -5,7 +5,7 @@ sidebarTitle: "Webhook"
 keywords: "reportStatus, notify QA Wolf on deploy, deployment status, CI notification, API key, self-hosted CI, ephemeral environment, preview environment, permanent environment, service, servicePattern"
 ---
 
-When your pipeline cannot create a GitHub or GitLab deployment, it can notify QA Wolf of the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/triggers/overview) evaluates it the same way.
+When your pipeline cannot create a GitHub or GitLab deployment, it can notify QA Wolf of the deploy itself. The `deployment.reportStatus` route takes the same information a deployment event carries, and a [trigger](/loops/overview) evaluates it the same way.
 
 Pick this path when your code host is not GitHub or GitLab, when the deploying repository is not connected, or when the deploy happens somewhere your code host never sees. A pipeline that runs Node.js can make the same report through the [Node.js SDK](/deployment-testing/ci-sdk), which also waits for the verdict.
 
@@ -128,8 +128,8 @@ From a Node.js pipeline, `deployment.collectCommitChanges` in `@qawolf/ci-sdk` b
 - The response carries the deployment only, never the resulting runs.
 - A deployment stays bound to the environment resolved on its first report, so later reports may omit the selector. Report a promotion as a new deployment under a new `providerDeploymentId`.
 
-How the environment name resolves, and what a preview deploy needs, is covered in [Deployments](/triggers/deployments).
+How the environment name resolves, and what a preview deploy needs, is covered in [Deployments](/loops/deployments).
 
 ## Create a trigger
 
-Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report. See [Triggers](/triggers/overview).
+Reporting a deploy starts nothing on its own. Create a deployment trigger whose conditions match the deployments you now report. See [Loops](/loops/overview).

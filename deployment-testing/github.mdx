@@ -27,10 +27,17 @@ A deployment is separate from the workflow that created it, so your repository c
   <Step title="Select the repositories that deploy">
     A repository the App does not cover sends nothing, so every repository whose deploys you want tested has to be selected.
   </Step>
+  <Step title="Authorize QA Wolf">
+    When GitHub asks you to authorize QA Wolf, approve it. If you cancel, GitHub doesn't connect, and you start again from **Workspace settings → Integrations**.
+
+    If QA Wolf shows **Your GitHub account does not have access to this installation.**, authorize with a GitHub account that can access the repositories you selected.
+  </Step>
   <Step title="Confirm the install">
     Reopen the integrations page and confirm GitHub reads as connected.
   </Step>
 </Steps>
+
+To let QA Wolf's AI read your code, connect through the QA Wolf Code app instead. See [GitHub code access](/github-code-access).
 
 ## Create the deployment
 
@@ -58,7 +65,7 @@ Some hosting providers, Vercel among them, create deployments on their own. Othe
 
 - The workflow needs [`permissions: deployments: write`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax).
 - `auto_merge: false` and `required_contexts: []` keep GitHub from refusing or deferring the deployment behind other checks.
-- `environment` defaults to `production`. QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches. See [Deployments](/triggers/deployments#environment).
+- `environment` defaults to `production`. QA Wolf matches it against the workspace's environments by alias or by slugified name, and creates a new environment when nothing matches. See [Deployments](/loops/deployments#environment).
 - `environment_url`, set on the deployment status, is the address QA Wolf runs against.
 
 QA Wolf evaluates triggers on a deployment's first `success` status only. A deployment left `pending` starts nothing.
@@ -113,4 +120,4 @@ The [Webhook](/deployment-testing/webhook) path takes `environmentVariables` as 
 
 ## Create a trigger
 
-A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your repository now creates. See [Triggers](/triggers/overview).
+A connected integration starts no runs on its own. Create a deployment trigger whose conditions match the deployments your repository now creates. See [Loops](/loops/overview).

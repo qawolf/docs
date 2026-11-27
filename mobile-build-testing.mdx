@@ -5,7 +5,7 @@ sidebarTitle: "Mobile build testing"
 keywords: "mobile, Android, iOS, apk, aab, ipa, build, Fastlane, fastlane-plugin-qawolf, upload-build-action, notify-qawolf-on-deploy-action, uploadBuild, reportStatus, builds, service, servicePattern, upload a build"
 ---
 
-QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for Android, an `.ipa` for iOS. Your pipeline uploads each new build and reports it as a deployment, and a [trigger](/triggers/overview) you create starts the runs. Every run records which build it installed.
+QA Wolf runs flows against a real build of your app: an `.apk` or `.aab` for Android, an `.ipa` for iOS. Your pipeline uploads each new build and reports it as a deployment, and a [trigger](/loops/overview) you create starts the runs. Every run records which build it installed.
 
 ## How it works
 
@@ -211,7 +211,7 @@ These examples upload an Android `.apk`. iOS works the same way: point the same 
 
 ## Create a trigger
 
-A deployment starts nothing until a trigger matches it. Create one on the workspace's triggers page, with conditions that match the deployments you now report:
+A deployment starts nothing until a trigger matches it. Create one on the workspace's **Loops** page, where the app calls a trigger a loop, with conditions that match the deployments you now report:
 
 | Condition | For a mobile pipeline |
 | --- | --- |
@@ -223,10 +223,10 @@ Shipping both platforms into one environment needs two triggers, one per `servic
 
 `deployTargetPattern` matches on the deploy target URL, which a mobile build has none of, so it is not a way to tell builds apart.
 
-See [Trigger fields](/triggers/reference) for every condition and for the action that selects which flows run.
+See [Trigger fields](/loops/reference) for every condition and for the action that selects which flows run.
 
 <Tip>
-  You can create and manage triggers from your own coding agent instead of the triggers page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments. It can also list recent deployments and show why a trigger did or did not fire.
+  You can create and manage triggers from your own coding agent instead of the **Loops** page. Add the [QA Wolf MCP](/qawolf-mcp) and ask it to set up the triggers for your mobile environments. It can also list recent deployments and show why a trigger did or did not fire.
 </Tip>
 
 ## Use the build in a flow
@@ -249,7 +249,7 @@ The flow installs the run's build of that app: the deployment's build, or else t
     The upload step prints the build id. The report step logs the deployment id and the environment's runs page.
   </Step>
   <Step title="Check the trigger fired">
-    Open the deployment in QA Wolf. It lists a verdict for every trigger, including the reason a trigger did not match. See [Deployments](/triggers/deployments#evaluation).
+    Open the deployment in QA Wolf. It lists a verdict for every trigger, including the reason a trigger did not match. See [Deployments](/loops/deployments#evaluation).
   </Step>
   <Step title="Check the run used the build">
     Open the run the trigger created. It shows the app version it tested, which matches the build you just uploaded.
@@ -270,8 +270,8 @@ The flow installs the run's build of that app: the deployment's build, or else t
 ## Related
 
 - [Upload builds](/upload-builds) — every way to upload a build, and how to move from legacy uploads.
-- [Triggers](/triggers/overview) and [Trigger fields](/triggers/reference)
-- [Deployments](/triggers/deployments) — how a deployment resolves to an environment, and the verdict per trigger.
+- [Loops](/loops/overview) and [Trigger fields](/loops/reference)
+- [Deployments](/loops/deployments) — how a deployment resolves to an environment, and the verdict per trigger.
 - [`@qawolf/ci-sdk`](/libraries/ci-sdk/api-reference)
 - [Legacy build uploads](/legacy-build-uploads)
 - [Mobile build testing with legacy triggers](/legacy-triggers/mobile-build-testing)

@@ -1,0 +1,124 @@
+---
+title: "Network logs (iOS)"
+description: "Record the network requests of the app under test in iOS flows, then read them in the Network tab, as a HAR file, or from flow code."
+sidebarTitle: "iOS"
+keywords: ["HAR", "network requests", "HTTP traffic", "API calls", "network inspection"]
+---
+
+QA Wolf records the HTTP, HTTPS, WebSocket, and DNS traffic of the app under test while an iOS flow runs. QA Wolf decrypts HTTPS, so the log shows the URL, method, headers, status, and body of each request.
+
+## Turn on network logs
+
+Set `network.capture` in the flow's `launch` options. Capture is off by default, and it covers the app under test only.
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/ios";
+
+export default flow("Check out", "iOS - iPhone 15 (iOS 26)", async () => {
+  const { driver } = await launch({
+    bundleId: "com.example.app",
+    network: { capture: true },
+  });
+
+  // ... flow steps ...
+});
+```
+
+<Warning>
+  While capture is on, the app's own web views (`WKWebView`) do not load. Native requests and sign-in sheets (`ASWebAuthenticationSession`, `SFSafariViewController`) work. Leave capture off for a flow whose app depends on an in-app web view.
+</Warning>
+
+## Read the network log
+
+- **IDE** — the Network tab next to Logs shows the requests live while you run the flow. The tab appears with the first request.
+- **Run page** — an iOS attempt with network logs has a Network tab. A running attempt refreshes it every 30 seconds.
+- **HAR file** — **Download HAR** on the run page's Network tab saves `network.har`. **Download artifacts** puts `network.har` in the attempt's zip. Open it in a browser's developer tools or any HAR viewer.
+- **API and MCP** — an attempt's `networkLogsUrl` artifact is a signed link to the log as newline-delimited JSON, one HAR 1.2 entry per line.
+- **CLI** — `qawolf attempt inspect --attempt-id <attemptId> --network` lists the requests, and `--failed` keeps the failed ones. `qawolf attempt investigate --attempt-id <attemptId>` lists the failed requests with the rest of the failure. Both need `@qawolf/cli` 2.17.0 or later.
+
+A coding agent can read the log through the CLI or the MCP server instead of downloading `networkLogsUrl` itself.
+
+## What the log contains
+
+- **Requests** — method, URL, headers, status, and timing.
+- **Bodies** — text types only: JSON, text, XML, form data, and GraphQL. QA Wolf decodes compressed bodies and keeps up to 64 KiB of each. Other bodies show their size only.
+- **WebSocket frames** — text frames, on the connection that opened them.
+- **DNS lookups** — the name and the answer.
+
+Each attempt keeps up to 64 MiB of log. QA Wolf counts the entries past that limit, but does not keep them.
+
+### Hidden credentials
+
+QA Wolf hides credentials in the log by default:
+
+- The values of the `authorization`, `proxy-authorization`, `cookie`, `set-cookie`, `x-api-key`, `x-goog-api-key`, and `x-amz-security-token` headers. The auth scheme and the cookie names stay.
+- Token query parameters, such as `access_token`, `token`, and `X-Amz-Signature`, also inside a URL that another parameter carries.
+- Bearer and JWT values in other headers and in URL parameters, and JWTs anywhere in a URL.
+
+A hidden value reads `[redacted <bytes> B]`. Bodies stay as they are. To keep the values, set `network.redact` to `false`. The latest launch with capture decides, for every reader of the log.
+
+## Apps that pin certificates
+
+An app that pins its certificates rejects QA Wolf's decryption, so its pinned hosts fail while capture is on. Use one of these options:
+
+- **Relay the hosts unread** — list them in `network.passThrough`. QA Wolf does not decrypt them, and the log shows only their server name. Each entry is a host name, `.domain` (the domain and its subdomains), `*.domain` (its subdomains only), an IP address, or a CIDR range. Up to 100 entries.
+- **Give the app QA Wolf's pin** — some apps accept more pins at launch, for example through a launch argument. `process.env.QAWOLF_MITM_CA_PIN` holds the pin: the base64 SHA-256 of the public key of QA Wolf's certificate. A launch argument applies to one start, so pass it again on every relaunch.
+
+Example:
+
+```ts
+const { driver } = await launch({
+  bundleId: "com.example.app",
+  network: {
+    capture: true,
+    passThrough: ["api.example.com", ".auth.example.com"],
+  },
+});
+```
+
+## Read requests in flow code
+
+`device.subscribeNetworkLogs()` streams the requests to flow code, so a flow can check that the app sent a request. The stream starts at the next request, so subscribe before the step that sends it. See [`subscribeNetworkLogs`](/libraries/flows/api-reference/ios-device-reference#subscribenetworklogs).
+
+Example:
+
+```ts
+import { device, expect, flow, launch } from "@qawolf/flows/ios";
+
+export default flow("Sign in", "iOS - iPhone 15 (iOS 26)", async () => {
+  await launch({
+    bundleId: "com.example.app",
+    network: { capture: true },
+  });
+
+  const logs = device.subscribeNetworkLogs();
+  const sessionStatus = new Promise<number>((resolve) => {
+    logs.on((entry) => {
+      if (entry.http?.uri.includes("/api/session")) {
+        resolve(entry.http.statusCode);
+      }
+    });
+  });
+
+  // ... sign in ...
+
+  expect(await sessionStatus).toBe(200);
+  logs.close();
+});
+```
+
+## Network logs with a VPN
+
+`device.routeTraffic()` replaces the capture of the launch. To keep the log while you route traffic through a VPN, pass `inspect: true` to `device.routeTraffic()`. See [Connect to a VPN (iOS)](/network-connectivity).
+
+Example:
+
+```ts
+const cleanup = await device.routeTraffic({
+  apps: ["com.example.app"],
+  tunnel: { type: "wireguard", configPath: "/configs/us-west.conf" },
+  inspect: true,
+});
+```

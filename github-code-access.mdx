@@ -1,0 +1,165 @@
+---
+title: "Let QA Wolf read your code on GitHub"
+description: "Turn on code access through the QA Wolf Code GitHub App, so QA Wolf's AI reads the code in the repositories you choose."
+sidebarTitle: "GitHub code access"
+keywords: "code access, QA Wolf Code, GitHub App, repository contents, read code, app permissions, required status checks, organization owner"
+---
+
+Code access lets QA Wolf's AI read the code in the repositories that you choose on GitHub. You turn it on when you connect GitHub through the QA Wolf Code app.
+
+QA Wolf has two GitHub Apps. A workspace connects through one of them, never through both.
+
+| App | What QA Wolf does |
+| --- | --- |
+| QA Wolf | Tests your deployments and pull requests, and posts the results as checks and comments. |
+| QA Wolf Code | Everything that the QA Wolf app does, and reads your code. |
+
+With code access, QA Wolf's AI uses your code changes to find new features, create flows, and maintain flows. It also helps tell when a failure is a bug.
+
+QA Wolf never writes code. The app has read access to repository contents.
+
+QA Wolf never uses your code to train models or improve its AI agents.
+
+See [GitHub code access security](/security/github-code-access) for details.
+
+## Requirements
+
+- Code access turned on for your workspace. Ask your QA Wolf representative to turn it on. Until then, the GitHub settings have no **Read your code** option.
+- An organization admin in QA Wolf. Other members see the state and the note "Only an organization admin can change this."
+- An owner of the GitHub organization that installs the app. For a personal account, the owner of that account.
+
+## Turn on code access for a new connection
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Integrations** and select **Connect** on the GitHub card.
+  </Step>
+  <Step>
+    In the **Connect GitHub** dialog, keep **Read your code** selected, then select **Continue to GitHub**.
+  </Step>
+  <Step>
+    In GitHub, install the QA Wolf Code app and choose the repositories.
+  </Step>
+  <Step>
+    Authorize the app when GitHub asks. GitHub then returns you to QA Wolf.
+  </Step>
+</Steps>
+
+If you clear **Read your code**, GitHub asks you to install the QA Wolf app, and code access stays off. You can change the repositories and code access later.
+
+## Turn on code access for a workspace on the QA Wolf app
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Integrations**. Open the GitHub card's menu and select **Configure**.
+  </Step>
+  <Step>
+    Under **What QA Wolf does**, find "Read your code (off)" and select **Turn on**.
+  </Step>
+  <Step>
+    In GitHub, install the QA Wolf Code app and choose the repositories.
+  </Step>
+  <Step>
+    Authorize the app when GitHub asks.
+  </Step>
+  <Step>
+    [Update your required status checks](#update-required-status-checks) in GitHub.
+  </Step>
+</Steps>
+
+QA Wolf Code replaces the QA Wolf app. QA Wolf removes the installation of the QA Wolf app after it links the new one, unless another workspace still uses that installation.
+
+## Update required status checks
+
+A required status check in GitHub can name the app that must post it. After the change, QA Wolf Code posts the checks, so a rule that names the QA Wolf app stops matching.
+
+<Warning>
+  Until you update the rule, a pull request waits for a check that never comes.
+</Warning>
+
+<Steps>
+  <Step>
+    In GitHub, open the branch protection rule or the ruleset of each protected branch.
+  </Step>
+  <Step>
+    Find each required status check that names the QA Wolf app as its source.
+  </Step>
+  <Step>
+    Change the source to QA Wolf Code, or to any source.
+  </Step>
+</Steps>
+
+Do the opposite when you turn code access off.
+
+## Turn off code access
+
+<Steps>
+  <Step>
+    Open **Workspace settings → Integrations**. Open the GitHub card's menu and select **Configure**.
+  </Step>
+  <Step>
+    Under **What QA Wolf does**, select **Turn off**.
+  </Step>
+  <Step>
+    In GitHub, install the QA Wolf app and choose the repositories.
+  </Step>
+  <Step>
+    Authorize the app when GitHub asks.
+  </Step>
+  <Step>
+    Change each required status check that names QA Wolf Code.
+  </Step>
+</Steps>
+
+The QA Wolf app can't read your repositories, only the changes in pull requests. An investigation already in progress may still have access. Testing keeps working.
+
+## Permissions of QA Wolf Code
+
+QA Wolf Code has every permission of the QA Wolf app, plus three: `contents: read`, `actions: write`, and `members: read`. GitHub shows these permissions when you install the app.
+
+The [coding agent webhook](/fix-bugs-with-your-coding-agent) needs none of these permissions. To check a fix on its pull request's preview, QA Wolf reads the pull request through either app.
+
+| Permission | What QA Wolf uses it for | Feature that needs it |
+| --- | --- | --- |
+| `contents: read` | Reads the code in the repositories you choose. Finds the coding agent workflow file, and compares a fix branch with the default branch. | Code access, and the coding agent in GitHub Actions. |
+| `actions: write` | Starts the coding agent workflow in your repository, and cancels that run when the bug closes. It can't change code. | The coding agent in GitHub Actions. |
+| `members: read` | Checks that the person who connects the app is an owner of the GitHub organization. | Connecting QA Wolf Code. |
+| `checks: write` | Posts the results of your flows as check runs. | Deployment and pull request testing. |
+| `statuses: write` | Reads the commit statuses of a commit. The QA Wolf app has this permission, and QA Wolf Code keeps it. | Deployment and pull request testing. |
+| `issues: write` | Files a bug report as a GitHub issue, updates the issue, and posts comments. | Bug reports in GitHub issues. |
+| `pull_requests: write` | Comments on pull requests, and replies to review comments. Opens the pull request of a coding agent fix. | `@qawolf` comments, and the coding agent in GitHub Actions. |
+| `repository_hooks: write` | Deletes the repository webhooks that QA Wolf created until 2024, when you disconnect GitHub. | Disconnecting GitHub. |
+| `deployments: read` | Receives the status of each deployment, which starts your flows. | Deployment and pull request testing. |
+| `metadata: read` | Required by GitHub for every app. | Every feature. |
+
+The app subscribes to these events: `deployment_status`, `issue_comment`, `issues`, `pull_request`, `pull_request_review_comment`, `push`, `status`, and `workflow_run`.
+
+| Event | What QA Wolf does with it |
+| --- | --- |
+| `deployment_status` | Starts the flows of a deployment. |
+| `pull_request` | Records the pull request and its changes. |
+| `issue_comment`, `pull_request_review_comment` | Reads a comment that mentions `@qawolf`. |
+| `push` | Finds a coding agent workflow file that you add or change. |
+| `workflow_run` | Records the end of a coding agent workflow run. |
+
+GitHub also sends `installation` and `check_suite` to the app without a subscription. QA Wolf uses `installation` to record a removed or suspended app, and `check_suite` to record the head commit of a check suite.
+
+## Approve the new permission
+
+If your organization installed QA Wolf Code before it asked for the `actions` permission, GitHub asks an organization owner to approve it. Until an owner accepts, QA Wolf can't start the coding agent workflow, and a fix in GitHub Actions fails.
+
+In GitHub, an owner opens the organization's installed GitHub Apps, opens QA Wolf Code, and accepts the new permissions.
+
+## States of code access
+
+| What you see | What to do |
+| --- | --- |
+| "Read your code (off)" with **Turn on**. | Turn on code access when you want it. |
+| "Read your code" with **Turn off**. | Nothing. Code access is on. |
+| "GitHub suspended QA Wolf Code. Unsuspend it on GitHub to restore code access." | Ask an owner to unsuspend the app in the GitHub organization's settings. |
+| "QA Wolf Code can't read your GitHub organization membership. Ask an owner of the organization to accept QA Wolf Code's updated permissions on GitHub, then connect again." | Ask an owner to accept the updated permissions in GitHub, then connect again. |
+| "Only an owner of the GitHub organization that installed QA Wolf Code can connect it." | Ask an owner of the GitHub organization to connect the app. |
+| "The GitHub authorization expired. Connect GitHub again." | Connect GitHub again. |
+| "Code access could not be loaded." with **Retry**. | Select **Retry**. |
+
+While GitHub has the app suspended, it sends QA Wolf no events, so the tests of deployments and pull requests also stop.

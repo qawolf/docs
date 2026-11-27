@@ -59,19 +59,23 @@
   "redirects": [
     {
       "source": "/triggers/set-up-a-trigger",
-      "destination": "/triggers/reference"
+      "destination": "/loops/reference"
     },
     {
       "source": "/triggers/report-deployments",
-      "destination": "/triggers/deployments"
+      "destination": "/loops/deployments"
     },
     {
       "source": "/triggers/diagnose-a-trigger",
-      "destination": "/triggers/deployments"
+      "destination": "/loops/deployments"
     },
     {
       "source": "/qawolf/Workspace-settings",
       "destination": "/workspace-setup"
+    },
+    {
+      "source": "/qawolf/Workspace-settings-2d25b2a994fb807fbd9bece4eb1a4d5f",
+      "destination": "/members"
     },
     {
       "source": "/qawolf/Asana",
@@ -623,7 +627,7 @@
     },
     {
       "source": "/triggers",
-      "destination": "/triggers/overview"
+      "destination": "/loops/overview"
     },
     {
       "source": "/legacy/legacy-triggers",
@@ -680,6 +684,14 @@
     {
       "source": "/Test-environments",
       "destination": "/prepare-environments-for-qa-wolf"
+    },
+    {
+      "source": "/triggers/:slug*",
+      "destination": "/loops/:slug*"
+    },
+    {
+      "source": "/loops",
+      "destination": "/loops/overview"
     }
   ],
   "integrations": {
@@ -725,17 +737,20 @@
             "pages": [
               "product-mapping",
               "test-automation",
+              "ai-investigation",
               "agent-in-your-tools",
               "custom-skills",
               "clone-with-git",
               "qawolf-mcp",
+              "fix-bugs-with-your-coding-agent",
               "mcp-connections"
             ]
           },
           {
             "group": "Run Orchestration",
             "pages": [
-              "triggers/overview",
+              "loops/overview",
+              "loops/run-ai",
               "smart-smoke-suites",
               "Run-Rules",
               "concurrency-limits",
@@ -744,8 +759,9 @@
             ]
           },
           {
-            "group": "Authentication",
+            "group": "Members and Access",
             "pages": [
+              "members",
               "sso"
             ]
           }
@@ -782,6 +798,12 @@
                 "group": "Network simulation",
                 "pages": [
                   "network-simulation"
+                ]
+              },
+              {
+                "group": "Network logs",
+                "pages": [
+                  "ios-network-logs"
                 ]
               },
               {
@@ -994,9 +1016,9 @@
           {
             "group": "Triggers",
             "pages": [
-              "triggers/reference",
-              "triggers/deployments",
-              "triggers/migrate-from-legacy-triggers"
+              "loops/reference",
+              "loops/deployments",
+              "loops/migrate-from-legacy-triggers"
             ]
           },
           {
@@ -1043,7 +1065,14 @@
           {
             "group": "Code review",
             "pages": [
-              "github-pull-requests"
+              "github-pull-requests",
+              "github-code-access"
+            ]
+          },
+          {
+            "group": "Security",
+            "pages": [
+              "security/github-code-access"
             ]
           },
           {
