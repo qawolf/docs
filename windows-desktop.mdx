@@ -175,6 +175,8 @@ The start fails if the app won't take that size. A baseline doesn't record the w
 
 ## Test every new build from CI
 
+To test a known build and record which one each run tested, [upload it as a build](/upload-builds#windows-apps) and start it with `startApp({ id })`. The legacy way below still works.
+
 A Windows build takes the same path as [Legacy build uploads](/legacy-build-uploads). Your pipeline uploads the build, reports a deployment that carries the build's path as `RUN_INPUT_PATH`, and a trigger starts the runs. Follow that page with your `.msi` in place of the `.apk`, through the GitHub Actions, Node.js or Webhook steps. If Android or iOS builds report into the same environment, give the Windows build its own `service` and its own trigger.
 
 The difference is in the flow. `startApp()` doesn't fall back to `RUN_INPUT_PATH` the way the mobile `launch()` does, so pass it in. Falling back to the build's file name lets a run started by hand use the latest upload:
