@@ -91,7 +91,7 @@ export default flow(
 
 Write both options as `true` or `false` in the options object. A variable, a spread, or a computed key is a sync error.
 
-The order applies inside one run. If a run selects only some targets of a sequential list, only those run in order. The run doesn't add the other targets. [Run rules](/Run-Rules) can't remove the order, An ordering rule that contradicts it is a rule cycle, and a `run-with` rule on a sequential list is an error.
+The order applies inside one run. If a run selects only some targets of a sequential list, only those run in order. The run doesn't add the other targets. [Run rules](/Run-Rules) can't remove the order. An ordering rule that contradicts it is a rule cycle, and a `run-with` rule on a sequential list is an error.
 
 ## Screenshots
 
