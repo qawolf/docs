@@ -39,9 +39,9 @@ A list names preset names, written the same way as a single `target`. All entrie
 | `@qawolf/flows/web` | Browser targets, such as `"Web - Chrome"` and `"Web - Firefox (GPU)"`. Not `"Electron"`. |
 | `@qawolf/flows/ios` | iOS targets: iPhones and iPads, on any pool. |
 | `@qawolf/flows/android` | Android targets: emulators and real phones. |
-| `@qawolf/flows/desktop` | Mac and Windows targets. See [`@qawolf/flows/desktop`](/libraries/flows/api-reference/desktop). |
+| `@qawolf/flows/desktop` | Mac, Windows, and `"Linux - Electron"` targets. See [`@qawolf/flows/desktop`](/libraries/flows/api-reference/desktop). |
 
-`@qawolf/flows/mac` and `@qawolf/flows/windows` take one target. To run one desktop flow on Mac and Windows, import from `@qawolf/flows/desktop`.
+`@qawolf/flows/mac` and `@qawolf/flows/windows` take one target. To run one desktop flow on Mac, Windows, and Linux, import from `@qawolf/flows/desktop`. A desktop list names `"Linux - Electron"` instead of the web `"Electron"` target.
 
 A list can mix any presets of its class. For example, Chrome with Chrome (GPU), or an iPhone with an iPad. Two entries can't name the same target.
 
