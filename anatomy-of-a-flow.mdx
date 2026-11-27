@@ -75,6 +75,10 @@ import { flow, expect } from "@qawolf/flows/android";
 import { flow, expect, startApp } from "@qawolf/flows/windows";
 ```
 
+```typescript Desktop
+import { flow, expect, startApp } from "@qawolf/flows/desktop";
+```
+
 ```typescript Node
 import { flow } from "@qawolf/flows/cli";
 ```
@@ -82,7 +86,7 @@ import { flow } from "@qawolf/flows/cli";
 </CodeGroup>
 
 <Warning>
-  For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`, which causes assertions to bypass QA Wolf's reporting. Windows flows import it from `@qawolf/flows/windows` for the same reason. iOS, Android, and Node flows don't have this pitfall: `expect` is wired to the QA Wolf runner automatically.
+  For web flows, always import `expect` from `@qawolf/flows/web` — not from `@playwright/test`, which causes assertions to bypass QA Wolf's reporting. Windows and desktop flows import it from `@qawolf/flows/windows` or `@qawolf/flows/desktop` for the same reason. iOS, Android, and Node flows don't have this pitfall: `expect` is wired to the QA Wolf runner automatically.
 </Warning>
 
 ## Flow wrapper
@@ -98,7 +102,7 @@ export default flow(
 ```
 
 - **Name** — what this flow is called in your results, bug reports, and QA Wolf dashboard. Make it descriptive enough that a failing flow name tells you where to look.
-- **Configuration** — where the flow runs and how it starts. See [Launch styles](#launch-styles) below, and [Target literals](/libraries/flows/api-reference/top-level#target-literals) for the values `target` accepts.
+- **Configuration** — where the flow runs and how it starts. See [Launch styles](#launch-styles) below, and [Target literals](/libraries/flows/api-reference/top-level#target-literals) for the values `target` accepts. To run one flow on several targets, pass a list. See [Run a flow on several targets](/target-lists).
 - **Callback** — the `async` function containing your test logic. See [Callback parameters](#callback-parameters).
 
 ### Launch styles
@@ -230,9 +234,10 @@ A launch-enabled flow also receives the platform object, which differs by platfo
 | iOS | `driver` — the Appium/WebdriverIO session for the device |
 | Android | `driver` — the Appium/WebdriverIO session for the device |
 | Windows | `page`, `context`, `browser` — Chrome on the Windows VM. Native apps come from [`startApp()`](/libraries/flows/api-reference/windows#startapp), not from the callback. |
+| Desktop (Mac and Windows) | `page`, `context`, `browser` with `launch: true`. `page` and `context` of the app with `launch: { app }`. See [`flow(...)`](/libraries/flows/api-reference/desktop#flow). |
 | Node | nothing additional — only `inputs`, `setOutput`, and `test` |
 
-For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), [iOS](/libraries/flows/api-reference/ios#flow-callback-context), and [Windows](/libraries/flows/api-reference/windows#flow-callback-context).
+For the full callback context shape, see the API Reference for [Web](/libraries/flows/api-reference/web#flow-callback-context), [Android](/libraries/flows/api-reference/android#flow-callback-context), [iOS](/libraries/flows/api-reference/ios#flow-callback-context), [Windows](/libraries/flows/api-reference/windows#flow-callback-context), and [Desktop](/libraries/flows/api-reference/desktop#flow).
 
 ## Environment variables
 

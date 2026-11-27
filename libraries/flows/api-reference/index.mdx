@@ -14,6 +14,7 @@ Use this section for stable API descriptions, defaults, and runtime behaviors.
 - [Android](/libraries/flows/api-reference/android)
 - [iOS](/libraries/flows/api-reference/ios)
 - [Windows](/libraries/flows/api-reference/windows)
+- [Desktop](/libraries/flows/api-reference/desktop)
 - [Node](/libraries/flows/api-reference/cli)
 
 Example imports:
@@ -24,6 +25,7 @@ import { flow } from "@qawolf/flows/web";
 import { flow } from "@qawolf/flows/android";
 import { flow } from "@qawolf/flows/ios";
 import { flow } from "@qawolf/flows/windows";
+import { flow } from "@qawolf/flows/desktop";
 import { flow } from "@qawolf/flows/cli";
 ```
 
@@ -75,6 +77,9 @@ type Target =
   | "iOS - iPhone 16 (iOS 27)"
   | "iOS - iPhone 17 (iOS 26)"
   | "iOS - iPhone 17 (iOS 27)"
+  | "macOS - Any Mac (Latest)"
+  | "macOS - Any Mac (macOS 26)"
+  | "macOS - Any Mac (macOS 26 | Private)"
   | "Windows 11 - Desktop"
   | "Windows 11 - Desktop (private)";
 ```

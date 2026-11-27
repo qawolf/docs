@@ -43,18 +43,24 @@ Web flows accept web targets only. Use the CLI entry point for `Basic`.
 type WebFlowTargetInput =
   | WebFlowTarget
   | {
-      target: WebFlowTarget;
+      target: WebFlowTarget | WebBrowserFlowTargetList;
       launch?: false | undefined;
+      sequential?: boolean;
+      failFast?: boolean;
     }
   | {
-      target: WebBrowserFlowTarget;
+      target: WebBrowserFlowTarget | WebBrowserFlowTargetList;
       launch: true | BrowserLaunchOptions;
+      sequential?: boolean;
+      failFast?: boolean;
     }
   | {
       target: WebElectronFlowTarget;
       launch: ElectronFlowLaunchOptions;
     };
 ```
+
+`WebBrowserFlowTargetList` is a list of browser targets, such as `["Web - Chrome", "Web - Firefox"]`. The flow runs once on each, and the browser and GPU come from the run's target. A list can't name `"Electron"`. See [Run a flow on several targets](/target-lists).
 
 Examples:
 
