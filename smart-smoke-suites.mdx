@@ -72,9 +72,28 @@ When your CI sends changes and QA Wolf also reads the deploy's changes from your
 
 Your pipeline can send what a deploy changed in the `changes` field of its [`deployment.reportStatus`](/deployment-testing/webhook#changes) report. This works on any CI system and code host, with or without QA Wolf's GitHub or GitLab integration. List every change the deploy ships, not only the ones the integration can't see.
 
-Sending changes is opt-in. QA Wolf only reads the changes your pipeline passes in `changes`. The SDK helpers below build that value and send nothing themselves.
+Sending changes is opt-in in every client. QA Wolf only reads the changes your pipeline sends: the GitHub Action sends them only with `send-changes: true`, and the SDK helpers below build the value and send nothing themselves.
 
 Send `changes` on the deploy's first `success` report, or on an earlier `pending` report. Loops are evaluated on the first `success` report, so changes sent later are not read.
+
+### With the GitHub Action
+
+On GitHub Actions, set `send-changes: true` on [`qawolf/notify-qawolf-on-deploy-action@v3`](/deployment-testing/github-actions#send-what-changed), version 3.3.0 or later. The action compares the commit QA Wolf last saw deployed to the environment with the deployed one through GitHub's API, with the workflow's `GITHUB_TOKEN`, so it needs no checkout and no deeper `fetch-depth`. When it can't compare, it sends the commits the `push` event lists. It needs `contents: read`, and `pull-requests: read` to look up the pull requests behind the commits. Collecting changes never fails the step: the deploy is still reported, without them.
+
+```yaml
+- name: Notify QA Wolf
+  uses: qawolf/notify-qawolf-on-deploy-action@v3
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  with:
+    qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+    workspace-id: ${{ secrets.QAWOLF_WORKSPACE_ID }}
+    environment: staging
+    deployment-url: https://staging.example.com
+    send-changes: true
+```
+
+It sends up to the 250 newest changes from the newest 300 commits, with the changed paths of the 50 newest commits, and removes secrets before anything leaves the job. In a `pull_request_target` workflow, see the [warning](/deployment-testing/github-actions#send-what-changed) on the GitHub Actions page.
 
 ### With the Node.js SDK
 
