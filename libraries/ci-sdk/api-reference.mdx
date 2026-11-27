@@ -191,7 +191,7 @@ On a shallow clone, or when `since` names no commit, it returns `collected` with
 | `service` | string | With `environment`, which application this deploy is, as you pass it to `deployment.reportStatus`. Without it, only deploys that named no service count. |
 | `repository` | object | `{ type: "url", url }` or `{ type: "full-name", fullName, host }`. Defaults to the repository your CI names, else the clone's `origin` remote. Credentials in a URL are removed before it's sent. |
 | `workspaceId` | string | Only needed with an organization or user API key. |
-| `pullRequests` | object | `{ token, codeHost }`. Looks up the merged pull request behind each commit with your pipeline's own token. See [Pull request lookup](#pull-request-lookup). |
+| `pullRequests` | object | `{ token, codeHost }`. Looks up the merged pull request behind each commit with your pipeline's own token. Requires 3.9.0. See [Pull request lookup](#pull-request-lookup). |
 | `include` | string[] | What each change carries: `"titles"`, `"descriptions"`, and `"paths"`. All three by default. Leaving out descriptions or paths lowers the quality of the flow selection. |
 | `filter` | function | Edits the changes before they're redacted and sent. Gets the changes and returns the ones to send, and may be async. |
 | `filterTimeoutMs` | number | How long `filter` may take. Defaults to 2 minutes. `Infinity` sets no limit. |

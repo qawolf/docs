@@ -189,7 +189,7 @@ To start from a commit or tag you choose, pass `since` in place of `environment`
 A pull request's title and description say what a change was meant to do better than its commit messages. When QA Wolf doesn't read your repository's pull requests itself, pass your pipeline's own token as `pullRequests.token`, and the SDK looks up the merged pull request behind each commit. Use `GITHUB_TOKEN` on GitHub Actions, with `pull-requests: read` permission, or `System.AccessToken` on Azure Pipelines.
 
 - The token only goes to your CI's own code host, over https. It's never sent to QA Wolf, and the SDK never prints it.
-- It works on GitHub and Azure Repos. For GitHub Enterprise Server outside GitHub Actions, pass the server's API as `pullRequests.codeHost`. See [`deployment.collectDeployChanges`](/libraries/ci-sdk/api-reference#deployment-collectdeploychanges).
+- It needs `@qawolf/ci-sdk` 3.9.0 or later, and works on GitHub and Azure Repos. For GitHub Enterprise Server outside GitHub Actions, pass the server's API as `pullRequests.codeHost`. See [`deployment.collectDeployChanges`](/libraries/ci-sdk/api-reference#deployment-collectdeploychanges).
 - At most the 50 newest commits are looked up. A permission error, a rate limit, or a failed request stops the lookups, and the rest are sent as commits.
 - When QA Wolf reads the repository's pull requests through its GitHub or GitLab integration, nothing is looked up.
 
@@ -231,7 +231,7 @@ Example:
 /smart-smoke-suite If nothing looks affected, run the Smoke tag
 ```
 
-Without instructions, the deploy is skipped and no run starts. The deployment shows **Skipped** with the cause, and a **How to send changes** link. When the cause is one you can fix, such as a repository that isn't connected, QA Wolf also raises a setup problem in the Inbox saying the loop can't see what changed, and the loop shows a warning on the Loops page. It clears once a deploy has something to read, or the loop gets instructions.
+Without instructions, the deploy is skipped and no run starts. The deployment shows **Skipped** with the cause, and a **How to send changes** link. When the cause is one you can fix, such as a repository that isn't connected, QA Wolf also raises a setup problem in the Inbox saying the loop can't see what changed. It clears once a deploy has something to read, or the loop gets instructions.
 
 Instructions guide the agent's selection. They don't guarantee a flow runs.
 
