@@ -1,10 +1,10 @@
 ---
 title: "Smart Smoke Suites"
-description: "Let a trigger use the QA Wolf agent to pick and run the flows affected by each deploy, from its pull request or from what changed since the environment's last deploy."
-keywords: "Smart Smoke Suite, smoke tests, smoke suite, generativeSuite, PR testing, adaptive flow selection, staging deploy, release deploy, no pull request, changes, collectCommitChanges, Why these flows, instructions"
+description: "Let a loop use the QA Wolf agent to pick and run the flows affected by each deploy, from its pull request or from what changed since the environment's last deploy."
+keywords: "Smart Smoke Suite, smoke tests, smoke suite, generativeSuite, PR testing, adaptive flow selection, staging deploy, release deploy, no pull request, changes, collectDeployChanges, collectCommitChanges, findLastDeployedCommit, Why these flows, instructions"
 ---
 
-A Smart Smoke Suite is one way for a [trigger](/triggers/overview) to choose its flows. Instead of running flows you name in advance, the QA Wolf agent selects the flows affected by what each deploy changed. On a pull request preview, that's the pull request. On a deploy with no pull request, such as a staging or release deploy, it's what reached the environment since its previous deploy.
+A Smart Smoke Suite is one way for a [loop](/loops/overview) to choose its flows. Instead of running flows you name in advance, the QA Wolf agent selects the flows affected by what each deploy changed. On a pull request preview, that's the pull request. On a deploy with no pull request, such as a staging or release deploy, it's what reached the environment since its previous deploy.
 
 Smart Smoke Suites are designed to layer onto your existing coverage strategies.
 
@@ -16,31 +16,31 @@ The suite has no fixed size. The agent selects the flows it judges affected by t
 
 ## How it works
 
-1. QA Wolf works out what the deploy changed:
-   - **A deploy tied to a pull request** — QA Wolf reads the pull request.
-   - **A deploy with no pull request** — QA Wolf reads what reached the environment since its previous deploy. That comes from the pull requests merged into the deployed branch, read through the GitHub or GitLab integration, and from the changes your CI sends with the deploy report.
-2. The agent compares the changes with your existing flows, along with any instructions on the trigger, and picks the flows the change affects.
+1. QA Wolf works out what the deploy changed, in this order:
+   1. **The pull request** — on a deploy tied to a pull request, QA Wolf reads the pull request.
+   2. **Changes merged since the last deploy** — on a deploy with no pull request, QA Wolf reads the pull requests merged into the deployed branch since the environment's previous deploy, through its GitHub or GitLab integration.
+   3. **Changes your CI sends** — on a deploy with no pull request, QA Wolf also reads the changes your pipeline sends with the deploy report. When it reads changes from your code host too, it uses both. See [Combining CI changes with your code host](#combining-ci-changes-with-your-code-host).
+   4. **The loop's instructions** — when there's nothing to read, the instructions decide what runs. Without instructions, the deploy is skipped. See [When QA Wolf has nothing to read](#when-qa-wolf-has-nothing-to-read).
+2. The agent compares the changes with your existing flows, along with any instructions on the loop, and picks the flows the change affects.
 3. The selected flows run against the deploy's URL.
 4. QA Wolf shows why it picked each flow under [Why these flows](#why-these-flows) on the run. On a pull request, it also posts the agent's analysis as a comment, and reports the result as described in [PR testing](/deployment-testing/pr-testing#checks-on-the-pull-request). When no run starts, GitHub gets a passing **QA Wolf Test Results** check.
 
-When QA Wolf can't see what a deploy changed, the trigger's instructions decide what runs. Without instructions, the deploy is skipped. See [When there's nothing to read](#when-theres-nothing-to-read).
-
 ## Requirements
 
-- **Deploys reported to QA Wolf.** A GitHub deployment, a GitLab deployment job, or a [`deployment.reportStatus`](/deployment-testing/webhook) report from your pipeline. See [Deployments](/triggers/deployments).
+- **Deploys reported to QA Wolf.** A GitHub deployment, a GitLab deployment job, or a [`deployment.reportStatus`](/deployment-testing/webhook) report from your pipeline. See [Deployments](/loops/deployments).
 - **A pull request, a GitHub or GitLab integration, or changes your CI sends**, so QA Wolf can see what the deploy changed:
-  - **A pull request** — GitHub deployments and GitLab deployment jobs are tied to their pull request automatically. A `deployment.reportStatus` report is tied when it sends `metadata.repository` with `metadata.pullRequestNumber`, or with `metadata.commitSha` while that pull request is still open. See [Deployments](/triggers/deployments#pull-request).
+  - **A pull request** — GitHub deployments and GitLab deployment jobs are tied to their pull request automatically. A `deployment.reportStatus` report is tied when it sends `metadata.repository` with `metadata.pullRequestNumber`, or with `metadata.commitSha` while that pull request is still open. See [Deployments](/loops/deployments#pull-request).
   - **A GitHub or GitLab integration** covering the deploying repository. QA Wolf reads the pull requests merged since the environment's previous deploy, with no change to your pipeline. A `deployment.reportStatus` report needs `metadata.repository` and `metadata.commitSha` for this, and `metadata.ref` to name the deployed branch. See [PR testing](/deployment-testing/pr-testing).
   - **Changes your CI sends** with the deploy report, from any CI system and any code host. See [Sending changes from your CI](#sending-changes-from-your-ci).
-- **A deployment trigger** matching those deploys. On the triggers page, select **Create trigger**, then:
-  - For pull request previews, start from **Pull request previews**, enter the environment name pattern, such as `pr-*`, and pick **Let QA Wolf choose from the pull request's changes**. The pattern isn't limited to previews, so `dev-*` covers several static dev environments.
-  - For staging, release or any long-lived environment, start from **Deploys to an environment** and pick **Let QA Wolf choose the flows**.
+- **A loop that starts on those deploys.** On the [Loops](/loops/overview) page, select **New loop**, then pick a starting point:
+  - **Smart smoke suite** — for staging, release, or any long-lived environment. The loop starts on **Deploys to an environment**.
+  - **Test each pull request** — for pull request previews. The loop starts on **Pull request previews**. Enter the environment name pattern, such as `pr-*`. The pattern isn't limited to previews, so `dev-*` covers several static dev environments.
 
-  The triggers table shows the trigger as **Smart smoke suite**.
+  Under **Then**, the loop runs AI with instructions that start with `/smart-smoke-suite`. From **Blank slate**, choose **Run AI** and type `/` for the `/smart-smoke-suite` command.
 
-Once it's set up, each matching deploy gets its own selection. To stop, switch the trigger to **Always run the same flows**, or pause it. The change applies to deploys that arrive afterwards.
+Once it's set up, each matching deploy gets its own selection. To stop, switch the loop to **Run specific flows**, or pause it. The change applies to deploys that arrive afterwards.
 
-A Smart Smoke Suite is a [deployment trigger](/triggers/overview) whose action kind is `generativeSuite`; see [Trigger fields](/triggers/reference#action).
+A Smart Smoke Suite is a [loop](/loops/overview) that starts on deploys. The API calls it a trigger whose action kind is `generativeSuite`; see [Trigger fields](/loops/reference#action).
 
 ## What QA Wolf reads
 
@@ -59,21 +59,35 @@ Through the GitHub or GitLab integration, QA Wolf only sees merged pull requests
 
 The first deploy QA Wolf sees for an environment has no earlier deploy to compare with, so only a pull request or changes your CI sends describe it.
 
+## Combining CI changes with your code host
+
+When your CI sends changes and QA Wolf also reads the deploy's merged pull requests from your code host, it uses both. Your code host has the real pull request titles, descriptions, and changed files. Your CI sees commits that never went through a pull request, such as a hotfix pushed straight to the branch.
+
+- **A change both list appears once.** QA Wolf matches changes by their pull request number or commit sha, and falls back to their links and titles. Send the ids when you can. The Node.js SDK sends them for you.
+- **Changes sent with a replaced deploy still count.** When a newer deploy replaced one before QA Wolf checked it, the changes your CI sent with the replaced deploy are read with the newer one.
+- **A failed code host read is shown, not hidden.** When QA Wolf can't read your code host after retrying, it chooses from the changes your CI sent, and **Why these flows** says the pull requests merged since the last deploy are missing.
+- **Secrets are redacted when the changes arrive.** QA Wolf removes text that looks like a token, key, or password before it stores the changes or shows them to the agent.
+
 ## Sending changes from your CI
 
 Your pipeline can send what a deploy changed in the `changes` field of its [`deployment.reportStatus`](/deployment-testing/webhook#changes) report. This works on any CI system and code host, with or without QA Wolf's GitHub or GitLab integration. List every change the deploy ships, not only the ones the integration can't see.
 
-Send `changes` on the deploy's first `success` report, or on an earlier `pending` report. Triggers are evaluated on the first `success` report, so changes sent later are not read.
+Sending changes is opt-in. QA Wolf only reads the changes your pipeline passes in `changes`. The SDK helpers below build that value and send nothing themselves.
+
+Send `changes` on the deploy's first `success` report, or on an earlier `pending` report. Loops are evaluated on the first `success` report, so changes sent later are not read.
 
 ### With the Node.js SDK
 
-`deployment.collectCommitChanges` in [`@qawolf/ci-sdk`](/deployment-testing/ci-sdk) 3.7.0 or later builds `changes` from the local git history:
+`deployment.collectDeployChanges` in [`@qawolf/ci-sdk`](/deployment-testing/ci-sdk) builds `changes` from the local git history:
 
-- **Each commit on the first-parent line after `since`** becomes one change. A GitHub or GitLab merge commit, or a GitHub squash-merge commit whose subject ends in `(#123)`, becomes a pull request titled from its message. Any other commit stays a commit.
-- **`since`** is the commit or tag the environment ran before, such as the previous release tag, or the commit your pipeline recorded for the environment's last deploy.
-- **`include`** picks what each change carries: `"titles"` by default, plus `"descriptions"` for message bodies and `"paths"` for changed file paths.
+- **It collects the deploy's commits.** Each commit on the first-parent line becomes one change, with its message and changed file paths. A merge commit, or on GitHub a squash-merge commit whose subject ends in `(#123)`, becomes a pull request. Each change carries its pull request number or commit sha, so QA Wolf lists a change it also reads from your code host only once.
+- **It knows where to start.** Pass `environment`, and `service` if several applications deploy into it, as you pass them to `deployment.reportStatus`. The SDK asks QA Wolf for the commit it last saw deployed there and collects the commits after it. Or pass `since`, the commit or tag the environment ran before, such as the previous release tag.
+- **It checks what QA Wolf reads.** It asks QA Wolf what it reads of the repository through your code host integration, logs the answer, and returns it as `coverage`.
+- **It redacts secrets**, such as tokens, keys, and passwords, before it returns the changes, with the same patterns QA Wolf applies when they arrive.
 
-It needs the full git history. On a shallow clone it returns `history-unavailable` rather than send part of the range. When `since` names a tag, fetch tags first.
+Passing `since` needs `@qawolf/ci-sdk` 3.8.0 or later. Passing `environment` instead needs 3.10.0 or later, with `@qawolf/api-contracts` 0.155.0 or later.
+
+It needs the full git history. On a shallow clone, the deploy is still reported, without the missing changes. The report tells QA Wolf why, so the Inbox shows a [setup problem](#problems-collecting-changes). When `since` names a tag, fetch tags first.
 
 Create `.ci/notifyQaWolf.mjs` in the deploying repository:
 
@@ -87,9 +101,6 @@ assert(apiKey, "QAWOLF_API_KEY is required");
 const workspaceId = process.env.QAWOLF_WORKSPACE_ID;
 assert(workspaceId, "QAWOLF_WORKSPACE_ID is required");
 
-const since = process.env.CHANGES_SINCE;
-assert(since, "CHANGES_SINCE is required");
-
 // Set DEPLOY_ID on a CI system detectProviderDeploymentId doesn't recognize.
 const detected = detectProviderDeploymentId();
 const providerDeploymentId =
@@ -97,20 +108,23 @@ const providerDeploymentId =
 assert(providerDeploymentId, `Could not identify this deployment: ${JSON.stringify(detected)}`);
 
 const { deployment } = makeQaWolfSdk({ apiKey });
+const environment = { name: "staging" };
 
-const collected = await deployment.collectCommitChanges({
-  include: ["titles", "descriptions", "paths"],
-  since,
+const collected = await deployment.collectDeployChanges({
+  environment,
+  workspaceId,
+  // Looks up the pull request behind each commit on GitHub and Azure Repos.
+  pullRequests: { token: process.env.GITHUB_TOKEN ?? process.env.SYSTEM_ACCESSTOKEN },
 });
 if (collected.outcome !== "collected") {
-  console.warn(`Reporting without changes: ${collected.fix ?? collected.message}`);
+  console.warn(`Reporting without changes: ${collected.message}`);
 }
 
 const report = await deployment.reportStatus({
   workspaceId,
   providerDeploymentId,
   status: "success",
-  environment: { name: "staging" },
+  environment,
   deployTarget: "https://staging.example.com",
   metadata: {
     commitSha: process.env.COMMIT_SHA,
@@ -125,7 +139,7 @@ if (report.outcome !== "reported") {
 console.log(`Reported deployment ${report.deployment.id}: ${report.deployment.url}`);
 ```
 
-A failed collection still reports the deploy, without changes. To gate the pipeline on the result, add `deployment.waitForVerdict` as shown in [Node.js SDK](/deployment-testing/ci-sdk).
+When collecting fails, the deploy is still reported, without changes. On the environment's first deploy there's no earlier commit to start from, so the result is `no-starting-commit`, and QA Wolf reads what it can of the deploy itself. To gate the pipeline on the result, add `deployment.waitForVerdict` as shown in [Node.js SDK](/deployment-testing/ci-sdk).
 
 Azure Pipelines example:
 
@@ -133,10 +147,8 @@ Azure Pipelines example:
 steps:
   - checkout: self
     fetchDepth: 0
-    fetchTags: true
 
   - script: |
-      export CHANGES_SINCE=$(git describe --tags --abbrev=0 HEAD^)
       export BRANCH=${BUILD_SOURCEBRANCH#refs/heads/}
       npm install @qawolf/ci-sdk
       node .ci/notifyQaWolf.mjs
@@ -144,11 +156,12 @@ steps:
     env:
       QAWOLF_API_KEY: $(QAWOLF_API_KEY)
       QAWOLF_WORKSPACE_ID: $(QAWOLF_WORKSPACE_ID)
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       DEPLOY_ID: $(Build.BuildId)-$(System.JobAttempt)
       COMMIT_SHA: $(Build.SourceVersion)
 ```
 
-`fetchDepth: 0` checks out the full history. Azure Pipelines doesn't pass secret variables to scripts on its own, so `env` maps them.
+`fetchDepth: 0` checks out the full history. Azure Pipelines doesn't pass secret variables to scripts on its own, so `env` maps them. `System.AccessToken` lets the SDK look up the pull request behind each commit on Azure Repos.
 
 Bitbucket Pipelines example:
 
@@ -162,34 +175,63 @@ pipelines:
           clone:
             depth: full
           script:
-            - git fetch --tags
-            - export CHANGES_SINCE=$(git describe --tags --abbrev=0 HEAD^)
             - export COMMIT_SHA=$BITBUCKET_COMMIT BRANCH=$BITBUCKET_BRANCH
             - npm install @qawolf/ci-sdk
             - node .ci/notifyQaWolf.mjs
 ```
 
-`depth: full` clones the full history. Store `QAWOLF_API_KEY` and `QAWOLF_WORKSPACE_ID` as secured repository variables.
+`depth: full` clones the full history. Store `QAWOLF_API_KEY` and `QAWOLF_WORKSPACE_ID` as secured repository variables. The SDK doesn't look up pull requests on Bitbucket, so each commit is sent with its own message.
 
-`git describe --tags --abbrev=0 HEAD^` finds the newest tag before the deployed commit, which fits a pipeline that tags each release. When the environment's previous deploy isn't tagged, set `CHANGES_SINCE` to the commit your pipeline recorded for it instead.
+To start from a commit or tag you choose, pass `since` in place of `environment`, such as `since: "v1.2.0"`.
+
+#### Pull request titles and descriptions
+
+A pull request's title and description say what a change was meant to do better than its commit messages. When QA Wolf doesn't read your repository's pull requests itself, pass your pipeline's own token as `pullRequests.token`, and the SDK looks up the merged pull request behind each commit. Use `GITHUB_TOKEN` on GitHub Actions, with `pull-requests: read` permission, or `System.AccessToken` on Azure Pipelines.
+
+- The token only goes to your CI's own code host, over https. It's never sent to QA Wolf, and the SDK never prints it.
+- It works on GitHub and Azure Repos. For GitHub Enterprise Server outside GitHub Actions, pass the server's API as `pullRequests.codeHost`. See [`deployment.collectDeployChanges`](/libraries/ci-sdk/api-reference#deployment-collectdeploychanges).
+- At most the 50 newest commits are looked up. A permission error, a rate limit, or a failed request stops the lookups, and the rest are sent as commits.
+- When QA Wolf reads the repository's pull requests through its GitHub or GitLab integration, nothing is looked up.
+
+#### Edit the changes before they leave CI
+
+To clean or leave out changes, pass a `filter`. It gets the changes and returns the ones to send, and it may be async. When the filter throws, takes longer than `filterTimeoutMs` (2 minutes by default), or returns something that isn't a list of changes, none of the changes are sent, and the Inbox shows a [setup problem](#collection-filter-failed). Redaction runs on what the filter returns.
+
+`deployment.collectCommitChanges` is a simpler helper that builds `changes` from the commits after `since`, without ids, redaction, or a filter. See [the API reference](/libraries/ci-sdk/api-reference#deployment-collectcommitchanges).
 
 ### Without Node.js
 
 Send `changes` as JSON in the [`deployment.reportStatus`](/deployment-testing/webhook#changes) request. The fields and their limits are on that page.
 
-## When there's nothing to read
+## Problems collecting changes
+
+When your CI reports that it couldn't collect every change, QA Wolf raises a setup problem in the Inbox saying your CI couldn't collect every change for the loop, and names the CI system when the report does. QA Wolf still reads the changes that arrived. Each problem below links here from the Inbox.
+
+### Collection filter failed
+
+The `filter` that edits the changes before they're sent threw, took too long, or returned something QA Wolf doesn't accept, so some or all of the changes weren't sent. Check the filter's output in the CI log, and make sure it returns a list of changes, each with a `kind` and a `title`.
+
+### Collection history unavailable
+
+The CI checkout's git history was too shallow to hold every change since the previous deploy, so some or all of them weren't sent. Fetch the full history before collecting changes: `fetch-depth: 0` on `actions/checkout`, `fetchDepth: 0` on Azure Pipelines, `depth: full` on Bitbucket Pipelines, or `git fetch --unshallow`.
+
+### Collection since not found
+
+The commit or tag the changes are collected since isn't in the CI checkout, so the changes weren't sent. Check that `since` names a commit or tag, and fetch it first if it's a tag, such as with `git fetch --tags`.
+
+## When QA Wolf has nothing to read
 
 QA Wolf can't see what a deploy changed when it has no pull request, your CI sent no changes, and the integration has nothing to offer: the repository isn't connected, no pull request merged, or there's no earlier deploy to compare with.
 
-Instructions on the trigger tell the agent what to do then. They also apply when QA Wolf reads the changes and judges that no flow looks affected.
+The loop's instructions, the text after `/smart-smoke-suite`, tell the agent what to do then. They also apply when QA Wolf reads the changes and judges that no flow looks affected.
 
 Example:
 
 ```text
-If nothing looks affected, run the Smoke tag
+/smart-smoke-suite If nothing looks affected, run the Smoke tag
 ```
 
-Without instructions, the deploy is skipped and no run starts. The deployment shows **Skipped** with the cause, and a **How to send changes** link. When the cause is one you can fix, such as a repository that isn't connected, QA Wolf also raises a setup problem in the Inbox, and the trigger shows a warning on the triggers page. It clears once a deploy has something to read, or the trigger gets instructions.
+Without instructions, the deploy is skipped and no run starts. The deployment shows **Skipped** with the cause, and a **How to send changes** link. When the cause is one you can fix, such as a repository that isn't connected, QA Wolf also raises a setup problem in the Inbox saying the loop can't see what changed, and the loop shows a warning on the Loops page. It clears once a deploy has something to read, or the loop gets instructions.
 
 Instructions guide the agent's selection. They don't guarantee a flow runs.
 
@@ -198,21 +240,21 @@ Instructions guide the agent's selection. They don't guarantee a flow runs.
 A Smart Smoke Suite's run summary has a **Why these flows** card:
 
 - **The headline** — how many flows the agent chose, out of how many it considered, and a one-line reason.
-- **What changed** — where QA Wolf learned what changed, such as the pull request, merged pull requests since the last deploy, or changes reported by your CI, with each change linked.
+- **What changed** — where QA Wolf learned what changed, such as the pull request, merged pull requests since the last deploy, changes reported by your CI, or both your code host and your CI, with each change linked. When QA Wolf couldn't read your code host, it says so here.
 - **Flows it chose** — most relevant first, each with the reason it was picked.
-- **Your trigger's instructions** — the flows that ran because of the instructions, when they applied.
+- **Your loop's instructions** — the flows that ran because of the instructions, when they applied.
 
 When your workspace posts run alerts to Slack, the alert for a deploy with no pull request says QA Wolf is choosing the flows, then what it chose and why.
 
 ## When no run starts
 
-A matched Smart Smoke Suite that starts no run records why. The deployment shows it, and [`deployment.listTriggerEvaluations`](/triggers/deployments#evaluation) and `deployment.waitForVerdict` return it as a reason code with a message.
+A matched Smart Smoke Suite that starts no run records why. The deployment shows it, and [`deployment.listTriggerEvaluations`](/loops/deployments#evaluation) and `deployment.waitForVerdict` return it as a reason code with a message.
 
 - **Nothing to run** (`low-risk-change`) — QA Wolf read the changes and judged them low-risk.
 - **No flow covers the change** (`no-relevant-flows`) — QA Wolf read the changes and found no existing flow that tests them.
-- **QA Wolf couldn't see what changed** (`skipped`) — there was nothing to read and the trigger has no instructions. The message names the cause.
+- **QA Wolf couldn't see what changed** (`skipped`) — there was nothing to read and the loop has no instructions. The message names the cause.
 - **A newer deploy is checked instead** (`deployment-no-longer-live`) — a newer deploy to the same environment and service arrived before QA Wolf started choosing flows for this one. QA Wolf checks the newer one, from the changes since the last deploy it checked.
-- **No flows were eligible** (`no-flows-to-run`) — the trigger's flows are in maintenance, still drafts, or missing on this branch.
+- **No flows were eligible** (`no-flows-to-run`) — the loop's flows are in maintenance, still drafts, or missing on this branch.
 
 The causes when QA Wolf couldn't see what changed, and how to fix each one:
 
@@ -229,15 +271,15 @@ The causes when QA Wolf couldn't see what changed, and how to fix each one:
 
 ### How does QA Wolf decide which flows to run?
 
-The agent reads what the deploy changed (see [What QA Wolf reads](#what-qa-wolf-reads)), your existing flows, and any instructions on the trigger. It picks the flows it judges the change affects.
+The agent reads what the deploy changed (see [What QA Wolf reads](#what-qa-wolf-reads)), your existing flows, and any instructions on the loop. It picks the flows it judges the change affects.
 
 ### Can we add specific tests to always run?
 
-Name them in the trigger's instructions. Instructions guide the agent's selection; they don't guarantee a flow runs.
+Name them in the loop's instructions. Instructions guide the agent's selection; they don't guarantee a flow runs.
 
 ### Do we need a pull request for every deploy?
 
-No. On a staging or release deploy, QA Wolf reads the pull requests merged since the environment's previous deploy through the GitHub or GitLab integration, or the changes your CI sends.
+No. On a staging or release deploy, QA Wolf reads the pull requests merged since the environment's previous deploy through the GitHub or GitLab integration, and the changes your CI sends.
 
 ### Do we have to write new flows specifically for Smart Smoke Suites?
 

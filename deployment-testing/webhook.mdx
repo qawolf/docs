@@ -83,7 +83,7 @@ The input goes inside a `json` wrapper, and the reply carries the deployment und
 
 ### Changes
 
-`changes` tells a [Smart Smoke Suite](/smart-smoke-suites) what a deploy with no pull request shipped: each merged pull request or pushed commit, plus release notes. It takes readable text only. There is no field for diffs or file contents, and unknown fields are refused.
+`changes` tells a [Smart Smoke Suite](/smart-smoke-suites) what a deploy with no pull request shipped: each merged pull request or pushed commit, plus release notes. It's optional, and QA Wolf reads changes only when you send them. It takes readable text only. There is no field for diffs or file contents, and unknown fields are refused.
 
 | Field | Description |
 | --- | --- |
@@ -93,14 +93,22 @@ The input goes inside a `json` wrapper, and the reply carries the deployment und
 | `items[].description` | The pull request description or the commit message body. Put ticket ids here or in the title. At most 4,000 characters. |
 | `items[].changedPaths` | Paths of the files the change touched, without their contents. At most 1,000 paths of up to 1,024 characters each. |
 | `items[].url` | A link to the pull request or commit, as an `http` or `https` URL. At most 2,048 characters. |
+| `items[].number` | On a `pull-request`, its pull or merge request number. Lets QA Wolf list a pull request it also reads from your code host only once. |
+| `items[].mergeCommitSha` | On a `pull-request`, the sha of the commit it landed as: its merge, squash, or last rebased commit. At least 7 characters. |
+| `items[].sha` | On a `commit`, its sha. At least 7 characters. Lets QA Wolf list a commit it also reads from your code host only once. |
+| `items[].pullRequestNumber` | On a `commit`, the number of the pull or merge request it came in through, such as `12` for "Fix the total (#12)". |
 | `omittedCount` | How many pull requests or commits you left out of `items` to stay within the limits. |
 | `releaseNotes` | Release notes written for the deployment. At most 16,000 characters. |
+| `ci` | The CI system that collected the changes, such as `GitHub Actions`. QA Wolf names it when it tells you collecting them went wrong. At most 64 characters. |
+| `problems` | What went wrong collecting the changes, at most 10, each with a `kind`: `filter-failed`, `history-unavailable`, or `since-not-found`. QA Wolf raises a [setup problem](/smart-smoke-suites#problems-collecting-changes) in the Inbox for them and reads the `items` you sent. Empty or absent means collecting them went fine. |
 
 The whole `changes` value is at most 256 KB. Text fields are trimmed, and a field that's empty after trimming is refused.
 
 - A report that omits `changes` keeps the stored value. A report that sends it replaces it.
 - A value with no `items` and no `releaseNotes` counts as not sent.
 - Triggers read it on the deployment's first `success` report, so send it on that report or an earlier one.
+- QA Wolf redacts secrets, such as tokens, keys, and passwords, from the text when it arrives, before storing it.
+- When QA Wolf also reads the deploy's merged pull requests from your code host, it uses both and lists a change both name once. See [Combining CI changes with your code host](/smart-smoke-suites#combining-ci-changes-with-your-code-host).
 
 Example:
 
@@ -120,7 +128,7 @@ Example:
 }
 ```
 
-From a Node.js pipeline, `deployment.collectCommitChanges` in `@qawolf/ci-sdk` builds this value from your git history. See [Sending changes from your CI](/smart-smoke-suites#sending-changes-from-your-ci).
+From a Node.js pipeline, `deployment.collectDeployChanges` in `@qawolf/ci-sdk` builds this value from your git history. See [Sending changes from your CI](/smart-smoke-suites#sending-changes-from-your-ci).
 
 ## When a report starts a run
 
