@@ -1,11 +1,11 @@
 ---
 title: "Desktop"
-description: "Reference for @qawolf/flows/desktop, the entry point for one flow file that runs on Mac and Windows desktop VMs."
+description: "Reference for @qawolf/flows/desktop, the entry point for one flow file that runs on Mac, Windows, and Linux Electron."
 sidebarTitle: "Desktop"
-keywords: "macOS, Mac, Windows, desktop app, Electron, cross-platform desktop, target list"
+keywords: "macOS, Mac, Windows, Linux, desktop app, Electron, cross-platform desktop, target list"
 ---
 
-`@qawolf/flows/desktop` defines one flow that runs on Mac, on Windows, or on both. The run's target decides the OS. Anything that differs by OS takes a record with a `mac` entry, a `windows` entry, or both.
+`@qawolf/flows/desktop` defines one flow that runs on Mac, Windows, or Linux Electron, or on several of them. The run's target decides the OS. Anything that differs by OS takes a record with a `linux`, `mac`, or `windows` entry.
 
 Use it to run a desktop app's flow on several OSes from one file, with a [target list](/target-lists). For a flow that runs only on Windows, see [`@qawolf/flows/windows`](/libraries/flows/api-reference/windows).
 
@@ -55,6 +55,7 @@ QA Wolf turns this file into two flows: `Sign in to the desktop app · macOS - A
 | `"macOS - Any Mac (macOS 26 \| Private)"` | A pool of Mac VMs for your workspace alone, on macOS 26. |
 | `"Windows 11 - Desktop"` | The shared pool of Windows VMs. |
 | `"Windows 11 - Desktop (private)"` | A pool of Windows VMs for your workspace alone. |
+| `"Linux - Electron"` | A Linux machine that runs an Electron app through Playwright. See [Linux Electron](#linux-electron). |
 
 `target` takes one of these, or a list of them. Each run gets one target. Everything the run does on the VM follows that target's OS.
 
@@ -80,13 +81,13 @@ type DesktopFlowTargetInput =
   | {
       target: DesktopFlowTarget | DesktopFlowTargetList;
       // An entry for each OS that `target` names, and only those.
-      launch: { app: { mac?: LaunchApp; windows?: LaunchApp } };
+      launch: { app: { linux?: LinuxLaunchApp; mac?: LaunchApp; windows?: LaunchApp } };
       sequential?: boolean;
       failFast?: boolean;
     };
 ```
 
-`DesktopFlowTargetList` is a list of one or more Mac and Windows targets. For `sequential` and `failFast`, see [Order and fail fast](/target-lists#order-and-fail-fast).
+`DesktopFlowTargetList` is a list of one or more Mac, Windows, and `"Linux - Electron"` targets. `launch: true` is a type error when the target or list names `"Linux - Electron"`. For `sequential` and `failFast`, see [Order and fail fast](/target-lists#order-and-fail-fast).
 
 ## `flow(...)`
 
@@ -130,7 +131,7 @@ export default flow(
 
 ## `launch(...)`
 
-`launch()` with no options connects to Chrome on the VM over the Chrome DevTools Protocol. Returns:
+On Mac and Windows, `launch()` with no options connects to Chrome on the VM over the Chrome DevTools Protocol. Returns:
 
 ```ts
 type LaunchResult = {
@@ -140,13 +141,15 @@ type LaunchResult = {
 };
 ```
 
-`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app` takes a `mac` entry, a `windows` entry, or both:
+`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app` takes a `linux`, `mac`, or `windows` entry, or several:
 
 ```ts
 type LaunchApp = { installed: string };
 
+type LinuxLaunchApp = { installed: string };
+
 type LaunchOptions = {
-  app: { mac?: LaunchApp; windows?: LaunchApp };
+  app: { linux?: LinuxLaunchApp; mac?: LaunchApp; windows?: LaunchApp };
 };
 
 type AppLaunchResult = {
@@ -159,10 +162,11 @@ type AppLaunchResult = {
 
 - **On Mac** — a bundle id, such as `com.example.Desktop`, or the path of an app bundle on the VM.
 - **On Windows** — a path on the VM, such as `C:\Program Files\Example\Example.exe`, or an app user model ID.
+- **On Linux** — the app's executable. See [Linux Electron](#linux-electron).
 
 `launch({ app })` installs nothing. It refuses an installer, a URL, or a file that is not on the VM.
 
-To start the app, QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. `page` is the app's first window, and its other windows are in `context.pages()`. The result has no `browser`, because an app can't open a new context. Chrome stays closed for the rest of the run. While the app holds the port, a later `launch()` without `app` fails.
+On Mac and Windows, QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. `page` is the app's first window, and its other windows are in `context.pages()`. The result has no `browser`, because an app can't open a new context. Chrome stays closed for the rest of the run. While the app holds the port, a later `launch()` without `app` fails.
 
 A `launch({ app })` call in the callback fails on a run whose OS it names no app for. Call it with an entry for each OS the flow runs on.
 
@@ -194,7 +198,7 @@ Starts native app automation on the VM and returns a WebdriverIO driver, typed `
 - **`mac`** — see [Start a native app on Mac](#start-a-native-app-on-mac).
 - **`windows`** — see [`startApp(...)` on Windows](/libraries/flows/api-reference/windows#startapp).
 
-A call fails on a run whose OS it names no app for.
+A call fails on a run whose OS it names no app for. On `"Linux - Electron"`, `startApp()` always throws.
 
 Example:
 
@@ -244,6 +248,48 @@ Mac2 runs one session per VM, so a Mac run has one driver. The first call create
 Capabilities other than the app, `appium:arguments` and `appium:environment` take effect only on the first call. A later call that passes one fails. An app that the VM already has at the same version isn't installed again.
 
 Prefer `~identifier` selectors, the element's accessibility identifier, then its label or title.
+
+## Linux Electron
+
+`"Linux - Electron"` runs an Electron app on a Linux machine through Playwright. It can share a list with Mac and Windows targets, so one flow file tests the app on all three OSes.
+
+`app.linux.installed` names the app's executable: an absolute path, or a path relative to the run's uploaded files or [team storage](/use-files-in-flows).
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/desktop";
+
+export default flow(
+  "Sign in to the desktop app",
+  {
+    target: [
+      "macOS - Any Mac (Latest)",
+      "Windows 11 - Desktop",
+      "Linux - Electron",
+    ],
+    launch: {
+      app: {
+        linux: { installed: "/opt/Example/example" },
+        mac: { installed: "com.example.Desktop" },
+        windows: { installed: "C:\\Program Files\\Example\\Example.exe" },
+      },
+    },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Log in" }).click();
+  },
+);
+```
+
+The Linux machine has no Chrome and no native app driver:
+
+- `launch: true` with `"Linux - Electron"` is a type error.
+- A bare `launch()` throws. Start the app with `launch({ app: { linux } })`.
+- `startApp()` throws. Call it only on Mac and Windows runs.
+- `launch({ app })` returns `{ context, page }`, with no `electronApplication`. Code that runs in Electron's main process, such as `electronApplication.evaluate(...)`, needs the web `"Electron"` target.
+
+A `"Linux - Electron"` run bills like a web run. To move a flow from the web `"Electron"` target, see [Move a web Electron flow to a desktop list](/electron#move-a-web-electron-flow-to-a-desktop-list).
 
 ## `expect`
 

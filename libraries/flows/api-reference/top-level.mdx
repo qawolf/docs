@@ -63,6 +63,7 @@ type Target =
   | "iOS - iPhone 16 (iOS 27)"
   | "iOS - iPhone 17 (iOS 26)"
   | "iOS - iPhone 17 (iOS 27)"
+  | "Linux - Electron"
   | "macOS - Any Mac (Latest)"
   | "macOS - Any Mac (macOS 26)"
   | "macOS - Any Mac (macOS 26 | Private)"
@@ -111,6 +112,8 @@ Android and iOS target names follow the pattern `<Platform> - <Model> (<Version>
 Windows has two targets. `Windows 11 - Desktop` runs on the shared pool of Windows VMs, and `Windows 11 - Desktop (private)` on a pool for your workspace alone. See [Windows](/libraries/flows/api-reference/windows#targets).
 
 Mac has three targets. `macOS - Any Mac (Latest)` follows the newest macOS that the shared pool offers. `macOS - Any Mac (macOS 26)` pins the version. `macOS - Any Mac (macOS 26 | Private)` runs on a pool for your workspace alone. See [Desktop](/libraries/flows/api-reference/desktop#targets).
+
+`Linux - Electron` runs an Electron app on Linux, in a desktop flow. See [Linux Electron](/libraries/flows/api-reference/desktop#linux-electron).
 
 ## `platform.target`
 

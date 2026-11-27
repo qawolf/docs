@@ -1,14 +1,123 @@
 ---
 title: "Testing Electron apps"
-description: "Test a desktop app built with Electron from a QA Wolf flow."
+description: "Test a desktop app built with Electron from a QA Wolf flow, on Linux alone or on Linux, Mac, and Windows from one file."
 sidebarTitle: "Electron apps"
 ---
 
-<Info>
-  Electron flows use `@qawolf/flows/web`. The callback receives the first window as `page`, giving you the full Playwright API for interacting with the app.
-</Info>
+A flow can test an Electron app in two ways:
 
-## Examples
+- **The `"Linux - Electron"` target** of `@qawolf/flows/desktop` — runs the app on Linux. It can share a [target list](/target-lists) with Mac and Windows, so one flow file tests the app on all three OSes.
+- **The `"Electron"` target** of `@qawolf/flows/web` — runs the app on Linux, as a flow with one target.
+
+Both run the app on a Linux machine with Playwright. The callback receives the app's first window as `page`, with the full Playwright API.
+
+## Run the app on Linux, Mac, and Windows
+
+Import `flow` from `@qawolf/flows/desktop`, and list `"Linux - Electron"` with the Mac and Windows targets. `launch: { app }` names the app for each OS.
+
+Example:
+
+```typescript
+import { flow } from "@qawolf/flows/desktop";
+
+export default flow(
+  "Sign in to desktop app",
+  {
+    target: [
+      "Linux - Electron",
+      "macOS - Any Mac (Latest)",
+      "Windows 11 - Desktop",
+    ],
+    launch: {
+      app: {
+        linux: { installed: "/opt/MyApp/myapp" },
+        mac: { installed: "com.example.MyApp" },
+        windows: { installed: "C:\\Program Files\\MyApp\\MyApp.exe" },
+      },
+    },
+  },
+  async ({ page, test }) => {
+    await test("sign in", async () => {
+      await page.getByRole("button", { name: "Sign in" }).click();
+    });
+  },
+);
+```
+
+QA Wolf turns this file into three flows, one for each target. Each has its own runs, history, and screenshots.
+
+`app.linux.installed` names the app's executable: an absolute path, or a path relative to the run's uploaded files or [team storage](/use-files-in-flows). For Mac and Windows, see [`launch(...)`](/libraries/flows/api-reference/desktop#launch).
+
+On `"Linux - Electron"`:
+
+- `launch({ app })` returns `{ context, page }`. `page` is the first window, and the other windows are in `context.pages()`.
+- There is no Chrome and no native app driver. `launch: true` is a type error. A bare `launch()` and `startApp()` throw.
+- A run bills like a web run.
+
+## Move a web Electron flow to a desktop list
+
+To add Mac and Windows to a flow on the web `"Electron"` target, move it in two commits. Push the second commit only after the first one syncs. The first commit keeps the flow's history on the Linux target.
+
+<Steps>
+  <Step title='Move the flow to "Linux - Electron"'>
+    Change three things, and keep one target:
+
+    - Import `flow` from `@qawolf/flows/desktop` instead of `@qawolf/flows/web`.
+    - Change `target: "Electron"` to `target: "Linux - Electron"`.
+    - Change `launch: { executablePath: path }` to `launch: { app: { linux: { installed: path } } }`.
+
+    ```diff
+    - import { flow } from "@qawolf/flows/web";
+    + import { flow } from "@qawolf/flows/desktop";
+
+      export default flow(
+        "Sign in to desktop app",
+        {
+    -     target: "Electron",
+    -     launch: { executablePath: "/opt/MyApp/myapp" },
+    +     target: "Linux - Electron",
+    +     launch: { app: { linux: { installed: "/opt/MyApp/myapp" } } },
+        },
+        async ({ page, test }) => {
+    ```
+
+    The callback still receives `page`, and now also `context`. Push the commit and let it sync. The flow keeps its name and history.
+  </Step>
+  <Step title="Add Mac and Windows">
+    Turn `target` into a list, and add an entry to `app` for each new OS:
+
+    ```diff
+    -     target: "Linux - Electron",
+    -     launch: { app: { linux: { installed: "/opt/MyApp/myapp" } } },
+    +     target: [
+    +       "Linux - Electron",
+    +       "macOS - Any Mac (Latest)",
+    +       "Windows 11 - Desktop",
+    +     ],
+    +     launch: {
+    +       app: {
+    +         linux: { installed: "/opt/MyApp/myapp" },
+    +         mac: { installed: "com.example.MyApp" },
+    +         windows: { installed: "C:\\Program Files\\MyApp\\MyApp.exe" },
+    +       },
+    +     },
+    ```
+
+    The flow becomes three flows. The Linux flow keeps the history, now named `Sign in to desktop app · Linux - Electron`. The Mac and Windows flows are new. They copy readiness, tags, and priority from the Linux flow.
+  </Step>
+</Steps>
+
+If both changes sync together, the three flows are all new, and the old flow's history stays on the deleted flow.
+
+<Warning>
+  `launch({ app })` from `@qawolf/flows/desktop` returns no `electronApplication`. A flow that runs code in Electron's main process, such as `electronApplication.evaluate(...)`, has no equivalent there. Keep that flow on the web `"Electron"` target.
+</Warning>
+
+A list starts new screenshot baselines for each target. See [Screenshots](/target-lists#screenshots).
+
+## Run the app on Linux only
+
+A flow on the web `"Electron"` target runs the app on Linux, with one target.
 
 **Launch and interact with an Electron app**
 
@@ -65,4 +174,4 @@ For most Electron flows, use the declarative style with `target: "Electron"` and
 
 Use explicit `launch({ kind: "electron", executablePath })` only when the executable path depends on runtime logic. In this case, the first window is returned as `firstWindowPage` rather than injected as `page`.
 
-For the full Electron launch shape, see the [Web API Reference](/libraries/flows/api-reference/web).
+For the full Electron launch shape, see the [Web API Reference](/libraries/flows/api-reference/web). For `"Linux - Electron"`, see the [Desktop API Reference](/libraries/flows/api-reference/desktop).
