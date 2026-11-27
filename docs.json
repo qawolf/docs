@@ -942,6 +942,7 @@
             "group": "Flow conventions",
             "pages": [
               "anatomy-of-a-flow",
+              "target-lists",
               "soft-checks",
               "lint-rules"
             ]
@@ -958,6 +959,7 @@
               "libraries/flows/api-reference/ios-device-reference",
               "libraries/flows/api-reference/ios-device-pools",
               "libraries/flows/api-reference/windows",
+              "libraries/flows/api-reference/desktop",
               "libraries/flows/troubleshooting"
             ]
           },

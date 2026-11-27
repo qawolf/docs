@@ -60,12 +60,16 @@ The target input model is:
 type IosFlowTargetInput =
   | IosFlowTarget
   | {
-      target: IosFlowTarget;
+      target: IosFlowTarget | IosFlowTargetList;
       launch?: false | undefined;
+      sequential?: boolean;
+      failFast?: boolean;
     }
   | {
-      target: IosFlowTarget;
+      target: IosFlowTarget | IosFlowTargetList;
       launch: true | LaunchOptions;
+      sequential?: boolean;
+      failFast?: boolean;
     };
 ```
 
@@ -73,6 +77,8 @@ Pass either:
 
 - a target directly for the common path
 - `{ target, launch }` when startup behavior should be part of the flow
+
+`target` also takes a list of iOS targets. The flow runs once on each, and every target installs the same build of the app. See [Run a flow on several targets](/target-lists).
 
 Example:
 

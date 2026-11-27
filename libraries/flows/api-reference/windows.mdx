@@ -53,7 +53,7 @@ All Windows flow callbacks receive:
 - `setOutput(...)`
 - `test(...)`
 
-Launch-enabled Windows flows also receive `browser`, `context` and `page`, connected to Chrome on the VM.
+Flows with `launch: true` also receive `browser`, `context`, and `page`, connected to Chrome on the VM. Flows with `launch: { app }` receive the app's `context` and `page`, with no `browser`.
 
 <Note>
   On Windows, `launch: true` starts the browser, not an app. On Android and iOS it starts the app. Start a native app with [`startApp(...)`](#startapp).
@@ -73,10 +73,17 @@ type WindowsFlowTargetInput =
   | {
       target: WindowsFlowTarget;
       launch: true;
+    }
+  | {
+      target: WindowsFlowTarget;
+      // The common form. `installed` also takes `startApp()` options.
+      launch: { app: { installed: string } };
     };
 ```
 
-`launch` takes only `true`. Windows flows have no launch options.
+`launch: true` connects to Chrome. `launch: { app }` starts a Chromium-based desktop app instead. See [`launch()`](#launch).
+
+`target` takes one target. To run one flow on Mac and Windows, or on both Windows targets, use [`@qawolf/flows/desktop`](/libraries/flows/api-reference/desktop).
 
 ## `flow(...)`
 
@@ -84,6 +91,7 @@ Use `flow(...)` for Windows authoring.
 
 - without launch, the callback receives `inputs`, `setOutput(...)`, and `test(...)`
 - with `launch: true`, the flow calls `launch()` before the callback, and the callback also receives `browser`, `context`, and `page`
+- with `launch: { app }`, the flow calls `launch({ app })` before the callback, and the callback also receives `context` and `page`, with no `browser`
 
 Example:
 
@@ -103,7 +111,7 @@ export default flow(
 
 ## `launch()`
 
-Connects to Chrome on the VM over the Chrome DevTools Protocol. Takes no options. Returns:
+With no options, connects to Chrome on the VM over the Chrome DevTools Protocol. Returns:
 
 ```ts
 type LaunchResult = {
@@ -124,6 +132,29 @@ export default flow("Launch explicitly", "Windows 11 - Desktop", async () => {
   const { page } = await launch();
   await page.goto(process.env.BASE_URL);
 });
+```
+
+### Start a desktop app
+
+`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app: { installed }` names an app that is already on the VM, the way `startApp(...)` takes it: a path on the VM or an app user model ID. With `installed`, `launch({ app })` installs nothing, so it refuses an `.msi`, a URL, or a file on the runner.
+
+QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. Returns `{ context, page }`: `page` is the app's first window, and its other windows are in `context.pages()`. There is no `browser`, because an app can't open a new context. Chrome stays closed until the session ends. In the flow editor, start a new session to get Chrome back. While the app holds the debugging port, a later `launch()` without `app` fails.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/windows";
+
+export default flow(
+  "Sign in to the desktop app",
+  {
+    target: "Windows 11 - Desktop",
+    launch: { app: { installed: "C:\\Program Files\\Example\\Example.exe" } },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Log in" }).click();
+  },
+);
 ```
 
 ## `startApp(...)`

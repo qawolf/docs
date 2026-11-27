@@ -1,0 +1,266 @@
+---
+title: "Desktop"
+description: "Reference for @qawolf/flows/desktop, the entry point for one flow file that runs on Mac and Windows desktop VMs."
+sidebarTitle: "Desktop"
+keywords: "macOS, Mac, Windows, desktop app, Electron, cross-platform desktop, target list"
+---
+
+`@qawolf/flows/desktop` defines one flow that runs on Mac, on Windows, or on both. The run's target decides the OS. Anything that differs by OS takes a record with a `mac` entry, a `windows` entry, or both.
+
+Use it to run a desktop app's flow on several OSes from one file, with a [target list](/target-lists). For a flow that runs only on Windows, see [`@qawolf/flows/windows`](/libraries/flows/api-reference/windows).
+
+<Note>
+  `@qawolf/flows/desktop` runs on QA Wolf. The published `@qawolf/flows` package on npm doesn't have it yet, so [local execution](/local-execution/get-started) can't type-check or run these files.
+</Note>
+
+## Primary exports
+
+- `flow(...)`
+- `launch(...)`
+- `startApp(...)`
+- `expect`
+
+It also exports the `DesktopApp`, `DesktopLaunchApp`, `LaunchOptions`, `LaunchResult`, `AppLaunchResult`, `NativeDriver`, `NativeSubject`, and `DesktopExpect` types, plus desktop target, callback context, and flow definition types.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/desktop";
+
+export default flow(
+  "Sign in to the desktop app",
+  {
+    target: ["macOS - Any Mac (Latest)", "Windows 11 - Desktop"],
+    launch: {
+      app: {
+        mac: { installed: "com.example.Desktop" },
+        windows: { installed: "C:\\Program Files\\Example\\Example.exe" },
+      },
+    },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Log in" }).click();
+  },
+);
+```
+
+QA Wolf turns this file into two flows: `Sign in to the desktop app · macOS - Any Mac (Latest)` and `Sign in to the desktop app · Windows 11 - Desktop`.
+
+## Targets
+
+| Target | Runs on |
+| --- | --- |
+| `"macOS - Any Mac (Latest)"` | The shared pool of Mac VMs, on the newest macOS the pool offers. |
+| `"macOS - Any Mac (macOS 26)"` | The shared pool of Mac VMs, on macOS 26. |
+| `"macOS - Any Mac (macOS 26 \| Private)"` | A pool of Mac VMs for your workspace alone, on macOS 26. |
+| `"Windows 11 - Desktop"` | The shared pool of Windows VMs. |
+| `"Windows 11 - Desktop (private)"` | A pool of Windows VMs for your workspace alone. |
+
+`target` takes one of these, or a list of them. Each run gets one target. Everything the run does on the VM follows that target's OS.
+
+## Target model
+
+The target input model is:
+
+```ts
+type DesktopFlowTargetInput =
+  | DesktopFlowTarget
+  | {
+      target: DesktopFlowTarget | DesktopFlowTargetList;
+      launch?: false | undefined;
+      sequential?: boolean;
+      failFast?: boolean;
+    }
+  | {
+      target: DesktopFlowTarget | DesktopFlowTargetList;
+      launch: true;
+      sequential?: boolean;
+      failFast?: boolean;
+    }
+  | {
+      target: DesktopFlowTarget | DesktopFlowTargetList;
+      // An entry for each OS that `target` names, and only those.
+      launch: { app: DesktopLaunchApp };
+      sequential?: boolean;
+      failFast?: boolean;
+    };
+```
+
+`DesktopFlowTargetList` is a list of one or more Mac and Windows targets. For `sequential` and `failFast`, see [Order and fail fast](/target-lists#order-and-fail-fast).
+
+## `flow(...)`
+
+- without launch, the callback receives `inputs`, `setOutput(...)`, and `test(...)`
+- with `launch: true`, the flow connects to Chrome on the VM before the callback, and the callback also receives `browser`, `context`, and `page`
+- with `launch: { app }`, the flow starts the app before the callback, and the callback also receives `context` and `page`, with no `browser`
+
+`launch: { app }` takes an entry for each OS that the target or list names, and only those. A type error points out a missing or extra entry. A list of two Macs names only `mac`:
+
+```ts
+import { flow } from "@qawolf/flows/desktop";
+
+export default flow(
+  "Sign in to the desktop app",
+  {
+    target: ["macOS - Any Mac (Latest)", "macOS - Any Mac (macOS 26)"],
+    launch: { app: { mac: { installed: "com.example.Desktop" } } },
+  },
+  async ({ page }) => {
+    await page.getByRole("button", { name: "Log in" }).click();
+  },
+);
+```
+
+`launch: true` connects to Chrome on every target:
+
+```ts
+import { flow } from "@qawolf/flows/desktop";
+
+export default flow(
+  "Sign in on the web",
+  {
+    target: ["macOS - Any Mac (Latest)", "Windows 11 - Desktop"],
+    launch: true,
+  },
+  async ({ page }) => {
+    await page.goto(process.env.BASE_URL);
+  },
+);
+```
+
+## `launch(...)`
+
+`launch()` with no options connects to Chrome on the VM over the Chrome DevTools Protocol. Returns:
+
+```ts
+type LaunchResult = {
+  browser: Browser;
+  context: BrowserContext;
+  page: Page;
+};
+```
+
+`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app` takes a `mac` entry, a `windows` entry, or both. This is a simplified view of `DesktopLaunchApp`, with the common `installed` form:
+
+```ts
+// At least one entry.
+type DesktopLaunchApp = {
+  mac?: { installed: string };
+  windows?: { installed: string };
+};
+
+type LaunchOptions = { app: DesktopLaunchApp };
+
+type AppLaunchResult = {
+  context: BrowserContext;
+  page: Page;
+};
+```
+
+`installed` names an app that is already on the VM, the way that OS's `startApp()` takes it:
+
+- **On Mac** — a bundle id, such as `com.example.Desktop`, or the path of an app bundle on the VM.
+- **On Windows** — a path on the VM, such as `C:\Program Files\Example\Example.exe`, or an app user model ID.
+
+With `installed`, `launch({ app })` installs nothing. It refuses an installer or a URL. On Windows, it also refuses a file on the runner.
+
+To start the app, QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. `page` is the app's first window, and its other windows are in `context.pages()`. The result has no `browser`, because an app can't open a new context. Chrome stays closed until the session ends. In the flow editor, start a new session to get Chrome back. While the app holds the debugging port, a later `launch()` without `app` fails.
+
+A `launch({ app })` call in the callback fails on a run whose OS it names no app for. Call it with an entry for each OS the flow runs on.
+
+These APIs are only available while a flow is running.
+
+Example:
+
+```ts
+import { flow, launch } from "@qawolf/flows/desktop";
+
+export default flow(
+  "Open the desktop app later",
+  "Windows 11 - Desktop",
+  async () => {
+    const { page } = await launch({
+      app: {
+        windows: { installed: "C:\\Program Files\\Example\\Example.exe" },
+      },
+    });
+    await page.getByRole("button", { name: "Log in" }).click();
+  },
+);
+```
+
+## `startApp(...)`
+
+Starts native app automation on the VM and returns a WebdriverIO driver, typed `NativeDriver`. `startApp` takes a record with a `mac` entry, a `windows` entry, or both. Each entry takes what that OS's `startApp()` takes:
+
+- **`mac`** — see [Start a native app on Mac](#start-a-native-app-on-mac).
+- **`windows`** — see [`startApp(...)` on Windows](/libraries/flows/api-reference/windows#startapp).
+
+A call fails on a run whose OS it names no app for.
+
+Example:
+
+```ts
+import { expect, flow, startApp } from "@qawolf/flows/desktop";
+
+export default flow(
+  "Open the native app",
+  { target: ["macOS - Any Mac (Latest)", "Windows 11 - Desktop"] },
+  async () => {
+    const app = await startApp({
+      mac: "com.example.Desktop",
+      windows: "C:\\Program Files\\Example\\Example.exe",
+    });
+    await expect(app.$("~WelcomeBanner")).toBeDisplayed();
+  },
+);
+```
+
+The OSes differ:
+
+- **Drivers** — on Mac, every call opens its app in one session and returns the same driver. On Windows, every call returns a new driver, and apps started earlier stay open.
+- **Window size** — only Windows honors `qawolf:windowSize`.
+
+### Start a native app on Mac
+
+On Mac, QA Wolf drives native apps through the Appium Mac2 driver on the VM. The `mac` entry can be:
+
+- a bundle id, such as `com.apple.TextEdit`
+- the absolute path of an app bundle on the VM, such as `/Applications/Client.app`
+- an installer to deliver first: a `.app.zip`, `.dmg`, or `.pkg`, as a path on the runner, a file name in the run's uploads or team storage, or an `http` or `https` URL. QA Wolf installs it into `/Applications` and launches the app it installed.
+- a capability object, for anything else, such as `appium:arguments` or `appium:environment` for the app's launch
+
+When an installer leaves several apps, name the one to launch with `qawolf:launch`:
+
+```ts
+const app = await startApp({
+  mac: {
+    "appium:app": "Client.dmg",
+    "qawolf:launch": "/Applications/Client.app",
+  },
+});
+```
+
+Mac2 runs one session per VM, so a Mac run has one driver. The first call creates it. A later call opens its app in the same session, or brings it to the front if it already runs. The driver acts on the app that `startApp()` started or brought to the front last.
+
+Capabilities other than the app, `appium:arguments`, and `appium:environment` take effect only on the first call. A later call that passes one fails. An app that the VM already has at the same version isn't installed again.
+
+Prefer `~identifier` selectors, the element's accessibility identifier, then its label or title.
+
+## `expect`
+
+The exported `expect` dispatches on its subject:
+
+- **A WebdriverIO driver, element, or element query not yet awaited** — the [`expect-webdriverio`](https://webdriver.io/docs/api/expect-webdriverio) matchers, including `toHaveScreenshot`.
+- **Anything else, including a Playwright `page` or locator** — the Playwright matchers.
+
+`expect.soft` dispatches the same way. See [Keep a flow going past a failed check](/soft-checks).
+
+Import `expect` from `@qawolf/flows/desktop`, so QA Wolf's defaults stay in effect. In a list, each target keeps its own screenshot baselines. See [Screenshots](/target-lists#screenshots).
+
+## Defaults
+
+- On Mac, Chrome has no window until the flow calls `launch()`, so a native app flow starts on a clear desktop.
+- On Mac, `launch()` reuses Chrome's first context and page, and opens one only when Chrome has none.
+- On Mac, the screen size is the VM's display.
+- On Windows, the defaults of [`@qawolf/flows/windows`](/libraries/flows/api-reference/windows) apply.

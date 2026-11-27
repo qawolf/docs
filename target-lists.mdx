@@ -1,0 +1,155 @@
+---
+title: "Run a flow on several targets"
+description: "List several targets in one flow file. Each target becomes its own flow, with its own runs, history, and screenshots."
+sidebarTitle: "Target lists"
+keywords: "matrix testing, cross-browser testing, multiple targets, OS versions, device matrix, target list"
+---
+
+A flow file can name a list of targets instead of one. QA Wolf runs the flow once on each target. You keep one copy of the steps, and each target still reports its own result.
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/ios";
+
+export default flow(
+  "Log in",
+  {
+    target: ["iOS - Any iPhone (iOS 26)", "iOS - Any iPhone (iOS 27)"],
+    launch: true,
+  },
+  async ({ driver }) => {
+    // The same steps run on every target.
+  },
+);
+```
+
+QA Wolf turns this file into two flows: `Log in · iOS - Any iPhone (iOS 26)` and `Log in · iOS - Any iPhone (iOS 27)`.
+
+<Note>
+  Target lists and `@qawolf/flows/desktop` run on QA Wolf. The published `@qawolf/flows` package on npm doesn't have them yet, so [local execution](/local-execution/get-started) can't type-check or run these files.
+</Note>
+
+## What a list can name
+
+A list names preset names, written the same way as a single `target`. All entries must be of the device class that the file imports `flow` from:
+
+| Import `flow` from | A list can name |
+| --- | --- |
+| `@qawolf/flows/web` | Browser targets, such as `"Web - Chrome"` and `"Web - Firefox (GPU)"`. Not `"Electron"`. |
+| `@qawolf/flows/ios` | iOS targets: iPhones and iPads, on any pool. |
+| `@qawolf/flows/android` | Android targets: emulators and real phones. |
+| `@qawolf/flows/desktop` | Mac and Windows targets. See [`@qawolf/flows/desktop`](/libraries/flows/api-reference/desktop). |
+
+`@qawolf/flows/mac` and `@qawolf/flows/windows` take one target. To run one desktop flow on Mac and Windows, import from `@qawolf/flows/desktop`.
+
+A list can mix any presets of its class. For example, Chrome with Chrome (GPU), or an iPhone with an iPad. Two entries can't name the same target.
+
+A list with one entry is the same as a single target. Its flow name has no suffix.
+
+## Each target is its own flow
+
+Each target of a list becomes a flow named `<name> · <preset>`. It is a normal flow:
+
+- **Runs** — each target runs on its own device or VM, and bills as one run. A list of three targets costs three runs.
+- **Results and history** — each target has its own result, flow history, and bug reports.
+- **Readiness, tags, and priority** — each target has its own. You can pause one broken target and keep the others running.
+
+When you add a target to a file that already has flows, the new target copies readiness, tags, and priority from the file's first existing target. So it has the same readiness as the first target. If it is active, it joins every trigger that picks flows by tag or picks every flow. A trigger that picks flows by ID doesn't pick up the new target.
+
+<Warning>
+  Turning a flow into a list multiplies its runs in every trigger that selects flows by tag or selects every flow. To run a target only in some triggers, change that target's tags.
+</Warning>
+
+## Order and fail fast
+
+Two options set how the targets of a list run against each other. Both are `false` unless you set them.
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `sequential` | `false` | Runs the targets one after another, in list order, instead of all at once. Use it when the targets share a test account. |
+| `failFast` | `false` | Stops the targets that haven't ended once one target fails a check for good, after its retries. A target that QA Wolf aborts for an infrastructure reason doesn't stop the others. The stopped targets show as canceled, and the run reports the target that failed. |
+
+Example:
+
+```ts
+import { flow } from "@qawolf/flows/web";
+
+export default flow(
+  "Checkout",
+  {
+    target: ["Web - Chrome", "Web - Firefox", "Web - Safari"],
+    sequential: true,
+    failFast: true,
+    launch: true,
+  },
+  async ({ page }) => {
+    await page.goto(process.env.BASE_URL);
+  },
+);
+```
+
+Write both options as `true` or `false` in the options object. A variable, a spread, or a computed key is a sync error.
+
+The order applies inside one run. If a run selects only some targets of a sequential list, only those run in order. The run doesn't add the other targets. [Run rules](/Run-Rules) can't remove the order, An ordering rule that contradicts it is a rule cycle, and a `run-with` rule on a sequential list is an error.
+
+## Screenshots
+
+Each target keeps its own screenshot baselines. For a flow of a list, QA Wolf adds the target key to the screenshot name:
+
+| Flow | `toHaveScreenshot("cart")` compares with |
+| --- | --- |
+| One target | `cart.png` |
+| A list, on `"Windows 11 - Desktop"` | `cart.windows-11.png` |
+| A list, on `"macOS - Any Mac (macOS 26)"` | `cart.mac-26.png` |
+| A list, on `"macOS - Any Mac (Latest)"` | `cart.macos-any-mac-latest.png` |
+
+A `Latest` preset is keyed by its name, so its baselines stay when the version it points to moves. WebdriverIO adds its own platform part to native screenshot names.
+
+<Warning>
+  Turning a flow into a list, or a list into one target, starts new baselines. The first run of each target saves its images and passes, so it can't catch a visual change in the same commit. Run every target once against the current UI, so it saves its baselines, before you deploy the UI change.
+</Warning>
+
+## Run rules
+
+In `rules.yaml`, the flow's name, such as `Checkout`, names every target of its list, the way a tag names every tagged flow. The full name, such as `Checkout · Web - Firefox`, names one target. A rule keeps working when its flow becomes a list. See [Run rules](/Run-Rules).
+
+The flow's name can't be the name of another flow. Otherwise, a rule for `Checkout` would name both. Sync reports it as an error on the name.
+
+## Change the list
+
+A target keeps its flow, and so its history, when you edit the file:
+
+| You change | What happens to the flows |
+| --- | --- |
+| Rename the flow | Same flows, with new names. |
+| Reorder the targets | Same flows. |
+| Move the file | Same flows. |
+| Add a target | A new flow. It copies readiness, tags, and priority from the file's first existing target. |
+| Remove a target | Its flow is deleted. Its history stays. |
+| Add a removed target back, while the file is still a list | Its flow comes back with its runs, history, readiness, tags, and priority. Bug report links don't come back. |
+| Replace a target | A new flow for the new target. The old target's flow is deleted. |
+| Turn one target into a list | The target that matches the old target keeps the old flow and its history. The other targets are new flows. |
+| Turn a list into one target | The matching target keeps its flow. The other flows are deleted. |
+| A preset is retired | Only that target stops running, with an error. The other targets still run. |
+
+## Run one target while you edit
+
+In the flow editor, the target menu next to **Run** picks the target of a list. The run, the file tree's **Run**, and Tester use the target you pick. The coverage map shows a list file as one row, with a row for each target under it.
+
+A coding agent connected through the QA Wolf MCP picks the target with the `target` input of `runner_runFlow`. It takes a preset name as the file lists it. Without it, the run takes the first listed target the runner can run. See [QA Wolf MCP](/qawolf-mcp).
+
+## Errors
+
+Sync checks each list. It reports an error, and the flow doesn't run, when:
+
+- An entry isn't a preset name.
+- Two entries name the same target.
+- The entries aren't all of one device class, or not of the class of the import.
+- An entry is `"Basic"` or the web `"Electron"` target.
+- `sequential` or `failFast` isn't written as `true` or `false`.
+
+Sync also reports an error on the flow's name when:
+
+- A target flow's name, `<name> · <preset>`, is longer than 255 characters.
+- The flow's name is the name of another flow. See [Run rules](#run-rules).
