@@ -16,8 +16,8 @@ Connect your GitHub Enterprise Server (GHES) to test pull requests on your own s
 
 | Setup option | App | What it does |
 | --- | --- | --- |
-| **Test your deployments and pull requests** | QA Wolf | Tests previews and posts checks and comments. It can read pull request changes without access to the rest of your repository contents. |
-| Also select **Read your code** | QA Wolf Code | Includes testing and lets the QA Wolf AI read code in the repositories you select. It can use that code to investigate failures. |
+| **Test your deployments and pull requests** | QA Wolf | Runs tests on deployments and posts results on pull requests. It can read pull request changes without access to the rest of your repository contents. |
+| **Read your code** (optional) | QA Wolf Code | Includes testing and lets the QA Wolf AI read code in the repositories you select. It can use that code to investigate failures. |
 
 You install one app. If **Read your code** is unavailable, ask your QA Wolf representative about code access for your workspace. See [GitHub app permissions](/github-code-access#permissions-of-qa-wolf-code).
 
@@ -47,21 +47,35 @@ To change code access later, open **Configure → What QA Wolf does**. Select **
 
 ## Set up automatic pull request testing
 
-Your deployment pipeline creates the preview. A QA Wolf loop starts the flows when GHES reports that the preview is ready.
+Your deployment pipeline builds the preview. QA Wolf listens for the successful deployment on GHES and runs the flows you choose.
 
-<Steps>
-  <Step title="Report preview deployments to GHES">
-    Configure your pipeline to deploy the pull request's head commit. Give each pull request a unique environment name, such as `preview/pr-42`, and its own URL that QA Wolf can open. Set `transient_environment: true` on the deployment. After the preview is ready, send a deployment status of `success` with the preview's `environment_url`. See [GitHub preview deployments](/deployment-testing/github#preview-deployments).
-  </Step>
-  <Step title="Create a loop for the previews">
-    In **Loops**, select **New loop** and choose **Test each pull request**. Under **When**, match your preview names, for example `preview/*`. The template lets QA Wolf choose flows for each change. To verify the first run with a known flow, select **Run specific flows** under **Then** and choose that flow. Select **Create loop** and confirm **Enabled** is on. See [Create a loop](/loops/overview#create-a-loop).
-  </Step>
-  <Step title="Test a fresh preview">
-    Open a pull request in the connected repository and let your pipeline deploy it. On the pull request, check that the successful deployment points to the correct preview URL and commit.
-  </Step>
-  <Step title="Verify the result">
-    Open the loop's **Run history** and confirm the flow ran against that preview. On the pull request, **QA Wolf Test Run** shows progress and **QA Wolf Test Results** reports the outcome.
-  </Step>
-</Steps>
+### Report the preview from your pipeline
 
-If no run appears, check the repository selection, the deployment status, and the loop's environment pattern. See [how QA Wolf matches deployments](/loops/deployments) and [pull request checks](/deployment-testing/pr-testing#checks-on-the-pull-request).
+For each pull request, deploy its latest commit to a URL that QA Wolf can open. Report the following values to GHES:
+
+| Field | What to send |
+| --- | --- |
+| `ref` | The commit SHA at the head of the pull request. |
+| `environment` | A name unique to that pull request, such as `preview/pr-42`. |
+| `transient_environment` | `true`, to mark the preview as temporary. |
+| `state` and `environment_url` | On the deployment status, send `success` and the preview URL once the app is ready. |
+
+For a workflow example, see [GitHub preview deployments](/deployment-testing/github#preview-deployments).
+
+### Create the loop
+
+1. In **Loops**, select **New loop**, then **Test each pull request**.
+2. Under **When**, select **Pull request previews**. Enter the pattern your pipeline uses. For example, `preview/pr-*` matches `preview/pr-42`.
+3. Under **Then**, select **Run specific flows** and choose one existing flow that opens your app. You can let QA Wolf choose flows for each change later.
+4. Select **Create loop** and confirm **Enabled** is on.
+
+### Verify the first run
+
+1. Open a pull request or push a new commit to an open pull request. Let your pipeline deploy it.
+2. On GHES, open the deployment on that commit. Confirm that its URL opens the preview and that its status is successful.
+3. Open the loop's **Run history** in QA Wolf. Look for the flow you selected.
+4. On the same commit, open **QA Wolf Test Run** for progress or **QA Wolf Test Results** for the outcome.
+
+**Preview ready but no run?** Compare the deployment's environment name with the loop's **When** condition. A loop set to **Staging** skips `preview/pr-42`. After you correct the condition, deploy a new commit. QA Wolf evaluates each deployment on its first successful status.
+
+See [how loops match deployments](/loops/deployments) and [pull request checks](/deployment-testing/pr-testing#checks-on-the-pull-request).
