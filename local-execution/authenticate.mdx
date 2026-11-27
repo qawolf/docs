@@ -4,7 +4,7 @@ description: "Install the qawolf CLI and connect it to your workspace so it can 
 sidebarTitle: "Authenticate"
 ---
 
-Before the CLI can pull flows from your workspace or run flows that depend on environment variables, it needs an API key. You can log in interactively for local development, or pass the key through an environment variable for CI.
+Before the CLI can pull flows from your workspace or run flows that depend on environment variables, it needs a credential. For local development, sign in through a browser or with an API key. For CI, pass an API key through an environment variable.
 
 ## Install the CLI
 
@@ -34,16 +34,21 @@ qawolf --version
 
 <Steps>
   <Step>
-    Generate an API key in your QA Wolf workspace under **Workspace settings → API keys**.
-  </Step>
-  <Step>
     Run the login command:
 
     ```bash
     qawolf auth login
     ```
 
-    The CLI prompts for your API key, validates it against the platform, and stores it in your system keychain. When a keychain is not available, the CLI falls back to a local config file in your user profile directory.
+    The CLI asks whether to sign in with a browser or an API key.
+  </Step>
+  <Step>
+    Sign in with the method you chose:
+
+    - **Browser**: the CLI shows a one-time code and opens a sign-in page. After you sign in, the CLI asks which organization and workspace to work in when you can reach more than one.
+    - **API key**: generate a key in your QA Wolf workspace under **Workspace settings → API keys**, then paste it at the prompt. The CLI validates the key against the platform and stores it in your system keychain. When a keychain is not available, the CLI falls back to a local config file in your user profile directory.
+
+    See [`auth login`](/libraries/cli/api-reference/commands#auth-login) for the Git setup the command also performs.
   </Step>
   <Step>
     Confirm the connection:
@@ -52,9 +57,11 @@ qawolf --version
     qawolf auth whoami
     ```
 
-    The output shows the team name, ID, and where the credential was loaded from.
+    The output shows the workspace name, ID, and where the credential was loaded from.
   </Step>
 </Steps>
+
+To move a browser session to another organization or workspace without signing in again, run `qawolf auth switch`.
 
 ## Authenticate in CI
 
@@ -65,7 +72,7 @@ export QAWOLF_API_KEY=<your-api-key>
 qawolf flows pull --env <env_id>
 ```
 
-The CLI prefers `QAWOLF_API_KEY` over any credential stored by `qawolf auth login`, so the same machine can switch between accounts by setting or unsetting the variable.
+The CLI prefers `QAWOLF_API_KEY` over any credential from `qawolf auth login`, so the same machine can switch between accounts by setting or unsetting the variable.
 
 ## Log out
 
