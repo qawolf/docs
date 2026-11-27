@@ -20,7 +20,7 @@ Use it to run a desktop app's flow on several OSes from one file, with a [target
 - `startApp(...)`
 - `expect`
 
-It also exports the `DesktopApp`, `DesktopLaunchApp`, `LaunchOptions`, `LaunchResult`, `AppLaunchResult`, `NativeDriver`, `NativeSubject` and `DesktopExpect` types, plus desktop target, callback context and flow definition types.
+It also exports the `DesktopApp`, `DesktopLaunchApp`, `LaunchOptions`, `LaunchResult`, `AppLaunchResult`, `NativeDriver`, `NativeSubject`, and `DesktopExpect` types, plus desktop target, callback context, and flow definition types.
 
 Example:
 
@@ -80,7 +80,7 @@ type DesktopFlowTargetInput =
   | {
       target: DesktopFlowTarget | DesktopFlowTargetList;
       // An entry for each OS that `target` names, and only those.
-      launch: { app: { mac?: LaunchApp; windows?: LaunchApp } };
+      launch: { app: DesktopLaunchApp };
       sequential?: boolean;
       failFast?: boolean;
     };
@@ -140,14 +140,16 @@ type LaunchResult = {
 };
 ```
 
-`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app` takes a `mac` entry, a `windows` entry, or both:
+`launch({ app })` starts a Chromium-based desktop app, such as an Electron app, and attaches to it instead of Chrome. `app` takes a `mac` entry, a `windows` entry, or both. This is a simplified view of `DesktopLaunchApp`, with the common `installed` form:
 
 ```ts
-type LaunchApp = { installed: string };
-
-type LaunchOptions = {
-  app: { mac?: LaunchApp; windows?: LaunchApp };
+// At least one entry.
+type DesktopLaunchApp = {
+  mac?: { installed: string };
+  windows?: { installed: string };
 };
+
+type LaunchOptions = { app: DesktopLaunchApp };
 
 type AppLaunchResult = {
   context: BrowserContext;
@@ -160,9 +162,9 @@ type AppLaunchResult = {
 - **On Mac** — a bundle id, such as `com.example.Desktop`, or the path of an app bundle on the VM.
 - **On Windows** — a path on the VM, such as `C:\Program Files\Example\Example.exe`, or an app user model ID.
 
-`launch({ app })` installs nothing. It refuses an installer, a URL, or a file that is not on the VM.
+With `installed`, `launch({ app })` installs nothing. It refuses an installer or a URL. On Windows, it also refuses a file on the runner.
 
-To start the app, QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. `page` is the app's first window, and its other windows are in `context.pages()`. The result has no `browser`, because an app can't open a new context. Chrome stays closed for the rest of the run. While the app holds the port, a later `launch()` without `app` fails.
+To start the app, QA Wolf quits Chrome and starts the app with `--remote-debugging-port`. `page` is the app's first window, and its other windows are in `context.pages()`. The result has no `browser`, because an app can't open a new context. Chrome stays closed until the session ends. In the flow editor, start a new session to get Chrome back. While the app holds the debugging port, a later `launch()` without `app` fails.
 
 A `launch({ app })` call in the callback fails on a run whose OS it names no app for. Call it with an entry for each OS the flow runs on.
 
@@ -239,9 +241,9 @@ const app = await startApp({
 });
 ```
 
-Mac2 runs one session per VM, so a Mac run has one driver. The first call creates it. A later call opens its app in the same session, or brings it to the front if it already runs. The driver acts on the app in front.
+Mac2 runs one session per VM, so a Mac run has one driver. The first call creates it. A later call opens its app in the same session, or brings it to the front if it already runs. The driver acts on the app that `startApp()` started or brought to the front last.
 
-Capabilities other than the app, `appium:arguments` and `appium:environment` take effect only on the first call. A later call that passes one fails. An app that the VM already has at the same version isn't installed again.
+Capabilities other than the app, `appium:arguments`, and `appium:environment` take effect only on the first call. A later call that passes one fails. An app that the VM already has at the same version isn't installed again.
 
 Prefer `~identifier` selectors, the element's accessibility identifier, then its label or title.
 

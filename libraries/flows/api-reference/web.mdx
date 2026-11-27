@@ -60,7 +60,7 @@ type WebFlowTargetInput =
     };
 ```
 
-`WebBrowserFlowTargetList` is a list of browser targets, such as `["Web - Chrome", "Web - Firefox"]`. The flow runs once on each, and the browser and GPU come from the run's target. A list can't name `"Electron"`. See [Run a flow on several targets](/target-lists).
+`WebBrowserFlowTargetList` is a list of browser targets, such as `["Web - Chrome", "Web - Firefox"]`. The flow runs once on each. The run's target sets the default browser and GPU, so leave `browser` out of `launch` in a list. A list can't name `"Electron"`. See [Run a flow on several targets](/target-lists).
 
 Examples:
 
