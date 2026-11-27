@@ -1,18 +1,18 @@
 ---
 title: "Upload builds"
-description: "Every way to upload an Android or iOS build to QA Wolf, how a run picks the build it installs, and how to move from legacy uploads."
+description: "Every way to upload an Android, iOS or Mac build to QA Wolf, how a run picks the build it installs, and how to move from legacy uploads."
 sidebarTitle: "Upload builds"
-keywords: "build, app build, apk, aab, ipa, upload a build, upload-build-action, uploadBuild, qawolf build upload, upload_build_to_qawolf, build.requestUpload, build.create, RUN_INPUT_PATH, app version"
+keywords: "build, app build, apk, aab, ipa, zip, mac, macOS, upload a build, upload-build-action, uploadBuild, qawolf build upload, upload_build_to_qawolf, build.requestUpload, build.create, RUN_INPUT_PATH, app version"
 ---
 
-A build is an Android `.apk` or `.aab`, or an iOS `.ipa`, that you upload to QA Wolf. QA Wolf reads the app id, version and build number from the file. Every run records which build it installed, so you know exactly what each run tested.
+A build is an Android `.apk` or `.aab`, an iOS `.ipa`, or a `.zip` of a Mac `.app`, that you upload to QA Wolf. QA Wolf reads the app id, version and build number from the file. Every run records which build it installed, so you know exactly what each run tested.
 
 ## What you can upload
 
-- **File types** — `.apk` and `.aab` for Android, `.ipa` for iOS. Any other file is refused, including a `.zip`.
+- **File types** — `.apk` and `.aab` for Android, `.ipa` for iOS, and a `.zip` of the `.app` for Mac. Any other file is refused.
 - **Size** — at most 1 GB.
 - **File name** — letters, digits, `.`, `_` and `-`, at most 255 characters. The Builds page and the CLI replace other characters with `-`, and the Fastlane plugin replaces spaces with `-`. Every other way refuses the file.
-- **Zipped apps** — not accepted. Upload the `.apk`, `.aab` or `.ipa` inside the zip. A zip that holds `Payload/<App>.app/` is already an `.ipa`, so rename it to `.ipa`. Any other zipped app stays on [legacy build uploads](/legacy-build-uploads) for now.
+- **Zipped apps** — a `.zip` is read as a Mac app. For Android and iOS, upload the `.apk`, `.aab` or `.ipa` inside the zip. A zip that holds `Payload/<App>.app/` is already an `.ipa`, so rename it to `.ipa`. Any other zipped app stays on [legacy build uploads](/legacy-build-uploads) for now.
 - **Retention** — QA Wolf keeps the newest builds of each app, and deletes older build files. See [How long QA Wolf keeps a build](#how-long-qa-wolf-keeps-a-build).
 
 ## How a run picks its build
@@ -232,6 +232,24 @@ await launch({ app: { id: "com.example.app" } });
 ```
 
 This needs `@qawolf/flows` 0.4.0 or later. When the run has no build of that app, `launch` fails with "No build of `<id>` for `<platform>` on this environment". It does not fall back to another file. A flow that passes `app` ignores `RUN_INPUT_PATH`. See App resolution for [Android](/libraries/flows/api-reference/android#app-resolution) or [iOS](/libraries/flows/api-reference/ios#app-resolution).
+
+## Mac apps
+
+A Mac build is a `.zip` holding one `.app`, such as the `-mac.zip` electron-builder writes next to the `.dmg`. The app can sit at the top of the zip, or inside a single top-level folder. QA Wolf reads the app's `Info.plist`: `CFBundleIdentifier` is the app id, `CFBundleShortVersionString` the version and `CFBundleVersion` the build number. `.dmg` and `.pkg` files are refused.
+
+Mac machines are Apple silicon without Rosetta, so upload the arm64 or universal build. QA Wolf refuses an app that runs only on Intel Macs.
+
+A Mac flow starts the build by its bundle id. The run installs the app into `/Applications`, then starts it:
+
+```ts
+import { launch, startApp } from "@qawolf/flows/mac";
+
+// An Electron app, driven with Playwright:
+const { page } = await launch({ app: { id: "com.example.desktop" } });
+
+// Or a native app, driven with WebdriverIO:
+const driver = await startApp({ id: "com.example.desktop" });
+```
 
 ## Test a build in one run
 
