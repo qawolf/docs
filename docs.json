@@ -1048,6 +1048,7 @@
                     "group": "GitHub",
                     "pages": [
                       "deployment-testing/github",
+                      "deployment-testing/github-enterprise-server",
                       "deployment-testing/github-actions"
                     ]
                   },

@@ -1,0 +1,81 @@
+---
+title: "Connect GitHub Enterprise Server"
+description: "Connect a self-hosted GitHub organization, choose repository access, and verify that QA Wolf tests a pull request preview."
+sidebarTitle: "GitHub Enterprise Server"
+---
+
+Connect your GitHub Enterprise Server (GHES) to test pull requests on your own server. QA Wolf prepares a private GitHub App for your organization. You choose what it can access.
+
+## Before you connect
+
+- Sign in as a QA Wolf organization admin and an owner of the GitHub organization.
+- QA Wolf must be able to reach the GHES API over HTTPS at a public address with a trusted certificate. Your server must also be able to send webhooks to QA Wolf. If your firewall requires an IP allowlist, ask your QA Wolf representative for the addresses.
+- Each workspace connects to one GitHub host. If this workspace already uses another host, disconnect it before switching.
+
+## Choose what QA Wolf can access
+
+| Setup option | App | What it does |
+| --- | --- | --- |
+| **Test your deployments and pull requests** | QA Wolf | Runs tests on deployments and posts results on pull requests. It can read pull request changes without access to the rest of your repository contents. |
+| **Read your code** (optional) | QA Wolf Code | Includes testing and lets the QA Wolf AI read code in the repositories you select. It can use that code to investigate failures. |
+
+You install one app. If **Read your code** is unavailable, ask your QA Wolf representative about code access for your workspace. See [GitHub app permissions](/github-code-access#permissions-of-qa-wolf-code).
+
+## Connect your organization
+
+<Steps>
+  <Step title="Open the enterprise integration">
+    In **Workspace settings → Integrations**, find **GitHub Enterprise Server** under **Code hosting** and select **Connect**.
+  </Step>
+  <Step title="Enter your server and organization">
+    For **Server URL**, enter the HTTPS origin, such as `https://git.example.com`. For **GitHub organization**, enter the organization name that appears in your repository URLs.
+  </Step>
+  <Step title="Choose access">
+    Select **Read your code** if you want code access. Select **Continue**.
+  </Step>
+  <Step title="Register and install the app">
+    On your GHES server, confirm creation of the app in your organization. QA Wolf supplies the webhook URL, callbacks, and permissions. Install the app and choose the repositories it can access. Authorize the connection when GitHub prompts you.
+  </Step>
+  <Step title="Verify the connection">
+    Back in **Integrations**, check that **GitHub Enterprise Server** shows **Connected**, your hostname, and the app you chose. Open its menu and select **Configure**. Confirm that the repository you want to test appears in the list.
+  </Step>
+</Steps>
+
+If you stop after registering the app, select **Resume** under **Saved registrations** the next time you connect.
+
+To change code access later, open **Configure → What QA Wolf does**. Select **Turn on** or **Turn off** beside **Read your code** and approve the app on GHES. If your branch rules require checks from a specific app, [update the required checks](/github-code-access#update-required-status-checks).
+
+## Set up automatic pull request testing
+
+Your deployment pipeline builds the preview. QA Wolf listens for the successful deployment on GHES and runs the flows you choose.
+
+### Report the preview from your pipeline
+
+For each pull request, deploy its latest commit to a URL that QA Wolf can open. Report the following values to GHES:
+
+| Field | What to send |
+| --- | --- |
+| `ref` | The commit SHA at the head of the pull request. |
+| `environment` | A name unique to that pull request, such as `preview/pr-42`. |
+| `transient_environment` | `true`, to mark the preview as temporary. |
+| `state` and `environment_url` | On the deployment status, send `success` and the preview URL once the app is ready. |
+
+For a workflow example, see [GitHub preview deployments](/deployment-testing/github#preview-deployments).
+
+### Create the loop
+
+1. In **Loops**, select **New loop**, then **Test each pull request**.
+2. Under **When**, select **Pull request previews**. Enter the pattern your pipeline uses. For example, `preview/pr-*` matches `preview/pr-42`.
+3. Under **Then**, select **Run specific flows** and choose one existing flow that opens your app. You can let QA Wolf choose flows for each change later.
+4. Select **Create loop** and confirm **Enabled** is on.
+
+### Verify the first run
+
+1. Open a pull request or push a new commit to an open pull request. Let your pipeline deploy it.
+2. On GHES, open the deployment on that commit. Confirm that its URL opens the preview and that its status is successful.
+3. Open the loop's **Run history** in QA Wolf. Look for the flow you selected.
+4. On the same commit, open **QA Wolf Test Run** for progress or **QA Wolf Test Results** for the outcome.
+
+**Preview ready but no run?** Compare the deployment's environment name with the loop's **When** condition. A loop set to **Staging** skips `preview/pr-42`. After you correct the condition, deploy a new commit. QA Wolf evaluates each deployment on its first successful status.
+
+See [how loops match deployments](/loops/deployments) and [pull request checks](/deployment-testing/pr-testing#checks-on-the-pull-request).
