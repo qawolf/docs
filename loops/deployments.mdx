@@ -63,7 +63,7 @@ QA Wolf records one verdict per trigger. `deployment.listTriggerEvaluations` ret
 | --- | --- |
 | `ran` | Names the run the trigger created. |
 | `starting` | Run creation is in progress. |
-| `did-not-run` | Carries a reason and a message. `no-pull-request` means a Smart Smoke Suite found no pull request on the deploy. `supersededByRunId` names a run an earlier delivery of the same deployment already created. |
+| `did-not-run` | Carries a reason and a message. For a Smart Smoke Suite, the reasons are listed under [When no run starts](/smart-smoke-suites#when-no-run-starts). `supersededByRunId` names a run an earlier delivery of the same deployment already created. |
 | `unknown` | No record of what followed the match. |
 
 Verdicts are a snapshot. Editing or deleting a trigger later does not change them. A verdict with no trigger id belongs to a trigger deleted since.

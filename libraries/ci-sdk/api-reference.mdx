@@ -52,6 +52,10 @@ A second argument injects dependencies. Each is optional:
 Returns an object with these functions:
 
 - **`deployment.reportStatus`** — reports a deployment. A deployment's first `success` report is what evaluates triggers and starts a run.
+- **`deployment.collectDeployChanges`** — builds a deployment's `changes` from the deploy's commits, carrying ids, with secrets redacted.
+- **`deployment.findLastDeployedCommit`** — reads the commit of an environment's last successful deploy.
+- **`deployment.collectCommitChanges`** — builds a deployment's `changes` from the commits after a given one, without ids or redaction.
+- **`codeHostIntegration.findForRepository`** — checks what QA Wolf reads of a repository.
 - **`deployment.waitForVerdict`** — blocks until QA Wolf can say whether the deployment's tests passed.
 - **`environment.promote`** and **`environment.terminate`** — close a preview environment, keeping or discarding its flow changes.
 - **`promotion.get`** — reads how a promotion settled.
@@ -123,6 +127,7 @@ console.log(result.deployment.url);
 | `metadata.commitUrl` | string | A link to the commit, for when QA Wolf cannot resolve the commit itself. |
 | `metadata.commitMessage` | string | The deployed commit's message. |
 | `metadata.commitAuthorName` | string | The display name of the commit's author. |
+| `changes` | object | What the deployment changed, for a [Smart Smoke Suite](/smart-smoke-suites) on a deploy with no pull request. Send it on the first `success` report or earlier. [`deployment.collectDeployChanges`](#deployment-collectdeploychanges) builds it; the fields and limits are under [Changes](/deployment-testing/webhook#changes). |
 
 The input is validated strictly: a field the contract does not know, or `environment` carrying both `id` and `name`, is an `invalid-request`. `ReportDeploymentParams` is the exported type.
 
@@ -151,6 +156,178 @@ The response carries the deployment only, never the resulting runs. `deployment.
 <Note>
   `outcome: "reported"` means QA Wolf recorded the deployment, not that a trigger matched it. Whether a run starts is decided afterwards, by your [triggers](/loops/overview).
 </Note>
+
+## deployment.collectDeployChanges
+
+Builds the `changes` value for `deployment.reportStatus` from the deploy's commits in the local git history. It sends nothing itself, so you pass what it returns to `deployment.reportStatus`. Requires 3.8.0. Starting from the last deployed commit, with `environment` in place of `since`, requires 3.10.0 and `@qawolf/api-contracts` 0.155.0.
+
+Example:
+
+```javascript
+const collected = await deployment.collectDeployChanges({
+  environment: { name: "staging" },
+});
+if (collected.outcome !== "collected") console.warn(collected.message);
+
+await deployment.reportStatus({
+  /* ... */
+  status: "success",
+  changes: collected.outcome === "collected" ? collected.changes : undefined,
+});
+```
+
+Each commit on the first-parent line becomes one change, with its message and changed file paths. A merge commit's message names its pull or merge request. On GitHub, a commit whose subject ends in `(#N)` is a squashed pull request, and on Azure Repos, so is a commit whose subject is `Merged PR N: <title>`. Each change carries its ids, a pull request's number and the commit it landed as, or a commit's sha, so QA Wolf lists a change it also reads from your code host only once. It never reads diffs or file contents.
+
+Before it returns the changes, it redacts secrets from the text, such as tokens, keys, and passwords, with the same patterns QA Wolf applies when it receives them. It also removes trailers like `Co-authored-by:` that name a person by email, and leaves out any change QA Wolf wouldn't accept.
+
+On a shallow clone, or when `since` names no commit, it returns `collected` with no changes and says what went wrong in `changes.problems`, so QA Wolf can raise a [setup problem](/smart-smoke-suites#problems-collecting-changes). The log says how to fix it.
+
+### Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `since` | string | The commit or tag the environment ran before, such as the previous release tag. Without it, pass `environment`. |
+| `environment` | object | `{ name }` or `{ id }`, as you pass it to `deployment.reportStatus`. Without `since`, the commits after the one QA Wolf last saw deployed there are collected. |
+| `service` | string | With `environment`, which application this deploy is, as you pass it to `deployment.reportStatus`. Without it, only deploys that named no service count. |
+| `repository` | object | `{ type: "url", url }` or `{ type: "full-name", fullName, host }`. Defaults to the repository your CI names, else the clone's `origin` remote. Credentials in a URL are removed before it's sent. |
+| `workspaceId` | string | Only needed with an organization or user API key. |
+| `pullRequests` | object | `{ token, codeHost }`. Looks up the merged pull request behind each commit with your pipeline's own token. Requires 3.9.0. See [Pull request lookup](#pull-request-lookup). |
+| `include` | string[] | What each change carries: `"titles"`, `"descriptions"`, and `"paths"`. All three by default. Leaving out descriptions or paths lowers the quality of the flow selection. |
+| `filter` | function | Edits the changes before they're redacted and sent. Gets the changes and returns the ones to send, and may be async. |
+| `filterTimeoutMs` | number | How long `filter` may take. Defaults to 2 minutes. `Infinity` sets no limit. |
+| `releaseNotes` | string | Notes written for the release, redacted and sent with the changes. |
+| `cwd` | string | The repository folder. Defaults to the current directory. Pass `repository` too when it's a checkout of another repository than the one the job was started for. |
+| `env` | object | The variables to read the CI's repository from. Defaults to `process.env`. |
+
+When the filter throws, takes longer than `filterTimeoutMs`, or returns something that isn't a list of changes, none of the changes are sent, never the text as it was before the filter, and `changes.problems` says the filter failed. A returned change QA Wolf doesn't accept, such as one without a title, is left out, and `changes.problems` says the filter failed too.
+
+### Pull request lookup
+
+When QA Wolf doesn't read your repository's pull requests itself, `pullRequests.token` lets the SDK look up the merged pull request behind each commit, so it's sent with its number, title, description, and changed file paths. Pass `GITHUB_TOKEN` on GitHub Actions, with `pull-requests: read` permission, or `System.AccessToken` on Azure Pipelines.
+
+- **Where the token goes.** Only to your CI's own code host: on GitHub Actions, the GitHub server the job runs for; on Azure Pipelines, the Azure Repos repository the job was started for; elsewhere, only to api.github.com for a repository on github.com. It's sent only over https, never follows a redirect, and is never sent to QA Wolf or printed. GitLab and Bitbucket aren't supported.
+- **GitHub Enterprise Server on another CI.** Pass the server's API as `codeHost: { kind: "github", apiUrl: "https://github.example.com/api/v3" }`. `apiUrl` must be https and on the repository's own host.
+- **Limits.** At most the 50 newest commits are looked up. A permission error, a rate limit, or a failed request stops the lookups, and the commits without a pull request are sent as commits.
+- When QA Wolf reads the pull requests itself, through its GitHub or GitLab integration, nothing is looked up. Without a token, the commits are sent as they are.
+
+### Result
+
+Every result carries `coverage`, what QA Wolf said it reads of the repository, and `repository`, the URL it checked and where the URL came from. See [codeHostIntegration.findForRepository](#codehostintegration-findforrepository). Branch on `outcome`:
+
+| `outcome` | Description |
+| --- | --- |
+| `"collected"` | Carries `changes`, ready to pass to `deployment.reportStatus`. When collecting went wrong, `changes.problems` says what. |
+| `"no-starting-commit"` | Without `since`, no commit could start the range, so nothing is collected. Carries `message` and `reason`: `no-earlier-deploy` on the environment's first deploy, `not-in-history` when the clone doesn't hold that commit, `lookup-failed` when asking QA Wolf failed, or `environment-required` when neither `since` nor `environment` was given. Report the deploy without `changes`. |
+| `"git-failed"` | Git failed reading the history. Carries `message`. |
+| `"outdated-contracts"` | The installed `@qawolf/api-contracts` is older than 0.148.0, so it can't redact the changes, or, without `since`, older than 0.155.0. Carries `message`. |
+
+More outcomes and reasons may be added in minor versions.
+
+## deployment.findLastDeployedCommit
+
+Asks QA Wolf for the commit of the environment's last successful deploy, a hint for where to start collecting changes. `deployment.collectDeployChanges` calls it for you when you pass `environment` without `since`. Requires 3.10.0 and `@qawolf/api-contracts` 0.155.0.
+
+Example:
+
+```javascript
+const last = await deployment.findLastDeployedCommit({
+  deployingCommitSha: process.env.GITHUB_SHA,
+  environment: { name: "staging" },
+});
+if (last.outcome === "found") console.log(`Last deployed: ${last.commitSha}`);
+```
+
+The commit is a hint. QA Wolf still decides which changes count for each trigger, from the deploys that trigger already checked, so a range that starts a little early is trimmed.
+
+### Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `environment` | object | `{ name }` or `{ id }`, as you pass it to `deployment.reportStatus`. Required. |
+| `service` | string | Which application, when several deploy into one environment. Without it, only deploys that named no service count. |
+| `repository` | string | The repository's owner/name, such as `acme/web`. Only deploys from it count: ones QA Wolf linked to it, or, when it linked none, reported with it as `metadata.repository`. |
+| `deployingCommitSha` | string | The commit being deployed now. Deploys of it are skipped, so a redeploy still answers with the commit the environment ran before. |
+| `workspaceId` | string | Only needed with an organization or user API key and an environment `name`. |
+
+### Result
+
+| `outcome` | Description |
+| --- | --- |
+| `"found"` | Carries `commitSha`, `deployedAt`, and `deploymentId`. |
+| `"no-earlier-deploy"` | QA Wolf has no earlier successful deploy with a commit for this environment, service, and repository. A `name` no environment matches yet answers this too. Carries `message`. |
+| `"outdated-contracts"` | The installed `@qawolf/api-contracts` is older than 0.155.0. Carries `message`. |
+
+It can also return one of the usual failures, such as `not-found` for an environment id that doesn't exist. More outcomes may be added in minor versions.
+
+## codeHostIntegration.findForRepository
+
+Works out the job's repository and asks QA Wolf what it reads there through the workspace's code host integrations. It takes the same `repository`, `workspaceId`, `cwd`, and `env` options as `deployment.collectDeployChanges`, and never fails. Requires 3.8.0.
+
+Example:
+
+```javascript
+const { coverage } = await codeHostIntegration.findForRepository({
+  repository: { fullName: "acme/storefront", type: "full-name" },
+});
+if (coverage.status === "covered")
+  console.log(`QA Wolf reads ${coverage.fullName} through ${coverage.provider}`);
+```
+
+`coverage.status` is one of:
+
+| `status` | Description |
+| --- | --- |
+| `"covered"` | QA Wolf reads the repository. Carries `fullName`, `provider`, `permissions.code`, `permissions.pullRequests`, and `settingsUrl`. |
+| `"not-covered"` | No integration covers the repository. Carries `settingsUrl`, where a workspace admin connects the code host, when QA Wolf said. |
+| `"unsupported-host"` | The repository is on a code host QA Wolf doesn't connect to. |
+| `"unknown"` | QA Wolf's answer couldn't be read. Carries `reason` and `message`. |
+
+More values may be added in minor versions. Treat one you don't handle like `unknown`.
+
+## deployment.collectCommitChanges
+
+Builds the `changes` value for `deployment.reportStatus` from the local git history, from the commit after `since` up to `HEAD`. It returns the summary rather than sending it, so you can check or edit it first. Requires 3.7.0; earlier versions call it `collectChanges`.
+
+Example:
+
+```javascript
+const collected = await deployment.collectCommitChanges({
+  include: ["titles", "paths"],
+  since: "v1.2.0",
+});
+
+if (collected.outcome === "collected") {
+  await deployment.reportStatus({
+    /* ... */
+    status: "success",
+    changes: collected.changes,
+  });
+}
+```
+
+Each commit on the first-parent line becomes one change. A GitHub or GitLab merge commit, or a GitHub squash-merge commit whose subject ends in `(#123)`, becomes a pull request titled from its message. Any other commit stays a commit. It reads commit messages and, when asked, changed file paths. It never reads diffs or file contents.
+
+It reads at most the 250 newest commits. Older ones, and any left out to fit the API's limits, are counted in `omittedCount`.
+
+### Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `since` | string | The commit or tag the environment ran before, such as the previous release tag. Required. |
+| `include` | string[] | What each change carries: `"titles"`, `"descriptions"` or `"paths"`. Defaults to `["titles"]`. `"descriptions"` adds each message body, and `"paths"` adds the changed file paths. |
+| `releaseNotes` | string | Notes written for the release, sent as they are. |
+| `cwd` | string | The repository to read. Defaults to the current directory. |
+
+### Result
+
+Branch on `outcome`:
+
+| `outcome` | Description |
+| --- | --- |
+| `"collected"` | Carries `changes`, ready to pass to `deployment.reportStatus`. |
+| `"history-unavailable"` | The clone is shallow, so it may not hold the whole range. Carries `fix`. Fetch the full history, such as `fetch-depth: 0` on `actions/checkout`, or `git fetch --unshallow`. |
+| `"since-not-found"` | `since` names no commit in this repository, such as a typo or a tag that wasn't fetched. Carries `fix`. |
+| `"git-failed"` | Git failed for another reason. Carries `message`. |
 
 ## detectProviderDeploymentId
 

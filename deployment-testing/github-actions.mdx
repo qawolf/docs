@@ -2,7 +2,7 @@
 title: "GitHub Actions"
 description: "Report a deploy from a GitHub Actions workflow, and hold your release jobs until QA Wolf's verdict."
 sidebarTitle: "Actions"
-keywords: "GitHub Actions, workflow, notify-qawolf-on-deploy-action, wait-for-verdict-action, notify QA Wolf on deploy, CI gate, wait for test results, release gate, deployment verdict"
+keywords: "GitHub Actions, workflow, notify-qawolf-on-deploy-action, send-changes, Smart Smoke Suite, wait-for-verdict-action, notify QA Wolf on deploy, CI gate, wait for test results, release gate, deployment verdict"
 ---
 
 <Tip>
@@ -85,6 +85,46 @@ jobs:
 While it waits, the step logs each change. When it ends, it writes a job summary with the outcome and a link to each run.
 
 If the deploy job reports through [`@qawolf/ci-sdk`](/deployment-testing/ci-sdk) instead, pass the deployment id `deployment.reportStatus` returned to `deployment-id`.
+
+## Send what changed
+
+A [Smart Smoke Suite](/smart-smoke-suites) on a deploy with no pull request reads what the deploy changed. Set `send-changes: true` on the notify action, version 3.3.0 or later through `@v3`, and it sends the deploy's commits with the report. It defaults to `false`, so a workflow that doesn't set it sends no changes.
+
+Example:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      # ... deploy, and wait until the deployment is live
+      - name: Notify QA Wolf
+        uses: qawolf/notify-qawolf-on-deploy-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          qawolf-api-key: ${{ secrets.QAWOLF_API_KEY }}
+          workspace-id: ${{ secrets.QAWOLF_WORKSPACE_ID }}
+          environment: staging
+          deployment-url: https://staging.example.com
+          send-changes: true
+```
+
+- **It needs `GITHUB_TOKEN`** in the step's `env`, with `contents: read` to compare commits and `pull-requests: read` to look up the pull requests behind them.
+- **No checkout needed.** The action compares the commit QA Wolf last saw deployed to the environment with the deployed one through your GitHub server's API, with the workflow's own token. It needs no clone and no deeper `fetch-depth`.
+- **When it can't compare**, such as on the environment's first deploy or without `GITHUB_TOKEN`, it sends the commits the `push` event lists, when that push is the deployed commit. On other events it sends no changes.
+- **What's sent.** For each commit or merged pull request: its title, its message or description, and the file paths it changed. Never code or diffs. At most the 250 newest changes, from up to the newest 300 commits, and the changed paths of the 50 newest commits. Secrets QA Wolf recognizes, such as tokens, are removed before anything leaves the job.
+- **The token stays in GitHub.** It only goes to the API of the GitHub server the workflow runs on, over https. It's never sent to QA Wolf and never printed.
+- **Collecting changes never fails the step.** When it goes wrong, or takes more than 3 minutes, the log says why, and the deploy is still reported without changes.
+
+<Warning>
+  A `pull_request_target` workflow runs with your repository's secrets and a token that can write, for pull requests from anyone, including forks. The action only reads the commits' text through the API and never runs code from the pull request. Don't add a step that runs code from the pull request's checkout before it, and keep in mind that the commit messages and pull request descriptions it sends are written by whoever opened the pull request.
+</Warning>
+
+See [Sending changes from your CI](/smart-smoke-suites#sending-changes-from-your-ci) for how QA Wolf uses them.
 
 ## What the step does
 
